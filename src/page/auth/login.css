@@ -1,0 +1,950 @@
+.login-container {
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    min-height: 100vh;
+    align-items: center;
+    flex-direction: column;
+  }
+  .login-login {
+    width: 100%;
+    height: 1117px;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 0;
+    background-color: rgba(63, 69, 209, 1);
+  }
+  .login-rectangle1 {
+    top: 0px;
+    left: 901px;
+    width: 827px;
+    height: 1117px;
+    position: absolute;
+  }
+  .login-mobileloginpana1 {
+    top: 169px;
+    left: 55px;
+    width: 778px;
+    height: 778.1500244140625px;
+    display: flex;
+    overflow: hidden;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+  .login-freepik-floorinject60 {
+    top: 704.80126953125px;
+    left: 145.77886962890625px;
+    width: 482.71759033203125px;
+    height: 0.8093067407608032px;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .login-vector {
+    top: 0px;
+    left: 0px;
+    width: 483px;
+    height: 1px;
+    position: absolute;
+  }
+  .login-freepik-padlockinject60 {
+    top: 73.96192169189453px;
+    left: 502.8555603027344px;
+    width: 107.9744873046875px;
+    height: 135.26708984375px;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .login-vector01 {
+    top: 21.589479446411133px;
+    left: 0.00005815788608742878px;
+    width: 67px;
+    height: 24px;
+    position: absolute;
+  }
+  .login-vector02 {
+    top: 24.458528518676758px;
+    left: 23.26706886291504px;
+    width: 85px;
+    height: 111px;
+    position: absolute;
+  }
+  .login-vector03 {
+    top: -0.000014641224879596848px;
+    left: 7.6716179847717285px;
+    width: 33px;
+    height: 42px;
+    position: absolute;
+  }
+  .login-vector04 {
+    top: 61.945682525634766px;
+    left: 32.21174621582031px;
+    width: 33px;
+    height: 51px;
+    position: absolute;
+  }
+  .login-freepik-deviceinject60 {
+    top: 129.0635223388672px;
+    left: 307.1353454589844px;
+    width: 224.8236083984375px;
+    height: 458.1600341796875px;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .login-vector05 {
+    top: 0px;
+    left: 0px;
+    width: 225px;
+    height: 458px;
+    position: absolute;
+  }
+  .login-vector06 {
+    top: 13.586479187011719px;
+    left: 10.34897232055664px;
+    width: 204px;
+    height: 428px;
+    position: absolute;
+  }
+  .login-vector07 {
+    top: 354.9365234375px;
+    left: 52.864662170410156px;
+    width: 120px;
+    height: 36px;
+    position: absolute;
+  }
+  .login-text {
+    top: 366.9364929199219px;
+    left: 98.86465454101562px;
+    color: rgba(255, 255, 255, 1);
+    height: auto;
+    position: absolute;
+    font-size: 10.377912521362305px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Inter;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .login-vector08 {
+    top: 125.75481414794922px;
+    left: 37.6381721496582px;
+    width: 40px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector09 {
+    top: 125.75481414794922px;
+    left: 37.6381721496582px;
+    width: 40px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector10 {
+    top: 143.61563110351562px;
+    left: 37.09538650512695px;
+    width: 161px;
+    height: 27px;
+    position: absolute;
+  }
+  .login-vector11 {
+    top: 152.3932342529297px;
+    left: 49.66133117675781px;
+    width: 73px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector12 {
+    top: 152.3932342529297px;
+    left: 49.66133117675781px;
+    width: 73px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector13 {
+    top: 192.76719665527344px;
+    left: 37.364871978759766px;
+    width: 40px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector14 {
+    top: 192.76719665527344px;
+    left: 37.364871978759766px;
+    width: 40px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector15 {
+    top: 210.80136108398438px;
+    left: 36.73497772216797px;
+    width: 161px;
+    height: 27px;
+    position: absolute;
+  }
+  .login-vector16 {
+    top: 262.6896667480469px;
+    left: 37.06350326538086px;
+    width: 40px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector17 {
+    top: 262.6896667480469px;
+    left: 37.06350326538086px;
+    width: 40px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector18 {
+    top: 280.4925537109375px;
+    left: 36.56404495239258px;
+    width: 161px;
+    height: 27px;
+    position: absolute;
+  }
+  .login-vector19 {
+    top: 221.0157012939453px;
+    left: 48.09973907470703px;
+    width: 73px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector20 {
+    top: 221.0157012939453px;
+    left: 48.09973907470703px;
+    width: 73px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector21 {
+    top: 291.80560302734375px;
+    left: 48.315879821777344px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector22 {
+    top: 291.86358642578125px;
+    left: 58.22895050048828px;
+    width: 6px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector23 {
+    top: 291.8988952636719px;
+    left: 68.15917205810547px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector24 {
+    top: 291.9457702636719px;
+    left: 78.07278442382812px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector25 {
+    top: 291.9921875px;
+    left: 87.98529815673828px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector26 {
+    top: 292.04022216796875px;
+    left: 97.9140853881836px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector27 {
+    top: 292.0815124511719px;
+    left: 107.82819366455078px;
+    width: 6px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector28 {
+    top: 292.13360595703125px;
+    left: 117.74171447753906px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector29 {
+    top: 292.1790771484375px;
+    left: 127.65531921386719px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-group {
+    top: 291.80560302734375px;
+    left: 48.315879821777344px;
+    width: 85.7458724975586px;
+    height: 7.134377956390381px;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .login-vector30 {
+    top: 0px;
+    left: 0px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector31 {
+    top: 0.05799105018377304px;
+    left: 9.91296672821045px;
+    width: 6px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector32 {
+    top: 0.09328272193670273px;
+    left: 19.843198776245117px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector33 {
+    top: 0.1400604397058487px;
+    left: 29.756736755371094px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector34 {
+    top: 0.18665969371795654px;
+    left: 39.66933822631836px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector35 {
+    top: 0.2344493269920349px;
+    left: 49.598167419433594px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector36 {
+    top: 0.2758708894252777px;
+    left: 59.512176513671875px;
+    width: 6px;
+    height: 7px;
+    position: absolute;
+  }
+  .login-vector37 {
+    top: 0.3279455006122589px;
+    left: 69.42573547363281px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector38 {
+    top: 0.37359240651130676px;
+    left: 79.33924865722656px;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector39 {
+    top: 59.38778305053711px;
+    left: 107.53778839111328px;
+    width: 21px;
+    height: 22px;
+    position: absolute;
+  }
+  .login-vector40 {
+    top: 59.38778305053711px;
+    left: 107.53778839111328px;
+    width: 21px;
+    height: 22px;
+    position: absolute;
+  }
+  .login-vector41 {
+    top: 87.63152313232422px;
+    left: 80.01769256591797px;
+    width: 73px;
+    height: 9px;
+    position: absolute;
+  }
+  .login-vector42 {
+    top: 87.63152313232422px;
+    left: 80.01769256591797px;
+    width: 73px;
+    height: 9px;
+    position: absolute;
+  }
+  .login-freepikspeechbubbleinject60 {
+    top: 262.5165710449219px;
+    left: 150.56475830078125px;
+    width: 80.25623321533203px;
+    height: 91.13709259033203px;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .login-vector43 {
+    top: 0px;
+    left: 0px;
+    width: 80px;
+    height: 91px;
+    position: absolute;
+  }
+  .login-vector44 {
+    top: 21.802597045898438px;
+    left: 24.71522331237793px;
+    width: 24px;
+    height: 34px;
+    position: absolute;
+  }
+  .login-vector45 {
+    top: 34.75231170654297px;
+    left: 50.44751739501953px;
+    width: 7px;
+    height: 20px;
+    position: absolute;
+  }
+  .login-freepik-characterinject60 {
+    top: 271.7684020996094px;
+    left: 190.5846710205078px;
+    width: 222.86109924316406px;
+    height: 433.24969482421875px;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .login-vector46 {
+    top: 412.5057373046875px;
+    left: 51.71569061279297px;
+    width: 40px;
+    height: 21px;
+    position: absolute;
+  }
+  .login-vector47 {
+    top: 430.76092529296875px;
+    left: 51.793277740478516px;
+    width: 40px;
+    height: 1px;
+    position: absolute;
+  }
+  .login-vector48 {
+    top: 426.2086181640625px;
+    left: 76.11824798583984px;
+    width: 2px;
+    height: 3px;
+    position: absolute;
+  }
+  .login-vector49 {
+    top: 426.66448974609375px;
+    left: 77.61321258544922px;
+    width: 2px;
+    height: 3px;
+    position: absolute;
+  }
+  .login-vector50 {
+    top: 426.4334716796875px;
+    left: 52.10182571411133px;
+    width: 7px;
+    height: 5px;
+    position: absolute;
+  }
+  .login-vector51 {
+    top: 426.1210632324219px;
+    left: 73.96907806396484px;
+    width: 2px;
+    height: 1px;
+    position: absolute;
+  }
+  .login-vector52 {
+    top: 424.5194091796875px;
+    left: 73.03680419921875px;
+    width: 3px;
+    height: 1px;
+    position: absolute;
+  }
+  .login-vector53 {
+    top: 412.5057373046875px;
+    left: 110.46623992919922px;
+    width: 40px;
+    height: 21px;
+    position: absolute;
+  }
+  .login-vector54 {
+    top: 430.79205322265625px;
+    left: 110.55904388427734px;
+    width: 40px;
+    height: 1px;
+    position: absolute;
+  }
+  .login-vector55 {
+    top: 426.2086181640625px;
+    left: 134.8754119873047px;
+    width: 2px;
+    height: 3px;
+    position: absolute;
+  }
+  .login-vector56 {
+    top: 426.66448974609375px;
+    left: 136.371826171875px;
+    width: 2px;
+    height: 3px;
+    position: absolute;
+  }
+  .login-vector57 {
+    top: 426.4334716796875px;
+    left: 110.8518295288086px;
+    width: 7px;
+    height: 5px;
+    position: absolute;
+  }
+  .login-vector58 {
+    top: 426.1210632324219px;
+    left: 132.71957397460938px;
+    width: 2px;
+    height: 1px;
+    position: absolute;
+  }
+  .login-vector59 {
+    top: 424.5194091796875px;
+    left: 131.83352661132812px;
+    width: 3px;
+    height: 1px;
+    position: absolute;
+  }
+  .login-vector60 {
+    top: 9.859586715698242px;
+    left: 0.00016902259085327387px;
+    width: 223px;
+    height: 234px;
+    position: absolute;
+  }
+  .login-vector61 {
+    top: 58.447303771972656px;
+    left: 23.982297897338867px;
+    width: 136px;
+    height: 109px;
+    position: absolute;
+  }
+  .login-vector62 {
+    top: 133.60096740722656px;
+    left: 61.22457504272461px;
+    width: 25px;
+    height: 3px;
+    position: absolute;
+  }
+  .login-vector63 {
+    top: 130.20828247070312px;
+    left: 63.80790328979492px;
+    width: 27px;
+    height: 4px;
+    position: absolute;
+  }
+  .login-vector64 {
+    top: 104.03131103515625px;
+    left: 108.02281951904297px;
+    width: 6px;
+    height: 23px;
+    position: absolute;
+  }
+  .login-vector65 {
+    top: 133.10304260253906px;
+    left: 24.698375701904297px;
+    width: 21px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector66 {
+    top: 60.081077575683594px;
+    left: 99.23236083984375px;
+    width: 19px;
+    height: 31px;
+    position: absolute;
+  }
+  .login-vector67 {
+    top: 63.72311782836914px;
+    left: 154.29783630371094px;
+    width: 1px;
+    height: 29px;
+    position: absolute;
+  }
+  .login-vector68 {
+    top: 5.673154830932617px;
+    left: 74.43756866455078px;
+    width: 33px;
+    height: 59px;
+    position: absolute;
+  }
+  .login-vector69 {
+    top: 30.898225784301758px;
+    left: 95.63731384277344px;
+    width: 4px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector70 {
+    top: -0.00004766526399180293px;
+    left: 33.744930267333984px;
+    width: 79px;
+    height: 123px;
+    position: absolute;
+  }
+  .login-vector71 {
+    top: 36.378963470458984px;
+    left: 97.15608215332031px;
+    width: 5px;
+    height: 6px;
+    position: absolute;
+  }
+  .login-vector72 {
+    top: 165.27169799804688px;
+    left: 43.18619918823242px;
+    width: 102px;
+    height: 258px;
+    position: absolute;
+  }
+  .login-vector73 {
+    top: 200.85076904296875px;
+    left: 68.01053619384766px;
+    width: 23px;
+    height: 5px;
+    position: absolute;
+  }
+  .login-vector74 {
+    top: 409.2371826171875px;
+    left: 102.74699401855469px;
+    width: 37px;
+    height: 1px;
+    position: absolute;
+  }
+  .login-vector75 {
+    top: 416.1471862792969px;
+    left: 49.27231216430664px;
+    width: 36px;
+    height: 1px;
+    position: absolute;
+  }
+  .login-vector76 {
+    top: 202.74728393554688px;
+    left: 76.7938461303711px;
+    width: 4px;
+    height: 213px;
+    position: absolute;
+  }
+  .login-vector77 {
+    top: 167.3727569580078px;
+    left: 109.89009094238281px;
+    width: 30px;
+    height: 242px;
+    position: absolute;
+  }
+  .login-vector78 {
+    top: 283.0525817871094px;
+    left: 106.2950439453125px;
+    width: 17px;
+    height: 3px;
+    position: absolute;
+  }
+  .login-vector79 {
+    top: 286.24591064453125px;
+    left: 107.7266616821289px;
+    width: 15px;
+    height: 1px;
+    position: absolute;
+  }
+  .login-vector80 {
+    top: 165.27169799804688px;
+    left: 46.22184371948242px;
+    width: 69px;
+    height: 8px;
+    opacity: 0.20;
+    position: absolute;
+  }
+  .login-group1 {
+    top: 201.67356872558594px;
+    left: 69.48837280273438px;
+    width: 12.730525016784668px;
+    height: 49.39698791503906px;
+    display: flex;
+    opacity: 0.20;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .login-vector81 {
+    top: 0px;
+    left: 0px;
+    width: 13px;
+    height: 49px;
+    position: absolute;
+  }
+  .login-image3 {
+    top: 263px;
+    left: 994px;
+    width: 423px;
+    height: 106px;
+    position: absolute;
+  }
+  .login-frame14 {
+    gap: 36px;
+    top: 399.5px;
+    left: 997px;
+    width: 420px;
+    display: flex;
+    position: absolute;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .login-frame13 {
+    gap: 32px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .login-frame2 {
+    gap: 3px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .login-text02 {
+    color: rgba(81, 81, 81, 1);
+    height: auto;
+    font-size: 36px;
+    font-style: Bold;
+    text-align: left;
+    font-family: Nunito Sans;
+    font-weight: 700;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .login-text04 {
+    color: rgba(81, 81, 81, 1);
+    height: auto;
+    font-size: 16px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Nunito Sans;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .login-frame12 {
+    gap: 32px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .login-frame11 {
+    gap: 24px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .login-frame5 {
+    gap: 4px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .login-text06 {
+    color: var(--dl-color-default-gray3);
+    height: auto;
+    font-size: 14px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Nunito Sans;
+    font-weight: 600;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .login-frame3 {
+    gap: 13px;
+    width: 420px;
+    display: flex;
+    padding: 13px 10px;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(222, 210, 217, 1);
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+  }
+  .login-text08 {
+    color: var(--dl-color-default-gray5);
+    height: auto;
+    font-size: 14px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Nunito Sans;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .login-frame9 {
+    gap: 8px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .login-frame6 {
+    gap: 4px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .login-text10 {
+    color: var(--dl-color-default-gray3);
+    height: auto;
+    font-size: 14px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Nunito Sans;
+    font-weight: 600;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .login-frame4 {
+    gap: 13px;
+    width: 420px;
+    display: flex;
+    padding: 18px 10px 13px;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(222, 210, 217, 1);
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+  }
+  .login-text12 {
+    color: var(--dl-color-default-gray5);
+    height: auto;
+    font-size: 10px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Nunito Sans;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .login-frame8 {
+    gap: 222px;
+    display: flex;
+    align-items: flex-start;
+  }
+  .login-checkbox {
+    gap: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-check {
+    width: 12px;
+    height: 12px;
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+  .login-icon-checkbox-unfilled {
+    top: 0px;
+    left: 0px;
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    border-color: rgba(127, 38, 91, 1);
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 2px;
+  }
+  .login-checksolid2 {
+    top: 0.8571836948394775px;
+    left: 0.9998838901519775px;
+    width: 10px;
+    height: 10.000000953674316px;
+    display: flex;
+    overflow: hidden;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+  .login-icons-navigation-others10-check {
+    top: 1.142822265625px;
+    left: 1px;
+    width: 8px;
+    height: 8px;
+    position: absolute;
+  }
+  .login-text14 {
+    color: rgba(161, 161, 161, 1);
+    height: auto;
+    font-size: 12px;
+    font-style: Regular;
+    text-align: left;
+    font-family: Nunito Sans;
+    font-weight: 400;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .login-text16 {
+    color: rgba(127, 38, 91, 1);
+    height: auto;
+    font-size: 12px;
+    font-style: SemiBold;
+    text-align: left;
+    font-family: Nunito Sans;
+    font-weight: 600;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .login-frame7 {
+    gap: 13px;
+    width: 420px;
+    display: flex;
+    padding: 13px 10px 12px;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 6px;
+    justify-content: center;
+    background-color: rgba(63, 69, 209, 1);
+  }
+  .login-text18 {
+    color: rgba(255, 255, 255, 1);
+    height: auto;
+    font-size: 18px;
+    font-style: ExtraBold;
+    text-align: left;
+    font-family: Nunito Sans;
+    font-weight: 800;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  
