@@ -4,8 +4,7 @@ import Login from "./page/auth/login";
 import ResetPassword from "./page/auth/reset-password";
 import AddNewClient from "./page/client/AddNewClient";
 import Client from "./page/client/Client";
-import Dashboard from "./Pages/DashBoard";
-
+import Dashboard from "./page/home/dashboard";
 function App() {
   return (
     <>
