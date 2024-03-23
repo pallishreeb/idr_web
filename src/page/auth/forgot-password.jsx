@@ -41,7 +41,14 @@ const ForgotPassword = () => {
                 placeholder="Enter your email"
               />
             </div>
-            
+            <div className="mb-6 text-right">
+              <a
+                className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+                href="/"
+              >
+                Login?
+              </a>
+            </div>
             {/* Submit button */}
             <div className="flex items-center justify-between">
               <button
