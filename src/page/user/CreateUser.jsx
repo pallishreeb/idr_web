@@ -16,14 +16,11 @@ const CreateUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const userData = {
+    // Dispatch the createUser action with the userData
+    dispatch(createUser({
       email_id: email,
       user_type: userType,
-    };
-
-    // Dispatch the createUser action with the userData
-    dispatch(createUser(userData,navigate));
+    },navigate));
   };
 
   return (
