@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./page/auth/forgot-password";
 import Login from "./page/auth/login";
 import ResetPassword from "./page/auth/reset-password";
@@ -15,40 +15,46 @@ import UpdateUser from "./page/user/UpdateUser";
 import SetUserPasswordForm from "./page/user/SetUserPassword";
 import NotFoundPage from "./page/home/404Page";
 import PrivateRoute from "./PrivateRoute";
-function App() {  
+import WorkOrder from "./page/home/WorkOrder";
+import AddWorkOrder from "./Components/AddNewWorkOrder";
+function App() {
   return (
     <>
-    <ToastContainer  
-    position="top-right"
-    autoClose={5000}
-    hideProgressBar={false}
-    newestOnTop={false}
-    closeOnClick
-    rtl={false}
-    pauseOnFocusLoss
-    draggable
-    pauseOnHover
-    theme="light"
-    transition: Bounce
-    />
-      <Routes> 
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition:Bounce
+      />
+      <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/set-password" element={<SetPasswordForm />} />
-      <Route path="/" element={<PrivateRoute />}>
-        <Route path="/set-user-password/:userId" element={<SetUserPasswordForm />} />
-        <Route path="/users" element={<AllUsers />}></Route>
-        <Route path="/clients" element={<Client />} />
-        <Route path="/add-client" element={<AddNewClient />} />
-        <Route path="/dashboard" element={<Dashboard />}></Route>
-        <Route path="/admin/dashboard" element={<AdminDashboard />}></Route>
-        <Route path="/users/create" element={<CreateUser />}></Route>
-        <Route path="/users/update/:userId" element={<UpdateUser />}></Route>
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
+        <Route path="/" element={<PrivateRoute />}>
+          <Route
+            path="/set-user-password/:userId"
+            element={<SetUserPasswordForm />}
+          />
+          <Route path="/users" element={<AllUsers />}></Route>
+          <Route path="/clients" element={<Client />} />
+          <Route path="/add-client" element={<AddNewClient />} />
+          <Route path="/dashboard" element={<Dashboard />}></Route>
+          <Route path="/admin/dashboard" element={<AdminDashboard />}></Route>
+          <Route path="/users/create" element={<CreateUser />}></Route>
+          <Route path="/users/update/:userId" element={<UpdateUser />}></Route>
+          <Route path="/workorder" element={<WorkOrder />}></Route>
+          <Route path="/add-work-order" element={<AddWorkOrder />}></Route>
 
-
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
       </Routes>
     </>
   );
