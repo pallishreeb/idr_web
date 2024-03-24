@@ -28,7 +28,8 @@ const userSlice = createSlice({
     },
     createUserSuccess(state, action) {
       state.loading = false;
-      state.users = [...state.users, action.payload];
+      // state.users = [...state.users, action.payload];
+      state.error = null;
     },
     createUserFailure(state, action) {
       state.loading = false;
