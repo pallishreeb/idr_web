@@ -29,10 +29,13 @@ export const createUser = (userData, navigate) => {
     try {
       // Perform API call to create user
       const response = await axios.post(apiConfig.createUser, userData);
+      if(response.data.user){
+        toast.success("Account created successfully!")
+        navigate("/users")
+      }
       dispatch(createUserSuccess(response.data.user));
-      toast.success("Account created successfully!")
-      navigate("/users");
     } catch (error) {
+      console.log(error,"Error in account creation")
       dispatch(createUserFailure(error.message));
       toast.error("Error In  Account Creation!");
       navigate("/users/create");
