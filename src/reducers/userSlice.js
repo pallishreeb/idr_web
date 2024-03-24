@@ -16,6 +16,7 @@ const initialState = {
   error: null,
   users: [],
   user: getUserFromLocalStorage(),
+  isAuthenticated:false
 };
 
 const userSlice = createSlice({
@@ -44,6 +45,7 @@ const userSlice = createSlice({
       state.user = action.payload;
       state.error = null;
       saveUserToLocalStorage(action.payload);
+      state.isAuthenticated=true;
     },
     userLoginFailure(state, action) {
       state.loading = false;
@@ -76,6 +78,7 @@ const userSlice = createSlice({
     logout(state) {
       state.user = null; // Clear user data from Redux state
       localStorage.removeItem("user"); // Clear user data from local storage
+      state.isAuthenticated = false;
     },
     updateUserStart(state) {
       state.loading = true;
