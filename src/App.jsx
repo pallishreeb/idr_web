@@ -14,8 +14,8 @@ import AdminDashboard from "./page/home/adminDashboard";
 import UpdateUser from "./page/user/UpdateUser";
 import SetUserPasswordForm from "./page/user/SetUserPassword";
 import NotFoundPage from "./page/home/404Page";
-function App() {
-
+import PrivateRoute from "./PrivateRoute";
+function App() {  
   return (
     <>
     <ToastContainer  
@@ -36,6 +36,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/set-password" element={<SetPasswordForm />} />
+      <Route path="/" element={<PrivateRoute />}>
         <Route path="/set-user-password/:userId" element={<SetUserPasswordForm />} />
         <Route path="/users" element={<AllUsers />}></Route>
         <Route path="/clients" element={<Client />} />
@@ -45,6 +46,9 @@ function App() {
         <Route path="/users/create" element={<CreateUser />}></Route>
         <Route path="/users/update/:userId" element={<UpdateUser />}></Route>
         <Route path="*" element={<NotFoundPage />} />
+      </Route>
+
+
       </Routes>
     </>
   );

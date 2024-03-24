@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'; 
 import { userLogin } from '../../actions/userActions';
@@ -10,6 +10,13 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const loginError = useSelector(state => state.user.error);
 
+
+  useEffect(()=>{
+    const token = localStorage.getItem("user");
+    if(token){
+      navigate('/admin/dashboard')
+    }
+  })
   const handleSubmit = (e) => {
     e.preventDefault();
     // Dispatch the loginUser action
