@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { MdDashboardCustomize } from "react-icons/md";
+import { Link } from "react-router-dom";
 // import tem from "../Images/template.png";
 const SideNavbar = () => {
-  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
+  const [isSubMenuOpen, setIsSubMenuOpen] = useState(true);
 
   const toggleSubMenu = () => {
     setIsSubMenuOpen(!isSubMenuOpen);
@@ -12,7 +13,7 @@ const SideNavbar = () => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <aside className=" text-black w-64 flex-shrink-0 border-r border-gray-400">
+      <aside className=" text-black w-64 flex-shrink-0 border-gray-400">
         <nav>
           <ul>
             <li className="flex items-center justify-between px-4 py-2 bg-gray-300 font-semibold">
@@ -27,14 +28,18 @@ const SideNavbar = () => {
             </li>
             {isSubMenuOpen && (
               <ul className="flex flex-col gap-1 mt-1">
-                <div className="flex items-center gap-3 bg-gray-100 hover:bg-red-700 hover:text-white cursor-pointer">
-                  <MdDashboardCustomize size={20} className="ml-6" />
-                  <li className="py-2">Dashboard</li>
-                </div>
-                <div className="flex items-center gap-3 bg-gray-100 hover:bg-red-700 hover:text-white cursor-pointer">
-                  <MdDashboardCustomize size={20} className="ml-6" />
-                  <li className="py-2">Work Order</li>
-                </div>
+                <Link to={"/dashboard"}>
+                  <div className="flex items-center gap-3 bg-gray-100 hover:bg-red-700 hover:text-white cursor-pointer">
+                    <MdDashboardCustomize size={20} className="ml-6" />
+                    <li className="py-2">Dashboard</li>
+                  </div>
+                </Link>
+                <Link to={"/workorder"}>
+                  <div className="flex items-center gap-3 bg-gray-100 hover:bg-red-700 hover:text-white cursor-pointer">
+                    <MdDashboardCustomize size={20} className="ml-6" />
+                    <li className="py-2">Work Order</li>
+                  </div>
+                </Link>
                 <div className="flex items-center gap-3 bg-gray-100 hover:bg-red-700 hover:text-white cursor-pointer">
                   <MdDashboardCustomize size={20} className="ml-6" />
                   <li className="py-2">Inventory</li>
