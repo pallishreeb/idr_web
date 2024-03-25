@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Header from "../../Components/Header";
-import SideNavbar from "../../Components/SideNavbar";
+import SideNavbar from "../../Components/AdminSideNavbar";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { IoMdDownload } from "react-icons/io";
 const WorkOrder = () => {

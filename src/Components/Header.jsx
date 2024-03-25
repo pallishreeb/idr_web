@@ -17,7 +17,7 @@ const Header = () => {
         <img className="w-[50%] ml-4" src={logo} />
         <h1 className="text-lg mr-2 font-semibold">Client Service Portal</h1>
       </div>
-      <div className="flex justify-between align-middles gap-4 font-semibold mr-1" onClick={handleLogout}>
+      <div className="flex justify-between align-middles gap-4 font-semibold mr-1 cursor-pointer" onClick={handleLogout}>
         <h1>Logout</h1>
         <IoLogOut size={28} />
       </div>

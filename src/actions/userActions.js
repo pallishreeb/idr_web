@@ -17,6 +17,9 @@ import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  forgotPasswordRequest,
+  forgotPasswordSuccess,
+  forgotPasswordFailure,
 } from "../reducers/userSlice";
 import { API_BASE_URL, apiConfig } from "../config";
 import {toast} from "react-toastify"
@@ -120,6 +123,25 @@ export const updateUser = (userData, navigate) => {
       dispatch(updateUserFailure(error.message));
       toast.error("Error updating user");
       navigate("/users");
+    }
+  };
+};
+
+export const forgotPassword = (email) => {
+  return async (dispatch) => {
+    dispatch(forgotPasswordRequest());
+    try {
+      // Perform API call to send forgot password request
+      const response = await axios.post(apiConfig.forgotPassword, email);
+      dispatch(forgotPasswordSuccess());
+      // Optionally, you can return a success message or handle it in the component
+      toast.success(response.data.message || "Forgot password request sent successfully!")
+      return response.data.message;
+    } catch (error) {
+      dispatch(forgotPasswordFailure(error.message));
+      // Handle error or display error message
+      toast.error(error?.response?.data.code == 'AU400' ? 'User Not Found' : error?.response?.data.message);
+      return error.message;
     }
   };
 };
