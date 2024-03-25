@@ -17,6 +17,10 @@ import NotFoundPage from "./page/home/404Page";
 import PrivateRoute from "./PrivateRoute";
 import WorkOrder from "./page/home/WorkOrder";
 import AddWorkOrder from "./Components/AddNewWorkOrder";
+import EmployeePage from "./page/client-employee/EmployeePage";
+import AddEmployeePage from "./page/client-employee/AddEmployeePage";
+import Locations from "./page/locations/Locations";
+import AddLocationPage from "./page/locations/AddNewLocation";
 function App() {
   return (
     <>
@@ -52,6 +56,10 @@ function App() {
           <Route path="/users/update/:userId" element={<UpdateUser />}></Route>
           <Route path="/workorder" element={<WorkOrder />}></Route>
           <Route path="/add-work-order" element={<AddWorkOrder />}></Route>
+          <Route path="/client-employees" element={<EmployeePage />}></Route>
+          <Route path="/add-employee" element={<AddEmployeePage />}></Route>
+          <Route path="/locations" element={<Locations />}></Route>
+          <Route path="/add-location" element={<AddLocationPage />}></Route>
 
           <Route path="*" element={<NotFoundPage />} />
         </Route>
