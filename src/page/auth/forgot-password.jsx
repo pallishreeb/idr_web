@@ -1,7 +1,22 @@
-import React,{useEffect} from 'react';
-
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { forgotPassword } from '../../actions/userActions';
 
 const ForgotPassword = () => {
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = () => {
+    if (!email) {
+      setErrorMessage('Please provide your email');
+      return;
+    }
+    dispatch(forgotPassword({ email_id :email.trim()}));
+    setEmail("")
+    setErrorMessage("")
+  };
+
   return (
     <div className="flex h-screen">
       {/* Left side with image */}
@@ -18,8 +33,7 @@ const ForgotPassword = () => {
       {/* Right side with login form */}
       <div className="w-full lg:w-1/2 p-8 flex items-center justify-center">
         <div className="w-full md:w-96 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-
-            <title>ForgotPassword</title>
+          <title>ForgotPassword</title>
           {/* Logo */}
           <div className="text-center mb-8">
             <img
@@ -39,7 +53,12 @@ const ForgotPassword = () => {
                 id="email"
                 type="email"
                 placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
+              {errorMessage && (
+                <p className="text-red-500 text-xs italic">{errorMessage}</p>
+              )}
             </div>
             <div className="mb-6 text-right">
               <a
@@ -54,6 +73,7 @@ const ForgotPassword = () => {
               <button
                 className="bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-md w-full focus:outline-none focus:shadow-outline"
                 type="button"
+                onClick={handleSubmit}
               >
                 Submit
               </button>

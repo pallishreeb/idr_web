@@ -1,25 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPassword } from '../../actions/userActions';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate ,useLocation } from 'react-router-dom'; 
+import { toast } from 'react-toastify';
 const SetPasswordForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const userEmailId = searchParams.get('user_email_id');
   const [email, setEmail] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  useEffect(() =>{
+    if(userEmailId){
+      setEmail(userEmailId)
+    }
+  },[userEmailId])
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Check if passwords match
     if (passwordValue !== confirmPassword) {
-      alert('Passwords do not match');
+      // alert('Passwords do not match');
+      toast.warn("Passwords Do Not Match")
       return;
     }
 
     // Dispatch the setPassword action
-    dispatch(setPassword({ password:passwordValue, email_id:email },navigate));
+    // dispatch(setPassword({ password:passwordValue, email_id:email },navigate));
+    dispatch(setPassword({ password:passwordValue, email_id:userEmailId.trim() },navigate));
   };
 
   return (
@@ -55,6 +66,7 @@ const SetPasswordForm = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                readOnly
               />
             </div>
             <div className="mb-4">
