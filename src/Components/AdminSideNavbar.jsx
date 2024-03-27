@@ -51,7 +51,7 @@ const AdminSideNavbar = () => {
     },
     {
       title: "Work Order",
-      path: "/work-order",
+      path: "/workorder",
       roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"],
     },
     {

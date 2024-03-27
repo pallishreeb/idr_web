@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'; 
 import { userLogin } from '../../actions/userActions';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -19,6 +20,10 @@ const Login = () => {
   })
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!email || !password) {
+      toast.error('Please provide your email and password to login!');
+      return;
+    }
     // Dispatch the loginUser action
     dispatch(userLogin({ email_id: email, password },navigate));
     // navigate('/admin/dashboard');
@@ -42,7 +47,7 @@ const Login = () => {
       <div className="w-full lg:w-1/2 p-8 flex items-center justify-center">
         <div className="w-full md:w-96 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
           <h1 className="text-2xl text-center mb-2">Login</h1>
-          {loginError && <div className="text-red-500 text-sm mb-4">{loginError}</div>}
+          {/* {loginError && <div className="text-red-500 text-sm mb-4">{loginError}</div>} */}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">

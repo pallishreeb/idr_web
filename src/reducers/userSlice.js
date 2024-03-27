@@ -16,7 +16,8 @@ const initialState = {
   error: null,
   users: [],
   user: getUserFromLocalStorage(),
-  isAuthenticated:false
+  isAuthenticated:false,
+  successMessage: "",
 };
 
 const userSlice = createSlice({
@@ -103,6 +104,19 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    forgotPasswordRequest(state) {
+      state.loading = true;
+      state.error = null;
+      state.successMessage = "";
+    },
+    forgotPasswordSuccess(state) {
+      state.loading = false;
+      state.successMessage = "Forgot password request sent successfully!";
+    },
+    forgotPasswordFailure(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -123,5 +137,8 @@ export const {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  forgotPasswordRequest,
+  forgotPasswordSuccess,
+  forgotPasswordFailure
 } = userSlice.actions;
 export default userSlice.reducer;

@@ -4,6 +4,7 @@ import { createUser } from "../../actions/userActions"; // Import the createUser
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { useNavigate } from 'react-router-dom'; 
+import { toast } from "react-toastify";
 
 
 const CreateUser = () => {
@@ -16,6 +17,10 @@ const CreateUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!email || !userType) {
+      toast.error('Please provide user email and userType!');
+      return;
+    }
     // Dispatch the createUser action with the userData
     dispatch(createUser({
       email_id: email,
