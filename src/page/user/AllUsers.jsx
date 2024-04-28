@@ -26,10 +26,10 @@ const AllUsers = () => {
     // navigate(`/set-password`);
   };
 
-  const handleDelete = (userId) => {
-    // Implement delete functionality
-    console.log("Delete user:", userId);
-  };
+  // const handleDelete = (userId) => {
+  //   // Implement delete functionality
+  //   console.log("Delete user:", userId);
+  // };
 
   return (
     <>
@@ -75,9 +75,7 @@ const AllUsers = () => {
                     <button className="bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded mr-2" onClick={() => handleEdit(user.user_id)}>
                       <BsPencil />
                     </button>
-                    <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" onClick={() => handleDelete(user.id)}>
-                      <BsTrash/>
-                    </button>
+                    
                   </td>
                 </tr>
               ))}

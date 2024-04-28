@@ -1,10 +1,15 @@
 // reducers.js
 import { combineReducers } from '@reduxjs/toolkit';
 import userReducer from './userSlice';
+import clientReducer from './clientSlice';
+import clientEmployeeReducer from './clientEmployeeSlice';
+import locationReducer from './locationSlice';
 
 const rootReducer = combineReducers({
   user: userReducer,
-  // Add other reducers here if needed
+  client: clientReducer,
+  clientEmployee:clientEmployeeReducer,
+  location:locationReducer,
 });
 
 export default rootReducer;

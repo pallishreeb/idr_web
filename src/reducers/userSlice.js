@@ -2,8 +2,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 // Function to save user data to local storage
-const saveUserToLocalStorage = (user) => {
+const saveUserToLocalStorage = ({user,token}) => {
   localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem("user_idr_token", token);
 };
 
 // Function to get user data from local storage
@@ -79,6 +80,7 @@ const userSlice = createSlice({
     logout(state) {
       state.user = null; // Clear user data from Redux state
       localStorage.removeItem("user"); // Clear user data from local storage
+      localStorage.removeItem("token"); // Clear user data from local storage
       state.isAuthenticated = false;
     },
     updateUserStart(state) {
