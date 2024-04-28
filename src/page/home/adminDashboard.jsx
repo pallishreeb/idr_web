@@ -86,9 +86,9 @@ const AdminDashboard = () => {
                     <th className="px-1 py-1 text-left text-sm font-semibold bg-gray-200 tracking-wider">
                       User Email
                     </th>
-                    <th className="px-1 py-1 text-left text-sm font-semibold bg-gray-200 tracking-wider">
+                    {/* <th className="px-1 py-1 text-left text-sm font-semibold bg-gray-200 tracking-wider">
                       Password
-                    </th>
+                    </th> */}
                   </tr>
                 </thead>
                 <tbody>
@@ -96,7 +96,7 @@ const AdminDashboard = () => {
                     <td className="px-[12px] py-3">{ user?.first_name !== null ? user?.first_name + ' ' + user?.last_name : "NA"}</td>
                     <td className="px-[12px] py-3">{user?.user_type}</td>
                     <td className="px-[12px] py-3">{user?.email_id}</td>
-                    <td className="px-[12px] py-3">Update password</td>
+                    {/* <td className="px-[12px] py-3">Update password</td> */}
                   </tr>
                 </tbody>
               </table>
