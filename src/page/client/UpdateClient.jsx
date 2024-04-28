@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addClient,getIndustries } from "../../actions/clientActions";
-import { toast } from "react-toastify";
+import { getClientById, updateClient, getIndustries } from "../../actions/clientActions";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import {useNavigate} from "react-router-dom"
-const AddNewClient = () => {
+import { useNavigate, useParams } from "react-router-dom";
+
+const UpdateClient = () => {
+  const { clientId } = useParams();
   const dispatch = useDispatch();
-const navigate = useNavigate();
+  const navigate = useNavigate();
+
   // const [cellCountryCode, setCellCountryCode] = useState("+1");
   // const [phoneCountryCode, setPhoneCountryCode] = useState("+1");
-  // State to store form data
   const [formData, setFormData] = useState({
     industry_id: "",
     staff: "",
@@ -28,47 +29,74 @@ const navigate = useNavigate();
     phone_number: "",
     cell_phone: "",
   });
-  // Fetch industries when component mounts
+
   useEffect(() => {
     dispatch(getIndustries());
-  }, [dispatch]);
+    dispatch(getClientById(clientId));
+  }, [dispatch, clientId]);
 
-  // Get industries from Redux store
-  const {industries} = useSelector((state) => state.client.industries);
-
+  const { industries } = useSelector((state) => state.client.industries);
+  const { client } = useSelector((state) => state.client);
+  useEffect(() => {
+    if (client) {
+        // console.log(client)
+      // Remove country codes from phone_number and cell_phone
+      // const phoneDigits = client?.phone_number.slice(3);
+      // const cellPhoneDigits = client?.cell_phone.slice(3);
+  
+      // Set formData with updated phone_number and cell_phone
+      setFormData({
+        ...client,
+        // phone_number: phoneDigits,
+        // cell_phone: cellPhoneDigits
+      });
+    }
+  }, [client]);
+  // useEffect(() => {
+  //   if (formData) {
+  //     // Extract country codes from phone numbers
+  //     const phoneCountry = formData.phone_number.slice(0, 3);
+  //     const cellPhoneCountry = formData.cell_phone.slice(0, 3);
+  //     // Set country codes as initial state
+  //     setPhoneCountryCode(phoneCountry);
+  //     setCellCountryCode(cellPhoneCountry);
+  //   }
+  // }, [formData]);
   // const handleCellCountryCodeChange = (e) => {
   //   setCellCountryCode(e.target.value);
   // };
+
   // const handlePhoneCountryCodeChange = (e) => {
   //   setPhoneCountryCode(e.target.value);
   // };
-  // Handle form input change
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     // const countryCode = cellCountryCode; // Get the selected country code
     // const cellPhone = formData.cell_phone; // Get the inputted cell phone number
-    // const fullCellPhone = `${countryCode}${cellPhone}`; 
-    // formData.cell_phone = fullCellPhone
-    // formData.phone_number = `${phoneCountryCode}${formData.phone_number}`; 
-    dispatch(addClient(formData,navigate))
+    // const fullCellPhone = `${countryCode}${cellPhone}`;
+    // formData.cell_phone = fullCellPhone;
+    // formData.phone_number = `${phoneCountryCode}${formData.phone_number}`;
+    delete formData.is_active;
+    delete formData.industries;
+    dispatch(updateClient(clientId, formData,navigate));
+
   };
 
   return (
     <>
       <Header />
       <div className="flex">
-        {/* <SideNavbar /> */}
         <AdminSideNavbar />
         <div className="container mx-auto p-6 shadow-lg mt-5">
           <form onSubmit={handleSubmit}>
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-2xl font-bold">Add New Client</h1>
+              <h1 className="text-2xl font-bold">Update Client</h1>
               <div>
                 <button className="bg-indigo-700 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
                   Save
@@ -88,23 +116,23 @@ const navigate = useNavigate();
                   Industry Code
                 </label>
                 <select
-                id="industry_id"
-                name="industry_id"
-                value={formData.industry_id}
-                onChange={handleChange}
+                  id="industry_id"
+                  name="industry_id"
+                  value={formData.industry_id}
+                  onChange={handleChange}
                   className="block w-full border-gray-300 rounded-md shadow-sm border p-2"
                 >
                   <option value="">Select Industry Code</option>
                   {industries?.map((industry) => (
-                  <option key={industry.industry_id} value={industry.industry_id}>
-                    {industry.industry_name}
-                  </option>
-                ))}
+                    <option key={industry.industry_id} value={industry.industry_id}>
+                      {industry.industry_name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
                 <label htmlFor="staffId" className="block">
-                  Staff 
+                  Staff
                 </label>
                 <input
                   type="text"
@@ -126,13 +154,11 @@ const navigate = useNavigate();
                   value={formData.company_name}
                   onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
                 />
               </div>
             </div>
-
-            {/* Second Row */}
-            <div className="flex flex-wrap -mx-2 mb-4">
+               {/* Second Row */}
+               <div className="flex flex-wrap -mx-2 mb-4">
               <div className="w-full md:w-1/3 px-2 mb-4">
                 <label htmlFor="contactFirstName" className="block">
                   Contact Person First Name
@@ -144,7 +170,6 @@ const navigate = useNavigate();
                   value={formData.contact_person_firstname}
                   onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
                 />
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
@@ -158,7 +183,6 @@ const navigate = useNavigate();
                   value={formData.contact_person_lastname}
                   onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
                 />
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
@@ -171,14 +195,12 @@ const navigate = useNavigate();
                 name="contact_email"
                 value={formData.contact_email}
                 onChange={handleChange}
-                className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                required
+                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
                 />
               </div>
             </div>
-
-            {/* Third Row */}
-            <div className="flex flex-wrap -mx-2 mb-4">
+                   {/* Third Row */}
+                   <div className="flex flex-wrap -mx-2 mb-4">
               <div className="w-full md:w-1/3 px-2 mb-4">
                 <label htmlFor="addressLine1" className="block">
                   Address Line 1
@@ -190,7 +212,6 @@ const navigate = useNavigate();
                   value={formData.address_line_one}
                   onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
                 />
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
@@ -204,7 +225,6 @@ const navigate = useNavigate();
                  value={formData.address_line_two}
                  onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
                 />
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
@@ -218,7 +238,6 @@ const navigate = useNavigate();
                   value={formData.address_line_three}
                   onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
                 />
               </div>
             </div>
@@ -236,7 +255,6 @@ const navigate = useNavigate();
                   value={formData.city}
                   onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
                 />
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
@@ -250,7 +268,6 @@ const navigate = useNavigate();
                    value={formData.state}
                    onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
                 />
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
@@ -264,7 +281,6 @@ const navigate = useNavigate();
                   value={formData.zipcode}
                   onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
                 />
               </div>
             </div>
@@ -309,8 +325,8 @@ const navigate = useNavigate();
                      name="phone_number"
                      value={formData.phone_number}
                      onChange={handleChange}
-                    className="block p-2 w-full border-gray-300 rounded-md shadow-sm border"
-                    required
+                     className="block p-2 w-full border-gray-300 rounded-md shadow-sm border"
+                     required
                   />
                 </div>
               </div>
@@ -330,7 +346,6 @@ const navigate = useNavigate();
                   <option value="+1">+1</option>
                   <option value="+12">+12</option>
                   <option value="+91">+91</option>
-               
                 </select> */}
 
                   <input
@@ -344,6 +359,7 @@ const navigate = useNavigate();
                 </div>
               </div>
             </div>
+            {/* Rest of the form content */}
           </form>
         </div>
       </div>
@@ -351,4 +367,4 @@ const navigate = useNavigate();
   );
 };
 
-export default AddNewClient;
+export default UpdateClient;

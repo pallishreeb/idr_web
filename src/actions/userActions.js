@@ -51,7 +51,7 @@ export const userLogin = (userData, navigate) => {
     dispatch(userLoginStart());
     try {
       const response = await axios.post(apiConfig.loginUser, userData);
-      dispatch(userLoginSuccess(response.data.user));
+      dispatch(userLoginSuccess(response.data));
       toast.success(`Logged in successfully`)
       navigate("/admin/dashboard");
     } catch (error) {

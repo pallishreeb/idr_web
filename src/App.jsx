@@ -20,7 +20,10 @@ import AddWorkOrder from "./Components/AddNewWorkOrder";
 import EmployeePage from "./page/client-employee/EmployeePage";
 import AddEmployeePage from "./page/client-employee/AddEmployeePage";
 import Locations from "./page/locations/Locations";
-import AddLocationPage from "./page/locations/AddNewLocation";
+import EditLocationPage from './page/locations/EditLocation';
+import EditEmployeePage from './page/client-employee/EditClientEmployee';
+import UpdateClient from "./page/client/UpdateClient";
+import AddLocation from "./page/locations/AddLocation";
 function App() {
   return (
     <>
@@ -59,8 +62,10 @@ function App() {
           <Route path="/client-employees" element={<EmployeePage />}></Route>
           <Route path="/add-employee" element={<AddEmployeePage />}></Route>
           <Route path="/locations" element={<Locations />}></Route>
-          <Route path="/add-location" element={<AddLocationPage />}></Route>
-
+          <Route path="/add-location" element={<AddLocation />}></Route>
+          <Route path="/update-client/:clientId" element={<UpdateClient />} />
+          <Route path="/edit-location/:locationId" element={<EditLocationPage />} />
+          <Route path="/edit-employee/:employeeId" element={<EditEmployeePage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

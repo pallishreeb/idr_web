@@ -5,27 +5,32 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { addLocation } from "../../actions/locationActions"; // Import the action to add location
 import { getClients } from "../../actions/clientActions"; // Import the action to fetch clients
 import { toast } from "react-toastify";
-
-const AddLocationPage = () => {
+import { Link,useNavigate } from 'react-router-dom';
+const AddLocation = () => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate()
   // Fetch clients from Redux store
   const clients = useSelector((state) => state.client.clients);
 
   const [selectedClient, setSelectedClient] = useState("");
-  const [locations, setLocations] = useState([
+  const [locations, setLocations] = useState(
     {
-      address1: "",
-      address2: "",
-      address3: "",
-      city: "",
-      state: "",
-      zipcode: "",
-      faxNumber: "",
-      phoneNumber: "",
-      cellNumber: "",
+    client_id: "",
+    contact_person_firstname: "",
+    contact_person_lastname: "",
+    contact_person_mail_id: "",
+    address_line_one: "",
+    address_line_two: "",
+    address_line_three: "",
+    city: "",
+    state: "",
+    zipcode: "",
+    fax_number: "",
+    phone_number: "",
+    cell_number: "",
+    active: true
     },
-  ]);
+  );
 
   // Fetch clients when component mounts
   useEffect(() => {
@@ -36,62 +41,24 @@ const AddLocationPage = () => {
     setSelectedClient(clientId);
   };
 
-  const handleChange = (index, e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    const updatedLocations = [...locations];
-    updatedLocations[index] = { ...updatedLocations[index], [name]: value };
-    setLocations(updatedLocations);
+    setLocations({ ...locations, [name]: value });
   };
 
-  const handleAddMore = () => {
-    setLocations([
-      ...locations,
-      {
-        address1: "",
-        address2: "",
-        address3: "",
-        city: "",
-        state: "",
-        zipcode: "",
-        faxNumber: "",
-        phoneNumber: "",
-        cellNumber: "",
-      },
-    ]);
-  };
+
 
   const handleSave = () => {
     // Perform save logic here
     if (selectedClient === "") {
       toast.error("Please select a client");
       return;
+    }else{
+      locations.client_id =  selectedClient;
     }
-    dispatch(addLocation(selectedClient, locations));
+    dispatch(addLocation(locations,navigate));
     // Reset form after saving
-    setSelectedClient("");
-    setLocations([
-      {
-        address1: "",
-        address2: "",
-        address3: "",
-        city: "",
-        state: "",
-        zipcode: "",
-        faxNumber: "",
-        phoneNumber: "",
-        cellNumber: "",
-      },
-    ]);
-  };
-
-  const handleCancel = (index) => {
-    // If there's only one location, don't allow canceling
-    if (locations.length === 1) {
-      return;
-    }
-    const updatedLocations = [...locations];
-    updatedLocations.splice(index, 1);
-    setLocations(updatedLocations);
+    // setSelectedClient("");
   };
 
   return (
@@ -105,7 +72,8 @@ const AddLocationPage = () => {
               Select Client:
             </label>
             <select
-              id="client"
+              id="client_id"
+              name="client_id"
               className="border border-gray-300 rounded px-3 py-1 w-full"
               value={selectedClient}
               onChange={(e) => handleClientChange(e.target.value)}
@@ -118,55 +86,55 @@ const AddLocationPage = () => {
               ))}
             </select>
           </div>
-          {locations.map((location, index) => (
-            <div key={index} className="mb-4">
+
+            <div className="mb-4">
               <h2 className="text-xl font-semibold mb-2">
-                Location {index + 1}
+                Add Location
               </h2>
               <form>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-1">
                     <label
-                      htmlFor={`address1-${index}`}
+                      htmlFor={`address_line_one`}
                       className="block text-sm font-medium text-gray-700"
                     >
                       Address Line 1
                     </label>
                     <input
                       type="text"
-                      name={`address1-${index}`}
-                      value={location.address1}
-                      onChange={(e) => handleChange(index, e)}
+                      name={`address_line_one`}
+                      value={locations.address_line_one}
+                      onChange={handleChange}
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                     />
                   </div>
                   <div className="col-span-1">
                     <label
-                      htmlFor={`address2-${index}`}
+                      htmlFor={`address_line_two`}
                       className="block text-sm font-medium text-gray-700"
                     >
                       Address Line 2
                     </label>
                     <input
                       type="text"
-                      name={`address2-${index}`}
-                      value={location.address2}
-                      onChange={(e) => handleChange(index, e)}
+                      name={`address_line_two`}
+                      value={locations.address_line_two}
+                      onChange={handleChange}
                       className=" w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div className="col-span-1">
                     <label
-                      htmlFor={`address3-${index}`}
+                      htmlFor={`address_line_three`}
                       className="block text-sm font-medium text-gray-700"
                     >
                       Address Line 3
                     </label>
                     <input
                       type="text"
-                      name={`address3-${index}`}
-                      value={location.address3}
-                      onChange={(e) => handleChange(index, e)}
+                      name={`address_line_three`}
+                      value={locations.address_line_three}
+                      onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                     />
                   </div>
@@ -174,7 +142,7 @@ const AddLocationPage = () => {
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-1">
                     <label
-                      htmlFor={`city-${index}`}
+                      htmlFor={`city`}
                       className="block text-sm font-medium text-gray-700"
                     >
                       City
@@ -182,14 +150,14 @@ const AddLocationPage = () => {
                     <input
                       type="text"
                       name="city"
-                      value={location.city}
-                      onChange={(e) => handleChange(index, e)}
+                      value={locations.city}
+                      onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div className="col-span-1">
                     <label
-                      htmlFor={`state-${index}`}
+                      htmlFor={`state`}
                       className="block text-sm font-medium text-gray-700"
                     >
                       State
@@ -197,14 +165,14 @@ const AddLocationPage = () => {
                     <input
                       type="text"
                       name="state"
-                      value={location.state}
-                      onChange={(e) => handleChange(index, e)}
+                      value={locations.state}
+                      onChange={(e) => handleChange( e)}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div className="col-span-1">
                     <label
-                      htmlFor={`zipcode-${index}`}
+                      htmlFor={`zipcode`}
                       className="block text-sm font-medium text-gray-700"
                     >
                       Zipcode
@@ -212,8 +180,8 @@ const AddLocationPage = () => {
                     <input
                       type="text"
                       name="zipcode"
-                      value={location.zipcode}
-                      onChange={(e) => handleChange(index, e)}
+                      value={locations.zipcode}
+                      onChange={(e) => handleChange( e)}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                     />
                   </div>
@@ -221,78 +189,114 @@ const AddLocationPage = () => {
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-1">
                     <label
-                      htmlFor={`faxNumber-${index}`}
+                      htmlFor={`fax_number`}
                       className="block text-sm font-medium text-gray-700"
                     >
                       Fax Number
                     </label>
                     <input
                       type="text"
-                      name="faxNumber"
-                      value={location.faxNumber}
-                      onChange={(e) => handleChange(index, e)}
+                      name="fax_number"
+                      value={locations.fax_number}
+                      onChange={(e) => handleChange( e)}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div className="col-span-1">
                     <label
-                      htmlFor={`phoneNumber-${index}`}
+                      htmlFor={`phone_number`}
                       className="block text-sm font-medium text-gray-700"
                     >
                       Phone Number
                     </label>
                     <input
                       type="text"
-                      name="phoneNumber"
-                      value={location.phoneNumber}
-                      onChange={(e) => handleChange(index, e)}
+                      name="phone_number"
+                      value={locations.phone_number}
+                      onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div className="col-span-1">
                     <label
-                      htmlFor={`cellNumber-${index}`}
+                      htmlFor={`cell_number`}
                       className="block text-sm font-medium text-gray-700"
                     >
                       Cell Number
                     </label>
                     <input
                       type="text"
-                      name="cellNumber"
-                      value={location.cellNumber}
-                      onChange={(e) => handleChange(index, e)}
+                      name="cell_number"
+                      value={locations.cell_number}
+                      onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
-                {/* Include other input fields similarly */}
-                {index !== 0 && ( // Render cancel button only if index is not 0
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
-                      onClick={() => handleCancel(index)}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="col-span-1">
+                    <label
+                      htmlFor={`contact_person_firstname`}
+                      className="block text-sm font-medium text-gray-700"
                     >
-                      Cancel
-                    </button>
+                     Contact Person First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="contact_person_firstname"
+                      value={locations.contact_person_firstname}
+                      onChange={(e) => handleChange( e)}
+                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    />
                   </div>
-                )}
+                  <div className="col-span-1">
+                    <label
+                      htmlFor={`contact_person_lastname`}
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                     Contact Person Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="contact_person_lastname"
+                      value={locations.contact_person_lastname}
+                      onChange={handleChange}
+                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="col-span-1">
+                    <label
+                      htmlFor={`contact_person_mail_id`}
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                    Contact Person Email ID
+                    </label>
+                    <input
+                      type="text"
+                      name="contact_person_mail_id"
+                      value={locations.contact_person_mail_id}
+                      onChange={handleChange}
+                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
               </form>
             </div>
-          ))}
+
           <div className="flex justify-end mb-4">
-            <button
-              onClick={handleAddMore}
-              className="bg-blue-700 text-white px-4 py-2 rounded mr-2"
-            >
-              Add More
-            </button>
+         
             <button
               onClick={handleSave}
               className="bg-indigo-700 text-white px-4 py-2 rounded"
             >
               Save
             </button>
+            <button
+                  type="button"
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                >
+                  <Link to={'/locations'}>Cancel</Link> 
+                </button>
           </div>
         </div>
       </div>
@@ -300,4 +304,4 @@ const AddLocationPage = () => {
   );
 };
 
-export default AddLocationPage;
+export default AddLocation;

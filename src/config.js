@@ -5,7 +5,24 @@ const apiConfig = {
     loginUser: '/users/login',
     allUsers: '/users/all_users',
     forgotPassword:'/users/forgot_password',
-    updateUser:'/users/update'
+    updateUser:'/users/update',
+    addClient:'/client/add',
+    getClients:'/client/all',
+    updateClient:'client/update',
+    getIndustries:'/industry/all',
+    getClientById:'/client',
+    deleteClient:'/client',
+    addClientEmployee:'/client_emp/add',
+    getClientEmployeeById:'/client_emp',
+    deleteClientEmployee:'/client_emp',
+    getLocationByClient:'/location',
+    addLocation:'/location/add',
+    deleteLocation:'/location',
+    client_emp_by_id:'/client_emp/by_id',
+    location_by_id:'/location/by_id',
+    updateClientEmp:'/client_emp',
+    updateLocation:'/location'
+
   };
   
   export {API_BASE_URL,apiConfig};

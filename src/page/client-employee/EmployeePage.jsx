@@ -1,84 +1,108 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
+import { getClientEmployeeByClientId,deleteClientEmployee } from '../../actions/clientEmployeeActions'; // Import your client employee actions
+import { getClients } from "../../actions/clientActions";
 const EmployeePage = () => {
-  // Sample client data
-  const clients = [
-    { id: 1, name: 'Client A' },
-    { id: 2, name: 'Client B' },
-    { id: 3, name: 'Client C' },
-  ];
-
-  // Sample employee data
-  const employees = [
-    { id: 1, name: 'John Doe', position: 'Developer', email: 'john@example.com' },
-    { id: 2, name: 'Jane Smith', position: 'Designer', email: 'jane@example.com' },
-    { id: 3, name: 'Mike Johnson', position: 'Manager', email: 'mike@example.com' },
-  ];
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const clients = useSelector((state) => state.client.clients); // Get clients from the client slice
+  const loadingClients = useSelector((state) => state.client.loading);
+  const employees = useSelector((state) => state.clientEmployee.clientEmployees); // Get client employees from the client employees slice
+  const loadingEmployees = useSelector((state) => state.clientEmployee.loading);
+  
   const [selectedClient, setSelectedClient] = useState(null);
 
+  useEffect(() => {
+    dispatch(getClients());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (selectedClient) {
+      dispatch(getClientEmployeeByClientId(selectedClient)); // Fetch client employees when a client is selected
+    }
+  }, [dispatch, selectedClient,]);
+
   const handleClientChange = (clientId) => {
+    // console.log(clientId)
     setSelectedClient(clientId);
   };
 
+  const handleDeleteEmployee = (employeeId) => {
+    if (window.confirm("Are you sure you want to delete this employee?")) {
+      dispatch(deleteClientEmployee(employeeId)); // Dispatch deleteClientEmployee action if confirmed
+    
+    }
+  };
+  const handleEdit = (employeeId) => {
+    // Navigate to the update client page
+    navigate(`/edit-employee/${employeeId}`);
+  };
   return (
     <>
-    <Header />
-    <div className="flex">
-      {/* <SideNavbar /> */}
-      <AdminSideNavbar />
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col mb-4">
-        <label htmlFor="client" className="mr-2">Select Client:</label>
-        <select
-          id="client"
-          className="border border-gray-300 rounded px-3 py-1 w-full"
-          onChange={(e) => handleClientChange(e.target.value)}
-        >
-          <option value="">Select a client</option>
-          {clients.map((client) => (
-            <option key={client.id} value={client.id}>{client.name}</option>
-          ))}
-        </select>
-      </div>
-
-      {selectedClient !== null && (
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold mb-2">Employees for {clients.find(client => client.id === parseInt(selectedClient)).name}</h2>
-          <div className="flex justify-end mb-2">
-            <button className="bg-indigo-700 text-white px-4 py-2 rounded"><Link to={'/add-employee'}>Add Employee</Link></button>
+      <Header />
+      <div className="flex">
+        <AdminSideNavbar />
+        <div className="container mx-auto p-4">
+          <div className="flex flex-col mb-4">
+            <label htmlFor="client" className="mr-2 text-xl font-semibold">Select Client To View Employees:</label>
+            <select
+              id="client"
+              className="border border-gray-300 rounded px-3 py-1 w-full"
+              onChange={(e) => handleClientChange(e.target.value)}
+            >
+              <option value="">Select a client</option>
+              {loadingClients ? (
+                <option value="" disabled>Loading...</option>
+              ) : (
+                clients?.data?.map((client) => (
+                  <option key={client.client_id} value={client.client_id}>{client.company_name}</option>
+                ))
+              )}
+            </select>
           </div>
-          <table className="table-auto w-full">
-            <thead>
-              <tr>
-                <th className="px-4 py-2">ID</th>
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">Position</th>
-                <th className="px-4 py-2">Email</th>
-                <th className="px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees.map((employee) => (
-                <tr key={employee.id}>
-                  <td className="border px-4 py-2">{employee.id}</td>
-                  <td className="border px-4 py-2">{employee.name}</td>
-                  <td className="border px-4 py-2">{employee.position}</td>
-                  <td className="border px-4 py-2">{employee.email}</td>
-                  <td className="border px-4 py-2">
-                    <button className="bg-indigo-700 text-white px-2 py-1 rounded mr-2">Edit</button>
-                    <button className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+          {selectedClient !== null && (
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold mb-2">Employees for {clients?.data?.find(client => client.client_id === selectedClient)?.company_name}</h2>
+              <div className="flex justify-end mb-2">
+                <button className="bg-indigo-700 text-white px-4 py-2 rounded"><Link to={'/add-employee'}>Add Employee</Link></button>
+              </div>
+              {loadingEmployees ? (
+                <p>Loading employees...</p>
+              ) : (
+                <table className="table-auto w-full">
+                  <thead>
+                    <tr>
+                      {/* <th className="px-4 py-2">ID</th> */}
+                      <th className="px-4 py-2">Name</th>
+                      <th className="px-4 py-2">Access to Website</th>
+                      <th className="px-4 py-2">Email</th>
+                      <th className="px-4 py-2">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {employees?.map((employee) => (
+                      <tr key={employee?.client_emp_id}>
+                        {/* <td className="border px-4 py-2">{employee.client_emp_id}</td> */}
+                        <td className="border px-4 py-2">{employee.first_name}{" "}{employee.last_name}</td>
+                        <td className="border px-4 py-2">{employee.access_to_website == true ? 'Yes' : 'No'}</td>
+                        <td className="border px-4 py-2">{employee.email_id}</td>
+                        <td className="border px-4 py-2">
+                          <button onClick={() => handleEdit(employee?.client_emp_id)} className="bg-indigo-700 text-white px-2 py-1 rounded mr-2">Edit</button>
+                          <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDeleteEmployee(employee.client_emp_id)}>Delete</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
         </div>
-      )}
-    </div>
-    </div>
+      </div>
     </>
   );
 };
