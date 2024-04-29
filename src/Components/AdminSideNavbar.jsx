@@ -27,27 +27,27 @@ const AdminSideNavbar = () => {
       roles: ["Admin", "Subadmin", ],
     },
     {
-      title: "Locations",
+      title: "Client Locations",
       path: "/locations",
-      roles: ["Admin",],
+      roles: ["Admin","Subadmin", ],
     },
-    // {
-    //   title: "Client Equipment",
-    //   path: "/client-equipment",
-    //   roles: ["Admin",],
-    // },
+    {
+      title: "Client Equipments",
+      path: "/client-equipment",
+      roles: ["Admin","Subadmin"],
+    },
     // Add more menu items as needed
   ];
   const idrMenuItems = [
     {
       title: "Dashboard",
       path: "/admin/dashboard",
-      roles: ["Admin", "IDR Employee", "Client Employee"],
+      roles: ["Admin","Subadmin", "IDR Employee", "Client Employee"],
     },
     {
       title: "IDR Employee",
       path: "/idr-employee",
-      roles: ["Admin", "Subadmin", "Client Employee"],
+      roles: ["Admin", "Subadmin"],
     },
     {
       title: "Work Order",
@@ -60,7 +60,7 @@ const AdminSideNavbar = () => {
       roles: ["Admin", "Subadmin", "IDR Employee"],
     },
     {
-      title: "Company Equipment",
+      title: "Client Equipments",
       path: "/company-equipment",
       roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"],
     },
