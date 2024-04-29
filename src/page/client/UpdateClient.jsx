@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getClientById, updateClient, getIndustries } from "../../actions/clientActions";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const UpdateClient = () => {
   const { clientId } = useParams();
@@ -36,7 +36,7 @@ const UpdateClient = () => {
   }, [dispatch, clientId]);
 
   const { industries } = useSelector((state) => state.client.industries);
-  const { client } = useSelector((state) => state.client);
+  const { client,loading } = useSelector((state) => state.client);
   useEffect(() => {
     if (client) {
         // console.log(client)
@@ -99,10 +99,10 @@ const UpdateClient = () => {
               <h1 className="text-2xl font-bold">Update Client</h1>
               <div>
                 <button className="bg-indigo-700 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
-                  Save
+                {loading ? 'Saving' : 'Save' }
                 </button>
                 <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                  Cancel
+                <Link to={'/clients'}>Cancel</Link>
                 </button>
               </div>
             </div>

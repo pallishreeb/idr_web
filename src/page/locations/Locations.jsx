@@ -73,28 +73,42 @@ const Locations = () => {
               <table className="table-auto w-full">
                 <thead>
                   <tr>
-                    <th className="px-4 py-2">Contact Person</th>
-                    <th className="px-4 py-2">Email ID</th>
-                    <th className="px-4 py-2">Phone Number</th>
-                    <th className="px-4 py-2">Zipcode</th>
-                    <th className="px-4 py-2">Actions</th>
+                  <th className="border px-4 py-2">Client</th>
+                    <th className="border px-4 py-2">Contact Person</th>
+                    <th className="border px-4 py-2">Email ID</th>
+                    <th className="border px-4 py-2">Phone Number</th>
+                    <th className="border px-4 py-2">City</th>
+                    <th className="border px-4 py-2">State</th>
+                    <th className="border px-4 py-2">Zipcode</th>
+                    <th className="border px-4 py-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {locations?.map((location) => (
-                    <tr key={location.location_id}>
-                      
-                      <td className="border px-4 py-2">{location.contact_person_firstname} {""} {location.contact_person_lastname}</td>
-                      <td className="border px-4 py-2">{location.phone_number}</td>
-                      <td className="border px-4 py-2">{location.contact_person_mail_id}</td>
-                      <td className="border px-4 py-2">{location.zipcode}</td>
-                      <td className="border px-4 py-2">
-                        <button  onClick={() => handleEdit(location.location_id)} className="bg-indigo-700 text-white px-2 py-1 rounded mr-2">Edit</button>
-                        <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDeleteLocation(location.location_id)}>Delete</button>
-                      </td>
-                    </tr>
-                  ))}
+                  {locations?.length === 0 ? (
+                   <tr>
+                   <td colSpan="7" className="text-center">
+                     <img src="not-found.png" alt="Data Not Found" className="mx-auto w-64 h-64 mt-4" />
+                   </td>
+                 </tr>
+                  ) : (
+                    locations?.map((location) => (
+                      <tr key={location.location_id}>
+                         <td className="text-center border px-4 py-2">{clients?.data?.find(client => client.client_id === location.client_id)?.company_name}</td>
+                        <td className="border px-4 py-2 text-center">{location.contact_person_firstname} {""} {location.contact_person_lastname}</td>
+                        <td className="border px-4 py-2 text-center">{location.phone_number}</td>
+                        <td className="border px-4 py-2 text-center">{location.contact_person_mail_id}</td>
+                        <td className="border px-4 py-2 text-center">{location.city}</td>
+                        <td className="border px-4 py-2 text-center">{location.state}</td>
+                        <td className="border px-4 py-2 text-center">{location.zipcode}</td>
+                        <td className="border px-4 py-2 text-center">
+                          <button onClick={() => handleEdit(location.location_id)} className="bg-indigo-700 text-white px-2 py-1 rounded mr-2">Edit</button>
+                          <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDeleteLocation(location.location_id)}>Delete</button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
+
               </table>
               )}
             </div>

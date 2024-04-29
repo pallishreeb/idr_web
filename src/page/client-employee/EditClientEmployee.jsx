@@ -17,7 +17,7 @@ const EditEmployeePage = () => {
   const clients = useSelector((state) => state.client.clients); // Get clients from the client slice
   const loadingClients = useSelector((state) => state.client.loading);
   const employee = useSelector((state) => state.clientEmployee.employee);
-
+  const loadingEmployees = useSelector((state) => state.clientEmployee.loading);
   const [formData, setFormData] = useState({
     client_id: "", // Change from clientId to client_id
     first_name: "",
@@ -186,7 +186,7 @@ const EditEmployeePage = () => {
                   type="submit"
                   className="bg-indigo-700 text-white px-4 py-2 rounded mr-2"
                 >
-                  Save
+                 {loadingEmployees ? 'Saving' : 'Save'} 
                 </button>
                 <button
                   type="button"

@@ -36,7 +36,7 @@ export const addClientEmployee = (employeeData,navigate) => {
     } catch (error) {
       dispatch(addClientEmployeeFailure(error.message));
       // console.log(error)
-      toast.error(error.response.data.message || "Error adding employee");
+      toast.error(error.response?.data?.message || "Error adding employee");
     }
   };
 };
@@ -45,9 +45,11 @@ export const deleteClientEmployee = (employeeId) => {
   return async (dispatch) => {
     dispatch(deleteClientEmployeeStart());
     try {
-       await axios.delete(`${apiConfig.deleteClientEmployee}/${employeeId}`);
-      dispatch(deleteClientEmployeeSuccess(employeeId));
-      toast.success("Employee deleted successfully!");
+       await axios.delete(`${apiConfig.deleteClientEmployee}/${employeeId}`).then((res)=>{
+        dispatch(deleteClientEmployeeSuccess(employeeId));
+        toast.success("Employee deleted successfully!");
+       })
+  
     } catch (error) {
       dispatch(deleteClientEmployeeFailure(error.message));
       toast.error(error?.response?.data?.message || "Error deleting employee");
@@ -64,7 +66,7 @@ export const getClientEmployeeByClientId = (clientId) => {
       dispatch(getClientEmployeeByIdSuccess(response.data.employees));
     } catch (error) {
       dispatch(getClientEmployeeByIdFailure(error.message));
-      toast.error("Error fetching employee details");
+      toast.error(error.response?.data?.message || "Error fetching employee details");
     }
   };
 };
@@ -77,7 +79,7 @@ export const getEmployeeById = (employeeId) => {
       dispatch(getEmployeeByIdSuccess(response.data.emp));
     } catch (error) {
       dispatch(getEmployeeByIdFailure(error.message));
-      toast.error("Failed to fetch employee by ID");
+      toast.error(error.response?.data?.message || "Failed to fetch employee by ID");
     }
   };
 };
@@ -96,7 +98,7 @@ export const updateClientEmployee = (employeeId, updatedEmployeeData,navigate) =
     } catch (error) {
       // Dispatch failure action if there was an error
       dispatch(updateClientEmployeeFailure(error.message));
-      toast.error("Failed to update client employee");
+      toast.error(error.response?.data?.message || "Failed to update client employee");
     }
   };
 };

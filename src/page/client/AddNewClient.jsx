@@ -4,7 +4,7 @@ import { addClient,getIndustries } from "../../actions/clientActions";
 import { toast } from "react-toastify";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import {useNavigate} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 const AddNewClient = () => {
   const dispatch = useDispatch();
 const navigate = useNavigate();
@@ -35,7 +35,7 @@ const navigate = useNavigate();
 
   // Get industries from Redux store
   const {industries} = useSelector((state) => state.client.industries);
-
+  const { loading } = useSelector((state) => state.client);
   // const handleCellCountryCodeChange = (e) => {
   //   setCellCountryCode(e.target.value);
   // };
@@ -71,10 +71,10 @@ const navigate = useNavigate();
               <h1 className="text-2xl font-bold">Add New Client</h1>
               <div>
                 <button className="bg-indigo-700 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
-                  Save
+                 {loading ? 'Saving' : 'Save' }
                 </button>
                 <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                  Cancel
+                <Link to={'/clients'}>Cancel</Link>
                 </button>
               </div>
             </div>
@@ -92,7 +92,8 @@ const navigate = useNavigate();
                 name="industry_id"
                 value={formData.industry_id}
                 onChange={handleChange}
-                  className="block w-full border-gray-300 rounded-md shadow-sm border p-2"
+                className="block w-full border-gray-300 rounded-md shadow-sm border p-2"
+                required
                 >
                   <option value="">Select Industry Code</option>
                   {industries?.map((industry) => (
@@ -113,6 +114,7 @@ const navigate = useNavigate();
                   value={formData.staff}
                   onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
+                  required
                 />
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
@@ -281,7 +283,8 @@ const navigate = useNavigate();
                name="fax_number"
                value={formData.fax_number}
                onChange={handleChange}
-                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
+               className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
+               required
                 />
               </div>
 
@@ -340,6 +343,7 @@ const navigate = useNavigate();
                     value={formData.cell_phone}
                     onChange={handleChange}
                     className="block p-2 w-full border-gray-300 rounded-md shadow-sm border"
+                    required
                   />
                 </div>
               </div>

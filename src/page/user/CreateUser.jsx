@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createUser } from "../../actions/userActions"; // Import the createUser action
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { useNavigate } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 import { toast } from "react-toastify";
 
 
@@ -14,7 +14,7 @@ const CreateUser = () => {
   const [userType, setUserType] = useState("");
   const successMessage = useSelector((state) => state.user.successMessage);
   const errorMessage = useSelector((state) => state.user.errorMessage);
-
+  const userLoading = useSelector((state) => state.user.loading);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email || !userType) {
@@ -83,7 +83,10 @@ const CreateUser = () => {
               type="submit"
               className="w-full bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
-              Create User
+              {userLoading ? 'Saving' : 'Create User'}
+            </button>
+            <button className=" mt-2 w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                <Link to={'/users'}>Cancel</Link>
             </button>
           </form>
         </div>
