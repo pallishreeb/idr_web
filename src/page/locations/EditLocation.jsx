@@ -14,7 +14,7 @@ const EditLocationPage = () => {
   const location = useSelector((state) => state.location.location);
   const clients = useSelector((state) => state.client.clients); // Get clients from the client slice
   const loadingClients = useSelector((state) => state.client.loading);
-
+  const loadinglocations = useSelector((state) => state.location.loading);
   // Local state for form data
   const [formData, setFormData] = useState({
     client_id:"",
@@ -313,7 +313,7 @@ const handleSave = (e) => {
                    onClick={(e) => handleSave(e)}
                   className="bg-indigo-700 text-white px-4 py-2 rounded mr-2"
                 >
-                  Save
+                 {loadinglocations ? 'Saving' :'Save'} 
                 </button>
                 <button
                   type="button"

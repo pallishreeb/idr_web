@@ -60,6 +60,8 @@ const clientSlice = createSlice({
     deleteClientSuccess: (state, action) => {
       state.loading = false;
       state.error = null;
+      // Remove the deleted employee from the clientEmployees array
+      state.clients = state.clients?.data.filter(client => client.client_id !== action.payload);
     },
     deleteClientFailure: (state, action) => {
       state.loading = false;

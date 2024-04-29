@@ -76,26 +76,35 @@ const EmployeePage = () => {
                 <table className="table-auto w-full">
                   <thead>
                     <tr>
-                      {/* <th className="px-4 py-2">ID</th> */}
-                      <th className="px-4 py-2">Name</th>
-                      <th className="px-4 py-2">Access to Website</th>
-                      <th className="px-4 py-2">Email</th>
-                      <th className="px-4 py-2">Actions</th>
+                      <th className="border px-4 py-2">Client</th>
+                      <th className="border px-4 py-2">Name</th>
+                      <th className="border px-4 py-2">Email</th>
+                      <th className="border px-4 py-2">Access to Website</th>
+                      
+                      <th className="border px-4 py-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {employees?.map((employee) => (
+                  {employees?.length === 0 ? (
+                   <tr>
+                   <td colSpan="5" className="text-center">
+                     <img src="not-found.png" alt="Data Not Found" className="mx-auto w-64 h-64 mt-4" />
+                   </td>
+                 </tr>
+                  ) : (
+                    employees?.map((employee) => (
                       <tr key={employee?.client_emp_id}>
-                        {/* <td className="border px-4 py-2">{employee.client_emp_id}</td> */}
-                        <td className="border px-4 py-2">{employee.first_name}{" "}{employee.last_name}</td>
-                        <td className="border px-4 py-2">{employee.access_to_website == true ? 'Yes' : 'No'}</td>
-                        <td className="border px-4 py-2">{employee.email_id}</td>
-                        <td className="border px-4 py-2">
+                        <td className="text-center border px-4 py-2">{clients?.data?.find(client => client.client_id === employee.client_id)?.company_name}</td>
+                        <td className="text-center border px-4 py-2">{employee.first_name}{" "}{employee.last_name}</td>   
+                        <td className="text-center border px-4 py-2">{employee.email_id}</td>
+                        <td className="text-center border px-4 py-2">{employee.access_to_website == true ? 'Yes' : 'No'}</td>
+                        <td className="text-center border px-4 py-2">
                           <button onClick={() => handleEdit(employee?.client_emp_id)} className="bg-indigo-700 text-white px-2 py-1 rounded mr-2">Edit</button>
                           <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDeleteEmployee(employee.client_emp_id)}>Delete</button>
                         </td>
                       </tr>
-                    ))}
+                     ))
+                    )}
                   </tbody>
                 </table>
               )}

@@ -11,6 +11,7 @@ const AddEmployeePage = () => {
   const navigate = useNavigate()
   const clients = useSelector((state) => state.client.clients); // Get clients from the client slice
   const loadingClients = useSelector((state) => state.client.loading);
+  const loadingEmployees = useSelector((state) => state.clientEmployee.loading);
   const [formData, setFormData] = useState({
     client_id: '', // Change from clientId to client_id
     first_name: '',
@@ -58,6 +59,7 @@ const AddEmployeePage = () => {
                     value={formData.client_id}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    required
                   >
                     <option value="">Select a client</option>
                     {loadingClients ? (
@@ -78,6 +80,7 @@ const AddEmployeePage = () => {
                     value={formData.first_name}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    required
                   />
                 </div>
                 <div className="mb-4">
@@ -89,6 +92,7 @@ const AddEmployeePage = () => {
                     value={formData.last_name}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    required
                   />
                 </div>
                 <div className="mb-4">
@@ -100,6 +104,7 @@ const AddEmployeePage = () => {
                     value={formData.email_id}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    required
                   />
                 </div>
                 <div className="mb-4">
@@ -135,7 +140,7 @@ const AddEmployeePage = () => {
                   type="submit"
                   className="bg-indigo-700 text-white px-4 py-2 rounded mr-2"
                 >
-                  Save
+                 {loadingEmployees ? 'Saving' : 'Save'} 
                 </button>
                 <button
                   type="button"

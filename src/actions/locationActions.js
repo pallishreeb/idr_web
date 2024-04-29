@@ -34,7 +34,7 @@ export const addLocation = (locationData,navigate) => {
       navigate("/locations");
     } catch (error) {
       dispatch(addLocationFailure(error.message));
-      toast.error(error.response.data.message || "Error adding location");
+      toast.error(error.response?.data?.message || "Error adding location");
     }
   };
 };
@@ -43,12 +43,13 @@ export const deleteLocation = (locationId) => {
   return async (dispatch) => {
     dispatch(deleteLocationStart());
     try {
-      const response = await axios.delete(`${apiConfig.deleteLocation}/${locationId}`);
-      dispatch(deleteLocationSuccess(response.data.message));
-      toast.success("Location deleted successfully!");
+      await axios.delete(`${apiConfig.deleteLocation}/${locationId}`).then((res) =>{
+        dispatch(deleteLocationSuccess(locationId));
+        toast.success("Location deleted successfully!");
+      });
     } catch (error) {
       dispatch(deleteLocationFailure(error.message));
-      toast.error("Error deleting location");
+      toast.error(error.response?.data?.message || "Error deleting location");
     }
   };
 };
@@ -61,7 +62,7 @@ export const getLocationByClient = (clientId) => {
       dispatch(getLocationByClientSuccess(response.data.locations));
     } catch (error) {
       dispatch(getLocationByClientFailure(error.message));
-      toast.error("Error fetching locations");
+      toast.error(error.response?.data?.message || "Error fetching locations");
     }
   };
 };
@@ -74,7 +75,7 @@ export const getLocationById = (locationId) => {
       dispatch(getLocationByIdSuccess(response.data.loc));
     } catch (error) {
       dispatch(getLocationByIdFailure(error.message));
-      toast.error("Failed to fetch employee by ID");
+      toast.error(error.response?.data?.message || "Failed to fetch employee by ID");
     }
   };
 };
@@ -95,7 +96,7 @@ export const updateLocation = (locationId, updatedLocationData,navigate) => {
     } catch (error) {
       // Dispatch failure action if there was an error
       dispatch(updateLocationFailure(error.message));
-      toast.error("Failed to update location");
+      toast.error(error.response?.data?.message || "Failed to update location");
     }
   };
 };

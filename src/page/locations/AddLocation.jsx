@@ -11,7 +11,8 @@ const AddLocation = () => {
   const navigate = useNavigate()
   // Fetch clients from Redux store
   const clients = useSelector((state) => state.client.clients);
-
+  const loadinglocations = useSelector((state) => state.location.loading);
+  const loadingClients = useSelector((state) => state.client.loading);
   const [selectedClient, setSelectedClient] = useState("");
   const [locations, setLocations] = useState(
     {
@@ -48,7 +49,8 @@ const AddLocation = () => {
 
 
 
-  const handleSave = () => {
+  const handleSave = (e) => {
+    e.preventDefault();
     // Perform save logic here
     if (selectedClient === "") {
       toast.error("Please select a client");
@@ -67,31 +69,36 @@ const AddLocation = () => {
       <div className="flex">
         <AdminSideNavbar />
         <div className="container mx-auto p-4">
-          <div className="flex flex-col mb-4">
-            <label htmlFor="client" className="mr-2">
-              Select Client:
-            </label>
-            <select
-              id="client_id"
-              name="client_id"
-              className="border border-gray-300 rounded px-3 py-1 w-full"
-              value={selectedClient}
-              onChange={(e) => handleClientChange(e.target.value)}
-            >
-              <option value="">Select a client</option>
-              {clients?.data?.map((client) => (
-                <option key={client.client_id} value={client.client_id}>
-                  {client.company_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
             <div className="mb-4">
               <h2 className="text-xl font-semibold mb-2">
                 Add Location
               </h2>
-              <form>
+              <form onSubmit={handleSave}>
+                  <div className="flex flex-col mb-4">
+                <label htmlFor="client" className="mr-2">
+                  Select Client:
+                </label>
+                <select
+                  id="client_id"
+                  name="client_id"
+                  className="border border-gray-300 rounded px-3 py-1 w-full"
+                  value={selectedClient}
+                  onChange={(e) => handleClientChange(e.target.value)}
+                >
+                  <option value="">Select a client</option>
+                  {loadingClients ? (
+                          <option value="" disabled>
+                            Loading...
+                          </option>
+                        ) : (
+                  clients?.data?.map((client) => (
+                    <option key={client.client_id} value={client.client_id}>
+                      {client.company_name}
+                    </option>
+                  ))
+                )}
+                </select>
+              </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-1">
                     <label
@@ -106,6 +113,7 @@ const AddLocation = () => {
                       value={locations.address_line_one}
                       onChange={handleChange}
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -121,6 +129,7 @@ const AddLocation = () => {
                       value={locations.address_line_two}
                       onChange={handleChange}
                       className=" w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -136,6 +145,7 @@ const AddLocation = () => {
                       value={locations.address_line_three}
                       onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
                 </div>
@@ -153,6 +163,7 @@ const AddLocation = () => {
                       value={locations.city}
                       onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -168,6 +179,7 @@ const AddLocation = () => {
                       value={locations.state}
                       onChange={(e) => handleChange( e)}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -183,6 +195,7 @@ const AddLocation = () => {
                       value={locations.zipcode}
                       onChange={(e) => handleChange( e)}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
                 </div>
@@ -200,6 +213,7 @@ const AddLocation = () => {
                       value={locations.fax_number}
                       onChange={(e) => handleChange( e)}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -215,6 +229,7 @@ const AddLocation = () => {
                       value={locations.phone_number}
                       onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -230,6 +245,7 @@ const AddLocation = () => {
                       value={locations.cell_number}
                       onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
                 </div>
@@ -247,6 +263,7 @@ const AddLocation = () => {
                       value={locations.contact_person_firstname}
                       onChange={(e) => handleChange( e)}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -262,6 +279,7 @@ const AddLocation = () => {
                       value={locations.contact_person_lastname}
                       onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -277,27 +295,28 @@ const AddLocation = () => {
                       value={locations.contact_person_mail_id}
                       onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
+                </div>
+                <div className="flex justify-end mb-4">
+         
+                  <button
+                    className="bg-indigo-700 text-white px-4 py-2 rounded m-2"
+                  >
+                    {loadinglocations ? 'Saving' : 'Save'}
+                  </button>
+                  <button
+                        type="button"
+                        className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
+                      >
+                        <Link to={'/locations'}>Cancel</Link> 
+                      </button>
                 </div>
               </form>
             </div>
 
-          <div className="flex justify-end mb-4">
-         
-            <button
-              onClick={handleSave}
-              className="bg-indigo-700 text-white px-4 py-2 rounded"
-            >
-              Save
-            </button>
-            <button
-                  type="button"
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-                >
-                  <Link to={'/locations'}>Cancel</Link> 
-                </button>
-          </div>
+  
         </div>
       </div>
     </>

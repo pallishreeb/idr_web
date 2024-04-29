@@ -33,7 +33,7 @@ const locationSlice = createSlice({
     deleteLocationSuccess: (state, action) => {
       state.loading = false;
       state.error = null;
-      state.locations = state.locations.filter(location => location.id !== action.payload);
+      state.locations = state.locations.filter(location => location.location_id !== action.payload);
     },
     deleteLocationFailure: (state, action) => {
       state.loading = false;

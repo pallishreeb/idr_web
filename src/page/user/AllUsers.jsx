@@ -12,6 +12,7 @@ const AllUsers = () => {
   const navigate = useNavigate();
   // Get users from Redux store
   const users = useSelector((state) => state.user.users);
+  const usersLoading = useSelector((state) => state.user.loading);
 // console.log(users)
   useEffect(() => {
     dispatch(fetchUsers());
@@ -39,7 +40,7 @@ const AllUsers = () => {
         <AdminSideNavbar />
         <div className="container mx-auto p-4 mt-5">
           <div className="flex justify-between mb-4">
-            <h1 className="font-bold text-lg">All Users</h1>
+            <h1 className="font-bold text-lg">Users Management</h1>
             <Link
               to="/users/create"
               className="bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -47,6 +48,7 @@ const AllUsers = () => {
               Create New User
             </Link>
           </div>
+          {usersLoading ? <p>Loading users data...</p> : 
           <table className="w-full border-collapse border border-gray-200">
             <thead>
               <tr className="bg-gray-100 text-left">
@@ -81,6 +83,7 @@ const AllUsers = () => {
               ))}
             </tbody>
           </table>
+          }
         </div>
       </div>
     </>
