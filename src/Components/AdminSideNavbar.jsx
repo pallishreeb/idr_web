@@ -31,11 +31,11 @@ const AdminSideNavbar = () => {
       path: "/locations",
       roles: ["Admin",],
     },
-    {
-      title: "Client Equipment",
-      path: "/client-equipment",
-      roles: ["Admin",],
-    },
+    // {
+    //   title: "Client Equipment",
+    //   path: "/client-equipment",
+    //   roles: ["Admin",],
+    // },
     // Add more menu items as needed
   ];
   const idrMenuItems = [
@@ -120,7 +120,7 @@ const AdminSideNavbar = () => {
             </>
             }
             <li className="flex items-center justify-between px-4 py-2 bg-gray-300 font-semibold">
-              <span>IDR</span>
+              <span>{user_type == 'IDR Employee' ? 'IDR' : 'Client Employee' }</span>
               <button onClick={toggleSubMenu} className="focus:outline-none">
                 {isSubMenuOpen ? (
                   <BsChevronUp className="h-5 w-5" />

@@ -18,7 +18,7 @@ export const addClient = (clientData,navigate) => {
       navigate('/clients')
     } catch (error) {
       dispatch(createClientFailure(error.message));
-      toast.error("Failed to add client");
+      toast.error(error.response?.data?.message || "Failed to add client");
     }
   };
 };
@@ -31,7 +31,7 @@ export const getClients = () => {
       dispatch(getClientsSuccess(response.data));
     } catch (error) {
       dispatch(getClientsFailure(error.message));
-      toast.error("Failed to fetch clients");
+      toast.error(error.response?.data?.message || "Failed to fetch clients");
     }
   };
 };
@@ -44,7 +44,7 @@ export const getClientById = (clientId) => {
       dispatch(getClientByIdSuccess(response.data.client));
     } catch (error) {
       dispatch(getClientByIdFailure(error.message));
-      toast.error("Failed to fetch client by ID");
+      toast.error(error.response?.data?.message || "Failed to fetch client by ID");
     }
   };
 };
@@ -53,12 +53,14 @@ export const deleteClient = (clientId) => {
   return async (dispatch) => {
     dispatch(deleteClientStart());
     try {
-     await axios.delete(`${apiConfig.deleteClient}/${clientId}`);
+     await axios.delete(`${apiConfig.deleteClient}/${clientId}`).then((res)=>{
       dispatch(deleteClientSuccess(clientId));
       toast.success("Client deleted successfully");
+     });
+     
     } catch (error) {
       dispatch(deleteClientFailure(error.message));
-      toast.error("Failed to delete client");
+      toast.error(error.response?.data?.message || "Failed to delete client");
     }
   };
 };
@@ -71,7 +73,7 @@ export const getIndustries = () => {
       dispatch(getIndustriesSuccess(response.data));
     } catch (error) {
       dispatch(getIndustriesFailure(error.message));
-      toast.error("Failed to fetch industries");
+      toast.error(error.response?.data?.message || "Failed to fetch industries");
     }
   };
 };
@@ -86,7 +88,7 @@ export const updateClient = (clientId, clientData,navigate) => {
       navigate(`/clients`);
     } catch (error) {
       dispatch(updateClientFailure(error.message));
-      toast.error("Failed to update client");
+      toast.error(error.response?.data?.message || "Failed to update client");
     }
   };
 };

@@ -34,8 +34,7 @@ const clientEmployeeSlice = createSlice({
       state.loading = false;
       state.error = null;
        // Remove the deleted employee from the clientEmployees array
-       state.clientEmployees = state.clientEmployees.filter(employee => employee.client_emp_id !== action.payload.employeeId);
-       console.log(state.clientEmployees,"state.clientEmployees")
+       state.clientEmployees = state.clientEmployees.filter(employee => employee.client_emp_id !== action.payload);
       },
     deleteClientEmployeeFailure: (state, action) => {
       state.loading = false;

@@ -3,6 +3,7 @@ import { IoLogOut } from "react-icons/io5";
 import { useDispatch } from 'react-redux';
 import { logout } from '../reducers/userSlice';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 // import logout from ""
 const Header = () => {
   const dispatch = useDispatch();
@@ -10,6 +11,7 @@ const Header = () => {
   const handleLogout = () => {
     dispatch(logout());
     navigate('/')
+    toast.success('Logged Out From System.')
   };
   return (
     <div className="flex flex-row justify-between py-2 border">

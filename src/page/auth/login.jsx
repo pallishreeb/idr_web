@@ -10,6 +10,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const loginError = useSelector(state => state.user.error);
+  const loginLoading = useSelector(state => state.user.loading);
 
 
   useEffect(()=>{
@@ -88,8 +89,9 @@ const Login = () => {
               <button
                 className="bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-md w-full focus:outline-none focus:shadow-outline"
                 type="submit"
+                disabled={!email || !password}
               >
-                Sign In
+                {loginLoading ? 'Submitting' : 'Sign In'}
               </button>
             </div>
           </form>

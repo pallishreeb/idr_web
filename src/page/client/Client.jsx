@@ -45,16 +45,23 @@ const Client = () => {
             <table className="w-full table-auto shadow-lg">
               <thead className="text-left">
                 <tr>
-                  <th className="px-4 py-2">Company Name</th>
-                  <th className="px-4 py-2">Industry Code</th>
-                  <th className="px-4 py-2">Staff ID</th>
-                  <th className="px-4 py-2">Phone Number</th>
-                  <th className="px-4 py-2">Contact Person Name</th>
-                  <th className="px-4 py-2">Action</th>
+                  <th className="border px-4 py-2">Company Name</th>
+                  <th className="border px-4 py-2">Industry Code</th>
+                  <th className="border px-4 py-2">Staff ID</th>
+                  <th className="border px-4 py-2">Phone Number</th>
+                  <th className="border px-4 py-2">Contact Person Name</th>
+                  <th className="border px-4 py-2">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {clients?.data?.map((client) => (
+              {clients?.data?.length === 0 ? (
+                   <tr>
+                   <td colSpan="5" className="text-center">
+                     <img src="not-found.png" alt="Data Not Found" className="mx-auto w-64 h-64 mt-4" />
+                   </td>
+                 </tr>
+                  ) : (
+                clients?.data?.map((client) => (
                   <tr key={client?.client_id}>
                     <td className="border px-4 py-2">{client?.company_name}</td>
                     <td className="border px-4 py-2">{client?.industries.industry_name}</td>
@@ -72,7 +79,8 @@ const Client = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
+                ))
+              )}
               </tbody>
             </table>
           )}

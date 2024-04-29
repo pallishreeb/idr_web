@@ -44,7 +44,7 @@ const userSlice = createSlice({
     },
     userLoginSuccess(state, action) {
       state.loading = false;
-      state.user = action.payload;
+      state.user = action.payload.user;
       state.error = null;
       saveUserToLocalStorage(action.payload);
       state.isAuthenticated=true;
