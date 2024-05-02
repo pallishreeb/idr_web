@@ -1,12 +1,13 @@
 // src/actions/clientActions.js
 
-import axios from "axios";
+import axios from '../axios-config';
 import { toast } from "react-toastify";
 import { createClientStart, createClientSuccess, createClientFailure, getClientsStart, getClientsSuccess, getClientsFailure, getClientByIdStart, getClientByIdSuccess, getClientByIdFailure, deleteClientStart, deleteClientSuccess, deleteClientFailure, getIndustriesStart, getIndustriesSuccess, getIndustriesFailure, updateClientStart, updateClientSuccess, updateClientFailure } from "../reducers/clientSlice";
-import { API_BASE_URL, apiConfig } from "../config";
+import {  apiConfig } from "../config";
 
-axios.defaults.baseURL = API_BASE_URL;
-axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem('user_idr_token')}`;
+// axios.defaults.baseURL = API_BASE_URL;
+// axios.defaults.headers.common["Content-Type"] = "application/json";
+// axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem('user_idr_token')}`;
 
 export const addClient = (clientData,navigate) => {
   return async (dispatch) => {

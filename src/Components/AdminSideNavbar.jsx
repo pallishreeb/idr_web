@@ -78,7 +78,7 @@ const AdminSideNavbar = () => {
   };
 
   const toggleSubMenuClient = () => {
-    setIsSubMenuOpenClient(!isSubMenuOpen);
+    setIsSubMenuOpenClient(!isSubMenuOpenClient);
   };
   return (
     <div className="flex h-screen">
@@ -120,7 +120,7 @@ const AdminSideNavbar = () => {
             </>
             }
             <li className="flex items-center justify-between px-4 py-2 bg-gray-300 font-semibold">
-              <span>{user_type == 'IDR Employee' ? 'IDR' : 'Client Employee' }</span>
+              <span>IDR</span>
               <button onClick={toggleSubMenu} className="focus:outline-none">
                 {isSubMenuOpen ? (
                   <BsChevronUp className="h-5 w-5" />

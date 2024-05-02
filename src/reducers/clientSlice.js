@@ -61,6 +61,7 @@ const clientSlice = createSlice({
       state.loading = false;
       state.error = null;
       // Remove the deleted employee from the clientEmployees array
+      // console.log(state.clients.data,"state.clients?.data")
       state.clients = state.clients?.data.filter(client => client.client_id !== action.payload);
     },
     deleteClientFailure: (state, action) => {

@@ -1,6 +1,6 @@
 // src/actions/locationActions.js
 
-import axios from "axios";
+import axios from '../axios-config';
 import {
   addLocationStart,
   addLocationSuccess,
@@ -18,12 +18,12 @@ import {
   updateLocationSuccess,
   updateLocationFailure
 } from "../reducers/locationSlice";
-import { API_BASE_URL, apiConfig } from "../config";
+import { apiConfig } from "../config";
 import { toast } from "react-toastify";
 
-axios.defaults.baseURL = API_BASE_URL;
-axios.defaults.headers.common["Content-Type"] = "application/json";
-
+//axios.defaults.baseURL = API_BASE_URL;
+//axios.defaults.headers.common["Content-Type"] = "application/json";
+//axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem('user_idr_token')}`;
 export const addLocation = (locationData,navigate) => {
   return async (dispatch) => {
     dispatch(addLocationStart());
