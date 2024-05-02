@@ -24,8 +24,8 @@ const Client = () => {
   const handleDeleteEmployee = (clientId) => {
     if (window.confirm("Are you sure you want to delete this Client?")) {
       dispatch(deleteClient(clientId)); // Dispatch deleteClientEmployee action if confirmed
-    
     }
+    dispatch(getClients());
   };
   return (
     <>

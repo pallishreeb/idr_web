@@ -96,11 +96,15 @@ const navigate = useNavigate();
                 required
                 >
                   <option value="">Select Industry Code</option>
-                  {industries?.map((industry) => (
-                  <option key={industry.industry_id} value={industry.industry_id}>
-                    {industry.industry_name}
-                  </option>
-                ))}
+                  {industries
+                    ? [...industries] // Create a shallow copy of the industries array
+                        .sort((a, b) => a.industry_name.localeCompare(b.industry_name)) // Sort the copied array alphabetically by industry name
+                        .map((industry) => (
+                          <option key={industry.industry_id} value={industry.industry_id}>
+                            {industry.industry_name}
+                          </option>
+                        ))
+                    : null}
                 </select>
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
@@ -206,7 +210,6 @@ const navigate = useNavigate();
                  value={formData.address_line_two}
                  onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
                 />
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
@@ -220,7 +223,6 @@ const navigate = useNavigate();
                   value={formData.address_line_three}
                   onChange={handleChange}
                   className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
                 />
               </div>
             </div>
@@ -284,7 +286,6 @@ const navigate = useNavigate();
                value={formData.fax_number}
                onChange={handleChange}
                className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-               required
                 />
               </div>
 
@@ -343,7 +344,6 @@ const navigate = useNavigate();
                     value={formData.cell_phone}
                     onChange={handleChange}
                     className="block p-2 w-full border-gray-300 rounded-md shadow-sm border"
-                    required
                   />
                 </div>
               </div>
