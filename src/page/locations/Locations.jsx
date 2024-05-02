@@ -94,9 +94,9 @@ const Locations = () => {
                     locations?.map((location) => (
                       <tr key={location.location_id}>
                          <td className="text-center border px-4 py-2">{clients?.data?.find(client => client.client_id === location.client_id)?.company_name}</td>
-                        <td className="border px-4 py-2 text-center">{location.contact_person_firstname} {""} {location.contact_person_lastname}</td>
-                        <td className="border px-4 py-2 text-center">{location.phone_number}</td>
+                        <td className="border px-4 py-2 text-center">{location.contact_person_firstname} {""} {location.contact_person_lastname}</td>           
                         <td className="border px-4 py-2 text-center">{location.contact_person_mail_id}</td>
+                        <td className="border px-4 py-2 text-center">{location.phone_number ? location.phone_number : 'NA' }</td>
                         <td className="border px-4 py-2 text-center">{location.city}</td>
                         <td className="border px-4 py-2 text-center">{location.state}</td>
                         <td className="border px-4 py-2 text-center">{location.zipcode}</td>

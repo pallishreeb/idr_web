@@ -129,7 +129,6 @@ const AddLocation = () => {
                       value={locations.address_line_two}
                       onChange={handleChange}
                       className=" w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -145,7 +144,6 @@ const AddLocation = () => {
                       value={locations.address_line_three}
                       onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                      required
                     />
                   </div>
                 </div>
@@ -213,7 +211,6 @@ const AddLocation = () => {
                       value={locations.fax_number}
                       onChange={(e) => handleChange( e)}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -229,7 +226,6 @@ const AddLocation = () => {
                       value={locations.phone_number}
                       onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                      required
                     />
                   </div>
                   <div className="col-span-1">
@@ -245,7 +241,6 @@ const AddLocation = () => {
                       value={locations.cell_number}
                       onChange={handleChange}
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                      required
                     />
                   </div>
                 </div>

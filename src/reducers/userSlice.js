@@ -80,7 +80,7 @@ const userSlice = createSlice({
     logout(state) {
       state.user = null; // Clear user data from Redux state
       localStorage.removeItem("user"); // Clear user data from local storage
-      localStorage.removeItem("token"); // Clear user data from local storage
+      localStorage.removeItem("user_idr_token"); // Clear user data from local storage
       state.isAuthenticated = false;
     },
     updateUserStart(state) {

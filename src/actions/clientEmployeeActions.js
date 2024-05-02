@@ -1,6 +1,6 @@
 // src/actions/clientEmployeeActions.js
 
-import axios from "axios";
+import axios from '../axios-config';
 import {
   addClientEmployeeStart,
   addClientEmployeeSuccess,
@@ -19,11 +19,12 @@ import {
   updateClientEmployeeFailure
 
 } from "../reducers/clientEmployeeSlice";
-import { API_BASE_URL, apiConfig } from "../config";
+import { apiConfig } from "../config";
 import { toast } from "react-toastify";
 
-axios.defaults.baseURL = API_BASE_URL;
-axios.defaults.headers.common["Content-Type"] = "application/json";
+// axios.defaults.baseURL = API_BASE_URL;
+// axios.defaults.headers.common["Content-Type"] = "application/json";
+// axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem('user_idr_token')}`;
 
 export const addClientEmployee = (employeeData,navigate) => {
   return async (dispatch) => {
