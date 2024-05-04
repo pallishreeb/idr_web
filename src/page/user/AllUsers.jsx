@@ -3,7 +3,7 @@ import { Link ,useNavigate} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { BsPencil, BsTrash } from "react-icons/bs";
+// import { BsPencil, BsTrash } from "react-icons/bs";
 import { fetchUsers } from "../../actions/userActions";
 
 
@@ -55,11 +55,15 @@ const AllUsers = () => {
                 <th className="border border-gray-200 px-4 py-2">Email</th>
                 <th className="border border-gray-200 px-4 py-2">User Type</th>
                 <th className="border border-gray-200 px-4 py-2">User Name</th>
+                <th className="border border-gray-200 px-4 py-2">Contact Number</th>
                 <th className="border border-gray-200 px-4 py-2">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {users?.data?.map((user) => (
+            {users?.data
+                    ? [...users.data] // Create a shallow copy of the industries array
+                        .sort((a, b) => a.email_id.localeCompare(b.email_id)) // Sort the copied array alphabetically by industry name
+                        .map((user) => (
                 <tr key={user?.id}>
                   <td className="border border-gray-200 px-4 py-2">
                     {user.email_id}
@@ -68,19 +72,23 @@ const AllUsers = () => {
                     {user.user_type}
                   </td>
                   <td className="border border-gray-200 px-4 py-2">
-                    { user?.first_name !== null ? user?.first_name + "" + user?.last_name : "NA"}
+                    { user?.first_name !== null ? user?.first_name + " " + user?.last_name : "NA"}
+                  </td>
+                  <td className="border border-gray-200 px-4 py-2">
+                    { user?.contact_number ? user?.contact_number : "NA"}
                   </td>
                   <td className="border border-gray-200 px-2 py-2">
                   <button className=" hover:bg-indigo-700 hover:text-white text-black font-bold py-1 px-2 rounded mr-2" onClick={() => handleSetPassword(user.user_id)}>
                       Set Password
                     </button>
-                    <button className="bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded mr-2" onClick={() => handleEdit(user.user_id)}>
-                      <BsPencil />
+                    <button className=" bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded" onClick={() => handleEdit(user.user_id)}>
+                     Edit
                     </button>
                     
                   </td>
                 </tr>
-              ))}
+              )) : "No Data available" }
+               
             </tbody>
           </table>
           }

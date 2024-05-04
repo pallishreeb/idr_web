@@ -11,6 +11,9 @@ const UpdateUser = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [userType, setUserType] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   // const successMessage = useSelector((state) => state.user.successMessage);
   // const errorMessage = useSelector((state) => state.user.errorMessage);
   const users = useSelector((state) => state.user.users);
@@ -24,6 +27,9 @@ const UpdateUser = () => {
     if (user) {
       setEmail(user.email_id);
       setUserType(user.user_type);
+      setContactNumber(user?.contact_number ? user?.contact_number : "")
+      setFirstName(user?.first_name ? user?.first_name : "")
+      setLastName(user?.last_name ? user?.last_name : "")
     }
   }, [user]); // Trigger effect when user data changes
 
@@ -33,6 +39,9 @@ const UpdateUser = () => {
     const userData = {
       user_id: userId,
       user_type: userType,
+      first_name:firstName,
+      last_name:lastName,
+      contact_number:contactNumber
     };
 
     dispatch(updateUser(userData, navigate));
@@ -58,6 +67,32 @@ const UpdateUser = () => {
             </div>
           )} */}
           <form onSubmit={handleSubmit} className="w-1/2 mx-auto">
+          <div className="mb-4">
+              <label htmlFor="firstName" className="block mb-2">
+                First Name
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                className="w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 px-4 py-2"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="email" className="block mb-2">
+                Last Name
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                className="w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 px-4 py-2"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+            </div>
             <div className="mb-4">
               <label htmlFor="email" className="block mb-2">Email</label>
               <input
@@ -85,6 +120,19 @@ const UpdateUser = () => {
                 <option value="IDR Employee">IDR Employee</option>
                 <option value="Client Employee">Client Employee</option>
               </select>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="contactNumber" className="block mb-2">
+              Contact Number
+              </label>
+              <input
+                type="text"
+                id="contactNumber"
+                className="w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 px-4 py-2"
+                value={contactNumber}
+                onChange={(e) => setContactNumber(e.target.value)}
+                required
+              />
             </div>
             <button
               type="submit"

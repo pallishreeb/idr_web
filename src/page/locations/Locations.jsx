@@ -65,7 +65,7 @@ const Locations = () => {
             <div className="mb-4">
               <h2 className="text-xl font-semibold mb-2">Locations for {clients?.data?.find(client => client.client_id === selectedClient)?.company_name}</h2>
               <div className="flex justify-end mb-2">
-                <button className="bg-indigo-700 text-white px-4 py-2 rounded"><Link to={'/add-location'}>Add New Location</Link></button>
+                <button className="bg-indigo-700 text-white px-4 py-2 rounded"><Link to={`/add-location/${selectedClient}`}>Add New Location</Link></button>
               </div>
               {loadinglocations ? (
                 <p>Loading Locations...</p>
@@ -91,7 +91,10 @@ const Locations = () => {
                    </td>
                  </tr>
                   ) : (
-                    locations?.map((location) => (
+                    locations
+                      && [...locations] // Create a shallow copy of the industries array
+                          .sort((a, b) => a.contact_person_firstname.localeCompare(b.contact_person_firstname))
+                          .map((location) => (
                       <tr key={location.location_id}>
                          <td className="text-center border px-4 py-2">{clients?.data?.find(client => client.client_id === location.client_id)?.company_name}</td>
                         <td className="border px-4 py-2 text-center">{location.contact_person_firstname} {""} {location.contact_person_lastname}</td>           

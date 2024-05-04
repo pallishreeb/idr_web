@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { Link,useNavigate } from 'react-router-dom';
+import { Link,useNavigate,useParams } from 'react-router-dom';
 import { addClientEmployee } from '../../actions/clientEmployeeActions'; // Import your client employee actions
 import { getClients } from "../../actions/clientActions";
 
 const AddEmployeePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
+  const { clientId } = useParams();
   const clients = useSelector((state) => state.client.clients); // Get clients from the client slice
   const loadingClients = useSelector((state) => state.client.loading);
   const loadingEmployees = useSelector((state) => state.clientEmployee.loading);
   const [formData, setFormData] = useState({
-    client_id: '', // Change from clientId to client_id
+    client_id: clientId ? clientId :'', // Change from clientId to client_id
     first_name: '',
     last_name: '',
     email_id: '',

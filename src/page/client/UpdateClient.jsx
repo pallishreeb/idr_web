@@ -123,11 +123,14 @@ const UpdateClient = () => {
                   className="block w-full border-gray-300 rounded-md shadow-sm border p-2"
                 >
                   <option value="">Select Industry Code</option>
-                  {industries?.map((industry) => (
+                  {industries
+                    ? [...industries] // Create a shallow copy of the industries array
+                        .sort((a, b) => a.industry_name.localeCompare(b.industry_name))
+                        .map((industry) => (
                     <option key={industry.industry_id} value={industry.industry_id}>
                       {industry.industry_name}
                     </option>
-                  ))}
+                  )) : null}
                 </select>
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
@@ -320,7 +323,7 @@ const UpdateClient = () => {
                   <option value="+91">+91</option>
                 </select> */}
                   <input
-                     type="number"
+                     type="text"
                      id="phone_number"
                      name="phone_number"
                      value={formData.phone_number}
@@ -349,7 +352,7 @@ const UpdateClient = () => {
                 </select> */}
 
                   <input
-                    type="number"
+                    type="text"
                     id="cell_phone"
                     name="cell_phone"
                     value={formData.cell_phone}
