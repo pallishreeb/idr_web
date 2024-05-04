@@ -12,6 +12,9 @@ const CreateUser = () => {
   const navigate = useNavigate()
   const [email, setEmail] = useState("");
   const [userType, setUserType] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const successMessage = useSelector((state) => state.user.successMessage);
   const errorMessage = useSelector((state) => state.user.errorMessage);
   const userLoading = useSelector((state) => state.user.loading);
@@ -25,6 +28,9 @@ const CreateUser = () => {
     dispatch(createUser({
       email_id: email,
       user_type: userType,
+      first_name:firstName,
+      last_name:lastName,
+      contact_number:contactNumber
     },navigate));
   };
 
@@ -48,6 +54,32 @@ const CreateUser = () => {
             </div>
           )}
           <form onSubmit={handleSubmit} className="w-1/2 mx-auto">
+          <div className="mb-4">
+              <label htmlFor="firstName" className="block mb-2">
+                First Name
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                className="w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 px-4 py-2"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="email" className="block mb-2">
+                Last Name
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                className="w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 px-4 py-2"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+            </div>
             <div className="mb-4">
               <label htmlFor="email" className="block mb-2">
                 Email
@@ -78,6 +110,19 @@ const CreateUser = () => {
                 <option value="IDR Employee">IDR Employee</option>
                 <option value="Client Employee">Client Employee</option>
               </select>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="contactNumber" className="block mb-2">
+              Contact Number
+              </label>
+              <input
+                type="text"
+                id="contactNumber"
+                className="w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 px-4 py-2"
+                value={contactNumber}
+                onChange={(e) => setContactNumber(e.target.value)}
+                required
+              />
             </div>
             <button
               type="submit"

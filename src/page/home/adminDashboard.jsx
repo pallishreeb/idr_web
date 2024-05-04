@@ -27,7 +27,7 @@ const AdminDashboard = () => {
                   Welcome to IDR Technology Solution Portal.
                 </p>
               </div>
-              <div className="flex gap-[4%]">
+              <div className="flex gap-[2%]">
                 <div className="flex gap-2">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200">
                     <MdPhone size={20} />
@@ -35,10 +35,10 @@ const AdminDashboard = () => {
 
                   <div className="text-sm">
                     <p className="text-gray-400">Phone</p>
-                    <p>{user?.contact_number !== null ? user?.contact_number : "+91987654321"}</p>
+                    <p>{user?.contact_number !== null ? user?.contact_number : "NA"}</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200">
                     <IoMail size={20} />
                   </div>
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </div>
-            <div className="mt-4 border py-7 px-5 bg-white w-[60%]">
+            <div className="mt-4 border py-7 px-5 bg-white w-[65%]">
               <h1 className="font-medium text-xl">User Details</h1>
               <table className="mt-2">
                 <thead>

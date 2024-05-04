@@ -61,7 +61,7 @@ const Client = () => {
                    </td>
                  </tr>
                   ) : (
-                clients?.data?.map((client) => (
+                    clients?.data?.map((client) => (
                   <tr key={client?.client_id}>
                     <td className="border px-4 py-2">{client?.company_name}</td>
                     <td className="border px-4 py-2">{client?.industries.industry_name}</td>
@@ -70,7 +70,7 @@ const Client = () => {
                     <td className="border px-4 py-2">
                       {client?.contact_person_firstname} {client?.contact_person_lastname}
                     </td>
-                    <td className="border px-4 py-2">
+                    <td className="border flex px-2 py-2">
                       <button  onClick={() => handleEdit(client?.client_id)} className="bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded mr-2">
                         <BsPencil />
                       </button>
