@@ -5,18 +5,19 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { addLocation } from "../../actions/locationActions"; // Import the action to add location
 import { getClients } from "../../actions/clientActions"; // Import the action to fetch clients
 import { toast } from "react-toastify";
-import { Link,useNavigate } from 'react-router-dom';
+import { Link,useNavigate,useParams } from 'react-router-dom';
 const AddLocation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
+  const { clientId } = useParams();
   // Fetch clients from Redux store
   const clients = useSelector((state) => state.client.clients);
   const loadinglocations = useSelector((state) => state.location.loading);
   const loadingClients = useSelector((state) => state.client.loading);
-  const [selectedClient, setSelectedClient] = useState("");
+  // const [selectedClient, setSelectedClient] = useState("");
   const [locations, setLocations] = useState(
     {
-    client_id: "",
+    client_id:clientId ? clientId : "",
     contact_person_firstname: "",
     contact_person_lastname: "",
     contact_person_mail_id: "",
@@ -38,9 +39,6 @@ const AddLocation = () => {
     dispatch(getClients());
   }, [dispatch]);
 
-  const handleClientChange = (clientId) => {
-    setSelectedClient(clientId);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,12 +50,12 @@ const AddLocation = () => {
   const handleSave = (e) => {
     e.preventDefault();
     // Perform save logic here
-    if (selectedClient === "") {
-      toast.error("Please select a client");
-      return;
-    }else{
-      locations.client_id =  selectedClient;
-    }
+    // if (selectedClient === "") {
+    //   toast.error("Please select a client");
+    //   return;
+    // }else{
+    //   locations.client_id =  selectedClient;
+    // }
     dispatch(addLocation(locations,navigate));
     // Reset form after saving
     // setSelectedClient("");
@@ -82,8 +80,9 @@ const AddLocation = () => {
                   id="client_id"
                   name="client_id"
                   className="border border-gray-300 rounded px-3 py-1 w-full"
-                  value={selectedClient}
-                  onChange={(e) => handleClientChange(e.target.value)}
+                  value={locations?.client_id}
+                  onChange={handleChange}
+                  required
                 >
                   <option value="">Select a client</option>
                   {loadingClients ? (

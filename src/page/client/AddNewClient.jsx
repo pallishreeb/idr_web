@@ -308,7 +308,7 @@ const navigate = useNavigate();
                   <option value="+91">+91</option>
                 </select> */}
                   <input
-                     type="number"
+                     type="text"
                      id="phone_number"
                      name="phone_number"
                      value={formData.phone_number}
@@ -338,7 +338,7 @@ const navigate = useNavigate();
                 </select> */}
 
                   <input
-                    type="number"
+                    type="text"
                     id="cell_phone"
                     name="cell_phone"
                     value={formData.cell_phone}

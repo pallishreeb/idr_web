@@ -60,9 +60,9 @@ function App() {
           <Route path="/workorder" element={<WorkOrder />}></Route>
           <Route path="/add-work-order" element={<AddWorkOrder />}></Route>
           <Route path="/client-employees" element={<EmployeePage />}></Route>
-          <Route path="/add-employee" element={<AddEmployeePage />}></Route>
+          <Route path="/add-employee/:clientId" element={<AddEmployeePage />}></Route>
           <Route path="/locations" element={<Locations />}></Route>
-          <Route path="/add-location" element={<AddLocation />}></Route>
+          <Route path="/add-location/:clientId" element={<AddLocation />}></Route>
           <Route path="/update-client/:clientId" element={<UpdateClient />} />
           <Route path="/edit-location/:locationId" element={<EditLocationPage />} />
           <Route path="/edit-employee/:employeeId" element={<EditEmployeePage />} />
