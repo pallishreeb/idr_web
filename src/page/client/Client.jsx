@@ -1,20 +1,34 @@
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { BsPencil, BsTrash } from "react-icons/bs";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { getClients,deleteClient } from "../../actions/clientActions";
+import { getClients,deleteClient ,getIndustries} from "../../actions/clientActions";
 import { useNavigate } from 'react-router-dom';
 
 const Client = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { clients, loading } = useSelector((state) => state.client);
+  const {industries} = useSelector((state) => state.client.industries);
+  const [clientName, setClientName] = useState('');
+  const [industryId, setIndustryId] = useState('');
 
   useEffect(() => {
     dispatch(getClients());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getIndustries());
+  }, [dispatch]);
+
+  // useEffect(() => {
+  //   if(industryId){
+  //     dispatch(getClients({ industryId }));
+  //   }
+  // }, [dispatch,industryId]);
+
   const handleEdit = (clientId) => {
     // Navigate to the update client page
     navigate(`/update-client/${clientId}`);
@@ -27,6 +41,15 @@ const Client = () => {
     }
     dispatch(getClients());
   };
+
+  const handleSearch = () => {
+    dispatch(getClients({ clientName, industryId }));
+  };
+  const clearSearch = () => {
+    setClientName("")
+    setIndustryId("")
+    dispatch(getClients());
+  }
   return (
     <>
       <Header />
@@ -39,10 +62,50 @@ const Client = () => {
               <Link to={"/add-client"}> Add New Client</Link>
             </button>
           </div>
+          <div className="flex mb-4">
+            <input
+              type="text"
+              placeholder="Search by Client Name"
+              value={clientName}
+              onChange={(e) => setClientName(e.target.value)}
+              className="border p-2 rounded-md mr-2"
+            />
+            <select
+              value={industryId}
+              onChange={(e) => setIndustryId(e.target.value)}
+              className="border p-2 rounded-md mr-2"
+            >
+              <option value="">Select Industry</option>
+              {industries
+                    ? [...industries] // Create a shallow copy of the industries array
+                        .sort((a, b) => a.industry_name.localeCompare(b.industry_name)) // Sort the copied array alphabetically by industry name
+                        .map((industry) => (
+                          <option key={industry.industry_id} value={industry.industry_id}>
+                            {industry.industry_name}
+                          </option>
+                        ))
+                    : null}
+            </select>
+            <button
+              onClick={handleSearch}
+              className="bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Search
+            </button>
+            <button
+              onClick={clearSearch}
+              className="bg-red-700 hover:bg-red-700 text-white font-bold py-2 px-4 ml-2 rounded"
+            >
+             Clear Search
+            </button>
+          </div>
+
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <table className="w-full table-auto shadow-lg">
+            <>
+            
+               <table className="w-full table-auto shadow-lg">
               <thead className="text-left">
                 <tr>
                   <th className="border px-4 py-2">Company Name</th>
@@ -83,6 +146,8 @@ const Client = () => {
               )}
               </tbody>
             </table>
+            </>
+         
           )}
         </div>
       </div>
