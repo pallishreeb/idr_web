@@ -24,11 +24,37 @@ export const addClient = (clientData,navigate) => {
   };
 };
 
-export const getClients = () => {
+// export const getClients = () => {
+//   return async (dispatch) => {
+//     dispatch(getClientsStart());
+//     try {
+//       const response = await axios.get(apiConfig.getClients);
+//       dispatch(getClientsSuccess(response.data));
+//     } catch (error) {
+//       dispatch(getClientsFailure(error.message));
+//       toast.error(error.response?.data?.message || "Failed to fetch clients");
+//     }
+//   };
+// };
+export const getClients = ({ clientName, industryId } = {}) => {
   return async (dispatch) => {
     dispatch(getClientsStart());
     try {
-      const response = await axios.get(apiConfig.getClients);
+      let url = apiConfig.getClients;
+      const params = new URLSearchParams();
+
+      if (clientName) {
+        params.append('client_name', clientName);
+      }
+      if (industryId) {
+        params.append('industry_id', industryId);
+      }
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      const response = await axios.get(url);
       dispatch(getClientsSuccess(response.data));
     } catch (error) {
       dispatch(getClientsFailure(error.message));
@@ -36,7 +62,6 @@ export const getClients = () => {
     }
   };
 };
-
 export const getClientById = (clientId) => {
   return async (dispatch) => {
     dispatch(getClientByIdStart());
