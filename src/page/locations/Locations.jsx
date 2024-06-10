@@ -77,7 +77,7 @@ const Locations = () => {
                     <th className="border px-4 py-2">Contact Person</th>
                     <th className="border px-4 py-2">Email ID</th>
                     <th className="border px-4 py-2">Phone Number</th>
-                    <th className="border px-4 py-2">City</th>
+                    <th className="border px-4 py-2">Address</th>
                     <th className="border px-4 py-2">State</th>
                     <th className="border px-4 py-2">Zipcode</th>
                     <th className="border px-4 py-2">Actions</th>
@@ -100,10 +100,10 @@ const Locations = () => {
                         <td className="border px-4 py-2 text-center">{location.contact_person_firstname} {""} {location.contact_person_lastname}</td>           
                         <td className="border px-4 py-2 text-center">{location.contact_person_mail_id}</td>
                         <td className="border px-4 py-2 text-center">{location.phone_number ? location.phone_number : 'NA' }</td>
-                        <td className="border px-4 py-2 text-center">{location.city}</td>
+                        <td className="border px-4 py-2 text-center">{location?.address_line_one} <br/> {location?.address_line_two}</td>
                         <td className="border px-4 py-2 text-center">{location.state}</td>
                         <td className="border px-4 py-2 text-center">{location.zipcode}</td>
-                        <td className="border px-4 py-2 text-center">
+                        <td className="border px-4 py-2 text-center flex">
                           <button onClick={() => handleEdit(location.location_id)} className="bg-indigo-700 text-white px-2 py-1 rounded mr-2">Edit</button>
                           <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDeleteLocation(location.location_id)}>Delete</button>
                         </td>
