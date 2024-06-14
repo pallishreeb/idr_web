@@ -81,9 +81,9 @@ const AllUsers = () => {
                   <button className=" hover:bg-indigo-700 hover:text-white text-black font-bold py-1 px-2 rounded mr-2" onClick={() => handleSetPassword(user.user_id)}>
                       Set Password
                     </button>
-                    <button className=" bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded" onClick={() => handleEdit(user.user_id)}>
+                    {/* <button className=" bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded" onClick={() => handleEdit(user.user_id)}>
                      Edit
-                    </button>
+                    </button> */}
                     
                   </td>
                 </tr>

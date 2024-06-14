@@ -21,7 +21,10 @@ const apiConfig = {
     client_emp_by_id:'/client_emp/by_id',
     location_by_id:'/location/by_id',
     updateClientEmp:'/client_emp',
-    updateLocation:'/location'
+    updateLocation:'/location',
+    getIdrEmployees:'/idr_emp/all',
+    deleteIdrEmp:'/idr_emp/delete',
+    addIdrEmployee:'/idr_emp/create'
 
   };
   
