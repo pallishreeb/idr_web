@@ -8,6 +8,7 @@ import {
   getEmployeeById,
 } from "../../actions/clientEmployeeActions"; // Import your client employee actions
 import { getClients } from "../../actions/clientActions";
+import { fetchUsers } from "../../actions/userActions"; // Import getUsers action
 
 const EditEmployeePage = () => {
   const dispatch = useDispatch();
@@ -18,8 +19,12 @@ const EditEmployeePage = () => {
   const loadingClients = useSelector((state) => state.client.loading);
   const employee = useSelector((state) => state.clientEmployee.employee);
   const loadingEmployees = useSelector((state) => state.clientEmployee.loading);
+  const usersData = useSelector((state) => state.user.users); // Get users from the user slice
+  const loadingUsers = useSelector((state) => state.user.loading);
+
   const [formData, setFormData] = useState({
-    client_id: "", // Change from clientId to client_id
+    client_id: "",
+    user_id: "",
     first_name: "",
     last_name: "",
     email_id: "",
@@ -29,20 +34,18 @@ const EditEmployeePage = () => {
   useEffect(() => {
     dispatch(getEmployeeById(employeeId));
     dispatch(getClients());
+    dispatch(fetchUsers());
   }, [dispatch, employeeId]);
 
   useEffect(() => {
     if (employee) {
-      // Extract only the fields you want to update from the employee data
-      const { client_id, first_name, last_name, email_id, access_to_website } =
-        employee;
-
-      // Set the form data with only the extracted fields
+      const { client_id, user_id, first_name, last_name, email_id, access_to_website } = employee;
       setFormData({
         client_id,
-        first_name,
-        last_name,
-        email_id,
+        user_id: user_id || '',
+        first_name: first_name || '',
+        last_name: last_name || '',
+        email_id: email_id || '',
         access_to_website,
       });
     }
@@ -53,17 +56,40 @@ const EditEmployeePage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleUserChange = (e) => {
+    const selectedUserId = e.target.value;
+    const selectedUser = usersData.data.find(user => user.user_id === selectedUserId);
+    if (selectedUser) {
+      setFormData({
+        ...formData,
+        user_id: selectedUser.user_id,
+        first_name: selectedUser.first_name,
+        last_name: selectedUser.last_name,
+        email_id: selectedUser.email_id,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        user_id: '',
+        first_name: '',
+        last_name: '',
+        email_id: '',
+      });
+    }
+  };
+
   const handleChangeRadio = (e) => {
     const { name, value } = e.target;
-    // For radio buttons, directly set the boolean value based on the name
-    // If 'name' is 'access_to_website', set the value to true if 'Yes' is selected, and false if 'No' is selected
     setFormData({ ...formData, [name]: name === 'access_to_website' ? value === 'true' : value });
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(updateClientEmployee(employeeId, formData, navigate));
   };
+
+  // Filter users with user_type as 'Client Employee'
+  const filteredUsers = Array.isArray(usersData?.data) ? usersData.data.filter(user => user.user_type === 'Client Employee') : [];
 
   return (
     <>
@@ -76,12 +102,7 @@ const EditEmployeePage = () => {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="mb-4">
-                  <label
-                    htmlFor="client_id"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Client
-                  </label>
+                  <label htmlFor="client_id" className="block text-sm font-medium text-gray-700">Client</label>
                   <select
                     id="client_id"
                     name="client_id"
@@ -91,25 +112,36 @@ const EditEmployeePage = () => {
                   >
                     <option value="">Select a client</option>
                     {loadingClients ? (
-                      <option value="" disabled>
-                        Loading...
-                      </option>
+                      <option value="" disabled>Loading...</option>
                     ) : (
                       clients?.data?.map((client) => (
-                        <option key={client.client_id} value={client.client_id}>
-                          {client.company_name}
-                        </option>
+                        <option key={client.client_id} value={client.client_id}>{client.company_name}</option>
                       ))
                     )}
                   </select>
                 </div>
                 <div className="mb-4">
-                  <label
-                    htmlFor="first_name"
-                    className="block text-sm font-medium text-gray-700"
+                  <label htmlFor="user_id" className="block text-sm font-medium text-gray-700">User</label>
+                  <select
+                    id="user_id"
+                    name="user_id"
+                    value={formData.user_id}
+                    onChange={handleUserChange}
+                    className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    required
                   >
-                    First Name
-                  </label>
+                    <option value="">Select a user</option>
+                    {loadingUsers ? (
+                      <option value="" disabled>Loading...</option>
+                    ) : (
+                      filteredUsers.map((user) => (
+                        <option key={user.user_id} value={user.user_id}>{user.first_name} {user.last_name}</option>
+                      ))
+                    )}
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">First Name</label>
                   <input
                     type="text"
                     name="first_name"
@@ -120,12 +152,7 @@ const EditEmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label
-                    htmlFor="last_name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Last Name
-                  </label>
+                  <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">Last Name</label>
                   <input
                     type="text"
                     name="last_name"
@@ -136,12 +163,7 @@ const EditEmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label
-                    htmlFor="email_id"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Email
-                  </label>
+                  <label htmlFor="email_id" className="block text-sm font-medium text-gray-700">Email</label>
                   <input
                     type="email"
                     name="email_id"
@@ -152,9 +174,7 @@ const EditEmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Allow Access to Website
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700">Allow Access to Website</label>
                   <div className="mt-1">
                     <label className="inline-flex items-center">
                       <input
@@ -186,7 +206,7 @@ const EditEmployeePage = () => {
                   type="submit"
                   className="bg-indigo-700 text-white px-4 py-2 rounded mr-2"
                 >
-                 {loadingEmployees ? 'Saving' : 'Save'} 
+                  {loadingEmployees ? 'Saving' : 'Save'}
                 </button>
                 <button
                   type="button"

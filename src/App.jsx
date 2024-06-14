@@ -24,6 +24,8 @@ import EditLocationPage from './page/locations/EditLocation';
 import EditEmployeePage from './page/client-employee/EditClientEmployee';
 import UpdateClient from "./page/client/UpdateClient";
 import AddLocation from "./page/locations/AddLocation";
+import IDREmployeePage from "./page/idr-employee/IDREmployeesPage";
+import EditIDREmployeePage from "./page/idr-employee/EditIDREmployeePage";
 function App() {
   return (
     <>
@@ -62,6 +64,8 @@ function App() {
           <Route path="/client-employees" element={<EmployeePage />}></Route>
           <Route path="/add-employee/:clientId" element={<AddEmployeePage />}></Route>
           <Route path="/locations" element={<Locations />}></Route>
+          <Route path="/idr-employees" element={<IDREmployeePage />}></Route>
+          <Route path="/idr-employees/:employeeId" element={<EditIDREmployeePage />}></Route>
           <Route path="/add-location/:clientId" element={<AddLocation />}></Route>
           <Route path="/update-client/:clientId" element={<UpdateClient />} />
           <Route path="/edit-location/:locationId" element={<EditLocationPage />} />
