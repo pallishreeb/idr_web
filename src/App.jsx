@@ -15,15 +15,17 @@ import UpdateUser from "./page/user/UpdateUser";
 import SetUserPasswordForm from "./page/user/SetUserPassword";
 import NotFoundPage from "./page/home/404Page";
 import PrivateRoute from "./PrivateRoute";
-import WorkOrder from "./page/home/WorkOrder";
-import AddWorkOrder from "./Components/AddNewWorkOrder";
+// import WorkOrder from "./page/home/WorkOrder";
+// import AddWorkOrder from "./Components/AddNewWorkOrder";
 import EmployeePage from "./page/client-employee/EmployeePage";
 import AddEmployeePage from "./page/client-employee/AddEmployeePage";
 import Locations from "./page/locations/Locations";
-import EditLocationPage from './page/locations/EditLocation';
-import EditEmployeePage from './page/client-employee/EditClientEmployee';
+import EditLocationPage from "./page/locations/EditLocation";
+import EditEmployeePage from "./page/client-employee/EditClientEmployee";
 import UpdateClient from "./page/client/UpdateClient";
 import AddLocation from "./page/locations/AddLocation";
+import WorkOrder from "./page/Idr_workorder/WorkOrder";
+import AddWorkOrder from "./page/Idr_workorder/AddWorkOrder";
 function App() {
   return (
     <>
@@ -58,14 +60,27 @@ function App() {
           <Route path="/users/create" element={<CreateUser />}></Route>
           <Route path="/users/update/:userId" element={<UpdateUser />}></Route>
           <Route path="/workorder" element={<WorkOrder />}></Route>
+          {/* <Route path="/add-work-order" element={<AddWorkOrder />}></Route> */}
           <Route path="/add-work-order" element={<AddWorkOrder />}></Route>
           <Route path="/client-employees" element={<EmployeePage />}></Route>
-          <Route path="/add-employee/:clientId" element={<AddEmployeePage />}></Route>
+          <Route
+            path="/add-employee/:clientId"
+            element={<AddEmployeePage />}
+          ></Route>
           <Route path="/locations" element={<Locations />}></Route>
-          <Route path="/add-location/:clientId" element={<AddLocation />}></Route>
+          <Route
+            path="/add-location/:clientId"
+            element={<AddLocation />}
+          ></Route>
           <Route path="/update-client/:clientId" element={<UpdateClient />} />
-          <Route path="/edit-location/:locationId" element={<EditLocationPage />} />
-          <Route path="/edit-employee/:employeeId" element={<EditEmployeePage />} />
+          <Route
+            path="/edit-location/:locationId"
+            element={<EditLocationPage />}
+          />
+          <Route
+            path="/edit-employee/:employeeId"
+            element={<EditEmployeePage />}
+          />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
