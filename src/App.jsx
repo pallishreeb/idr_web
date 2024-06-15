@@ -26,6 +26,8 @@ import UpdateClient from "./page/client/UpdateClient";
 import AddLocation from "./page/locations/AddLocation";
 import WorkOrder from "./page/Idr_workorder/WorkOrder";
 import AddWorkOrder from "./page/Idr_workorder/AddWorkOrder";
+import IDREmployeePage from "./page/idr-employee/IDREmployeesPage";
+import EditIDREmployeePage from "./page/idr-employee/EditIDREmployeePage";
 function App() {
   return (
     <>
@@ -68,6 +70,15 @@ function App() {
             element={<AddEmployeePage />}
           ></Route>
           <Route path="/locations" element={<Locations />}></Route>
+          <Route
+            path="/add-location/:clientId"
+            element={<AddLocation />}
+          ></Route>
+          <Route path="/idr-employees" element={<IDREmployeePage />}></Route>
+          <Route
+            path="/idr-employees/:employeeId"
+            element={<EditIDREmployeePage />}
+          ></Route>
           <Route
             path="/add-location/:clientId"
             element={<AddLocation />}
