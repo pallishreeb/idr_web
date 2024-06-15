@@ -1,6 +1,11 @@
 import axios from '../axios-config';
 import { toast } from "react-toastify";
-import { fetchIDREmployeesFailure,fetchIDREmployeesRequest,fetchIDREmployeesSuccess,deleteEmployeeFailure,deleteEmployeeRequest,deleteEmployeeSuccess} from "../reducers/idrEmployeeSlice";
+import { fetchIDREmployeesFailure,fetchIDREmployeesRequest,fetchIDREmployeesSuccess,deleteEmployeeFailure,deleteEmployeeRequest,deleteEmployeeSuccess, fetchIDREmployeeDetailsRequest,
+  fetchIDREmployeeDetailsSuccess,
+  fetchIDREmployeeDetailsFailure,
+  updateIDREmployeeRequest,
+  updateIDREmployeeSuccess,
+  updateIDREmployeeFailure,} from "../reducers/idrEmployeeSlice";
 import {  apiConfig } from "../config";
 
 
@@ -29,6 +34,28 @@ export const deleteEmployee = (employeeId) => async dispatch => {
        }
 };
 
+export const fetchIDREmployeeDetails = (employeeId) => async (dispatch) => {
+  dispatch(fetchIDREmployeeDetailsRequest());
+  try {
+    const response = await axios.get(`${apiConfig.getIdrEmpById}/${employeeId}`);
+    dispatch(fetchIDREmployeeDetailsSuccess(response.data.employee));
+  } catch (error) {
+    dispatch(fetchIDREmployeeDetailsFailure(error.message));
+    toast.error(error.response?.data?.message || 'Failed to fetch employee details');
+  }
+};
+
+export const updateIDREmployee = (employeeData) => async (dispatch) => {
+  dispatch(updateIDREmployeeRequest());
+  try {
+    const response = await axios.post(`${apiConfig.updateIdrEmp}`, employeeData);
+    dispatch(updateIDREmployeeSuccess(response.data));
+    toast.success('Employee updated successfully');
+  } catch (error) {
+    dispatch(updateIDREmployeeFailure(error.message));
+    toast.error(error.response?.data?.message || 'Failed to update employee');
+  }
+};
 // export const addIdrEmployee = (idrEmployeeData,navigate) => {
 //     return async (dispatch) => {
 //       dispatch(createIdrEmployeetStart());
@@ -48,7 +75,7 @@ export const deleteEmployee = (employeeId) => async dispatch => {
 //     return async (dispatch) => {
 //       dispatch(updateIdrEmployeeStart());
 //       try {
-//         const response = await axios.patch(`${apiConfig.updateClient}`, idrEmployeeData);
+//         const response = await axios.post(`${apiConfig.updateIdrEmp}`, idrEmployeeData);
 //         dispatch(updateIdrEmployeeSuccess(response.data));
 //         toast.success("Idr Employee updated successfully");
 //         navigate('/idr-employees');

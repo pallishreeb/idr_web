@@ -28,6 +28,7 @@ const EditEmployeePage = () => {
     first_name: "",
     last_name: "",
     email_id: "",
+    contact_number:"",
     access_to_website: true,
   });
 
@@ -39,13 +40,14 @@ const EditEmployeePage = () => {
 
   useEffect(() => {
     if (employee) {
-      const { client_id, user_id, first_name, last_name, email_id, access_to_website } = employee;
+      const { client_id, user_id, first_name, last_name, email_id,contact_number, access_to_website } = employee;
       setFormData({
         client_id,
         user_id: user_id || '',
         first_name: first_name || '',
         last_name: last_name || '',
         email_id: email_id || '',
+        contact_number:contact_number || '',
         access_to_website,
       });
     }
@@ -66,6 +68,7 @@ const EditEmployeePage = () => {
         first_name: selectedUser.first_name,
         last_name: selectedUser.last_name,
         email_id: selectedUser.email_id,
+        contact_number:selectedUser.contact_number
       });
     } else {
       setFormData({
@@ -74,6 +77,7 @@ const EditEmployeePage = () => {
         first_name: '',
         last_name: '',
         email_id: '',
+        contact_number:'',
       });
     }
   };
@@ -169,6 +173,17 @@ const EditEmployeePage = () => {
                     name="email_id"
                     id="email_id"
                     value={formData.email_id}
+                    onChange={handleChange}
+                    className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="contact_number" className="block text-sm font-medium text-gray-700">Contact Number</label>
+                  <input
+                    type="text"
+                    name="contact_number"
+                    id="contact_number"
+                    value={formData.contact_number}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                   />

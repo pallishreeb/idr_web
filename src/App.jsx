@@ -28,6 +28,7 @@ import WorkOrder from "./page/Idr_workorder/WorkOrder";
 import AddWorkOrder from "./page/Idr_workorder/AddWorkOrder";
 import IDREmployeePage from "./page/idr-employee/IDREmployeesPage";
 import EditIDREmployeePage from "./page/idr-employee/EditIDREmployeePage";
+import EditWorkOrder from "./page/Idr_workorder/EditWorkOrder";
 function App() {
   return (
     <>
@@ -62,8 +63,8 @@ function App() {
           <Route path="/users/create" element={<CreateUser />}></Route>
           <Route path="/users/update/:userId" element={<UpdateUser />}></Route>
           <Route path="/workorder" element={<WorkOrder />}></Route>
-          {/* <Route path="/add-work-order" element={<AddWorkOrder />}></Route> */}
           <Route path="/add-work-order" element={<AddWorkOrder />}></Route>
+          <Route path="/edit-work-order/:workOrderId" element={<EditWorkOrder />}></Route>
           <Route path="/client-employees" element={<EmployeePage />}></Route>
           <Route
             path="/add-employee/:clientId"

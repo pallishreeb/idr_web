@@ -1,54 +1,51 @@
 // src/pages/EditIDREmployeePage.js
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  fetchIDREmployeesRequest,
-  fetchIDREmployeesSuccess,
-  fetchIDREmployeesFailure,
-} from '../../reducers/idrEmployeeSlice';
-import { fetchIDREmployees } from '../../actions/employeeActions';
+import { fetchIDREmployeeDetails, updateIDREmployee } from '../../actions/employeeActions';
 import Header from '../../Components/Header';
 import AdminSideNavbar from '../../Components/AdminSideNavbar';
 
 const EditIDREmployeePage = () => {
-  const { employeeId } = useParams(); // Get employeeId from URL params
+  const { employeeId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const idrEmployees = useSelector((state) => state.employee.idrEmployees); // Assuming you store IDR employees in state.idrEmployees.idrEmployees
-  const loading = useSelector((state) => state.employee.loading);
+  const { idrEmployeeDetails, loading } = useSelector((state) => state.employee);
 
   const [formData, setFormData] = useState({
+    idr_emp_id: '',
     first_name: '',
     last_name: '',
     email_id: '',
-    job_desc:'',
-    user_id:'',
-    is_active: true, // Assuming is_active is a boolean field  
+    job_desc: '',
+    user_id: '',
+    user_type: '',
+    is_active: true,
+    user_role_id:'',
   });
 
   useEffect(() => {
-    // Simulate fetching employee details (replace with actual fetch action)
-    dispatch(fetchIDREmployeesRequest());
-    dispatch(fetchIDREmployees());
-    // Replace with actual fetch action to fetch employee details
-    const fetchedEmployee = idrEmployees.find((employee) => employee.user_id === employeeId);
+    if (employeeId) {
+      dispatch(fetchIDREmployeeDetails(employeeId));
+    }
+  }, [dispatch, employeeId]);
 
-    if (fetchedEmployee) {
-      const { first_name, last_name, email_id,job_desc, is_active } = fetchedEmployee;
+  useEffect(() => {
+    if (idrEmployeeDetails) {
+      const { idr_emp_id, first_name, last_name, email_id, job_desc, is_active, user_type, user_id,user_role_id } = idrEmployeeDetails;
       setFormData({
+        idr_emp_id,
         first_name,
         last_name,
         email_id,
         job_desc,
         is_active,
-        // Initialize other form fields here
+        user_type,
+        user_id,
+        user_role_id
       });
-    } else {
-      dispatch(fetchIDREmployeesFailure('Employee not found')); // Handle error if employee not found
     }
-  }, [dispatch, employeeId, idrEmployees]);
+  }, [idrEmployeeDetails]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,12 +54,9 @@ const EditIDREmployeePage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate update action (replace with actual update action)
-    const updatedEmployees = idrEmployees.map((employee) =>
-      employee.user_id === employeeId ? { ...employee, ...formData } : employee
-    );
-    dispatch(fetchIDREmployeesSuccess(updatedEmployees));
-    navigate('/idr-employees'); // Navigate to IDR employees list after successful update
+    dispatch(updateIDREmployee(formData)).then(() => {
+      navigate('/idr-employees');
+    });
   };
 
   return (
@@ -78,10 +72,7 @@ const EditIDREmployeePage = () => {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="mb-4">
-                  <label
-                    htmlFor="first_name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">
                     First Name
                   </label>
                   <input
@@ -94,10 +85,7 @@ const EditIDREmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label
-                    htmlFor="last_name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">
                     Last Name
                   </label>
                   <input
@@ -110,10 +98,7 @@ const EditIDREmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label
-                    htmlFor="email_id"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="email_id" className="block text-sm font-medium text-gray-700">
                     Email
                   </label>
                   <input
@@ -126,10 +111,7 @@ const EditIDREmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label
-                    htmlFor="job_desc"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="job_desc" className="block text-sm font-medium text-gray-700">
                     Job Description
                   </label>
                   <input
@@ -142,10 +124,7 @@ const EditIDREmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label
-                    htmlFor="is_active"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="is_active" className="block text-sm font-medium text-gray-700">
                     Active
                   </label>
                   <select
@@ -159,12 +138,27 @@ const EditIDREmployeePage = () => {
                     <option value={false}>No</option>
                   </select>
                 </div>
+                <div className="mb-4">
+                  <label htmlFor="user_type" className="block text-sm font-medium text-gray-700">
+                    User Type
+                  </label>
+                  <select
+                    id="user_type"
+                    name="user_type"
+                    value={formData.user_type}
+                    onChange={handleChange}
+                    className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                  >
+                    <option value="">Select User Type</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Subadmin">Subadmin</option>
+                    <option value="IDR Employee">IDR Employee</option>
+                    <option value="Client Employee">Client Employee</option>
+                  </select>
+                </div>
               </div>
               <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="bg-indigo-700 text-white px-4 py-2 rounded mr-2"
-                >
+                <button type="submit" className="bg-indigo-700 text-white px-4 py-2 rounded mr-2">
                   {loading ? 'Saving...' : 'Save'}
                 </button>
                 <button

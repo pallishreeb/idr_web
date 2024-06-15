@@ -3,6 +3,7 @@
   const initialState = {
     loading: false,
     idrEmployees: [],
+    idrEmployeeDetails: {},
     error: null,
   };
   
@@ -36,6 +37,35 @@
         state.loading = false;
         state.error = action.payload;
       },
+      fetchIDREmployeeDetailsRequest: (state) => {
+        state.loading = true;
+        state.error = null;
+      },
+      fetchIDREmployeeDetailsSuccess: (state, action) => {
+        state.loading = false;
+        state.idrEmployeeDetails = action.payload;
+      },
+      fetchIDREmployeeDetailsFailure: (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      },
+      updateIDREmployeeRequest: (state) => {
+        state.loading = true;
+        state.error = null;
+      },
+      updateIDREmployeeSuccess: (state, action) => {
+        state.loading = false;
+        const updatedEmployee = action.payload;
+        const index = state.idrEmployees.findIndex(employee => employee.idr_emp_id === updatedEmployee.idr_emp_id);
+        if (index !== -1) {
+          state.idrEmployees[index] = updatedEmployee;
+        }
+      },
+      updateIDREmployeeFailure: (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      },
+
     },
   });
   
@@ -46,6 +76,12 @@
     deleteEmployeeRequest,
     deleteEmployeeSuccess,
     deleteEmployeeFailure,
+    fetchIDREmployeeDetailsRequest,
+    fetchIDREmployeeDetailsSuccess,
+    fetchIDREmployeeDetailsFailure,
+    updateIDREmployeeRequest,
+    updateIDREmployeeSuccess,
+    updateIDREmployeeFailure,
   } = idrEmployeeSlice.actions;
   
   export default idrEmployeeSlice.reducer;

@@ -23,6 +23,7 @@ const AddEmployeePage = () => {
     first_name: '',
     last_name: '',
     email_id: '',
+    contact_number:'',
     access_to_website: true,
   });
 
@@ -47,6 +48,7 @@ const AddEmployeePage = () => {
         first_name: selectedUser.first_name,
         last_name: selectedUser.last_name,
         email_id: selectedUser.email_id,
+        contact_number: selectedUser.contact_number,
       });
     } else {
       setFormData({
@@ -55,6 +57,7 @@ const AddEmployeePage = () => {
         first_name: '',
         last_name: '',
         email_id: '',
+        contact_number: '',
       });
     }
   };
@@ -158,6 +161,19 @@ return (
                   name="email_id"
                   id="email_id"
                   value={formData.email_id}
+                  onChange={handleChange}
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                  required
+                  readOnly
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="contact_number" className="block text-sm font-medium text-gray-700">Contact Number</label>
+                <input
+                  type="number"
+                  name="contact_number"
+                  id="contact_number"
+                  value={formData.contact_number}
                   onChange={handleChange}
                   className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                   required
