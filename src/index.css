@@ -2,3 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+.resize-y {
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 40px; /* Set a minimum height */
+    max-height: 200px; /* Set a maximum height if needed */
+  }
+  
