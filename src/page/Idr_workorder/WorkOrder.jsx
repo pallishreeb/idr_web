@@ -96,7 +96,7 @@ const WorkOrder = () => {
                     <option value="">All</option>
                     <option value="Open">Open</option>
                     <option value="Design">Design</option>
-                    <option value="InProgress">InProgress</option>
+                    <option value="In Progress">In Progress</option>
                     <option value="Reviewing">Reviewing</option>
                     <option value="Closed">Closed</option>
                   </select>
