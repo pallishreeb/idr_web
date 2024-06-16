@@ -3,9 +3,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import Header from "../../Components/Header";
 import SideNavbar from "../../Components/AdminSideNavbar";
-import NotesTable from "../../Components/NotesTable"
-import TechniciansCard from "../../Components/TechniciansCard"
-import WorkOrderCard from "../../Components/WorkOrderCard"
+import NotesTable from "../../Components/NotesTable";
+import TechniciansCard from "../../Components/TechniciansCard";
+import WorkOrderCard from "../../Components/WorkOrderCard";
 import {
   getWorkOrderDetails,
   updateNotes,
@@ -16,6 +16,7 @@ import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { getClientEmployeeByClientId } from "../../actions/clientEmployeeActions";
 import { fetchIDREmployees } from "../../actions/employeeActions";
+import Loader from "../../Images/ZZ5H.gif"
 
 const EditWorkOrder = () => {
   const { workOrderId } = useParams();
@@ -37,8 +38,8 @@ const EditWorkOrder = () => {
 
   useEffect(() => {
     dispatch(getWorkOrderDetails(workOrderId));
-    dispatch(getClients())
-    dispatch(fetchIDREmployees())
+    dispatch(getClients());
+    dispatch(fetchIDREmployees());
   }, [dispatch, workOrderId]);
 
   useEffect(() => {
@@ -57,23 +58,44 @@ const EditWorkOrder = () => {
   }, [dispatch, workOrder?.client_id]);
 
   const handleWorkOrderChange = (e) => {
-    const { name, value } = e.target;
-    setWorkOrder({ ...workOrder, [name]: value });
-    dispatch(getLocationByClient(value));
-    // Autofill client name
-    const selectedClient = clients?.data?.find(
-      (client) => client.client_id === value
-    );
-    if (selectedClient) {
-      setWorkOrder((prev) => ({
-        ...prev,
-        client_name: selectedClient.company_name,
-      }));
+    const { name, value } = e.target;    
+    setWorkOrder(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  
+    if (name === 'client_id') {
+      // Dispatch actions when client_id changes
+      dispatch(getLocationByClient(value));
+      
+      // Autofill client name
+      const selectedClient = clients?.data?.find(client => client.client_id === value);
+      if (selectedClient) {
+        setWorkOrder(prev => ({
+          ...prev,
+          client_name: selectedClient.company_name,
+        }));
+      }
+  
+      // Fetch client employees by client_id
+      dispatch(getClientEmployeeByClientId(value));
     }
-
-    // Fetch client employees by client_id
-    dispatch(getClientEmployeeByClientId(value));
+        // Autofill contact phone number and email when contact_person changes
+        if (name === "contact_person") {
+          const selectedEmployee = clientEmployees?.find(
+            (employee) => (employee.first_name + ' ' + employee.last_name) === value
+          );
+          if (selectedEmployee) {
+            setWorkOrder(prev => ({
+              ...prev,
+              contact_person: selectedEmployee.first_name + " " + selectedEmployee.last_name,
+              contact_phone_number: selectedEmployee.contact_number,
+              contact_mail_id: selectedEmployee.email_id,
+            }));
+          }
+        }
   };
+  
 
   const handleTechnicianChange = (index, e) => {
     const { name, value } = e.target;
@@ -88,33 +110,88 @@ const EditWorkOrder = () => {
     updatedNotes[index] = { ...updatedNotes[index], [name]: value };
     setNotes(updatedNotes);
   };
+  
 
-  const handleSaveTicket = () => {
-    dispatch(updateTicket(workOrderId, workOrder));
-  };
-
-  const handleSaveTechnician = (index) => {
-    dispatch(updateTechnician(workOrderId, technicians[index]));
-  };
-
-  const handleSaveNote = (index) => {
-    dispatch(updateNotes(workOrderId, notes[index]));
+  const getFilteredWorkOrder = (workOrder) => {
+    const allowedFields = [
+      "work_order_id", "client_id", "location_id", "client_name", "work_order_type",
+      "generated_date", "generated_time", "po_number", "client_site",
+      "job_location", "service_date", "contact_person", "contact_phone_number",
+      "contact_mail_id", "issue", "status"
+    ];
+    const filteredWorkOrder = {};
+    allowedFields.forEach(field => {
+      if (Object.prototype.hasOwnProperty.call(workOrder, field)) {
+        filteredWorkOrder[field] = workOrder[field];
+      }
+    });
+    return filteredWorkOrder;
   };
   
-  const handleEditTechnician = (index) =>{
-    console.log("edit technician",index)
-  }
+  const handleSaveTicket = () => {
+    const filteredWorkOrder = getFilteredWorkOrder(workOrder);
+    dispatch(updateTicket(filteredWorkOrder));
+  };
+  
+
+  const getFilteredTechnician = (technician) => {
+    const allowedFields = [
+      "technician_id", "work_order_id", "technician_name", "project_manager",
+      "service_request", "other_details", "procedures"
+    ];
+    const filteredTechnician = {};
+    allowedFields.forEach(field => {
+      if (Object.prototype.hasOwnProperty.call(technician, field)) {
+        filteredTechnician[field] = technician[field];
+      }
+    });
+    return filteredTechnician;
+  };
+  
+  const handleSaveTechnician = (index) => {
+    const filteredTechnician = getFilteredTechnician(technicians[index]);
+    dispatch(updateTechnician(filteredTechnician));
+  };
+  
+  const getFilteredNote = (note) => {
+    const allowedFields = [
+      "note_id", "work_order_id", "parts", "labeling_methodology",
+      "equipment_installation", "required_deliverables", "deliverable_instructions"
+    ];
+
+    const filteredNote = {};
+    allowedFields.forEach(field => {
+      if (Object.prototype.hasOwnProperty.call(note, field)) {
+        filteredNote[field] = note[field];
+      }
+    });
+    return filteredNote;
+  };
+  
+  const handleSaveNote = (index) => {
+    const filteredNote = getFilteredNote(notes[index]);
+    dispatch(updateNotes(filteredNote));
+  };
+  
+
+  const handleEditTechnician = (index) => {
+    console.log("edit technician", index);
+  };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <img className="w-20 h-20" src={Loader} alt="Loading..." />
+      </div>
+    );
   }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  // if (error) {
+  //   return <div>Error: {error}</div>;
+  // }
 
   if (!workOrder) {
-    return <div>No work order details found</div>;
+    return <div className="text-center mt-5">No work order details found</div>;
   }
 
   return (
@@ -122,9 +199,9 @@ const EditWorkOrder = () => {
       <Header />
       <div className="flex">
         <SideNavbar />
-        <div className="py-12 px-8 bg-gray-50 w-full">
+        <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between">
-            <h1 className="font-bold text-lg">Edit Work Orders</h1>
+            <h1 className="font-bold text-lg">Edit Work Order</h1>
             <div className="flex gap-3">
               <Link to={"/workorder"}>
                 <button className="border border-gray-400 text-gray-400 px-6 py-2 rounded">
@@ -134,25 +211,32 @@ const EditWorkOrder = () => {
             </div>
           </div>
           {/* update Work order ticket details */}
-         <WorkOrderCard 
-         workOrder={workOrder} 
-         clients={clients} 
-         locations={locations} 
-         clientEmployees={clientEmployees} 
-         handleWorkOrderChange={handleWorkOrderChange}
-         handleSaveTicket={handleSaveTicket}
-         />
+          <WorkOrderCard
+            workOrder={workOrder}
+            clients={clients}
+            locations={locations}
+            clientEmployees={clientEmployees}
+            handleWorkOrderChange={handleWorkOrderChange}
+            handleSaveTicket={handleSaveTicket}
+            loading={loading}
+          />
           {/* update Technicians */}
-          <TechniciansCard 
-          technicians={technicians} 
-          idrEmployees={idrEmployees} 
-          handleTechnicianChange={handleTechnicianChange}
-           handleEditTechnician={handleEditTechnician}
-           handleSaveTechnicians={handleSaveTechnician} 
-           />
+          <TechniciansCard
+            technicians={technicians}
+            idrEmployees={idrEmployees}
+            handleTechnicianChange={handleTechnicianChange}
+            handleEditTechnician={handleEditTechnician}
+            handleSaveTechnicians={handleSaveTechnician}
+            loading={loading}
+          />
           {/* update Notes */}
-          <NotesTable notes={notes} handleSaveNote={handleSaveNote} handleNoteChange={handleNoteChange} />
-          
+          <NotesTable
+            notes={notes}
+            handleSaveNote={handleSaveNote}
+            handleNoteChange={handleNoteChange}
+            loading={loading}
+            workOrderId={workOrderId}
+          />
         </div>
       </div>
     </>

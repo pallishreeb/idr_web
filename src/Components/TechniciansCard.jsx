@@ -15,7 +15,7 @@ const TechniciansCards = ({ technicians, idrEmployees, handleTechnicianChange, h
               <h2 className="font-semibold text-lg">Technician {index + 1}</h2>
               <button
                 className="bg-blue-500 text-white px-4 py-1 rounded"
-                onClick={() => handleEditTechnician(index)}
+                onClick={() => handleSaveTechnicians(index)}
               >
                 Edit
               </button>
@@ -32,7 +32,7 @@ const TechniciansCards = ({ technicians, idrEmployees, handleTechnicianChange, h
                 >
                   <option value="">Choose technician</option>
                   {idrEmployees.map(employee => (
-                    <option key={employee.idr_emp_id} value={employee.first_name + employee.last_name}>
+                    <option key={employee.idr_emp_id} value={employee.first_name + '' + employee.last_name}>
                       {employee.first_name} {employee.last_name}
                     </option>
                   ))}
@@ -50,7 +50,7 @@ const TechniciansCards = ({ technicians, idrEmployees, handleTechnicianChange, h
                 >
                   <option value="">Choose project manager</option>
                   {idrEmployees.map(employee => (
-                    <option key={employee.idr_emp_id} value={employee.first_name + employee.last_name}>
+                    <option key={employee.idr_emp_id} value={employee.first_name +''+ employee.last_name}>
                       {employee.first_name} {employee.last_name}
                     </option>
                   ))}

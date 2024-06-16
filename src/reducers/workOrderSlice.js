@@ -37,10 +37,10 @@ const workOrderSlice = createSlice({
     addTechnicianToTicketSuccess: (state, action) => {
       state.loading = false;
       state.error = null;
-      const index = state.workOrders.findIndex(order => order.id === action.payload.workOrderId);
-      if (index !== -1) {
-        state.workOrders[index].technicians.push(action.payload.technician);
-      }
+      // const index = state.workOrders.findIndex(order => order.id === action.payload.workOrderId);
+      // if (index !== -1) {
+      //   state.workOrders[index].technicians.push(action.payload.technician);
+      // }
     },
     addTechnicianToTicketFailure: (state, action) => {
       state.loading = false;
@@ -53,10 +53,10 @@ const workOrderSlice = createSlice({
     addNotesToTicketSuccess: (state, action) => {
       state.loading = false;
       state.error = null;
-      const index = state.workOrders.findIndex(order => order.id === action.payload.workOrderId);
-      if (index !== -1) {
-        state.workOrders[index].notes.push(action.payload.note);
-      }
+      // const index = state.workOrders.findIndex(order => order.id === action.payload.workOrderId);
+      // if (index !== -1) {
+      //   state.workOrders[index].notes.push(action.payload.note);
+      // }
     },
     addNotesToTicketFailure: (state, action) => {
       state.loading = false;
@@ -95,10 +95,10 @@ const workOrderSlice = createSlice({
     updateTicketSuccess: (state, action) => {
       state.loading = false;
       state.error = null;
-      const index = state.workOrders?.workOrder.findIndex(order => order.work_order_id === action.payload.work_order_id);
-      if (index !== -1) {
-        state.workOrders.workOrder[index] = action.payload;
-      }
+      // const index = state.workOrders?.workOrder.findIndex(order => order.work_order_id === action.payload.work_order_id);
+      // if (index !== -1) {
+      //   state.workOrders.workOrder[index] = action.payload;
+      // }
     },
     updateTicketFailure: (state, action) => {
       state.loading = false;
@@ -111,13 +111,13 @@ const workOrderSlice = createSlice({
     updateTechnicianSuccess: (state, action) => {
       state.loading = false;
       state.error = null;
-      const workOrderIndex = state.workOrders.findIndex(order => order.id === action.payload.workOrderId);
-      if (workOrderIndex !== -1) {
-        const technicianIndex = state.workOrders[workOrderIndex].technicians.findIndex(tech => tech.id === action.payload.technician.id);
-        if (technicianIndex !== -1) {
-          state.workOrders[workOrderIndex].technicians[technicianIndex] = action.payload.technician;
-        }
-      }
+      // const workOrderIndex = state.workOrders.findIndex(order => order.id === action.payload.workOrderId);
+      // if (workOrderIndex !== -1) {
+      //   const technicianIndex = state.workOrders[workOrderIndex].technicians.findIndex(tech => tech.id === action.payload.technician.id);
+      //   if (technicianIndex !== -1) {
+      //     state.workOrders[workOrderIndex].technicians[technicianIndex] = action.payload.technician;
+      //   }
+      // }
     },
     updateTechnicianFailure: (state, action) => {
       state.loading = false;
@@ -130,13 +130,13 @@ const workOrderSlice = createSlice({
     updateNotesSuccess: (state, action) => {
       state.loading = false;
       state.error = null;
-      const workOrderIndex = state.workOrders.findIndex(order => order.id === action.payload.workOrderId);
-      if (workOrderIndex !== -1) {
-        const noteIndex = state.workOrders[workOrderIndex].notes.findIndex(note => note.id === action.payload.note.id);
-        if (noteIndex !== -1) {
-          state.workOrders[workOrderIndex].notes[noteIndex] = action.payload.note;
-        }
-      }
+      // const workOrderIndex = state.workOrders.findIndex(order => order.id === action.payload.workOrderId);
+      // if (workOrderIndex !== -1) {
+      //   const noteIndex = state.workOrders[workOrderIndex].notes.findIndex(note => note.id === action.payload.note.id);
+      //   if (noteIndex !== -1) {
+      //     state.workOrders[workOrderIndex].notes[noteIndex] = action.payload.note;
+      //   }
+      // }
     },
     updateNotesFailure: (state, action) => {
       state.loading = false;

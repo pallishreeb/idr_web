@@ -1,9 +1,16 @@
 import React, {useState} from 'react';
+import { useDispatch } from "react-redux";
 import AddNoteModal from './AddNoteModal'; 
+import {  addNotesToTicket,getWorkOrderDetails } from '../actions/workOrderActions';
+import { getClients } from "../actions/clientActions";
+import { fetchIDREmployees } from "../actions/employeeActions";
 
-const NotesTable = ({ notes, handleSaveNote, handleNoteChange }) => {
 
+const NotesTable = ({ notes, handleSaveNote, handleNoteChange ,workOrderId}) => {
+    const dispatch = useDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+  
     const handleOpenModal = () => {
         setIsModalOpen(true);
       };
@@ -12,6 +19,25 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange }) => {
         setIsModalOpen(false);
       };
     
+      const handleAddNote = (newNote) => {
+        // dispatch(addNotesToTicket(newNote)); 
+        dispatch(addNotesToTicket(newNote))
+        .then(response => {
+          if (response.code == "WO201") {
+            // navigate("/workorder");
+            handleCloseModal();
+            dispatch(getWorkOrderDetails(workOrderId));
+            dispatch(getClients());
+            dispatch(fetchIDREmployees());
+          } else {
+            console.error("Error adding notes:", response.error);
+          }
+        })
+        .catch(error => {
+          console.error("API call error:", error);
+        });
+
+      };
   return (
 <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -85,9 +111,7 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange }) => {
                       <td className="border px-4 py-2">
                         <button
                           className="bg-blue-500 text-white px-4 py-1 rounded"
-                          onClick={() =>
-                            notes.forEach((_, index) => handleSaveNote(index))
-                          }
+                          onClick={() => handleSaveNote(index)}
                         >
                           Edit
                         </button>
@@ -102,7 +126,8 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange }) => {
       <AddNoteModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onSave={handleSaveNote}
+        onSave={handleAddNote}
+        workOrderId={workOrderId}
       />
     </div>
   );
