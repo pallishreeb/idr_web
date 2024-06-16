@@ -31,9 +31,15 @@ export const addClientEmployee = (employeeData,navigate) => {
     dispatch(addClientEmployeeStart());
     try {
       const response = await axios.post(apiConfig.addClientEmployee, employeeData);
-      dispatch(addClientEmployeeSuccess(response.data));
-      toast.success("Employee added successfully!");
-      navigate('/client-employees')
+      if(response?.data){
+        dispatch(addClientEmployeeSuccess(response.data));
+        toast.success("Employee added successfully!");
+        navigate('/client-employees')
+      }else{
+        dispatch(addClientEmployeeFailure("Client employee Already exist."));
+        toast.error(response?.data?.message || "Client employee Already exist.");
+      }
+
     } catch (error) {
       dispatch(addClientEmployeeFailure(error.message));
       // console.log(error)
