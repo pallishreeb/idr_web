@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 
-const AddNoteModal = ({ isOpen, onClose, onSave }) => {
+const AddNoteModal = ({ isOpen, onClose, onSave,workOrderId }) => {
   const [note, setNote] = useState({
+    work_order_id: workOrderId,
     parts: '',
     labeling_methodology: '',
     equipment_installation: '',
@@ -11,7 +12,7 @@ const AddNoteModal = ({ isOpen, onClose, onSave }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNote(prevNote => ({
+    setNote((prevNote) => ({
       ...prevNote,
       [name]: value,
     }));

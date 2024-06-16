@@ -19,7 +19,7 @@ function AddWorkOrder() {
   const locations = useSelector(state => state.location.locations);
   const clientEmployees = useSelector(state => state.clientEmployee.clientEmployees);
   const idrEmployees = useSelector(state => state.employee.idrEmployees);
-
+  const { loading } = useSelector((state) => state.workOrder);
   const [ticketData, setTicketData] = useState({
     client_id: "",
     location_id: "",
@@ -89,8 +89,8 @@ function AddWorkOrder() {
       if (selectedEmployee) {
         setTicketData(prev => ({
           ...prev,
-          contact_person: selectedEmployee.first_name  +selectedEmployee.last_name,
-          contact_phone_number: selectedEmployee.phone_number,
+          contact_person: selectedEmployee.first_name + ' '+selectedEmployee.last_name,
+          contact_phone_number: selectedEmployee.contact_number,
           contact_mail_id: selectedEmployee.email_id,
         }));
       }
@@ -186,14 +186,21 @@ function AddWorkOrder() {
       });
   };
 
-
+// Helper function to get today's date in 'YYYY-MM-DD' format
+const getTodayDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
   return (
     <>
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="py-12 px-8 bg-gray-50 w-full">
+        <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between">
             <h1 className="font-bold text-lg">New Work Orders</h1>
           </div>
@@ -309,6 +316,7 @@ function AddWorkOrder() {
                 name="service_date"
                 className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
                 onChange={(e) => handleChange(e, setTicketData)}
+                min={getTodayDate()}
                 required
               />
             </div>
@@ -343,10 +351,10 @@ function AddWorkOrder() {
                 onChange={(e) => handleChange(e, setTicketData)}
               >
                 <option value="Open">Open</option>
-                <option value="Project Completed">Design</option>
-                <option value="Open">InProgress</option>
-                <option value="Open">Reviewing</option>
-                <option value="Project Completed">Project Completed</option>
+                <option value="Design">Design</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Reviewing">Reviewing</option>
+                <option value="Closed">Closed</option>
               </select>
             </div>
             <div className="flex flex-col gap-2 ">
@@ -377,7 +385,7 @@ function AddWorkOrder() {
                   className="border bg-blue-600 w-1/3 py-2 text-white rounded"
                   onClick={handleNext}
                 >
-                  Next
+                 {loading ? "Saving" : "Next"} 
                 </button>
               </div>
             </div>
@@ -401,7 +409,7 @@ function AddWorkOrder() {
                 >
                   <option value="">Choose technician</option>
                   {idrEmployees.map(employee => (
-                    <option key={employee.idr_emp_id} value={employee.first_name + employee.last_name}>
+                    <option key={employee.idr_emp_id} value={employee.first_name +''+ employee.last_name}>
                       {employee.first_name} {employee.last_name}
                     </option>
                   ))}
@@ -418,7 +426,7 @@ function AddWorkOrder() {
                 >
                   <option value="">Choose project manager</option>
                   {idrEmployees.map(employee => (
-                    <option key={employee.idr_emp_id} value={employee.first_name + employee.last_name}>
+                    <option key={employee.idr_emp_id} value={employee.first_name +''+ employee.last_name}>
                       {employee.first_name} {employee.last_name}
                     </option>
                   ))}
@@ -458,7 +466,7 @@ function AddWorkOrder() {
                   className="border bg-blue-600 w-1/3 py-2 text-white rounded"
                   onClick={handleNext}
                 >
-                  Next
+                  {loading ? "Saving" : "Next"} 
                 </button>
               </div>
             </div>
@@ -528,12 +536,12 @@ function AddWorkOrder() {
                       className="border bg-blue-600 w-1/3 py-2 text-white rounded"
                       onClick={handleNext}
                     >
-                      Submit
+                      {loading ? "Saving" : "Submit"} 
                     </button>
                   </div>
                 </div>
               )}
-            </div>
+        </div>
       </div>
     </>
   );

@@ -38,10 +38,11 @@ export const addTechnicianToTicket = (technicianData) => {
     dispatch(addTechnicianToTicketStart());
     try {
       const response = await axios.post(`${apiConfig.addTechnicianToTicket}`, technicianData);
-      dispatch(addTechnicianToTicketSuccess(response.data));
+      dispatch(addTechnicianToTicketSuccess(response?.data));
       toast.success("Technician added to ticket successfully");
-      return response.data
+      return response?.data
     } catch (error) {
+      console.log(error)
       dispatch(addTechnicianToTicketFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to add technician to ticket");
     }
@@ -53,12 +54,20 @@ export const addNotesToTicket = ( notesData) => {
     dispatch(addNotesToTicketStart());
     try {
       const response = await axios.post(`${apiConfig.addNotesToTicket}`, notesData);
-      dispatch(addNotesToTicketSuccess(response.data));
-      toast.success("Notes added to ticket successfully");
-      return response.data
+      console.log("res",response)
+      if(response?.data){
+        dispatch(addNotesToTicketSuccess(response?.data));
+        toast.success("Notes added to ticket successfully");
+        return response?.data
+      }else{
+        dispatch(addNotesToTicketFailure(response?.data?.message));
+         toast.error("Failed to add notes to ticket");
+      }
+   
     } catch (error) {
-      dispatch(addNotesToTicketFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to add notes to ticket");
+      console.log("err",error)
+      dispatch(addNotesToTicketFailure(error?.message));
+      toast.error(error?.message || error?.response?.data?.message || "Failed to add notes to ticket");
     }
   };
 };
@@ -100,11 +109,11 @@ export const deleteWorkOrder = (workOrderId) => {
   };
 };
 
-export const updateTicket = (ticketId, ticketData) => {
+export const updateTicket = ( ticketData) => {
   return async (dispatch) => {
     dispatch(updateTicketStart());
     try {
-      const response = await axios.post(`${apiConfig.updateTicket}/${ticketId}`, ticketData);
+      const response = await axios.post(`${apiConfig.updateTicket}`, ticketData);
       dispatch(updateTicketSuccess(response.data));
       toast.success("Ticket updated successfully");
     } catch (error) {
@@ -114,11 +123,11 @@ export const updateTicket = (ticketId, ticketData) => {
   };
 };
 
-export const updateTechnician = (ticketId, technicianData) => {
+export const updateTechnician = (technicianData) => {
   return async (dispatch) => {
     dispatch(updateTechnicianStart());
     try {
-      const response = await axios.post(`${apiConfig.updateTechnician}/${ticketId}`, technicianData);
+      const response = await axios.post(`${apiConfig.updateTechnician}`, technicianData);
       dispatch(updateTechnicianSuccess(response.data));
       toast.success("Technician updated successfully");
     } catch (error) {
@@ -128,11 +137,11 @@ export const updateTechnician = (ticketId, technicianData) => {
   };
 };
 
-export const updateNotes = (ticketId, notesData) => {
+export const updateNotes = (notesData) => {
   return async (dispatch) => {
     dispatch(updateNotesStart());
     try {
-      const response = await axios.post(`${apiConfig.updateNotes}/${ticketId}`, notesData);
+      const response = await axios.post(`${apiConfig.updateNotes}`, notesData);
       dispatch(updateNotesSuccess(response.data));
       toast.success("Notes updated successfully");
     } catch (error) {

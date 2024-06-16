@@ -79,7 +79,7 @@ const WorkOrderCard = ({ workOrder, clients, locations, clientEmployees,handleWo
           {clientEmployees.map((employee) => (
             <option
               key={employee.client_emp_id}
-              value={employee.first_name  + employee.last_name}
+              value={employee.first_name + ' ' + employee.last_name}
             >
               {employee.first_name} {employee.last_name}
             </option>
@@ -174,11 +174,11 @@ const WorkOrderCard = ({ workOrder, clients, locations, clientEmployees,handleWo
           value={workOrder.status || ""}
           onChange={(e) => handleWorkOrderChange(e)}
         >
-          <option value="Open">Open</option>
-          <option value="Design">Design</option>
-          <option value="InProgress">InProgress</option>
-          <option value="Reviewing">Reviewing</option>
-          <option value="Project Completed">Project Completed</option>
+                <option value="Open">Open</option>
+                <option value="Design">Design</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Reviewing">Reviewing</option>
+                <option value="Closed">Closed</option>
         </select>
       </div>
 

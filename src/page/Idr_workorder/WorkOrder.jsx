@@ -59,7 +59,7 @@ const WorkOrder = () => {
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="py-12 px-8 bg-gray-50 w-full">
+        <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between">
             <h1 className="font-bold text-lg">Work Orders</h1>
           </div>
@@ -115,7 +115,7 @@ const WorkOrder = () => {
                     {idrEmployees.map((employee) => (
                       <option
                         key={employee.idr_emp_id}
-                        value={employee.first_name + employee.first_name}
+                        value={employee.first_name}
                       >
                         {employee.first_name} {employee.last_name}
                       </option>
@@ -136,7 +136,7 @@ const WorkOrder = () => {
                     {idrEmployees.map((employee) => (
                       <option
                         key={employee.idr_emp_id}
-                        value={employee.first_name + employee.first_name}
+                        value={employee.first_name}
                       >
                         {employee.first_name} {employee.last_name}
                       </option>
