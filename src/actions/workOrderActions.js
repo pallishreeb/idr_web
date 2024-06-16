@@ -25,8 +25,9 @@ export const generateTicket = (ticketData) => {
       const response = await axios.post(apiConfig.generateTicket, ticketData);
       dispatch(generateTicketSuccess(response.data.work_order_id));
       toast.success("Ticket generated successfully");
-      return response.data;
+      return response?.data;
     } catch (error) {
+      console.log(error)
       dispatch(generateTicketFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to generate ticket");
     }

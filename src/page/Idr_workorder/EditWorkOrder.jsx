@@ -117,7 +117,7 @@ const EditWorkOrder = () => {
       "work_order_id", "client_id", "location_id", "client_name", "work_order_type",
       "generated_date", "generated_time", "po_number", "client_site",
       "job_location", "service_date", "contact_person", "contact_phone_number",
-      "contact_mail_id", "issue", "status"
+      "contact_mail_id", "issue", "status","local_onsite_person","local_onsite_person_contact"
     ];
     const filteredWorkOrder = {};
     allowedFields.forEach(field => {

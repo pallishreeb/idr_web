@@ -8,6 +8,7 @@ import { getLocationByClient } from "../../actions/locationActions";
 import { getClientEmployeeByClientId } from "../../actions/clientEmployeeActions";
 import { fetchIDREmployees } from '../../actions/employeeActions';
 import { generateTicket, addTechnicianToTicket, addNotesToTicket } from '../../actions/workOrderActions';
+import { toast } from "react-toastify";
 
 function AddWorkOrder() {
   const [step, setStep] = useState(1);
@@ -36,8 +37,8 @@ function AddWorkOrder() {
     contact_mail_id: "",
     issue: "",
     status: "Open",
-    // local_contact_person: "",
-    // local_contact_number: "",
+    local_onsite_person: "",
+    local_onsite_person_contact: "",
   });
   const [technicianData, setTechnicianData] = useState({
     work_order_id: "",
@@ -98,19 +99,29 @@ function AddWorkOrder() {
   };
 
   const handleNext = () => {
+
     if (step === 1) {
       // Validate step 1 fields
-      if (!validateStep1()) return;
+      if (!validateStep1()) {
+        toast.error("Fill up all required fields.")
+        return
+      }
 
       generateWorkOrderTicket();
     } else if (step === 2) {
       // Validate step 2 fields
-      if (!validateStep2()) return;
+      if (!validateStep2()){
+        toast.error("Fill up all required fields.")
+        return
+      }
 
       addTechnician();
     } else if (step === 3) {
       // Validate step 3 fields
-      if (!validateStep3()) return;
+      if (!validateStep3()){
+        toast.error("Fill up all required fields.")
+        return
+      }
 
       addNotes();
     }
@@ -122,18 +133,28 @@ function AddWorkOrder() {
       ticketData.client_id !== "" &&
       ticketData.location_id !== "" &&
       ticketData.service_date !== "" &&
-      ticketData.issue !== ""
+      ticketData.issue !== "" &&
+      ticketData.contact_person !== "" &&
+      ticketData.job_location !== ""
     );
   };
 
   const validateStep2 = () => {
     // Example validation, adjust as per your field requirements
-    return technicianData.technician_name !== "" && technicianData.project_manager !== "";
+    return technicianData.technician_name !== "" && 
+    technicianData.project_manager !== "" &&
+    technicianData.service_request!== "" &&
+    technicianData.other_details!== "" &&
+    technicianData.procedures !== "";
   };
 
   const validateStep3 = () => {
     // Example validation, adjust as per your field requirements
-    return notesData.parts !== "" && notesData.labeling_methodology !== "";
+    return notesData.parts !== "" &&
+     notesData.labeling_methodology !== "" &&
+     notesData.equipment_installation !== "" &&
+     notesData.required_deliverables !== "" &&
+     notesData.deliverable_instructions!== "";
   };
 
   const generateWorkOrderTicket = () => {
@@ -206,6 +227,7 @@ const getTodayDate = () => {
           </div>
 
           {step === 1 && (
+
             <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
               <div className="mb-2">
                 <h1 className="text-xl font-normal mb-2">Generate Ticket</h1>
@@ -362,7 +384,7 @@ const getTodayDate = () => {
               <input
                 type="text"
                 placeholder="Type Local Contact Person"
-                name="local_contact_person"
+                name="local_onsite_person"
                 className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
                 onChange={(e) => handleChange(e, setTicketData)}
               />
@@ -371,8 +393,8 @@ const getTodayDate = () => {
               <label className="font-normal text-base">Local Contact Phone Number</label>
               <input
                 type="text"
-                placeholder="Type Local Contact Number"
-                name="local_contact_number"
+                placeholder="Type  Local Person Contact Number"
+                name="local_onsite_person_contact"
                 className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
                 onChange={(e) => handleChange(e, setTicketData)}
               />
@@ -389,6 +411,7 @@ const getTodayDate = () => {
                 </button>
               </div>
             </div>
+
           )}
 
 

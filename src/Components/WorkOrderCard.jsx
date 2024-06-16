@@ -189,9 +189,9 @@ const WorkOrderCard = ({ workOrder, clients, locations, clientEmployees,handleWo
         <input
           type="text"
           placeholder="Type Local Contact Person"
-          name="local_contact_person"
+          name="local_onsite_person"
           className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
-          value={workOrder.local_contact_person || ""}
+          value={workOrder.local_onsite_person || ""}
           onChange={(e) => handleWorkOrderChange(e)}
         />
       </div>
@@ -203,9 +203,9 @@ const WorkOrderCard = ({ workOrder, clients, locations, clientEmployees,handleWo
         <input
           type="text"
           placeholder="Type Local Contact Number"
-          name="local_contact_number"
+          name="local_onsite_person_contact"
           className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
-          value={workOrder.local_contact_number || ""}
+          value={workOrder.local_onsite_person_contact || ""}
           onChange={(e) => handleWorkOrderChange(e)}
         />
       </div>
