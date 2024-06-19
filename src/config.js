@@ -24,7 +24,21 @@ const apiConfig = {
     updateLocation:'/location',
     getIdrEmployees:'/idr_emp/all',
     deleteIdrEmp:'/idr_emp/delete',
-    addIdrEmployee:'/idr_emp/create'
+    addIdrEmployee:'/idr_emp/create',
+    updateIdrEmp:'/idr_emp/updateEmp',
+    getIdrEmpById:'/idr_emp',
+    generateTicket:'/work_order/add',
+    addTechnicianToTicket:'/work_order/technician/add',
+    addNotesToTicket:'/work_order/note/add',
+    getWorkOrderLists:'/work_order/all',
+    workOrderbyId:'/work_order/by_id',
+    deleteWorkOrder:'/work_order/by_id',
+    updateTicket:'/work_order/update_ticket',
+    updateTechnician:'/work_order/update_technician',
+    updateNotes:'/work_order/update_note',
+    getTechniciansByWorkOrder:'/work_order/technician/by_work_order',
+    getNotesByWorkOrder:'/work_order/note/by_work_order',
+    getWorkOrderByClientId:'/work_order/by_client'
 
   };
   

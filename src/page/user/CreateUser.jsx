@@ -130,9 +130,11 @@ const CreateUser = () => {
             >
               {userLoading ? 'Saving' : 'Create User'}
             </button>
+            <Link to={'/users'}>
             <button className=" mt-2 w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                <Link to={'/users'}>Cancel</Link>
+                Cancel
             </button>
+            </Link>
           </form>
         </div>
       </div>

@@ -55,7 +55,7 @@ const Client = () => {
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4 mt-5">
+        <div className="container mx-auto p-4 mt-5 h-screen overflow-y-scroll">
           <div className="flex justify-between items-center mb-4">
             <h1 className="font-bold text-lg">Client Management</h1>
             <button className="bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">

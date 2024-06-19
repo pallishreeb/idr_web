@@ -41,6 +41,7 @@ const IDREmployeesPage = () => {
                   <th className="py-2 px-4 border border-gray-200">Name</th>
                   <th className="py-2 px-4 border border-gray-200">Job Description</th>
                   <th className="py-2 px-4 border border-gray-200">Email</th>
+                  <th className="py-2 px-4 border border-gray-200">User Type</th>
                   <th className="py-2 px-4 border border-gray-200">Active</th>
                   <th className="py-2 px-4 border border-gray-200">Actions</th>
                 </tr>
@@ -58,8 +59,9 @@ const IDREmployeesPage = () => {
                 employees?.map(employee => (
                   <tr key={employee.user_id}>
                     <td className="py-2 px-4 border border-gray-200 text-center">{employee.first_name}{""}{employee.last_name}</td>
-                    <td className="py-2 px-4 border border-gray-200 text-center">{employee?.job_desc}</td>
+                    <td className="py-2 px-4 border border-gray-200 text-center">{employee?.job_desc ? employee?.job_desc : "NA"}</td>
                     <td className="py-2 px-4 border border-gray-200 text-center">{employee.email_id}</td>
+                    <td className="py-2 px-4 border border-gray-200 text-center">{employee.user_type}</td>
                     <td className="py-2 px-4 border border-gray-200 text-center">{employee.is_active ? 'Yes' : 'No'}</td>
                     <td className="py-2 px-4 border border-gray-200 text-center flex gap-1 justify-center">
                     <button

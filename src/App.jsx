@@ -1,4 +1,6 @@
 import { Route, Routes } from "react-router-dom";
+import axios from "axios";
+import {useDispatch} from "react-redux"
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./page/auth/forgot-password";
@@ -28,7 +30,24 @@ import WorkOrder from "./page/Idr_workorder/WorkOrder";
 import AddWorkOrder from "./page/Idr_workorder/AddWorkOrder";
 import IDREmployeePage from "./page/idr-employee/IDREmployeesPage";
 import EditIDREmployeePage from "./page/idr-employee/EditIDREmployeePage";
+import EditWorkOrder from "./page/Idr_workorder/EditWorkOrder";
+import { logout } from "./reducers/userSlice";
 function App() {
+  const dispatch = useDispatch();
+  const token = localStorage.getItem('user_idr_token');
+  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  axios.interceptors.response.use(
+    function (response) {
+      return response;
+    },
+    function (error) {
+      let res = error?.response;
+      if (res?.status === 401 && res?.config && !res?.config.__isRetryRequest) {
+        localStorage.removeItem('user_idr_token');
+        dispatch(logout());
+      }
+    },
+  );
   return (
     <>
       <ToastContainer
@@ -62,8 +81,8 @@ function App() {
           <Route path="/users/create" element={<CreateUser />}></Route>
           <Route path="/users/update/:userId" element={<UpdateUser />}></Route>
           <Route path="/workorder" element={<WorkOrder />}></Route>
-          {/* <Route path="/add-work-order" element={<AddWorkOrder />}></Route> */}
           <Route path="/add-work-order" element={<AddWorkOrder />}></Route>
+          <Route path="/edit-work-order/:workOrderId" element={<EditWorkOrder />}></Route>
           <Route path="/client-employees" element={<EmployeePage />}></Route>
           <Route
             path="/add-employee/:clientId"
