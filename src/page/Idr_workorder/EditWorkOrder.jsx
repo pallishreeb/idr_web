@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Header from "../../Components/Header";
 import SideNavbar from "../../Components/AdminSideNavbar";
 import NotesTable from "../../Components/NotesTable";
@@ -20,7 +20,6 @@ import Loader from "../../Images/ZZ5H.gif"
 
 const EditWorkOrder = () => {
   const { workOrderId } = useParams();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { workOrderDetails, loading, error } = useSelector(
     (state) => state.workOrder
@@ -137,7 +136,8 @@ const EditWorkOrder = () => {
   const getFilteredTechnician = (technician) => {
     const allowedFields = [
       "technician_id", "work_order_id", "technician_name", "project_manager",
-      "service_request", "other_details", "procedures"
+       "other_details", "procedures","parts", "labeling_methodology",
+       "required_deliverables", "deliverable_instructions"
     ];
     const filteredTechnician = {};
     allowedFields.forEach(field => {
@@ -155,8 +155,7 @@ const EditWorkOrder = () => {
   
   const getFilteredNote = (note) => {
     const allowedFields = [
-      "note_id", "work_order_id", "parts", "labeling_methodology",
-      "equipment_installation", "required_deliverables", "deliverable_instructions"
+      "note_id", "work_order_id", "comments",
     ];
 
     const filteredNote = {};
@@ -228,6 +227,7 @@ const EditWorkOrder = () => {
             handleEditTechnician={handleEditTechnician}
             handleSaveTechnicians={handleSaveTechnician}
             loading={loading}
+            workOrderId={workOrderId}
           />
           {/* update Notes */}
           <NotesTable
