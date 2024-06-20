@@ -112,7 +112,7 @@ const TechniciansCards = ({
               </div>
             </div>
             <div className="mb-4">
-            <label className="font-normal text-base">Part</label>
+            <label className="font-normal text-base">Parts</label>
               <input
                 type="text"
                 className="px-2 py-2 border text-sm border-gray-200 resize-none rounded w-full"
