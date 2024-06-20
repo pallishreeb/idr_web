@@ -58,7 +58,7 @@ const IDREmployeesPage = () => {
                    
                 employees?.map(employee => (
                   <tr key={employee.user_id}>
-                    <td className="py-2 px-4 border border-gray-200 text-center">{employee.first_name}{""}{employee.last_name}</td>
+                    <td className="py-2 px-4 border border-gray-200 text-center">{employee.first_name}{" "}{employee.last_name}</td>
                     <td className="py-2 px-4 border border-gray-200 text-center">{employee?.job_desc ? employee?.job_desc : "NA"}</td>
                     <td className="py-2 px-4 border border-gray-200 text-center">{employee.email_id}</td>
                     <td className="py-2 px-4 border border-gray-200 text-center">{employee.user_type}</td>

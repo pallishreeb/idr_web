@@ -170,7 +170,7 @@ return (
               <div className="mb-4">
                 <label htmlFor="contact_number" className="block text-sm font-medium text-gray-700">Contact Number</label>
                 <input
-                  type="number"
+                  type="text"
                   name="contact_number"
                   id="contact_number"
                   value={formData.contact_number}

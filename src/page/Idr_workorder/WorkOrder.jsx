@@ -54,12 +54,20 @@ const WorkOrder = () => {
     }
   };
 
+  function formatDate(date) {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+  
   return (
     <>
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
+        <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between">
             <h1 className="font-bold text-lg">Work Orders</h1>
           </div>
@@ -173,7 +181,7 @@ const WorkOrder = () => {
                       Status
                     </th>
                     <th className="px-1 py-1 text-left  font-semibold bg-gray-200 tracking-wider">
-                      Issue
+                      Service Request
                     </th>
                     <th className="px-1 py-1 text-left  font-semibold bg-gray-200 tracking-wider">
                       Action
@@ -185,8 +193,8 @@ const WorkOrder = () => {
                     workOrders.workOrder?.map((order) => (
                       <tr key={order.id} className="text-left ">
                         <td className=" py-3">{order.client_name}</td>
-                        <td className=" py-3">{order.generated_date}</td>
-                        <td className=" py-3">{order.service_date}</td>
+                        <td className=" py-3">{formatDate(order.generated_date)}</td>
+                        <td className=" py-3">{formatDate(order.service_date)}</td>
                         <td className=" py-3">{order.contact_person}</td>
                         <td className=" py-3">{order.contact_phone_number}</td>
                         <td className="py-3">{order.status}</td>

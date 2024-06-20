@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const AddNoteModal = ({ isOpen, onClose, onSave,workOrderId }) => {
+const AddNoteModal = ({ isOpen, onClose, onSave, workOrderId }) => {
   const [note, setNote] = useState({
     work_order_id: workOrderId,
-    parts: '',
-    labeling_methodology: '',
-    equipment_installation: '',
-    required_deliverables: '',
-    deliverable_instructions: '',
+    comments: "",
   });
 
   const handleInputChange = (e) => {
@@ -21,66 +17,29 @@ const AddNoteModal = ({ isOpen, onClose, onSave,workOrderId }) => {
   const handleSaveNote = () => {
     onSave(note); // Pass the note object to the onSave function in the parent component
     setNote({
-      parts: '',
-      labeling_methodology: '',
-      equipment_installation: '',
-      required_deliverables: '',
-      deliverable_instructions: '',
+      comments: "",
     });
     onClose(); // Close the modal after saving
   };
 
   return (
-    <div className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center ${isOpen ? '' : 'hidden'}`}>
+    <div
+      className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center ${
+        isOpen ? "" : "hidden"
+      }`}
+    >
       <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Add Note</h2>
         <div className="mb-4">
-          <label className="font-normal text-base">Parts</label>
+          <label className="font-normal text-base">Comments</label>
           <textarea
-            className="px-2 py-2 border text-sm border-gray-200 resize-none rounded w-full"
-            name="parts"
-            value={note.parts}
+            className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
+            name="comments"
+            value={note.comments}
             onChange={handleInputChange}
           />
         </div>
-        <div className="mb-4">
-          <label className="font-normal text-base">Labeling Methodology</label>
-          <input
-            type="text"
-            className="px-2 py-2 border text-sm border-gray-200 rounded w-full"
-            name="labeling_methodology"
-            value={note.labeling_methodology}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="font-normal text-base">Equipment Installation</label>
-          <input
-            type="text"
-            className="px-2 py-2 border text-sm border-gray-200 rounded w-full"
-            name="equipment_installation"
-            value={note.equipment_installation}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="font-normal text-base">Required Deliverables</label>
-          <textarea
-            className="px-2 py-2 border text-sm border-gray-200 resize-none rounded w-full"
-            name="required_deliverables"
-            value={note.required_deliverables}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="font-normal text-base">Deliverable Instructions</label>
-          <textarea
-            className="px-2 py-2 border text-sm border-gray-200 resize-none rounded w-full"
-            name="deliverable_instructions"
-            value={note.deliverable_instructions}
-            onChange={handleInputChange}
-          />
-        </div>
+
         <div className="flex justify-end">
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded"
