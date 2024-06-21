@@ -162,28 +162,28 @@ const WorkOrder = () => {
               <table className="mt-2 w-full">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="px-1 py-1 text-left  font-semibold bg-gray-200 tracking-wider">
+                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
                       Client Name
                     </th>
-                    <th className="px-1 py-1 text-left  font-semibold bg-gray-200 tracking-wider">
+                    <th className="px-1 py-1 text-left text-sm  font-semibold tracking-wider border">
                       Generated Date
                     </th>
-                    <th className="px-1 py-1 text-left  font-semibold bg-gray-200 tracking-wider">
+                    <th className="px-1 py-1 text-left text-sm font-semibold  tracking-wider border">
                       Service Date
                     </th>
-                    <th className="px-1 py-1 text-left  font-semibold bg-gray-200 tracking-wider">
+                    <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                       Contact Person
                     </th>
-                    <th className="px-1 py-1 text-left  font-semibold bg-gray-200 tracking-wider">
+                    <th className="px-1 py-1 text-left text-sm  font-semibold  tracking-wider border">
                       Mobile Number
                     </th>
-                    <th className="px-1 py-1 text-left  font-semibold bg-gray-200 tracking-wider">
+                    <th className="px-1 py-1 text-left text-sm  font-semibold  tracking-wider border">
                       Status
                     </th>
-                    <th className="px-1 py-1 text-left  font-semibold bg-gray-200 tracking-wider">
+                    <th className="px-1 py-1 text-left text-sm  font-semibold  tracking-wider border">
                       Service Request
                     </th>
-                    <th className="px-1 py-1 text-left  font-semibold bg-gray-200 tracking-wider">
+                    <th className="px-1 py-1 text-left text-sm  font-semibold tracking-wider border">
                       Action
                     </th>
                   </tr>
@@ -192,14 +192,14 @@ const WorkOrder = () => {
                   {workOrders && workOrders.workOrder?.length > 0 ? (
                     workOrders.workOrder?.map((order) => (
                       <tr key={order.id} className="text-left ">
-                        <td className=" py-3">{order.client_name}</td>
-                        <td className=" py-3">{formatDate(order.generated_date)}</td>
-                        <td className=" py-3">{formatDate(order.service_date)}</td>
-                        <td className=" py-3">{order.contact_person}</td>
-                        <td className=" py-3">{order.contact_phone_number}</td>
-                        <td className="py-3">{order.status}</td>
-                        <td className="py-3">{order.issue}</td>
-                        <td className="py-3">
+                        <td className="border px-1 py-3">{order.client_name}</td>
+                        <td className="border px-1 py-3">{formatDate(order.generated_date)}</td>
+                        <td className="border px-1 py-3">{formatDate(order.service_date)}</td>
+                        <td className="border px-1 py-3">{order.contact_person}</td>
+                        <td className="border px-1 py-3">{order.contact_phone_number}</td>
+                        <td className="border px-1 py-3">{order.status}</td>
+                        <td className="border  px-1 py-3">{order.issue}</td>
+                        <td className="border px-1 py-3">
                           <div className="flex gap-2">
                             <div className="p-[4px] bg-gray-100 cursor-pointer">
                               <BiSolidEditAlt

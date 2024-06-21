@@ -504,7 +504,7 @@ function AddWorkOrder() {
                   </select>
                 </div>
                 <div className="flex flex-col gap-2 ">
-                  <label className="font-normal text-base">Parts</label>
+                  <label className="font-normal text-base">Parts and Tools</label>
                   <textarea
                     name="parts"
                     className="px-3 py-2 border text-sm h-32 border-gray-200 rounded resize-y"
