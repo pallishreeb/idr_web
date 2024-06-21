@@ -107,7 +107,7 @@ const AddTechnicianModal = ({
           </div>
         </div>
         <div className="mb-4">
-          <label className="font-normal text-base">Parts</label>
+          <label className="font-normal text-base">Parts and Tools</label>
           <textarea
             className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
             name="parts"
