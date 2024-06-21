@@ -94,7 +94,14 @@ const Locations = () => {
                           Address <span className="ml-2">{getSortSymbol("address_line_one")}</span>
                         </span>
                       </th>
-                      <th className="border px-4 py-2">State</th>
+                      <th
+                        className="border px-4 py-2 cursor-pointer"
+                        onClick={() => handleSort("state")}
+                      >
+                        <span className="flex items-center">
+                          State <span className="ml-2">{getSortSymbol("state")}</span>
+                        </span>
+                      </th>
                       <th className="border px-4 py-2">Zipcode</th>
                       <th className="border px-4 py-2">Actions</th>
                     </tr>
@@ -109,7 +116,7 @@ const Locations = () => {
                     ) : (
                       locations && [...locations]
                         .sort((a, b) => {
-                          if (sortConfig.key === "address_line_one") {
+                          if (sortConfig.key === "address_line_one" || sortConfig.key === "state") {
                             return sortConfig.direction === "ASC"
                               ? a[sortConfig.key].localeCompare(b[sortConfig.key])
                               : b[sortConfig.key].localeCompare(a[sortConfig.key]);
