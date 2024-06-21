@@ -73,10 +73,10 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange ,workOrderId}) => 
           </td>
           <td className="border px-4 py-2" style={{ width: '10%' }}>
             <button
-              className="bg-blue-500 text-white px-4 py-1 rounded"
+              className="bg-indigo-600 text-white px-4 py-1 rounded"
               onClick={() => handleSaveNote(index)}
             >
-              Edit
+              Save
             </button>
           </td>
         </tr>

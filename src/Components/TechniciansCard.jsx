@@ -62,10 +62,10 @@ const TechniciansCards = ({
             <div className="flex justify-between items-center mb-4">
               <h2 className="font-semibold text-lg">Technician {index + 1}</h2>
               <button
-                className="bg-blue-500 text-white px-4 py-1 rounded"
+                className="bg-indigo-600 text-white px-4 py-1 rounded"
                 onClick={() => handleSaveTechnicians(index)}
               >
-                Edit
+                Save Work Order Details
               </button>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -153,7 +153,7 @@ const TechniciansCards = ({
             </div>
             <div className="mb-4">
               <label className="font-normal text-base">
-                required_deliverables
+                Required Deliverables
               </label>
               <textarea
                 className="px-2 border border-gray-200 rounded text-sm w-full resize-y"
@@ -165,7 +165,7 @@ const TechniciansCards = ({
             </div>
             <div className="mb-4">
               <label className="font-normal text-base">
-                deliverable_instructions
+                Deliverable Instructions
               </label>
               <textarea
                 className="px-2 border border-gray-200 rounded text-sm w-full resize-y"
