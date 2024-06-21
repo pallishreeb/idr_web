@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 const AddNoteModal = ({ isOpen, onClose, onSave, workOrderId }) => {
   const [note, setNote] = useState({
@@ -15,11 +16,21 @@ const AddNoteModal = ({ isOpen, onClose, onSave, workOrderId }) => {
   };
 
   const handleSaveNote = () => {
+    if (!validateStep()) {
+      toast.error("Comment can't be empty.");
+      return;
+    }
     onSave(note); // Pass the note object to the onSave function in the parent component
     setNote({
       comments: "",
     });
     onClose(); // Close the modal after saving
+  };
+  const validateStep = () => {
+    // Example validation, adjust as per your field requirements
+    return (
+      note.comments !== ""
+    );
   };
 
   return (

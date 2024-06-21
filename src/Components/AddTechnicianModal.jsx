@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 const AddTechnicianModal = ({
   isOpen,
@@ -25,6 +26,10 @@ const AddTechnicianModal = ({
   };
 
   const handleSave = () => {
+    if (!validateStep()) {
+      toast.error("Fill up all the fields.");
+      return;
+    }
     onSave(technician);
     setTechnician({
       technician_name: "",
@@ -39,6 +44,20 @@ const AddTechnicianModal = ({
     onClose();
   };
 
+  const validateStep = () => {
+    // Example validation, adjust as per your field requirements
+    return (
+      technician.technician_name !== "" &&
+      technician.project_manager !== "" &&
+      technician.other_details !== "" &&
+      technician.procedures !== "" &&
+      technician.parts !== "" &&
+      technician.labeling_methodology !== "" &&
+      technician.equipment_installation !== "" &&
+      technician.required_deliverables !== "" &&
+      technician.deliverable_instructions !== ""
+    );
+  };
   return (
     <div
     className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center ${
@@ -89,13 +108,13 @@ const AddTechnicianModal = ({
         </div>
         <div className="mb-4">
           <label className="font-normal text-base">Parts</label>
-          <input
-            type="text"
-            className="px-2 py-2 border text-sm border-gray-200 resize-none rounded w-full"
+          <textarea
+            className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
             name="parts"
             value={technician.parts}
             onChange={handleChange}
-          />
+            rows={4}
+          ></textarea>
         </div>
         <div className="mb-4">
           <label className="font-normal text-base">Labeling Methodology</label>

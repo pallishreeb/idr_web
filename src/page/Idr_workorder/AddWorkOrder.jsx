@@ -131,7 +131,7 @@ function AddWorkOrder() {
     } else if (step === 3) {
       // Validate step 3 fields
       if (!validateStep3()) {
-        toast.error("Fill up all required fields.");
+        toast.error("Please add Note.");
         return;
       }
 
@@ -147,7 +147,9 @@ function AddWorkOrder() {
       ticketData.service_date !== "" &&
       ticketData.issue !== "" &&
       ticketData.contact_person !== "" &&
-      ticketData.job_location !== ""
+      ticketData.job_location !== "" &&
+      ticketData.local_onsite_person !== "",
+      ticketData.local_onsite_person_contact !== ""
     );
   };
 
@@ -503,12 +505,12 @@ function AddWorkOrder() {
                 </div>
                 <div className="flex flex-col gap-2 ">
                   <label className="font-normal text-base">Parts</label>
-                  <input
-                    type="text"
+                  <textarea
                     name="parts"
-                    className="px-3 py-2 border text-sm border-gray-200 rounded"
+                    className="px-3 py-2 border text-sm h-32 border-gray-200 rounded resize-y"
                     onChange={(e) => handleChange(e, setTechnicianData)}
-                  />
+                    rows={3}
+                  ></textarea>
                 </div>
 
                 <div className="flex flex-col gap-2 ">

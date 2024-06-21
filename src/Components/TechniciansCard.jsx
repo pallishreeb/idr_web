@@ -113,13 +113,13 @@ const TechniciansCards = ({
             </div>
             <div className="mb-4">
             <label className="font-normal text-base">Parts</label>
-              <input
-                type="text"
-                className="px-2 py-2 border text-sm border-gray-200 resize-none rounded w-full"
+            <textarea
+                className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
                 name="parts"
                 value={technician.parts || ""}
                 onChange={(e) => handleTechnicianChange(index, e)}
-              />
+                rows={4}
+              ></textarea>
             </div>
             <div className="mb-4">
             <label className="font-normal text-base">Labeling Methodology</label>
