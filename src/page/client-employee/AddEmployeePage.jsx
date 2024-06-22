@@ -36,6 +36,10 @@ const AddEmployeePage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    if (name === 'client_id') {
+      setFormData({ ...formData, client_id: value });
+    }
   };
 
   const handleUserChange = (e) => {

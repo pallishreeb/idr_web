@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { Link, useNavigate } from 'react-router-dom';
@@ -37,12 +38,23 @@ const Locations = () => {
     navigate(`/edit-location/${locationId}`);
   };
 
-  const handleDeleteLocation = (locationId) => {
-    if (window.confirm("Are you sure you want to delete this Location?")) {
+
+
+
+const handleDeleteLocation = (locationId) => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you really want to delete this location?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, keep it',
+  }).then((result) => {
+    if (result.isConfirmed) {
       dispatch(deleteLocation(locationId));
     }
-  };
-
+  });
+};
   const getSortSymbol = (key) => {
     if (sortConfig.key === key) {
       return sortConfig.direction === "ASC" ? "▲" : "▼";
@@ -81,7 +93,7 @@ const Locations = () => {
               ) : (
                 <table className="table-auto w-full border-collapse border border-gray-200">
                   <thead>
-                    <tr className="bg-gray-100 text-left">
+                     <tr className="bg-gray-100 text-left">
                       <th className="border px-4 py-2">Client</th>
                       <th className="border px-4 py-2">Contact Person</th>
                       <th className="border px-4 py-2">Email ID</th>
@@ -124,15 +136,15 @@ const Locations = () => {
                           return 0;
                         })
                         .map((location) => (
-                          <tr key={location.location_id}>
-                            <td className="text-center border px-4 py-2">{clients?.data?.find(client => client.client_id === location.client_id)?.company_name}</td>
-                            <td className="border px-4 py-2 text-center">{location.contact_person_firstname} {""} {location.contact_person_lastname}</td>
-                            <td className="border px-4 py-2 text-center">{location.contact_person_mail_id}</td>
-                            <td className="border px-4 py-2 text-center">{location.phone_number ? location.phone_number : 'NA'}</td>
-                            <td className="border px-4 py-2 text-center">{location?.address_line_one} <br /> {location?.address_line_two}</td>
-                            <td className="border px-4 py-2 text-center">{location.state}</td>
-                            <td className="border px-4 py-2 text-center">{location.zipcode}</td>
-                            <td className="border px-4 py-2 text-center flex">
+                          <tr key={location.location_id} className='text-left'>
+                            <td className="border px-4 py-2">{clients?.data?.find(client => client.client_id === location.client_id)?.company_name}</td>
+                            <td className="border px-4 py-2 ">{location.contact_person_firstname} {""} {location.contact_person_lastname}</td>
+                            <td className="border px-4 py-2 ">{location.contact_person_mail_id}</td>
+                            <td className="border px-4 py-2">{location.phone_number ? location.phone_number : 'NA'}</td>
+                            <td className="border px-4 py-2">{location?.address_line_one} <br /> {location?.address_line_two}</td>
+                            <td className="border px-4 py-2">{location.state}</td>
+                            <td className="border px-4 py-2">{location.zipcode}</td>
+                            <td className="border px-4 py-2 flex">
                               <button onClick={() => handleEdit(location.location_id)} className="bg-indigo-700 text-white px-2 py-1 rounded mr-2">Edit</button>
                               <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDeleteLocation(location.location_id)}>Delete</button>
                             </td>

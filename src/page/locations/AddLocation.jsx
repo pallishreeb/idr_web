@@ -43,6 +43,10 @@ const AddLocation = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLocations({ ...locations, [name]: value });
+
+    if (name === 'client_id') {
+      setLocations({ ...locations, client_id: value });
+    }
   };
 
 
