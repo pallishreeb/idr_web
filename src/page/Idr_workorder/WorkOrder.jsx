@@ -59,7 +59,7 @@ const WorkOrder = () => {
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-based
     const year = d.getFullYear();
-    return `${month}-${day}-${year}`;
+    return `${month}/${day}/${year}`;
   }
   
   return (
@@ -73,7 +73,7 @@ const WorkOrder = () => {
           </div>
           <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
             <div className="flex justify-between items-center">
-              <div className="flex gap-4 w-[70%]">
+              <div className="flex gap-4 w-[80%]">
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-sm">
                     Filter By Client Name
@@ -159,9 +159,12 @@ const WorkOrder = () => {
               </Link>
             </div>
             {!loading ? (
-              <table className="mt-2 w-full">
+              <table className="mt-2 w-full overflow-x-scroll">
                 <thead>
                   <tr className="bg-gray-50">
+                  <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
+                      Ticket Number
+                    </th>
                     <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
                       Client Name
                     </th>
@@ -186,20 +189,22 @@ const WorkOrder = () => {
                     <th className="px-1 py-1 text-left text-sm  font-semibold tracking-wider border">
                       Action
                     </th>
+                    
                   </tr>
                 </thead>
                 <tbody>
                   {workOrders && workOrders.workOrder?.length > 0 ? (
                     workOrders.workOrder?.map((order) => (
                       <tr key={order.id} className="text-left ">
-                        <td className="border px-1 py-3">{order.client_name}</td>
-                        <td className="border px-1 py-3">{formatDate(order.generated_date)}</td>
-                        <td className="border px-1 py-3">{formatDate(order.service_date)}</td>
-                        <td className="border px-1 py-3">{order.contact_person}</td>
-                        <td className="border px-1 py-3">{order.contact_phone_number}</td>
-                        <td className="border px-1 py-3">{order.status}</td>
-                        <td className="border  px-1 py-3">{order.issue}</td>
-                        <td className="border px-1 py-3">
+                        <td className="border text-sm px-1 py-3">{order?.ticket_number ? order?.ticket_number : "NA"  }</td>
+                        <td className="border text-sm px-1 py-3">{order.client_name}</td>
+                        <td className="border text-sm px-1 py-3">{formatDate(order.generated_date)}</td>
+                        <td className="border text-sm px-1 py-3">{formatDate(order.service_date)}</td>
+                        <td className="border text-sm px-1 py-3">{order.contact_person}</td>
+                        <td className="border text-sm px-1 py-3">{order.contact_phone_number}</td>
+                        <td className="border text-sm px-1 py-3">{order.status}</td>
+                        <td className="border text-sm  px-1 py-3">{order.issue}</td>
+                        <td className="border text-sm px-1 py-3">
                           <div className="flex gap-2">
                             <div className="p-[4px] bg-gray-100 cursor-pointer">
                               <BiSolidEditAlt
