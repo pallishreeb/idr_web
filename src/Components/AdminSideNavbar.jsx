@@ -120,7 +120,7 @@ const AdminSideNavbar = () => {
             </>
             }
             <li className="flex items-center justify-between px-4 py-2 bg-gray-300 font-semibold">
-              <span>IDR</span>
+              <span>{user_type ===  "Client Employee" ? "Client" : "IDR"}</span>
               <button onClick={toggleSubMenu} className="focus:outline-none">
                 {isSubMenuOpen ? (
                   <BsChevronUp className="h-5 w-5" />
