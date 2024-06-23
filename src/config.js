@@ -38,7 +38,8 @@ const apiConfig = {
     updateNotes:'/work_order/update_note',
     getTechniciansByWorkOrder:'/work_order/technician/by_work_order',
     getNotesByWorkOrder:'/work_order/note/by_work_order',
-    getWorkOrderByClientId:'/work_order/by_client'
+    getWorkOrderByClientId:'/work_order/by_client',
+    deleteUser:'/users/delete',
 
   };
   

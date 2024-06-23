@@ -101,6 +101,7 @@ const WorkOrderCard = ({
             value={workOrder.contact_phone_number || ""}
             onChange={(e) => handleWorkOrderChange(e)}
             required
+            readOnly
           />
         </div>
 
@@ -113,6 +114,7 @@ const WorkOrderCard = ({
             className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
             value={workOrder.contact_mail_id || ""}
             onChange={(e) => handleWorkOrderChange(e)}
+            readOnly
           />
         </div>
 

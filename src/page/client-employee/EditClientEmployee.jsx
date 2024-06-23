@@ -153,6 +153,7 @@ const EditEmployeePage = () => {
                     value={formData.first_name}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    readOnly
                   />
                 </div>
                 <div className="mb-4">
@@ -164,6 +165,7 @@ const EditEmployeePage = () => {
                     value={formData.last_name}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    readOnly
                   />
                 </div>
                 <div className="mb-4">
@@ -175,6 +177,7 @@ const EditEmployeePage = () => {
                     value={formData.email_id}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    readOnly
                   />
                 </div>
                 <div className="mb-4">
@@ -186,6 +189,7 @@ const EditEmployeePage = () => {
                     value={formData.contact_number}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    readOnly
                   />
                 </div>
                 <div className="mb-4">

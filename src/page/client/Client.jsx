@@ -1,5 +1,6 @@
 import React, { useEffect,useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import Swal from 'sweetalert2';
 import { Link } from "react-router-dom";
 import { BsPencil, BsTrash } from "react-icons/bs";
 import Header from "../../Components/Header";
@@ -34,13 +35,22 @@ const Client = () => {
     navigate(`/update-client/${clientId}`);
   };
 
-
-  const handleDeleteEmployee = (clientId) => {
-    if (window.confirm("Are you sure you want to delete this Client?")) {
-      dispatch(deleteClient(clientId)); // Dispatch deleteClientEmployee action if confirmed
+const handleDeleteClient = (clientId) => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you really want to delete this client?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, keep it',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      dispatch(deleteClient(clientId));
+      dispatch(getClients());
     }
-    dispatch(getClients());
-  };
+
+  });
+};
 
   const handleSearch = () => {
     dispatch(getClients({ clientName, industryId }));
@@ -137,7 +147,7 @@ const Client = () => {
                       <button  onClick={() => handleEdit(client?.client_id)} className="bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded mr-2">
                         <BsPencil />
                       </button>
-                      <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" onClick={() => handleDeleteEmployee(client?.client_id)}>
+                      <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" onClick={() => handleDeleteClient(client?.client_id)}>
                         <BsTrash />
                       </button>
                     </td>

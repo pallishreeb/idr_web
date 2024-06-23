@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Swal from 'sweetalert2';
 import { Link, useNavigate } from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
@@ -41,17 +42,27 @@ const WorkOrder = () => {
     });
   };
 
+
   const handleDelete = (orderId) => {
-    if (window.confirm("Are you sure you want to delete this work order?")) {
-      dispatch(deleteWorkOrder(orderId))
-        .then(() => {
-          dispatch(getWorkOrderLists(filters)); // Refresh the list after deletion
-        })
-        .catch((error) => {
-          console.log(error);
-          toast.error("Failed to delete the work order");
-        });
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to delete this work order?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteWorkOrder(orderId))
+          .then(() => {
+            dispatch(getWorkOrderLists(filters)); // Refresh the list after deletion
+          })
+          .catch((error) => {
+            console.log(error);
+            toast.error("Failed to delete the work order");
+          });
+      }
+    });
   };
 
   function formatDate(date) {

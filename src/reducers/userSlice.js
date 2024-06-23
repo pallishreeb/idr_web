@@ -119,6 +119,19 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    deleteUserRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    deleteUserSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+      // state.users = state.users.filter(user => user.user_id !== action.payload);
+    },
+    deleteUserFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -141,6 +154,9 @@ export const {
   updateUserFailure,
   forgotPasswordRequest,
   forgotPasswordSuccess,
-  forgotPasswordFailure
+  forgotPasswordFailure,
+  deleteUserRequest,
+  deleteUserFailure,
+  deleteUserSuccess
 } = userSlice.actions;
 export default userSlice.reducer;
