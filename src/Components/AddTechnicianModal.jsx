@@ -10,7 +10,9 @@ const AddTechnicianModal = ({
 }) => {
   const [technician, setTechnician] = useState({
     work_order_id: workOrderId,
+    technician_user_id: "",
     technician_name: "",
+    pm_user_id: "",
     project_manager: "",
     parts: "",
     labeling_methodology: "",
@@ -23,6 +25,30 @@ const AddTechnicianModal = ({
   const handleChange = (e) => {
     const { name, value } = e.target;
     setTechnician((prev) => ({ ...prev, [name]: value }));
+    //set technician user id
+    if (name === "technician_name") {
+      const selectedTechnician = idrEmployees?.find(
+        (employee) => employee?.user_id === value
+      );
+      if (selectedTechnician) {
+        setTechnician((prev) => ({
+          ...prev,
+          technician_user_id: selectedTechnician.user_id,
+        }));
+      }
+    }
+    //set technician manager user id
+    if (name === "project_manager") {
+      const selectedTechnician = idrEmployees?.find(
+        (employee) => employee?.user_id === value
+      );
+      if (selectedTechnician) {
+        setTechnician((prev) => ({
+          ...prev,
+          pm_user_id: selectedTechnician.user_id,
+        }));
+      }
+    }
   };
 
   const handleSave = () => {
@@ -40,6 +66,8 @@ const AddTechnicianModal = ({
       procedures: "",
       required_deliverables: "",
       deliverable_instructions: "",
+      pm_user_id: "",
+      technician_user_id: "",
     });
     onClose();
   };
@@ -60,12 +88,14 @@ const AddTechnicianModal = ({
   };
   return (
     <div
-    className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center ${
-      isOpen ? "" : "hidden"
-    }`}
-  >
-    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-4 my-8 max-h-[95vh] overflow-y-auto">
-      <h2 className="text-xl font-bold mb-4 text-center">Add Technician and Work order details</h2>
+      className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center ${
+        isOpen ? "" : "hidden"
+      }`}
+    >
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-4 my-8 max-h-[95vh] overflow-y-auto">
+        <h2 className="text-xl font-bold mb-4 text-center">
+          Add Technician and Work order details
+        </h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="mb-4">
             <label className="font-normal text-base">Technician Name</label>
@@ -79,7 +109,7 @@ const AddTechnicianModal = ({
               {idrEmployees.map((employee) => (
                 <option
                   key={employee.idr_emp_id}
-                  value={employee.first_name + " " + employee.last_name}
+                  value={employee?.user_id}
                 >
                   {employee.first_name} {employee.last_name}
                 </option>
@@ -98,7 +128,7 @@ const AddTechnicianModal = ({
               {idrEmployees.map((employee) => (
                 <option
                   key={employee.idr_emp_id}
-                  value={employee.first_name + " " + employee.last_name}
+                  value={employee?.user_id}
                 >
                   {employee.first_name} {employee.last_name}
                 </option>

@@ -100,6 +100,28 @@ const EditWorkOrder = () => {
     const { name, value } = e.target;
     const updatedTechnicians = [...technicians];
     updatedTechnicians[index] = { ...updatedTechnicians[index], [name]: value };
+    if (name === "technician_name") {
+      const selectedTechnician = idrEmployees.find(
+        (employee) => employee?.user_id === value
+      );
+  
+      if (selectedTechnician) {
+        updatedTechnicians[index].technician_user_id = selectedTechnician.user_id;
+      } else {
+        updatedTechnicians[index].technician_user_id = technicians[index].technician_user_id || '';
+      }
+    }
+    if (name === "project_manager") {
+      const selectedTechnician = idrEmployees.find(
+        (employee) => employee?.user_id === value
+      );
+  
+      if (selectedTechnician) {
+        updatedTechnicians[index].pm_user_id = selectedTechnician.user_id;
+      } else {
+        updatedTechnicians[index].pm_user_id = technicians[index].pm_user_id || '';
+      }
+    }
     setTechnicians(updatedTechnicians);
   };
 
@@ -137,7 +159,7 @@ const EditWorkOrder = () => {
     const allowedFields = [
       "technician_id", "work_order_id", "technician_name", "project_manager",
        "other_details", "procedures","parts", "labeling_methodology",
-       "required_deliverables", "deliverable_instructions"
+       "required_deliverables", "deliverable_instructions","technician_user_id","pm_user_id"
     ];
     const filteredTechnician = {};
     allowedFields.forEach(field => {

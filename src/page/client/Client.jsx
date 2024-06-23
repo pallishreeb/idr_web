@@ -46,8 +46,9 @@ const handleDeleteClient = (clientId) => {
   }).then((result) => {
     if (result.isConfirmed) {
       dispatch(deleteClient(clientId));
+      dispatch(getClients());
     }
-    dispatch(getClients());
+
   });
 };
 

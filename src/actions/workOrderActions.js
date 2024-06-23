@@ -55,7 +55,7 @@ export const addNotesToTicket = ( notesData) => {
     dispatch(addNotesToTicketStart());
     try {
       const response = await axios.post(`${apiConfig.addNotesToTicket}`, notesData);
-      console.log("res",response)
+      // console.log("res",response)
       if(response?.data){
         dispatch(addNotesToTicketSuccess(response?.data));
         toast.success("Notes added to ticket successfully");

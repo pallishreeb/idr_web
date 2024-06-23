@@ -1,10 +1,12 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import AddTechnicianModal from './AddTechnicianModal'; 
-import {  addTechnicianToTicket,getWorkOrderDetails } from '../actions/workOrderActions';
+import AddTechnicianModal from "./AddTechnicianModal";
+import {
+  addTechnicianToTicket,
+  getWorkOrderDetails,
+} from "../actions/workOrderActions";
 import { getClients } from "../actions/clientActions";
 import { fetchIDREmployees } from "../actions/employeeActions";
-
 
 const TechniciansCards = ({
   technicians,
@@ -12,23 +14,22 @@ const TechniciansCards = ({
   handleTechnicianChange,
   handleEditTechnician,
   handleSaveTechnicians,
-  workOrderId
+  workOrderId,
 }) => {
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-
   const handleOpenModal = () => {
-      setIsModalOpen(true);
-    };
-  
-    const handleCloseModal = () => {
-      setIsModalOpen(false);
-    };
-  
-    const handleAddNote = (newTechnician) => {
-      dispatch(addTechnicianToTicket(newTechnician))
-      .then(response => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleAddNote = (newTechnician) => {
+    dispatch(addTechnicianToTicket(newTechnician))
+      .then((response) => {
         if (response.code == "WO201") {
           // navigate("/workorder");
           handleCloseModal();
@@ -39,10 +40,10 @@ const TechniciansCards = ({
           console.error("Error adding new technician:", response.error);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("API call error:", error);
       });
-    }
+  };
   return (
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -82,7 +83,7 @@ const TechniciansCards = ({
                   {idrEmployees.map((employee) => (
                     <option
                       key={employee.idr_emp_id}
-                      value={employee.first_name + "" + employee.last_name}
+                      value={employee?.user_id}
                     >
                       {employee.first_name} {employee.last_name}
                     </option>
@@ -103,7 +104,7 @@ const TechniciansCards = ({
                   {idrEmployees?.map((employee) => (
                     <option
                       key={employee.idr_emp_id}
-                      value={employee.first_name + "" + employee.last_name}
+                      value={employee?.user_id}
                     >
                       {employee.first_name} {employee.last_name}
                     </option>
@@ -112,8 +113,8 @@ const TechniciansCards = ({
               </div>
             </div>
             <div className="mb-4">
-            <label className="font-normal text-base">Parts and Tools</label>
-            <textarea
+              <label className="font-normal text-base">Parts and Tools</label>
+              <textarea
                 className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
                 name="parts"
                 value={technician.parts || ""}
@@ -122,7 +123,9 @@ const TechniciansCards = ({
               ></textarea>
             </div>
             <div className="mb-4">
-            <label className="font-normal text-base">Labeling Methodology</label>
+              <label className="font-normal text-base">
+                Labeling Methodology
+              </label>
               <input
                 type="text"
                 className="px-2 py-2 border text-sm border-gray-200 rounded w-full"
@@ -178,13 +181,13 @@ const TechniciansCards = ({
           </div>
         ))}
       </div>
-            {/* Add Note Modal */}
+      {/* Add Note Modal */}
       <AddTechnicianModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSave={handleAddNote}
         workOrderId={workOrderId}
-        idrEmployees ={idrEmployees}
+        idrEmployees={idrEmployees}
       />
     </div>
   );
