@@ -28,7 +28,7 @@ const AddTechnicianModal = ({
     //set technician user id
     if (name === "technician_name") {
       const selectedTechnician = idrEmployees?.find(
-        (employee) => employee?.user_id === value
+        (employee) => employee.first_name +''+ employee.last_name === value
       );
       if (selectedTechnician) {
         setTechnician((prev) => ({
@@ -40,7 +40,7 @@ const AddTechnicianModal = ({
     //set technician manager user id
     if (name === "project_manager") {
       const selectedTechnician = idrEmployees?.find(
-        (employee) => employee?.user_id === value
+        (employee) => employee.first_name +''+ employee.last_name === value
       );
       if (selectedTechnician) {
         setTechnician((prev) => ({
@@ -109,7 +109,7 @@ const AddTechnicianModal = ({
               {idrEmployees.map((employee) => (
                 <option
                   key={employee.idr_emp_id}
-                  value={employee?.user_id}
+                  value={employee.first_name +''+ employee.last_name}
                 >
                   {employee.first_name} {employee.last_name}
                 </option>
@@ -128,7 +128,7 @@ const AddTechnicianModal = ({
               {idrEmployees.map((employee) => (
                 <option
                   key={employee.idr_emp_id}
-                  value={employee?.user_id}
+                  value={employee.first_name +''+ employee.last_name}
                 >
                   {employee.first_name} {employee.last_name}
                 </option>

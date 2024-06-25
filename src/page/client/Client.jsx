@@ -13,6 +13,7 @@ const Client = () => {
   const navigate = useNavigate();
   const { clients, loading } = useSelector((state) => state.client);
   const {industries} = useSelector((state) => state.client.industries);
+  const { user_type } = useSelector((state) => state.user.user);
   const [clientName, setClientName] = useState('');
   const [industryId, setIndustryId] = useState('');
 
@@ -147,9 +148,11 @@ const handleDeleteClient = (clientId) => {
                       <button  onClick={() => handleEdit(client?.client_id)} className="bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded mr-2">
                         <BsPencil />
                       </button>
+                      {user_type === "Admin" && 
                       <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" onClick={() => handleDeleteClient(client?.client_id)}>
                         <BsTrash />
                       </button>
+                      }
                     </td>
                   </tr>
                 ))

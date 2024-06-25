@@ -48,6 +48,7 @@ function AddWorkOrder() {
     status: "Open",
     local_onsite_person: "",
     local_onsite_person_contact: "",
+    client_emp_user_id:""
   });
   const [technicianData, setTechnicianData] = useState({
     work_order_id: "",
@@ -108,6 +109,7 @@ function AddWorkOrder() {
             selectedEmployee.first_name + " " + selectedEmployee.last_name,
           contact_phone_number: selectedEmployee.contact_number,
           contact_mail_id: selectedEmployee.email_id,
+          client_emp_user_id:selectedEmployee.user_id
         }));
       }
     }
@@ -115,7 +117,7 @@ function AddWorkOrder() {
     //set technician user id
     if (name === "technician_name") {
       const selectedTechnician = idrEmployees?.find(
-        (employee) => employee?.user_id === value
+        (employee) => employee.first_name +''+ employee.last_name === value
       );
       console.log(selectedTechnician,"selectedTechnician")
       if (selectedTechnician) {
@@ -128,8 +130,9 @@ function AddWorkOrder() {
       //set technician manager user id
       if (name === "project_manager") {
         const selectedTechnician = idrEmployees?.find(
-          (employee) => employee?.user_id === value
+          (employee) => employee.first_name +''+ employee.last_name === value
         );
+        console.log(selectedTechnician,"PM selectedTechnician")
         if (selectedTechnician) {
           setTechnicianData((prev) => ({
             ...prev,
@@ -229,7 +232,8 @@ function AddWorkOrder() {
             ...prev,
             work_order_id: technicianData.work_order_id,
           }));
-          setStep(3); // Proceed to next step
+          // setStep(3); // Proceed to next step
+          navigate("/workorder");
         } else {
           console.error("Error adding technician:", response.error);
         }
@@ -504,7 +508,7 @@ function AddWorkOrder() {
                     {idrEmployees.map((employee) => (
                       <option
                         key={employee.idr_emp_id}
-                        value={employee.user_id}
+                        value={employee.first_name +''+ employee.last_name}
                       >
                         {employee.first_name} {employee.last_name}
                       </option>
@@ -526,7 +530,7 @@ function AddWorkOrder() {
                     {idrEmployees.map((employee) => (
                       <option
                         key={employee.idr_emp_id}
-                        value={employee.user_id}
+                        value={employee.first_name +''+ employee.last_name}
                       >
                         {employee.first_name} {employee.last_name}
                       </option>
@@ -604,7 +608,7 @@ function AddWorkOrder() {
                     className="border bg-blue-600 w-1/3 py-2 text-white rounded"
                     onClick={handleNext}
                   >
-                    {loading ? "Saving" : "Next"}
+                    {loading ? "Saving" : "Submit"}
                   </button>
                 </div>
               </div>

@@ -15,7 +15,7 @@ const Locations = () => {
   const locations = useSelector((state) => state.location.locations);
   const loadinglocations = useSelector((state) => state.location.loading);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
-
+  const { user_type } = useSelector((state) => state.user.user);
   useEffect(() => {
     dispatch(getClients());
   }, [dispatch]);
@@ -146,7 +146,9 @@ const handleDeleteLocation = (locationId) => {
                             <td className="border px-4 py-2">{location.zipcode}</td>
                             <td className="border px-4 py-2 flex">
                               <button onClick={() => handleEdit(location.location_id)} className="bg-indigo-700 text-white px-2 py-1 rounded mr-2">Edit</button>
+                              {user_type === "Admin" && 
                               <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDeleteLocation(location.location_id)}>Delete</button>
+                              }
                             </td>
                           </tr>
                         ))
