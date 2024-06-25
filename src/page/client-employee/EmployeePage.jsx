@@ -13,7 +13,7 @@ const EmployeePage = () => {
   const loadingClients = useSelector((state) => state.client.loading);
   const employees = useSelector((state) => state.clientEmployee.clientEmployees); // Get client employees from the client employees slice
   const loadingEmployees = useSelector((state) => state.clientEmployee.loading);
-  
+  const { user_type } = useSelector((state) => state.user.user);
   const [selectedClient, setSelectedClient] = useState(null);
 
   useEffect(() => {
@@ -116,7 +116,8 @@ const handleDeleteEmployee = (employeeId) => {
                         <td className="text-left border px-4 py-2">{employee.access_to_website == true ? 'Yes' : 'No'}</td>
                         <td className="text-left border px-4 py-2">
                           <button onClick={() => handleEdit(employee?.client_emp_id)} className="bg-indigo-700 text-white px-2 py-1 rounded mr-2">Edit</button>
-                          <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDeleteEmployee(employee.client_emp_id)}>Delete</button>
+                          {user_type === "Admin" && 
+                          <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDeleteEmployee(employee.client_emp_id)}>Delete</button>}
                         </td>
                       </tr>
                      ))

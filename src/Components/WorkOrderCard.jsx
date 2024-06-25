@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import React from "react";
-
+import React,{useState} from "react";
+import {  useSelector } from "react-redux";
 const WorkOrderCard = ({
   workOrder,
   clients,
@@ -9,16 +9,43 @@ const WorkOrderCard = ({
   handleWorkOrderChange,
   handleSaveTicket,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const { user_type } = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="text-xl font-normal mb-2">Work Order Ticket</h1>
-        <button
-          className="bg-indigo-600 text-white px-6 py-2 rounded"
-          onClick={handleSaveTicket}
-        >
-          Save Ticket
-        </button>
+        {access.includes(user_type) && 
+        <div>
+          {isEditing ? (
+            <>
+              <button
+              className="bg-indigo-600 text-white px-6 py-2 rounded"
+              onClick={handleSaveTicket}
+            >
+              Save Ticket
+            </button>
+               <button
+               className="bg-gray-500 text-white px-6 py-2 rounded ml-2"
+               onClick={handleEditToggle}
+             >
+               Cancel
+             </button>
+            </>
+          
+          ) : (
+            <button
+              className="bg-indigo-600 text-white px-6 py-2 rounded"
+              onClick={handleEditToggle}
+            >
+              Edit
+            </button>
+          )}
+        </div>}
       </div>
 
       <div className="grid grid-cols-3 gap-8">
@@ -30,6 +57,7 @@ const WorkOrderCard = ({
             required
             value={workOrder.client_id || ""}
             onChange={(e) => handleWorkOrderChange(e)}
+            disabled={!isEditing}
           >
             <option value="">Choose Option</option>
             {clients?.data?.map((client) => (
@@ -48,6 +76,7 @@ const WorkOrderCard = ({
             required
             value={workOrder.location_id || ""}
             onChange={(e) => handleWorkOrderChange(e)}
+            disabled={!isEditing}
           >
             <option value="">Choose Option</option>
             {locations.map((location) => (
@@ -66,6 +95,7 @@ const WorkOrderCard = ({
             className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
             value={workOrder.client_name || ""}
             readOnly
+            disabled={!isEditing}
           />
         </div>
 
@@ -78,6 +108,7 @@ const WorkOrderCard = ({
             required
             value={workOrder.contact_person || ""}
             onChange={(e) => handleWorkOrderChange(e)}
+            disabled={!isEditing}
           >
             <option value="">Choose Contact Person</option>
             {clientEmployees.map((employee) => (
@@ -127,6 +158,7 @@ const WorkOrderCard = ({
             className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
             value={workOrder.po_number || ""}
             onChange={(e) => handleWorkOrderChange(e)}
+            disabled={!isEditing}
           />
         </div>
 
@@ -140,6 +172,7 @@ const WorkOrderCard = ({
             value={workOrder.service_date || ""}
             onChange={(e) => handleWorkOrderChange(e)}
             required
+            disabled={!isEditing}
           />
         </div>
 
@@ -152,6 +185,7 @@ const WorkOrderCard = ({
             className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
             value={workOrder.job_location || ""}
             onChange={(e) => handleWorkOrderChange(e)}
+            disabled={!isEditing}
           />
         </div>
 
@@ -165,6 +199,7 @@ const WorkOrderCard = ({
             value={workOrder.issue || ""}
             onChange={(e) => handleWorkOrderChange(e)}
             required
+            disabled={!isEditing}
           />
         </div>
 
@@ -175,6 +210,7 @@ const WorkOrderCard = ({
             className="px-3 border border-gray-200 h-10 text-sm rounded"
             value={workOrder.status || ""}
             onChange={(e) => handleWorkOrderChange(e)}
+            disabled={!isEditing}
           >
             <option value="Open">Open</option>
             <option value="Design">Design</option>
@@ -193,6 +229,7 @@ const WorkOrderCard = ({
             className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
             value={workOrder.local_onsite_person || ""}
             onChange={(e) => handleWorkOrderChange(e)}
+            disabled={!isEditing}
           />
         </div>
 
@@ -207,6 +244,7 @@ const WorkOrderCard = ({
             className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
             value={workOrder.local_onsite_person_contact || ""}
             onChange={(e) => handleWorkOrderChange(e)}
+            disabled={!isEditing}
           />
         </div>
       </div>

@@ -23,7 +23,8 @@ const WorkOrder = () => {
     technician: "",
     project_manager: "",
   });
-
+  const { user_type } = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
   const { workOrders, loading } = useSelector((state) => state.workOrder);
   const { clients } = useSelector((state) => state.client);
   const { idrEmployees } = useSelector((state) => state.employee);
@@ -85,23 +86,7 @@ const WorkOrder = () => {
           <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
             <div className="flex justify-between items-center">
               <div className="flex gap-4 w-[80%]">
-                <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">
-                    Filter By Client Name
-                  </label>
-                  <select
-                    name="client_name"
-                    className="px-3 border border-gray-200 h-10 rounded"
-                    onChange={handleFilterChange}
-                  >
-                    <option value="">All</option>
-                    {clients?.data?.map((client) => (
-                      <option key={client.id} value={client.company_name}>
-                        {client.company_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                
 
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-sm">
@@ -120,7 +105,25 @@ const WorkOrder = () => {
                     <option value="Closed">Closed</option>
                   </select>
                 </div>
-
+                {access.includes(user_type) && 
+                <>
+                <div className="flex flex-col gap-2">
+                  <label className="font-normal text-sm">
+                    Filter By Client Name
+                  </label>
+                  <select
+                    name="client_name"
+                    className="px-3 border border-gray-200 h-10 rounded"
+                    onChange={handleFilterChange}
+                  >
+                    <option value="">All</option>
+                    {clients?.data?.map((client) => (
+                      <option key={client.id} value={client.company_name}>
+                        {client.company_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-sm">
                     Filter By Technician Name
@@ -162,12 +165,14 @@ const WorkOrder = () => {
                     ))}
                   </select>
                 </div>
+                </>}
               </div>
+              {access.includes(user_type) && 
               <Link to={"/add-work-order"}>
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded mt-7">
                   New Work Order
                 </button>
-              </Link>
+              </Link>}
             </div>
             {!loading ? (
               <table className="mt-2 w-full overflow-x-scroll">
@@ -226,6 +231,7 @@ const WorkOrder = () => {
                                 }
                               />
                             </div>
+                            {user_type === "Admin" && 
                             <div className="p-[4px] bg-gray-100 cursor-pointer">
                               <AiFillDelete
                                 onClick={() =>
@@ -233,6 +239,7 @@ const WorkOrder = () => {
                                 }
                               />
                             </div>
+                            }
                           </div>
                         </td>
                       </tr>

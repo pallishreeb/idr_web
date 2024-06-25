@@ -11,7 +11,7 @@ const IDREmployeesPage = () => {
   const navigate = useNavigate();
   const employees = useSelector(state => state.employee.idrEmployees); // Assuming you store IDR employees in state.employee.idrEmployees
   const loading = useSelector(state => state.employee.loading);
-
+  const { user_type } = useSelector((state) => state.user.user);
   useEffect(() => {
     dispatch(fetchIDREmployees());
   }, [dispatch]);
@@ -86,12 +86,13 @@ const handleDelete = (employeeId) => {
                       >
                         Edit
                       </button>
+                      {user_type === "Admin" && 
                       <button
                         onClick={() => handleDelete(employee.idr_emp_id)}
                         className="bg-red-500 text-white px-4 py-2 rounded"
                       >
                         Delete
-                      </button>
+                      </button>}
                     </td>
                   </tr>
                 ))

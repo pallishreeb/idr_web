@@ -90,6 +90,7 @@ const EditWorkOrder = () => {
               contact_person: selectedEmployee.first_name + " " + selectedEmployee.last_name,
               contact_phone_number: selectedEmployee.contact_number,
               contact_mail_id: selectedEmployee.email_id,
+              client_emp_user_id:selectedEmployee.user_id
             }));
           }
         }
@@ -102,9 +103,9 @@ const EditWorkOrder = () => {
     updatedTechnicians[index] = { ...updatedTechnicians[index], [name]: value };
     if (name === "technician_name") {
       const selectedTechnician = idrEmployees.find(
-        (employee) => employee?.user_id === value
+        (employee) => employee.first_name +''+ employee.last_name === value
       );
-  
+      
       if (selectedTechnician) {
         updatedTechnicians[index].technician_user_id = selectedTechnician.user_id;
       } else {
@@ -113,9 +114,9 @@ const EditWorkOrder = () => {
     }
     if (name === "project_manager") {
       const selectedTechnician = idrEmployees.find(
-        (employee) => employee?.user_id === value
+        (employee) => employee.first_name +''+ employee.last_name === value
       );
-  
+
       if (selectedTechnician) {
         updatedTechnicians[index].pm_user_id = selectedTechnician.user_id;
       } else {
@@ -138,7 +139,8 @@ const EditWorkOrder = () => {
       "work_order_id", "client_id", "location_id", "client_name", "work_order_type",
       "generated_date", "generated_time", "po_number", "client_site",
       "job_location", "service_date", "contact_person", "contact_phone_number",
-      "contact_mail_id", "issue", "status","local_onsite_person","local_onsite_person_contact"
+      "contact_mail_id", "issue", "status","local_onsite_person","local_onsite_person_contact",
+      "client_emp_user_id"
     ];
     const filteredWorkOrder = {};
     allowedFields.forEach(field => {
