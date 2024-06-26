@@ -178,9 +178,7 @@ function AddWorkOrder() {
       ticketData.service_date !== "" &&
       ticketData.issue !== "" &&
       ticketData.contact_person !== "" &&
-      ticketData.job_location !== "" &&
-      ticketData.local_onsite_person !== "",
-      ticketData.local_onsite_person_contact !== ""
+      ticketData.job_location !== ""
     );
   };
 
