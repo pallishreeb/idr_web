@@ -56,14 +56,15 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
         <table className="min-w-full bg-gray-200 border rounded">
           <thead>
             <tr className="bg-gray-300">
-              <th className="border px-4 py-2" style={{ width: '90%' }}>Comments</th>
+              <th className="border px-4 py-2" style={{ width: '70%' }}>Comments</th>
+              <th className="border px-4 py-2" style={{ width: '20%' }}>Date and Time</th>
               <th className="border px-4 py-2" style={{ width: '10%' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {notes?.map((note, index) => (
               <tr key={note.note_id} className="bg-white">
-                <td className="border px-4 py-2" style={{ width: '90%' }}>
+                <td className="border px-4 py-2" style={{ width: '70%' }}>
                   <textarea
                     className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
                     name="comments"
@@ -72,6 +73,17 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
                     rows={3}
                     disabled={editingIndex !== index}
                   ></textarea>
+                </td>
+                <td className="border px-4 py-2" style={{ width: '20%' }}>
+                {new Date(note.created_at).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true,
+                  })}
                 </td>
                 <td className="border px-4 py-2" style={{ width: '10%' }}>
                   <div>
