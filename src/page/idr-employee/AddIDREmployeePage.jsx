@@ -1,23 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
-import {
-  fetchIDREmployeeDetails,
-  updateIDREmployee,
-} from "../../actions/employeeActions";
+import { useNavigate } from "react-router-dom";
+import { createIDREmployee } from "../../actions/employeeActions";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 
-const EditIDREmployeePage = () => {
-  const { employeeId } = useParams();
+const AddIDREmployeePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { idrEmployeeDetails, loading } = useSelector(
-    (state) => state.employee
-  );
+  const { loading } = useSelector((state) => state.employee);
 
   const [formData, setFormData] = useState({
-    idr_emp_id: "",
     first_name: "",
     last_name: "",
     email_id: "",
@@ -27,37 +20,6 @@ const EditIDREmployeePage = () => {
     is_active: true,
   });
 
-  useEffect(() => {
-    if (employeeId) {
-      dispatch(fetchIDREmployeeDetails(employeeId));
-    }
-  }, [dispatch, employeeId]);
-
-  useEffect(() => {
-    if (idrEmployeeDetails) {
-      const {
-        idr_emp_id,
-        first_name,
-        last_name,
-        email_id,
-        job_desc,
-        contact_number,
-        is_active,
-        user_type
-      } = idrEmployeeDetails;
-      setFormData({
-        idr_emp_id,
-        first_name,
-        last_name,
-        email_id,
-        job_desc,
-        contact_number,
-        is_active,
-        user_type
-      });
-    }
-  }, [idrEmployeeDetails]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -65,9 +27,7 @@ const EditIDREmployeePage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateIDREmployee(formData)).then(() => {
-      navigate("/idr-employees");
-    });
+    dispatch(createIDREmployee(formData,navigate));
   };
 
   return (
@@ -76,7 +36,7 @@ const EditIDREmployeePage = () => {
       <div className="flex">
         <AdminSideNavbar />
         <div className="container mx-auto p-4">
-          <h2 className="text-xl font-semibold mb-4">Edit IDR Employee</h2>
+          <h2 className="text-xl font-semibold mb-4">Add IDR Employee</h2>
           {loading ? (
             <p>Loading...</p>
           ) : (
@@ -229,4 +189,4 @@ const EditIDREmployeePage = () => {
   );
 };
 
-export default EditIDREmployeePage;
+export default AddIDREmployeePage;

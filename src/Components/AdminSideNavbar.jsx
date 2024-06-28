@@ -15,7 +15,7 @@ const AdminSideNavbar = () => {
       path: "/admin/dashboard",
       roles: ["Admin", "Subadmin",],
     },
-    { title: "Users", path: "/users", roles: ["Admin"] },
+    // { title: "Users", path: "/users", roles: ["Admin"] },
     {
       title: "Clients",
       path: "/clients",
@@ -64,11 +64,11 @@ const AdminSideNavbar = () => {
       path: "/company-equipment",
       roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"],
     },
-    {
-      title: "Upload CSV File",
-      path: "/upload-csv",
-      roles: ["Admin", "Client Employee"],
-    },
+    // {
+    //   title: "Upload CSV File",
+    //   path: "/upload-csv",
+    //   roles: ["Admin", "Client Employee"],
+    // },
     // Add more menu items as needed
   ];
   const mainMenu = ['Admin', 'Subadmin']
