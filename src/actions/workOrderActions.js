@@ -14,7 +14,8 @@ import {
   getTechniciansByWorkOrderStart, getTechniciansByWorkOrderSuccess, getTechniciansByWorkOrderFailure,
   getNotesByWorkOrderStart, getNotesByWorkOrderSuccess, getNotesByWorkOrderFailure,
   getWorkOrderByClientIdStart, getWorkOrderByClientIdSuccess, getWorkOrderByClientIdFailure,
-  getWorkOrderDetailsStart,getWorkOrderDetailsSuccess,getWorkOrderDetailsFailure
+  getWorkOrderDetailsStart,getWorkOrderDetailsSuccess,getWorkOrderDetailsFailure,
+  assignPeopleToWorkOrderStart,assignPeopleToWorkOrderSuccess,assignPeopleToWorkOrderFailure
 } from "../reducers/workOrderSlice";
 import { apiConfig } from "../config";
 
@@ -202,6 +203,22 @@ export const getWorkOrderDetails = (workOrderId) => {
     } catch (error) {
       dispatch(getWorkOrderDetailsFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to fetch work order details");
+    }
+  };
+};
+
+export const assignPeopleToWorkOrder = (technicians) => {
+  return async (dispatch) => {
+    dispatch(assignPeopleToWorkOrderStart());
+    try {
+      const response = await axios.post(`${apiConfig.assignPeople}`, technicians);
+      dispatch(assignPeopleToWorkOrderSuccess(response?.data));
+      // toast.success("People assigned to work order successfully");
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+      dispatch(assignPeopleToWorkOrderFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to assign people to work order");
     }
   };
 };

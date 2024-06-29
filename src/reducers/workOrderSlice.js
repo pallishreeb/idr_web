@@ -194,6 +194,18 @@ const workOrderSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    assignPeopleToWorkOrderStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    assignPeopleToWorkOrderSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+    assignPeopleToWorkOrderFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   }
 });
 
@@ -209,7 +221,8 @@ export const {
   getTechniciansByWorkOrderStart, getTechniciansByWorkOrderSuccess, getTechniciansByWorkOrderFailure,
   getNotesByWorkOrderStart, getNotesByWorkOrderSuccess, getNotesByWorkOrderFailure,
   getWorkOrderByClientIdStart, getWorkOrderByClientIdSuccess, getWorkOrderByClientIdFailure,
-  getWorkOrderDetailsStart,getWorkOrderDetailsSuccess,getWorkOrderDetailsFailure
+  getWorkOrderDetailsStart,getWorkOrderDetailsSuccess,getWorkOrderDetailsFailure,
+  assignPeopleToWorkOrderStart,assignPeopleToWorkOrderSuccess,assignPeopleToWorkOrderFailure
 } = workOrderSlice.actions;
 
 export default workOrderSlice.reducer;

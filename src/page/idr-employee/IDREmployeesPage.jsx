@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { BiSolidEditAlt } from "react-icons/bi";
+import { AiFillDelete } from "react-icons/ai";
 import { fetchIDREmployees, deleteEmployee } from '../../actions/employeeActions'; // Import your actions
 import Header from '../../Components/Header';
 import AdminSideNavbar from '../../Components/AdminSideNavbar';
-import { BsPencil, BsTrash } from "react-icons/bs";
+
 
 const IDREmployeesPage = () => {
   const dispatch = useDispatch();
@@ -46,7 +48,7 @@ const IDREmployeesPage = () => {
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4 h-screen overflow-y-scroll">
+        <div className="container bg-gray-50 mx-auto p-4 h-screen overflow-y-scroll">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">IDR Employees</h2>
             <button
@@ -90,16 +92,16 @@ const IDREmployeesPage = () => {
                       <td className="py-2 px-4 border border-gray-200 flex gap-2 justify-center">
                         <button
                           onClick={() => handleEdit(employee.idr_emp_id)}
-                         className="bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded"
+                         className="p-[4px] bg-gray-100 cursor-pointer"
                         >
-                          <BsPencil />
+                          <BiSolidEditAlt />
                         </button>
                         {user_type === "Admin" && (
                           <button
                             onClick={() => handleDelete(employee.idr_emp_id)}
-                           className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                           className="p-[4px] bg-gray-100 cursor-pointer"
                           >
-                            <BsTrash />
+                            <AiFillDelete />
                           </button>
                         )}
                       </td>

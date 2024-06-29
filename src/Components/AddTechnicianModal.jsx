@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { toast } from "react-toastify";
+
 
 const AddTechnicianModal = ({
   isOpen,
@@ -8,42 +8,37 @@ const AddTechnicianModal = ({
   workOrderId,
   idrEmployees,
 }) => {
-  const [technician, setTechnician] = useState({
+  const [assigns, setAssigns] = useState({
     work_order_id: workOrderId,
     technician_user_id: "",
     technician_name: "",
     pm_user_id: "",
     project_manager: "",
-    parts: "",
-    labeling_methodology: "",
-    other_details: "",
-    procedures: "",
-    required_deliverables: "",
-    deliverable_instructions: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTechnician((prev) => ({ ...prev, [name]: value }));
-    //set technician user id
+    setAssigns((prev) => ({ ...prev, [name]: value }));
+
+    // Set technician user id
     if (name === "technician_name") {
       const selectedTechnician = idrEmployees?.find(
-        (employee) => employee.first_name +''+ employee.last_name === value
+        (employee) => employee.first_name + ' ' + employee.last_name === value
       );
       if (selectedTechnician) {
-        setTechnician((prev) => ({
+        setAssigns((prev) => ({
           ...prev,
           technician_user_id: selectedTechnician.user_id,
         }));
       }
     }
-    //set technician manager user id
+    // Set project manager user id
     if (name === "project_manager") {
       const selectedTechnician = idrEmployees?.find(
-        (employee) => employee.first_name +''+ employee.last_name === value
+        (employee) => employee.first_name + "" + employee.last_name === value
       );
       if (selectedTechnician) {
-        setTechnician((prev) => ({
+        setAssigns((prev) => ({
           ...prev,
           pm_user_id: selectedTechnician.user_id,
         }));
@@ -53,19 +48,16 @@ const AddTechnicianModal = ({
 
   const handleSave = () => {
     if (!validateStep()) {
-      toast.error("Fill up all the fields.");
       return;
     }
-    onSave(technician);
-    setTechnician({
+    // Filter out keys with empty values
+    let filteredAssigns = Object.fromEntries(
+      Object.entries(assigns).filter(([key, value]) => value !== "")
+    );
+    onSave(filteredAssigns);
+    setAssigns({
       technician_name: "",
       project_manager: "",
-      parts: "",
-      labeling_methodology: "",
-      other_details: "",
-      procedures: "",
-      required_deliverables: "",
-      deliverable_instructions: "",
       pm_user_id: "",
       technician_user_id: "",
     });
@@ -75,15 +67,8 @@ const AddTechnicianModal = ({
   const validateStep = () => {
     // Example validation, adjust as per your field requirements
     return (
-      technician.technician_name !== "" &&
-      technician.project_manager !== "" &&
-      technician.other_details !== "" &&
-      technician.procedures !== "" &&
-      technician.parts !== "" &&
-      technician.labeling_methodology !== "" &&
-      technician.equipment_installation !== "" &&
-      technician.required_deliverables !== "" &&
-      technician.deliverable_instructions !== ""
+      assigns.technician_name !== "" ||
+      assigns.project_manager !== ""
     );
   };
   return (
@@ -102,14 +87,14 @@ const AddTechnicianModal = ({
             <select
               className="px-2 border border-gray-200 h-10 rounded text-sm w-full"
               name="technician_name"
-              value={technician.technician_name}
+              value={assigns.technician_name}
               onChange={handleChange}
             >
               <option value="">Choose technician</option>
               {idrEmployees.map((employee) => (
                 <option
                   key={employee.idr_emp_id}
-                  value={employee.first_name +''+ employee.last_name}
+                  value={employee.first_name +' '+ employee.last_name}
                 >
                   {employee.first_name} {employee.last_name}
                 </option>
@@ -121,82 +106,20 @@ const AddTechnicianModal = ({
             <select
               className="px-2 border border-gray-200 h-10 rounded text-sm w-full"
               name="project_manager"
-              value={technician.project_manager}
+              value={assigns.project_manager}
               onChange={handleChange}
             >
               <option value="">Choose project manager</option>
               {idrEmployees.map((employee) => (
                 <option
                   key={employee.idr_emp_id}
-                  value={employee.first_name +''+ employee.last_name}
+                  value={employee.first_name +' '+ employee.last_name}
                 >
                   {employee.first_name} {employee.last_name}
                 </option>
               ))}
             </select>
           </div>
-        </div>
-        <div className="mb-4">
-          <label className="font-normal text-base">Parts and Tools</label>
-          <textarea
-            className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
-            name="parts"
-            value={technician.parts}
-            onChange={handleChange}
-            rows={4}
-          ></textarea>
-        </div>
-        <div className="mb-4">
-          <label className="font-normal text-base">Labeling Methodology</label>
-          <input
-            type="text"
-            className="px-2 py-2 border text-sm border-gray-200 rounded w-full"
-            name="labeling_methodology"
-            value={technician.labeling_methodology}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="font-normal text-base">Service Details</label>
-          <textarea
-            className="px-2 border border-gray-200 rounded text-sm w-full resize-y"
-            name="other_details"
-            value={technician.other_details}
-            onChange={handleChange}
-            rows={4}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="font-normal text-base">Procedures</label>
-          <textarea
-            className="px-2 border border-gray-200 rounded text-sm w-full resize-y"
-            name="procedures"
-            value={technician.procedures}
-            onChange={handleChange}
-            rows={4}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="font-normal text-base">Required Deliverables</label>
-          <textarea
-            className="px-2 border border-gray-200 rounded text-sm w-full resize-y"
-            name="required_deliverables"
-            value={technician.required_deliverables}
-            onChange={handleChange}
-            rows={4}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="font-normal text-base">
-            Deliverable Instructions
-          </label>
-          <textarea
-            className="px-2 border border-gray-200 rounded text-sm w-full resize-y"
-            name="deliverable_instructions"
-            value={technician.deliverable_instructions}
-            onChange={handleChange}
-            rows={4}
-          />
         </div>
         <div className="flex justify-end">
           <button

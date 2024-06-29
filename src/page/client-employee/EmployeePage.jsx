@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
+import { BiSolidEditAlt } from "react-icons/bi";
+import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
+
 import { Link,useNavigate } from 'react-router-dom';
 import { getClientEmployeeByClientId,deleteClientEmployee } from '../../actions/clientEmployeeActions'; // Import your client employee actions
 import { getClients } from "../../actions/clientActions";
@@ -56,7 +59,7 @@ const handleDeleteEmployee = (employeeId) => {
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 bg-gray-50">
           <div className="flex flex-col mb-4">
             <label htmlFor="client" className="mr-2 text-xl font-semibold">Select Client To View Employees:</label>
             <select
@@ -115,9 +118,13 @@ const handleDeleteEmployee = (employeeId) => {
                         <td className="text-left border px-4 py-2">{employee?.contact_number ? employee?.contact_number : "NA"}</td>
                         <td className="text-left border px-4 py-2">{employee.access_to_website == true ? 'Yes' : 'No'}</td>
                         <td className="text-left border px-4 py-2">
-                          <button onClick={() => handleEdit(employee?.client_emp_id)} className="bg-indigo-700 text-white px-2 py-1 rounded mr-2">Edit</button>
+                          <button onClick={() => handleEdit(employee?.client_emp_id)} className="p-[4px] bg-gray-100 cursor-pointer">
+                            <BiSolidEditAlt/>
+                          </button>
                           {user_type === "Admin" && 
-                          <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDeleteEmployee(employee.client_emp_id)}>Delete</button>}
+                          <button className="p-[4px] bg-gray-100 cursor-pointer" onClick={() => handleDeleteEmployee(employee.client_emp_id)}>
+                            <AiFillDelete/>
+                            </button>}
                         </td>
                       </tr>
                      ))
