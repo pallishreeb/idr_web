@@ -106,6 +106,7 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
                 </td>
                 <td className="border px-4 py-2" style={{ width: '15%' }}>
                 {new Date(note.created_at).toLocaleString('en-US', {
+                    timeZone: 'America/New_York',
                     year: 'numeric',
                     month: '2-digit',
                     day: '2-digit',
