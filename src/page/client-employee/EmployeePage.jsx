@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
-import { BiSolidEditAlt } from "react-icons/bi";
+import { BiLockAlt, BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
@@ -54,6 +54,11 @@ const handleDeleteEmployee = (employeeId) => {
     // Navigate to the update client page
     navigate(`/edit-employee/${employeeId}`);
   };
+
+  const handleSetPassword = (userId) => {
+    navigate(`/set-user-password/${userId}`);
+  };
+
   return (
     <>
       <Header />
@@ -118,13 +123,23 @@ const handleDeleteEmployee = (employeeId) => {
                         <td className="text-left border px-4 py-2">{employee?.contact_number ? employee?.contact_number : "NA"}</td>
                         <td className="text-left border px-4 py-2">{employee.access_to_website == true ? 'Yes' : 'No'}</td>
                         <td className="text-left border px-4 py-2">
+                        
                           <button onClick={() => handleEdit(employee?.client_emp_id)} className="p-[4px] bg-gray-100 cursor-pointer">
                             <BiSolidEditAlt/>
                           </button>
                           {user_type === "Admin" && 
+                          <>
+                          <button
+                            className="p-[4px] bg-gray-100 cursor-pointer"
+                            onClick={() => handleSetPassword(employee.user_id)}
+                          >
+                            <BiLockAlt/>
+                          </button>
                           <button className="p-[4px] bg-gray-100 cursor-pointer" onClick={() => handleDeleteEmployee(employee.client_emp_id)}>
                             <AiFillDelete/>
-                            </button>}
+                            </button>
+                          </>
+                          }
                         </td>
                       </tr>
                      ))

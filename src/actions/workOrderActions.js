@@ -15,7 +15,8 @@ import {
   getNotesByWorkOrderStart, getNotesByWorkOrderSuccess, getNotesByWorkOrderFailure,
   getWorkOrderByClientIdStart, getWorkOrderByClientIdSuccess, getWorkOrderByClientIdFailure,
   getWorkOrderDetailsStart,getWorkOrderDetailsSuccess,getWorkOrderDetailsFailure,
-  assignPeopleToWorkOrderStart,assignPeopleToWorkOrderSuccess,assignPeopleToWorkOrderFailure
+  assignPeopleToWorkOrderStart,assignPeopleToWorkOrderSuccess,assignPeopleToWorkOrderFailure,
+  deleteAssigneeSuccess, deleteNoteSuccess
 } from "../reducers/workOrderSlice";
 import { apiConfig } from "../config";
 
@@ -219,6 +220,35 @@ export const assignPeopleToWorkOrder = (technicians) => {
       console.log(error);
       dispatch(assignPeopleToWorkOrderFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to assign people to work order");
+    }
+  };
+};
+
+
+export const deleteAssignee = (assigneeId) => {
+  return async (dispatch) => {
+    dispatch(deleteWorkOrderStart());
+    try {
+      await axios.delete(`${apiConfig.deleteAssignee}/${assigneeId}`);
+      dispatch(deleteAssigneeSuccess(assigneeId));
+      toast.success("Assignee deleted successfully");
+    } catch (error) {
+      dispatch(deleteWorkOrderFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to delete Assignee");
+    }
+  };
+};
+
+export const deleteNote = (noteId) => {
+  return async (dispatch) => {
+    dispatch(deleteWorkOrderStart());
+    try {
+      await axios.delete(`${apiConfig.deleteNote}/${noteId}`);
+      dispatch(deleteNoteSuccess(noteId));
+      toast.success("Comment deleted successfully");
+    } catch (error) {
+      dispatch(deleteWorkOrderFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to delete Comment");
     }
   };
 };

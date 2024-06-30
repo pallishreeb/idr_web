@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useDispatch,useSelector } from "react-redux";
 import { BiSolidEditAlt } from "react-icons/bi";
+import { AiFillDelete } from "react-icons/ai";
+import Swal from 'sweetalert2';
 import AddNoteModal from './AddNoteModal'; 
-import { addNotesToTicket, getWorkOrderDetails } from '../actions/workOrderActions';
+import { addNotesToTicket, getWorkOrderDetails,deleteNote } from '../actions/workOrderActions';
 import { getClients } from "../actions/clientActions";
 import { fetchIDREmployees } from "../actions/employeeActions";
 
@@ -10,7 +12,7 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const { user_type } = useSelector((state) => state.user.user);
+  const { user_type,user_id } = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
   const handleEditToggle = (index) => {
     setEditingIndex(index === editingIndex ? null : index);
@@ -41,16 +43,37 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
       });
   };
 
+  const handleDelete = (noteId) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to delete this Comment?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteNote(noteId));
+        dispatch(getWorkOrderDetails(workOrderId));
+        dispatch(getClients());
+        dispatch(fetchIDREmployees());
+      }
+  
+    });
+  };
+  const addAccess = ["Admin", "Subadmin", "IDR Employee"];
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="font-normal text-xl mb-2">Notes</h1>
+        {addAccess.includes(user_type) && (
         <button
           className="bg-indigo-600 text-white px-6 py-2 rounded"
           onClick={handleOpenModal}
         >
           Add Note
         </button>
+        )}
       </div>
 
       {/* Table for notes */}
@@ -61,7 +84,7 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
               <th className="border px-4 py-2" style={{ width: '65%' }}>Comments</th>
               <th className="border px-4 py-2" style={{ width: '15%' }}>User Name</th>
               <th className="border px-4 py-2" style={{ width: '15%' }}>Date and Time</th>
-              {access.includes(user_type) && 
+              {addAccess.includes(user_type)  && 
               <th className="border px-4 py-2" style={{ width: '5%' }}>Actions</th>}
             </tr>
           </thead>
@@ -92,7 +115,7 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
                     hour12: true,
                   })}
                 </td>
-                {access.includes(user_type) && 
+                {(access.includes(user_type) || note.profile?.user_id  === user_id) && 
                 <td className="border px-4 py-2" style={{ width: '5%' }}>
                   <div>
                     {editingIndex === index ? (
@@ -114,16 +137,27 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
                         </button>
                       </>
                     ) : (
+                      <>
                       <button
                         className="p-[4px] bg-gray-100 cursor-pointer"
                         onClick={() => handleEditToggle(index)}
                       >
                         <BiSolidEditAlt/>
                       </button>
+                      {user_type === "Admin" && (
+                      <button
+                      className="p-[4px] bg-gray-100 cursor-pointer"
+                      onClick={() => handleDelete(note.note_id)}
+                    >
+                      <AiFillDelete/>
+                    </button>
+                    )}
+                    </>
                     )}
                   </div>
                 </td>
                 }
+                
               </tr>
             ))}
           </tbody>

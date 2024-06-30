@@ -35,7 +35,7 @@ const AddTechnicianModal = ({
     // Set project manager user id
     if (name === "project_manager") {
       const selectedTechnician = idrEmployees?.find(
-        (employee) => employee.first_name + "" + employee.last_name === value
+        (employee) => employee.first_name + ' ' + employee.last_name === value
       );
       if (selectedTechnician) {
         setAssigns((prev) => ({
@@ -79,7 +79,7 @@ const AddTechnicianModal = ({
     >
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-4 my-8 max-h-[95vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4 text-center">
-          Add Technician and Work order details
+          Add Technician and Manager
         </h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="mb-4">

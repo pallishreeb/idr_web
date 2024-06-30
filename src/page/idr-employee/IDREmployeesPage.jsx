@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
-import { BiSolidEditAlt } from "react-icons/bi";
+import {BiLockAlt, BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import { fetchIDREmployees, deleteEmployee } from '../../actions/employeeActions'; // Import your actions
 import Header from '../../Components/Header';
@@ -43,6 +43,9 @@ const IDREmployeesPage = () => {
     navigate('/add-idr-employees');
   };
 
+  const handleSetPassword = (userId) => {
+    navigate(`/set-user-password/${userId}`);
+  };
   return (
     <>
       <Header />
@@ -90,6 +93,7 @@ const IDREmployeesPage = () => {
                       <td className="py-2 px-6 border border-gray-200">{employee.user_type}</td>
                       <td className="py-2 px-6 border border-gray-200">{employee.is_active ? 'Yes' : 'No'}</td>
                       <td className="py-2 px-4 border border-gray-200 flex gap-2 justify-center">
+                      
                         <button
                           onClick={() => handleEdit(employee.idr_emp_id)}
                          className="p-[4px] bg-gray-100 cursor-pointer"
@@ -97,12 +101,21 @@ const IDREmployeesPage = () => {
                           <BiSolidEditAlt />
                         </button>
                         {user_type === "Admin" && (
+                          <>
+                           <button
+                            className="p-[4px] bg-gray-100 cursor-pointer"
+                            onClick={() => handleSetPassword(employee.user_id)}
+                          >
+                            <BiLockAlt/>
+                          </button>
                           <button
                             onClick={() => handleDelete(employee.idr_emp_id)}
                            className="p-[4px] bg-gray-100 cursor-pointer"
                           >
                             <AiFillDelete />
                           </button>
+                          </>
+                         
                         )}
                       </td>
                     </tr>
