@@ -40,7 +40,9 @@ const apiConfig = {
     getNotesByWorkOrder:'/work_order/note/by_work_order',
     getWorkOrderByClientId:'/work_order/by_client',
     deleteUser:'/users/delete',
-
+    assignPeople:'/work_order/assignee',
+    deleteAssignee:'/work_order/delete/assignee',
+    deleteNote:'/work_order/delete/note'
   };
   
   export {API_BASE_URL,apiConfig};

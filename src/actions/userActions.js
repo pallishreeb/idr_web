@@ -87,11 +87,11 @@ export const setUserPasswordByAdmin = (passwordData, navigate) => {
       const response = await axios.patch(apiConfig.setPassword, passwordData);
       dispatch(setPasswordSuccess(response.data.message));
       toast.success(`Password Updated  successfully`)
-      navigate("/users");
+      navigate(-1);
     } catch (error) {
       dispatch(setPasswordFailure(error.message));
       toast.error("Failed to Update User's Password")
-      navigate("/users");
+      navigate(-1);
     }
   };
 };

@@ -65,6 +65,18 @@
         state.loading = false;
         state.error = action.payload;
       },
+      createIdrEmployeetStart: (state) => {
+        state.loading = true;
+        state.error = null;
+      },
+      createIdrEmployeeSuccess: (state, action) => {
+        state.loading = false;
+        state.error = null;
+      },
+      createIdrEmployeeFailure: (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      },
 
     },
   });
@@ -82,6 +94,10 @@
     updateIDREmployeeRequest,
     updateIDREmployeeSuccess,
     updateIDREmployeeFailure,
+    createIdrEmployeetStart,
+    createIdrEmployeeSuccess,
+    createIdrEmployeeFailure,
+
   } = idrEmployeeSlice.actions;
   
   export default idrEmployeeSlice.reducer;

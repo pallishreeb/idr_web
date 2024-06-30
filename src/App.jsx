@@ -30,6 +30,7 @@ import WorkOrder from "./page/Idr_workorder/WorkOrder";
 import AddWorkOrder from "./page/Idr_workorder/AddWorkOrder";
 import IDREmployeePage from "./page/idr-employee/IDREmployeesPage";
 import EditIDREmployeePage from "./page/idr-employee/EditIDREmployeePage";
+import AddIDREmployeePage from "./page/idr-employee/AddIDREmployeePage";
 import EditWorkOrder from "./page/Idr_workorder/EditWorkOrder";
 import { logout } from "./reducers/userSlice";
 function App() {
@@ -76,6 +77,7 @@ function App() {
           <Route path="/users" element={<AllUsers />}></Route>
           <Route path="/clients" element={<Client />} />
           <Route path="/add-client" element={<AddNewClient />} />
+          <Route path="/add-idr-employees" element={<AddIDREmployeePage />}></Route>
           <Route path="/dashboard" element={<Dashboard />}></Route>
           <Route path="/admin/dashboard" element={<AdminDashboard />}></Route>
           <Route path="/users/create" element={<CreateUser />}></Route>

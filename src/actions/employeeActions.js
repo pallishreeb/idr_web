@@ -5,7 +5,7 @@ import { fetchIDREmployeesFailure,fetchIDREmployeesRequest,fetchIDREmployeesSucc
   fetchIDREmployeeDetailsFailure,
   updateIDREmployeeRequest,
   updateIDREmployeeSuccess,
-  updateIDREmployeeFailure,} from "../reducers/idrEmployeeSlice";
+  updateIDREmployeeFailure,createIdrEmployeetStart,createIdrEmployeeSuccess,createIdrEmployeeFailure} from "../reducers/idrEmployeeSlice";
 import {  apiConfig } from "../config";
 
 
@@ -52,37 +52,27 @@ export const updateIDREmployee = (employeeData) => async (dispatch) => {
     dispatch(updateIDREmployeeSuccess(response.data));
     toast.success('Employee updated successfully');
   } catch (error) {
+    console.log(error)
     dispatch(updateIDREmployeeFailure(error.message));
     toast.error(error.response?.data?.message || 'Failed to update employee');
   }
 };
-// export const addIdrEmployee = (idrEmployeeData,navigate) => {
-//     return async (dispatch) => {
-//       dispatch(createIdrEmployeetStart());
-//       try {
-//         const response = await axios.post(apiConfig.addIdrEmployee, idrEmployeeData);
-//         dispatch(createIdrEmployeeSuccess(response.data));
-//         toast.success("Idr Employee added successfully");
-//         navigate('/idr-employees')
-//       } catch (error) {
-//         dispatch(createIdrEmployeeFailure(error.message));
-//         toast.error(error.response?.data?.message || "Failed to add IdrEmployee");
-//       }
-//     };
-//   };
+export const createIDREmployee = (idrEmployeeData,navigate) => {
+    return async (dispatch) => {
+      dispatch(createIdrEmployeetStart());
+      try {
+        const response = await axios.post(apiConfig.addIdrEmployee, idrEmployeeData);
+        dispatch(createIdrEmployeeSuccess(response?.data));
+        // console.log(response.data)
+        toast.success("Idr Employee added successfully");
+        navigate('/idr-employees')
+      } catch (error) {
+        console.log(error,"error")
+        dispatch(createIdrEmployeeFailure(error.message));
+        toast.error(error.response?.data?.message || "Failed to add IdrEmployee");
+      }
+    };
+  };
 
-// export const updateIdrEmployee = (idrEmployeeId,idrEmployeeData,navigate) => {
-//     return async (dispatch) => {
-//       dispatch(updateIdrEmployeeStart());
-//       try {
-//         const response = await axios.post(`${apiConfig.updateIdrEmp}`, idrEmployeeData);
-//         dispatch(updateIdrEmployeeSuccess(response.data));
-//         toast.success("Idr Employee updated successfully");
-//         navigate('/idr-employees');
-//       } catch (error) {
-//         dispatch(updateIdrEmployeeFailure(error.message));
-//         toast.error(error.response?.data?.message || "Failed to update Idr Employee");
-//       }
-//     };
-//   };
+
   
