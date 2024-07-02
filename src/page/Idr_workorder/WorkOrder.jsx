@@ -219,7 +219,7 @@ const WorkOrder = () => {
                           {order.client_name}
                         </td>
                         <td className="border text-sm px-1 py-3">
-                          {order.generated_date}
+                          {formatDate(order.generated_date)}
                         </td>
                         <td className="border text-sm px-1 py-3">
                           <input
