@@ -1,7 +1,9 @@
 import React, { useEffect,useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import Swal from 'sweetalert2';
 import { Link } from "react-router-dom";
-import { BsPencil, BsTrash } from "react-icons/bs";
+import { BiSolidEditAlt } from "react-icons/bi";
+import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients,deleteClient ,getIndustries} from "../../actions/clientActions";
@@ -12,6 +14,7 @@ const Client = () => {
   const navigate = useNavigate();
   const { clients, loading } = useSelector((state) => state.client);
   const {industries} = useSelector((state) => state.client.industries);
+  const { user_type } = useSelector((state) => state.user.user);
   const [clientName, setClientName] = useState('');
   const [industryId, setIndustryId] = useState('');
 
@@ -34,13 +37,22 @@ const Client = () => {
     navigate(`/update-client/${clientId}`);
   };
 
-
-  const handleDeleteEmployee = (clientId) => {
-    if (window.confirm("Are you sure you want to delete this Client?")) {
-      dispatch(deleteClient(clientId)); // Dispatch deleteClientEmployee action if confirmed
+const handleDeleteClient = (clientId) => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you really want to delete this client?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, keep it',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      dispatch(deleteClient(clientId));
+      dispatch(getClients());
     }
-    dispatch(getClients());
-  };
+
+  });
+};
 
   const handleSearch = () => {
     dispatch(getClients({ clientName, industryId }));
@@ -55,7 +67,7 @@ const Client = () => {
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4 mt-5 h-screen overflow-y-scroll">
+        <div className="container mx-auto bg-gray-50 p-4 mt-5 h-screen overflow-y-scroll">
           <div className="flex justify-between items-center mb-4">
             <h1 className="font-bold text-lg">Client Management</h1>
             <button className="bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
@@ -105,7 +117,7 @@ const Client = () => {
           ) : (
             <>
             
-               <table className="w-full table-auto shadow-lg">
+               <table className="w-full table-auto">
               <thead className="text-left">
                 <tr>
                   <th className="border px-4 py-2">Company Name</th>
@@ -134,12 +146,14 @@ const Client = () => {
                       {client?.contact_person_firstname} {client?.contact_person_lastname}
                     </td>
                     <td className="border flex px-2 py-2">
-                      <button  onClick={() => handleEdit(client?.client_id)} className="bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded mr-2">
-                        <BsPencil />
+                      <button  onClick={() => handleEdit(client?.client_id)} className="p-[4px] bg-gray-100 cursor-pointer">
+                        <BiSolidEditAlt />
                       </button>
-                      <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" onClick={() => handleDeleteEmployee(client?.client_id)}>
-                        <BsTrash />
+                      {user_type === "Admin" && 
+                      <button className="p-[4px] bg-gray-100 cursor-pointer" onClick={() => handleDeleteClient(client?.client_id)}>
+                        <AiFillDelete />
                       </button>
+                      }
                     </td>
                   </tr>
                 ))

@@ -13,39 +13,39 @@ const AdminSideNavbar = () => {
     {
       title: "Dashboard",
       path: "/admin/dashboard",
-      roles: ["Admin", "Subadmin",],
+      roles: ["Admin", "Subadmin"],
     },
-    { title: "Users", path: "/users", roles: ["Admin"] },
+    // { title: "Users", path: "/users", roles: ["Admin"] },
     {
       title: "Clients",
       path: "/clients",
-      roles: ["Admin", "Subadmin",],
+      roles: ["Admin", "Subadmin"],
     },
     {
       title: "Client Employees",
       path: "/client-employees",
-      roles: ["Admin", "Subadmin", ],
+      roles: ["Admin", "Subadmin"],
     },
     {
       title: "Client Locations",
       path: "/locations",
-      roles: ["Admin","Subadmin", ],
+      roles: ["Admin", "Subadmin"],
     },
     {
       title: "Client Equipments",
       path: "/client-equipment",
-      roles: ["Admin","Subadmin"],
+      roles: ["Admin", "Subadmin"],
     },
     // Add more menu items as needed
   ];
   const idrMenuItems = [
+    // {
+    //   title: "Dashboard",
+    //   path: "/admin/dashboard",
+    //   roles: ["Admin","Subadmin", "IDR Employee", "Client Employee"],
+    // },
     {
-      title: "Dashboard",
-      path: "/admin/dashboard",
-      roles: ["Admin","Subadmin", "IDR Employee", "Client Employee"],
-    },
-    {
-      title: "IDR Employee",
+      title: "IDR Employees",
       path: "/idr-employees",
       roles: ["Admin", "Subadmin"],
     },
@@ -60,18 +60,18 @@ const AdminSideNavbar = () => {
       roles: ["Admin", "Subadmin", "IDR Employee"],
     },
     {
-      title: "Client Equipments",
+      title: "IDR Equipment and Tools",
       path: "/company-equipment",
       roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"],
     },
-    {
-      title: "Upload CSV File",
-      path: "/upload-csv",
-      roles: ["Admin", "Client Employee"],
-    },
+    // {
+    //   title: "Upload CSV File",
+    //   path: "/upload-csv",
+    //   roles: ["Admin", "Client Employee"],
+    // },
     // Add more menu items as needed
   ];
-  const mainMenu = ['Admin', 'Subadmin']
+  const mainMenu = ["Admin", "Subadmin"];
 
   const toggleSubMenu = () => {
     setIsSubMenuOpen(!isSubMenuOpen);
@@ -86,41 +86,44 @@ const AdminSideNavbar = () => {
       <aside className=" text-black w-64 flex-shrink-0 border-r border-gray-400">
         <nav>
           <ul>
-            {mainMenu.includes(user_type) && 
-            <>
-            <li className="flex items-center justify-between px-4 py-2 bg-gray-300 font-semibold">
-              <span>CLIENT</span>
-              <button
-                onClick={toggleSubMenuClient}
-                className="focus:outline-none"
-              >
-                {isSubMenuOpenClient ? (
-                  <BsChevronUp className="h-5 w-5" />
-                ) : (
-                  <BsChevronDown className="h-5 w-5" />
+            {mainMenu.includes(user_type) && (
+              <>
+                <li className="flex items-center justify-between px-4 py-2 bg-gray-300 font-semibold">
+                  <span>CLIENT</span>
+                  <button
+                    onClick={toggleSubMenuClient}
+                    className="focus:outline-none"
+                  >
+                    {isSubMenuOpenClient ? (
+                      <BsChevronUp className="h-5 w-5" />
+                    ) : (
+                      <BsChevronDown className="h-5 w-5" />
+                    )}
+                  </button>
+                </li>
+
+                {isSubMenuOpenClient && (
+                  <ul className="flex flex-col gap-1 mt-1">
+                    {menuItems.map(
+                      (item) =>
+                        item.roles.includes(user_type) && (
+                          <Link to={item.path} key={item.title}>
+                            <div className="flex items-center gap-3 bg-gray-100 hover:bg-indigo-700 hover:text-white cursor-pointer">
+                              <MdDashboardCustomize
+                                size={20}
+                                className="ml-6"
+                              />
+                              <li className="py-2">{item.title}</li>
+                            </div>
+                          </Link>
+                        )
+                    )}
+                  </ul>
                 )}
-              </button>
-            </li>
-             
-            {isSubMenuOpenClient && (
-              <ul className="flex flex-col gap-1 mt-1">
-                {menuItems.map(
-                  (item) =>
-                    item.roles.includes(user_type) && (
-                      <Link to={item.path} key={item.title}>
-                        <div className="flex items-center gap-3 bg-gray-100 hover:bg-indigo-700 hover:text-white cursor-pointer">
-                          <MdDashboardCustomize size={20} className="ml-6" />
-                          <li className="py-2">{item.title}</li>
-                        </div>
-                      </Link>
-                    )
-                )}
-              </ul>
+              </>
             )}
-            </>
-            }
             <li className="flex items-center justify-between px-4 py-2 bg-gray-300 font-semibold">
-              <span>IDR</span>
+              <span>{user_type === "Client Employee" ? "Client" : "IDR"}</span>
               <button onClick={toggleSubMenu} className="focus:outline-none">
                 {isSubMenuOpen ? (
                   <BsChevronUp className="h-5 w-5" />
@@ -131,6 +134,14 @@ const AdminSideNavbar = () => {
             </li>
             {isSubMenuOpen && (
               <ul className="flex flex-col gap-1 mt-1">
+                {!mainMenu.includes(user_type) && (
+                  <Link to={"/admin/dashboard"} key="/admin/dashboard">
+                    <div className="flex items-center gap-3 bg-gray-100 hover:bg-indigo-700 hover:text-white cursor-pointer">
+                      <MdDashboardCustomize size={20} className="ml-6" />
+                      <li className="py-2">Dashboard</li>
+                    </div>
+                  </Link>
+                )}
                 {idrMenuItems.map(
                   (item) =>
                     item.roles.includes(user_type) && (
@@ -147,15 +158,6 @@ const AdminSideNavbar = () => {
           </ul>
         </nav>
       </aside>
-
-      {/* Content */}
-      {/* <div className="flex-1 p-4">
-        <h1 className="text-2xl font-bold">Main Content</h1>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vel
-          urna ut urna efficitur commodo.
-        </p>
-      </div> */}
     </div>
   );
 };

@@ -25,7 +25,7 @@ const UpdateUser = () => {
 
   useEffect(() => {
     if (user) {
-      setEmail(user.email_id);
+      setEmail(user?.email_id);
       setUserType(user.user_type);
       setContactNumber(user?.contact_number ? user?.contact_number : "")
       setFirstName(user?.first_name ? user?.first_name : "")
@@ -37,6 +37,7 @@ const UpdateUser = () => {
     e.preventDefault();
 
     const userData = {
+      email_id:email,
       user_id: userId,
       user_type: userType,
       first_name:firstName,
@@ -102,7 +103,6 @@ const UpdateUser = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                readOnly
               />
             </div>
             <div className="mb-4">
@@ -113,6 +113,7 @@ const UpdateUser = () => {
                 value={userType}
                 onChange={(e) => setUserType(e.target.value)}
                 required
+                disabled
               >
                 <option value="">Select User Type</option>
                 <option value="Admin">Admin</option>

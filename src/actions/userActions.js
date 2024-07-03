@@ -20,6 +20,9 @@ import {
   forgotPasswordRequest,
   forgotPasswordSuccess,
   forgotPasswordFailure,
+  deleteUserRequest,
+  deleteUserFailure,
+  deleteUserSuccess
 } from "../reducers/userSlice";
 import { API_BASE_URL, apiConfig } from "../config";
 import {toast} from "react-toastify"
@@ -84,11 +87,11 @@ export const setUserPasswordByAdmin = (passwordData, navigate) => {
       const response = await axios.patch(apiConfig.setPassword, passwordData);
       dispatch(setPasswordSuccess(response.data.message));
       toast.success(`Password Updated  successfully`)
-      navigate("/users");
+      navigate(-1);
     } catch (error) {
       dispatch(setPasswordFailure(error.message));
       toast.error("Failed to Update User's Password")
-      navigate("/users");
+      navigate(-1);
     }
   };
 };
@@ -144,4 +147,18 @@ export const forgotPassword = (email) => {
       return error.message;
     }
   };
+};
+
+export const deleteUser = (userId) => async dispatch => {
+  dispatch(deleteUserRequest());
+  try {
+      await axios.delete(`${apiConfig.deleteUser}/${userId}`).then((res)=>{
+       dispatch(deleteUserSuccess(userId));
+       toast.success("User deleted successfully");
+      });
+      
+     } catch (error) {
+       dispatch(deleteUserFailure(error.message));
+       toast.error(error.response?.data?.message || "Failed to delete User");
+     }
 };
