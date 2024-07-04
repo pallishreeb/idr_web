@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import axios from "axios";
-import {useDispatch} from "react-redux"
+import { useDispatch } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./page/auth/forgot-password";
@@ -32,9 +32,16 @@ import IDREmployeePage from "./page/idr-employee/IDREmployeesPage";
 import EditIDREmployeePage from "./page/idr-employee/EditIDREmployeePage";
 import EditWorkOrder from "./page/Idr_workorder/EditWorkOrder";
 import { logout } from "./reducers/userSlice";
+import Inventory from "./page/idr_inventory/Inventory";
+import AddInventory from "./page/idr_inventory/AddInventory";
+import EditInventory from "./page/idr_inventory/EditInventory";
+import ClientEquipment from "./page/idr_client_equipment/ClientEquipment";
+import AddClientEqiupment from "./page/idr_client_equipment/AddClientEqupment";
+import EditClientEqiupment from "./page/idr_client_equipment/EditClientEqupment";
+import TransferInventory from "./page/idr_inventory/TransferInventory";
 function App() {
   const dispatch = useDispatch();
-  const token = localStorage.getItem('user_idr_token');
+  const token = localStorage.getItem("user_idr_token");
   axios.defaults.headers.common.Authorization = `Bearer ${token}`;
   axios.interceptors.response.use(
     function (response) {
@@ -43,10 +50,10 @@ function App() {
     function (error) {
       let res = error?.response;
       if (res?.status === 401 && res?.config && !res?.config.__isRetryRequest) {
-        localStorage.removeItem('user_idr_token');
+        localStorage.removeItem("user_idr_token");
         dispatch(logout());
       }
-    },
+    }
   );
   return (
     <>
@@ -82,7 +89,10 @@ function App() {
           <Route path="/users/update/:userId" element={<UpdateUser />}></Route>
           <Route path="/workorder" element={<WorkOrder />}></Route>
           <Route path="/add-work-order" element={<AddWorkOrder />}></Route>
-          <Route path="/edit-work-order/:workOrderId" element={<EditWorkOrder />}></Route>
+          <Route
+            path="/edit-work-order/:workOrderId"
+            element={<EditWorkOrder />}
+          ></Route>
           <Route path="/client-employees" element={<EmployeePage />}></Route>
           <Route
             path="/add-employee/:clientId"
@@ -111,6 +121,23 @@ function App() {
             path="/edit-employee/:employeeId"
             element={<EditEmployeePage />}
           />
+          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/addinventory" element={<AddInventory />} />
+          <Route path="/edit_inventory" element={<EditInventory />} />
+          <Route path="/company-equipment" element={<ClientEquipment />} />
+          <Route
+            path="/add-company-equipment"
+            element={<AddClientEqiupment />}
+          />
+          <Route
+            path="/edit-company-equipment"
+            element={<EditClientEqiupment />}
+          />
+          <Route
+            path="/transfer-company-equipment"
+            element={<TransferInventory />}
+          />
+
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
