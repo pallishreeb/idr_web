@@ -8,7 +8,6 @@ import {
   getEmployeeById,
 } from "../../actions/clientEmployeeActions"; // Import your client employee actions
 import { getClients } from "../../actions/clientActions";
-import { fetchUsers } from "../../actions/userActions"; // Import getUsers action
 
 const EditEmployeePage = () => {
   const dispatch = useDispatch();
@@ -19,12 +18,9 @@ const EditEmployeePage = () => {
   const loadingClients = useSelector((state) => state.client.loading);
   const employee = useSelector((state) => state.clientEmployee.employee);
   const loadingEmployees = useSelector((state) => state.clientEmployee.loading);
-  const usersData = useSelector((state) => state.user.users); // Get users from the user slice
-  const loadingUsers = useSelector((state) => state.user.loading);
 
   const [formData, setFormData] = useState({
     client_id: "",
-    user_id: "",
     first_name: "",
     last_name: "",
     email_id: "",
@@ -35,19 +31,17 @@ const EditEmployeePage = () => {
   useEffect(() => {
     dispatch(getEmployeeById(employeeId));
     dispatch(getClients());
-    dispatch(fetchUsers());
   }, [dispatch, employeeId]);
 
   useEffect(() => {
     if (employee) {
-      const { client_id, user_id, first_name, last_name, email_id,contact_number, access_to_website } = employee;
+      const { client_id, first_name, last_name, email_id, contact_number, access_to_website } = employee;
       setFormData({
         client_id,
-        user_id: user_id || '',
         first_name: first_name || '',
         last_name: last_name || '',
         email_id: email_id || '',
-        contact_number:contact_number || '',
+        contact_number: contact_number || '',
         access_to_website,
       });
     }
@@ -56,30 +50,6 @@ const EditEmployeePage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-  };
-
-  const handleUserChange = (e) => {
-    const selectedUserId = e.target.value;
-    const selectedUser = usersData.data.find(user => user.user_id === selectedUserId);
-    if (selectedUser) {
-      setFormData({
-        ...formData,
-        user_id: selectedUser.user_id,
-        first_name: selectedUser.first_name,
-        last_name: selectedUser.last_name,
-        email_id: selectedUser.email_id,
-        contact_number:selectedUser.contact_number
-      });
-    } else {
-      setFormData({
-        ...formData,
-        user_id: '',
-        first_name: '',
-        last_name: '',
-        email_id: '',
-        contact_number:'',
-      });
-    }
   };
 
   const handleChangeRadio = (e) => {
@@ -91,9 +61,6 @@ const EditEmployeePage = () => {
     e.preventDefault();
     dispatch(updateClientEmployee(employeeId, formData, navigate));
   };
-
-  // Filter users with user_type as 'Client Employee'
-  const filteredUsers = Array.isArray(usersData?.data) ? usersData.data.filter(user => user.user_type === 'Client Employee') : [];
 
   return (
     <>
@@ -125,26 +92,6 @@ const EditEmployeePage = () => {
                   </select>
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="user_id" className="block text-sm font-medium text-gray-700">User</label>
-                  <select
-                    id="user_id"
-                    name="user_id"
-                    value={formData.user_id}
-                    onChange={handleUserChange}
-                    className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    required
-                  >
-                    <option value="">Select a user</option>
-                    {loadingUsers ? (
-                      <option value="" disabled>Loading...</option>
-                    ) : (
-                      filteredUsers.map((user) => (
-                        <option key={user.user_id} value={user.user_id}>{user.first_name} {user.last_name}</option>
-                      ))
-                    )}
-                  </select>
-                </div>
-                <div className="mb-4">
                   <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">First Name</label>
                   <input
                     type="text"
@@ -153,7 +100,7 @@ const EditEmployeePage = () => {
                     value={formData.first_name}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    readOnly
+                    required
                   />
                 </div>
                 <div className="mb-4">
@@ -165,7 +112,7 @@ const EditEmployeePage = () => {
                     value={formData.last_name}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    readOnly
+                    required
                   />
                 </div>
                 <div className="mb-4">
@@ -177,7 +124,7 @@ const EditEmployeePage = () => {
                     value={formData.email_id}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    readOnly
+                    required
                   />
                 </div>
                 <div className="mb-4">
@@ -189,7 +136,7 @@ const EditEmployeePage = () => {
                     value={formData.contact_number}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    readOnly
+                    required
                   />
                 </div>
                 <div className="mb-4">

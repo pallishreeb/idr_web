@@ -10,7 +10,7 @@ import { fetchIDREmployees } from "../../actions/employeeActions";
 import {
   generateTicket,
   addTechnicianToTicket,
-  addNotesToTicket,
+  assignPeopleToWorkOrder,
 } from "../../actions/workOrderActions";
 import { toast } from "react-toastify";
 
@@ -32,7 +32,7 @@ function AddWorkOrder() {
     location_id: "",
     client_name: "",
     work_order_type: "abv",
-    generated_date: new Date().toLocaleDateString('en-US'),
+    generated_date: new Date().toLocaleDateString("en-US"),
     generated_time: new Date().toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -48,13 +48,10 @@ function AddWorkOrder() {
     status: "Open",
     local_onsite_person: "",
     local_onsite_person_contact: "",
+    client_emp_user_id: "",
   });
   const [technicianData, setTechnicianData] = useState({
     work_order_id: "",
-    technician_user_id:"",
-    technician_name: "",
-    pm_user_id:"",
-    project_manager: "",
     other_details: "",
     procedures: "",
     parts: "",
@@ -62,9 +59,13 @@ function AddWorkOrder() {
     required_deliverables: "",
     deliverable_instructions: "",
   });
-  const [notesData, setNotesData] = useState({
+
+  const [assigns, setAssigns] = useState({
     work_order_id: "",
-    comments: "",
+    technician_user_id: "",
+    technician_name: "",
+    pm_user_id: "",
+    project_manager: "",
   });
 
   useEffect(() => {
@@ -108,35 +109,35 @@ function AddWorkOrder() {
             selectedEmployee.first_name + " " + selectedEmployee.last_name,
           contact_phone_number: selectedEmployee.contact_number,
           contact_mail_id: selectedEmployee.email_id,
+          client_emp_user_id: selectedEmployee.user_id,
         }));
       }
     }
 
-    //set technician user id
+    // Set technician user id
     if (name === "technician_name") {
       const selectedTechnician = idrEmployees?.find(
-        (employee) => employee?.user_id === value
+        (employee) => employee.first_name + ' ' + employee.last_name === value
       );
-      console.log(selectedTechnician,"selectedTechnician")
       if (selectedTechnician) {
-        setTechnicianData((prev) => ({
+        setAssigns((prev) => ({
           ...prev,
           technician_user_id: selectedTechnician.user_id,
         }));
       }
     }
-      //set technician manager user id
-      if (name === "project_manager") {
-        const selectedTechnician = idrEmployees?.find(
-          (employee) => employee?.user_id === value
-        );
-        if (selectedTechnician) {
-          setTechnicianData((prev) => ({
-            ...prev,
-            pm_user_id: selectedTechnician.user_id,
-          }));
-        }
+    // Set project manager user id
+    if (name === "project_manager") {
+      const selectedTechnician = idrEmployees?.find(
+        (employee) => employee.first_name + ' ' + employee.last_name === value
+      );
+      if (selectedTechnician) {
+        setAssigns((prev) => ({
+          ...prev,
+          pm_user_id: selectedTechnician.user_id,
+        }));
       }
+    }
   };
 
   const handleNext = () => {
@@ -159,11 +160,11 @@ function AddWorkOrder() {
     } else if (step === 3) {
       // Validate step 3 fields
       if (!validateStep3()) {
-        toast.error("Please add Note.");
+        toast.error("Please add Technicians.");
         return;
       }
 
-      addNotes();
+      addAssigns();
     }
   };
 
@@ -175,32 +176,25 @@ function AddWorkOrder() {
       ticketData.service_date !== "" &&
       ticketData.issue !== "" &&
       ticketData.contact_person !== "" &&
-      ticketData.job_location !== "" &&
-      ticketData.local_onsite_person !== "",
-      ticketData.local_onsite_person_contact !== ""
+      ticketData.job_location !== ""
     );
   };
 
   const validateStep2 = () => {
     // Example validation, adjust as per your field requirements
     return (
-      technicianData.technician_name !== "" &&
-      technicianData.project_manager !== "" &&
       technicianData.other_details !== "" &&
       technicianData.procedures !== "" &&
-      notesData.parts !== "" &&
-      notesData.labeling_methodology !== "" &&
-      notesData.equipment_installation !== "" &&
-      notesData.required_deliverables !== "" &&
-      notesData.deliverable_instructions !== ""
+      technicianData.parts !== "" &&
+      technicianData.labeling_methodology !== "" &&
+      technicianData.required_deliverables !== "" &&
+      technicianData.deliverable_instructions !== ""
     );
   };
 
   const validateStep3 = () => {
     // Example validation, adjust as per your field requirements
-    return (
-      notesData.comments !== ""
-    );
+    return assigns.technician_name !== "" && assigns.project_manager !== "";
   };
 
   const generateWorkOrderTicket = () => {
@@ -225,11 +219,12 @@ function AddWorkOrder() {
     dispatch(addTechnicianToTicket(technicianData))
       .then((response) => {
         if (response.code == "WO201") {
-          setNotesData((prev) => ({
+          setAssigns((prev) => ({
             ...prev,
             work_order_id: technicianData.work_order_id,
           }));
           setStep(3); // Proceed to next step
+          // navigate("/workorder");
         } else {
           console.error("Error adding technician:", response.error);
         }
@@ -239,13 +234,14 @@ function AddWorkOrder() {
       });
   };
 
-  const addNotes = () => {
-    dispatch(addNotesToTicket(notesData))
+  const addAssigns = () => {
+    dispatch(assignPeopleToWorkOrder(assigns))
       .then((response) => {
         if (response.code == "WO201") {
+          toast.success("Work Order Created.")
           navigate("/workorder");
         } else {
-          console.error("Error adding notes:", response.error);
+          console.error("Error adding assigns:", response.error);
         }
       })
       .catch((error) => {
@@ -281,7 +277,7 @@ function AddWorkOrder() {
 
               <div className="grid grid-cols-3 gap-8">
                 <div className="flex flex-col gap-2">
-                  <label className="font-normal text-base">Choose Client</label>
+                  <label className="font-normal text-base">Choose Client*</label>
                   <select
                     name="client_id"
                     className="px-3 border border-gray-200 h-10 text-sm rounded"
@@ -299,7 +295,7 @@ function AddWorkOrder() {
 
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-base">
-                    Choose Location
+                    Choose Location*
                   </label>
                   <select
                     name="location_id"
@@ -320,7 +316,7 @@ function AddWorkOrder() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="font-normal text-base">Client Name</label>
+                  <label className="font-normal text-base">Client Name*</label>
                   <input
                     type="text"
                     name="client_name"
@@ -331,7 +327,7 @@ function AddWorkOrder() {
                 </div>
                 <div className="flex flex-col gap-2 ">
                   <label className="font-normal text-base">
-                    Contact person
+                    Contact person*
                   </label>
                   <select
                     name="contact_person"
@@ -353,7 +349,7 @@ function AddWorkOrder() {
 
                 <div className="flex flex-col gap-2 ">
                   <label className="font-normal text-base">
-                    Contact Phone Number
+                    Contact Phone Number*
                   </label>
                   <input
                     type="text"
@@ -369,7 +365,7 @@ function AddWorkOrder() {
 
                 <div className="flex flex-col gap-2 ">
                   <label className="font-normal text-base">
-                    Contact Email id
+                    Contact Email id*
                   </label>
                   <input
                     type="email"
@@ -384,7 +380,7 @@ function AddWorkOrder() {
 
                 <div className="flex flex-col gap-2 ">
                   <label className="font-normal text-base">
-                    Customer PO Number
+                    Customer PO Number*
                   </label>
                   <input
                     type="text"
@@ -396,7 +392,7 @@ function AddWorkOrder() {
                 </div>
 
                 <div className="flex flex-col gap-2 ">
-                  <label className="font-normal text-base">Service date</label>
+                  <label className="font-normal text-base">Service Date*</label>
                   <input
                     type="date"
                     placeholder="type"
@@ -408,7 +404,7 @@ function AddWorkOrder() {
                   />
                 </div>
                 <div className="flex flex-col gap-2 ">
-                  <label className="font-normal text-base">Job Location</label>
+                  <label className="font-normal text-base">Job Location*</label>
                   <input
                     type="text"
                     placeholder="Type Job Location"
@@ -419,7 +415,7 @@ function AddWorkOrder() {
                 </div>
                 <div className="flex flex-col gap-2 ">
                   <label className="font-normal text-base">
-                    Service Request
+                    Service Request*
                   </label>
                   <input
                     type="text"
@@ -474,7 +470,7 @@ function AddWorkOrder() {
 
               <div className="flex flex-col gap-2 justify-center mt-7 items-center">
                 <button
-                  className="border bg-blue-600 w-1/3 py-2 text-white rounded"
+                  className="border bg-indigo-600 w-1/3 py-2 text-white rounded"
                   onClick={handleNext}
                 >
                   {loading ? "Saving" : "Next"}
@@ -486,55 +482,15 @@ function AddWorkOrder() {
           {step === 2 && (
             <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
               <div className="mb-2">
-                <h1 className="text-xl font-normal mb-2">Assign Technician</h1>
+                <h1 className="text-xl font-normal mb-2">Work Order Details</h1>
                 <div className="border border-gray-200"></div>
               </div>
 
               <div className="flex flex-col gap-5">
-                <div className="flex flex-col gap-2">
-                  <label className="font-normal text-base">
-                    Technician name
-                  </label>
-                  <select
-                    name="technician_name"
-                    className="px-3 border border-gray-200 h-10 text-sm rounded"
-                    onChange={(e) => handleChange(e, setTechnicianData)}
-                  >
-                    <option value="">Choose technician</option>
-                    {idrEmployees.map((employee) => (
-                      <option
-                        key={employee.idr_emp_id}
-                        value={employee.user_id}
-                      >
-                        {employee.first_name} {employee.last_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Other fields */}
-                <div className="flex flex-col gap-2">
-                  <label className="font-normal text-base">
-                    Project manager
-                  </label>
-                  <select
-                    name="project_manager"
-                    className="px-3 border border-gray-200 h-10 text-sm rounded"
-                    onChange={(e) => handleChange(e, setTechnicianData)}
-                  >
-                    <option value="">Choose project manager</option>
-                    {idrEmployees.map((employee) => (
-                      <option
-                        key={employee.idr_emp_id}
-                        value={employee.user_id}
-                      >
-                        {employee.first_name} {employee.last_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
                 <div className="flex flex-col gap-2 ">
-                  <label className="font-normal text-base">Parts and Tools</label>
+                  <label className="font-normal text-base">
+                    Parts and Tools*
+                  </label>
                   <textarea
                     name="parts"
                     className="px-3 py-2 border text-sm h-32 border-gray-200 rounded resize-y"
@@ -545,7 +501,7 @@ function AddWorkOrder() {
 
                 <div className="flex flex-col gap-2 ">
                   <label className="font-normal text-base">
-                    Labeling Methodology
+                    Labeling Methodology*
                   </label>
                   <input
                     type="text"
@@ -556,7 +512,7 @@ function AddWorkOrder() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-base">
-                    Service details
+                    Service Details*
                   </label>
                   <textarea
                     name="other_details"
@@ -566,7 +522,7 @@ function AddWorkOrder() {
                   ></textarea>
                 </div>
                 <div className="flex flex-col gap-2 ">
-                  <label className="font-normal text-base">Procedures</label>
+                  <label className="font-normal text-base">Procedures*</label>
                   <textarea
                     name="procedures"
                     className="px-3 py-3 border border-gray-200 h-32 text-sm rounded resize-y"
@@ -577,7 +533,7 @@ function AddWorkOrder() {
 
                 <div className="flex flex-col gap-2 ">
                   <label className="font-normal text-base">
-                    Require Deliverables
+                    Require Deliverables*
                   </label>
                   <textarea
                     name="required_deliverables"
@@ -589,7 +545,7 @@ function AddWorkOrder() {
 
                 <div className="flex flex-col gap-2 ">
                   <label className="font-normal text-base">
-                    Deliverable Instructions
+                    Deliverable Instructions*
                   </label>
                   <textarea
                     name="deliverable_instructions"
@@ -601,7 +557,7 @@ function AddWorkOrder() {
 
                 <div className="flex flex-col gap-2 justify-center mt-7 items-center">
                   <button
-                    className="border bg-blue-600 w-1/3 py-2 text-white rounded"
+                    className="border bg-indigo-600 w-1/3 py-2 text-white rounded"
                     onClick={handleNext}
                   >
                     {loading ? "Saving" : "Next"}
@@ -614,29 +570,63 @@ function AddWorkOrder() {
           {step === 3 && (
             <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
               <div className="mb-2">
-                <h1 className="font-normal text-xl mb-2">Notes</h1>
+                <h1 className="text-xl font-normal mb-2">Assign Technicians</h1>
                 <div className="border border-gray-200"></div>
               </div>
+              <div className="grid grid-cols-2 gap-8">
+                  <div className="flex flex-col gap-2">
+                    <label className="font-normal text-base">
+                      Technician name
+                    </label>
+                    <select
+                      name="technician_name"
+                      value={assigns.technician_name}
+                      className="px-3 border border-gray-200 h-10 text-sm rounded"
+                      onChange={(e) => handleChange(e, setAssigns)}
+                    >
+                      <option value="">Choose technician</option>
+                      {idrEmployees.map((employee) => (
+                        <option
+                          key={employee.idr_emp_id}
+                          value={employee.first_name + ' ' + employee.last_name}
+                        >
+                          {employee.first_name} {employee.last_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-base">Comments</label>
-                <textarea
-                  name="comments"
-                  className="px-3 py-2 border text-sm border-gray-200 h-32 rounded"
-                  onChange={(e) => handleChange(e, setNotesData)}
-                  rows={3}
-                ></textarea>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-normal text-base">
+                      Project manager
+                    </label>
+                    <select
+                      name="project_manager"
+                      value={assigns.project_manager}
+                      className="px-3 border border-gray-200 h-10 text-sm rounded"
+                      onChange={(e) => handleChange(e, setAssigns)}
+                    >
+                      <option value="">Choose project manager</option>
+                      {idrEmployees.map((employee) => (
+                        <option
+                          key={employee.idr_emp_id}
+                          value={employee.first_name + ' ' + employee.last_name}
+                        >
+                          {employee.first_name} {employee.last_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>     
+                </div>
+                <div className="flex flex-col gap-2  justify-center mt-7 items-center">
+                    <button
+                      className="border bg-indigo-600 w-1/3 py-2 text-white rounded"
+                      onClick={handleNext}
+                    >
+                      {loading ? "Saving" : "Submit"}
+                    </button>
+                  </div>
               </div>
-
-              <div className="flex flex-col gap-2 justify-center mt-7 items-center">
-                <button
-                  className="border bg-blue-600 w-1/3 py-2 text-white rounded"
-                  onClick={handleNext}
-                >
-                  {loading ? "Saving" : "Submit"}
-                </button>
-              </div>
-            </div>
           )}
         </div>
       </div>

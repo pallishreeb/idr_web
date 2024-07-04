@@ -19,17 +19,20 @@ const AdminDashboard = () => {
   // Define a state variable to hold the matched user
   const [user, setUser] = useState(null);
 
+    
   useEffect(() => {
     dispatch(fetchUsers());
     dispatch(getWorkOrderLists());
   }, [dispatch]);
   useEffect(() => {
+    let loggedInUsers = JSON.parse(localStorage.getItem('user'))
     // Find the user object in the users array that matches the user.userId
-    const matched = users?.data?.find(
-      (u) => u.user_id === loggedInuser.user_id
-    );
-    // Update the matchedUser state variable
-    setUser(matched);
+    // const matched = users?.data?.find(
+    //   (u) => u.user_id === loggedInuser.user_id
+    // );
+    // // Update the matchedUser state variable
+    // setUser(matched);
+    setUser(loggedInUsers)
   }, [loggedInuser, users]);
   // Define all possible statuses
   const statuses = ["Open", "Design", "In Progress", "Reviewing", "Closed"];
@@ -50,6 +53,7 @@ const AdminDashboard = () => {
   // Split statuses into two columns
   const column1 = statuses.slice(0, Math.ceil(statuses.length / 2));
   const column2 = statuses.slice(Math.ceil(statuses.length / 2));
+
   return (
     <>
       <Header />
