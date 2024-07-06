@@ -1,12 +1,24 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import save from "../../Images/save.png";
 import { MdCloudUpload } from "react-icons/md";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getLocationInventory } from "../../actions/locationsInventoryAction";
 
 const AddInventory = () => {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const locationsInventory = useSelector(
+    (state) => state.locationInventory.locations
+  );
+
+  useEffect(() => {
+    dispatch(getLocationInventory());
+  }, []);
+
+  console.log("locationsInventory:", locationsInventory);
   return (
     <>
       <Header />
@@ -80,11 +92,14 @@ const AddInventory = () => {
 
               <div className="flex flex-col gap-2 ">
                 <label className="font-normal text-base">Location</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
+                <select className="px-3 border border-gray-200 h-10 text-sm rounded">
+                  <option>Select Location</option>
+                  {locationsInventory?.map((ele) => (
+                    <option className="capitalize" key={ele.id}>
+                      {ele.location}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="flex flex-col gap-2 ">
@@ -160,7 +175,7 @@ const AddInventory = () => {
 
             <div className="flex flex-row gap-10 justify-center mt-7 items-center">
               <button className="border w-1/3 py-2  rounded">Cancel</button>
-              <button className="border bg-blue-600 w-1/3 py-2 text-white rounded">
+              <button className="border bg-indigo-600 w-1/3 py-2 text-white rounded">
                 Submit
               </button>
             </div>

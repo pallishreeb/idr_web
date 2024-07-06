@@ -6,8 +6,29 @@ import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { BiTransferAlt } from "react-icons/bi";
+import { useState } from "react";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { postLocationInventory } from "../../actions/locationsInventoryAction";
+
 const Inventory = () => {
+  const [showModal, setShowModal] = useState(false);
+  const dispatch = useDispatch();
+  const [location, setLocation] = useState("");
+
+  const loading = useSelector((state) => state.locationInventory.loading);
+  const handleOpenModel = () => {
+    setShowModal(true);
+  };
+  const handleConfirmSave = async () => {
+    const data = {
+      location: location,
+    };
+    dispatch(postLocationInventory(data));
+    setLocation("");
+  };
   const navigate = useNavigate();
+
   return (
     <>
       <Header />
@@ -51,17 +72,25 @@ const Inventory = () => {
                     <option value="">All model</option>
                   </select>
                 </div>
-                <div class="flex flex-col gap-2">
-                  <label class="font-normal text-sm">Search List</label>
-                  <div class="flex border border-gray-200 h-10 rounded">
+                <div className="flex flex-col gap-2">
+                  <label className="font-normal text-sm">Search List</label>
+                  <div className="flex border border-gray-200 h-10 rounded">
                     <input
-                      class="flex-1 border-none text-xs font-normal px-2 py-2 rounded-l"
+                      className="flex-1 border-none text-xs font-normal px-2 py-2 rounded-l"
                       placeholder="Type"
                     />
-                    <button class="border-none text-xs font-normal px-4 py-2 bg-gray-200 rounded-r">
+                    <button className="border-none text-xs font-normal px-4 py-2 bg-gray-200 rounded-r">
                       Search
                     </button>
                   </div>
+                </div>
+                <div className="flex flex-col gap-2 justify-end">
+                  <button
+                    className="border-none text-xs font-normal px-4 py-3 bg-gray-200 rounded-r"
+                    onClick={handleOpenModel}
+                  >
+                    Add Location
+                  </button>
                 </div>
               </div>
 
@@ -139,6 +168,30 @@ const Inventory = () => {
           </div>
         </div>
       </div>
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="flex flex-col gap-2 bg-white p-8 rounded shadow-lg w-[20%] m-auto text-center">
+            <p>Add Location</p>
+            <div className="flex border border-gray-200 h-10 rounded">
+              <input
+                className="flex-1 border-none text-xs font-normal px-2 py-2 rounded-l"
+                placeholder="Type Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+              <button
+                disabled={loading}
+                onClick={() => {
+                  handleConfirmSave(), setShowModal(false);
+                }}
+                className="border-none text-xs font-normal px-4 py-2 bg-gray-200 rounded-r"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

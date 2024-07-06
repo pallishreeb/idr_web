@@ -33,7 +33,7 @@ const TransferInventory = () => {
                 Cancel
               </button>
               <button
-                className="bg-blue-600 text-white px-6 py-2 rounded"
+                className="bg-indigo-600 text-white px-6 py-2 rounded"
                 onClick={handleOpenModel}
               >
                 Save
@@ -41,7 +41,7 @@ const TransferInventory = () => {
             </div>
           </div>
 
-          <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
+          {/* <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
             <div className="mb-2">
               <h1 className="text-xl font-normal mb-2">Details</h1>
               <div className="border border-gray-200"></div>
@@ -169,9 +169,9 @@ const TransferInventory = () => {
                 required
               />
             </div>
-          </div>
+          </div> */}
 
-          <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
+          {/* <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
             <div className="mb-2">
               <h1 className="font-normal text-xl mb-2">Retiring item</h1>
               <div className="border border-gray-200"></div>
@@ -206,7 +206,7 @@ const TransferInventory = () => {
                 ></input>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
             <div className="mb-2">
@@ -214,7 +214,7 @@ const TransferInventory = () => {
                 <h1 className="text-xl font-normal mb-2">
                   Assign inventory to work order
                 </h1>
-                <button className="bg-blue-600 text-white px-6 py-2 rounded">
+                <button className="bg-indigo-600 text-white px-6 py-2 rounded">
                   Assign inventory
                 </button>
               </div>
@@ -273,7 +273,7 @@ const TransferInventory = () => {
                 <h1 className="font-normal text-xl">
                   Transfer inventory to alternate location
                 </h1>
-                <button className="bg-blue-600 text-white px-6 py-2 rounded">
+                <button className="bg-indigo-600 text-white px-6 py-2 rounded">
                   Transfer inventory
                 </button>
               </div>
@@ -311,7 +311,7 @@ const TransferInventory = () => {
             </div>
             <div className="flex justify-center gap-4 mt-4">
               <button
-                className=" px-4 py-2 text-white bg-blue-600 rounded"
+                className=" px-4 py-2 text-white bg-indigo-600 rounded"
                 onClick={handleConfirmSave}
               >
                 Save

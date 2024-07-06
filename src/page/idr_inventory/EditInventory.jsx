@@ -1,44 +1,32 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import save from "../../Images/save.png";
+import { MdCloudUpload } from "react-icons/md";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getLocationInventory } from "../../actions/locationsInventoryAction";
 
 const EditInventory = () => {
-  const [showModal, setShowModal] = useState(false);
+  const dispatch = useDispatch();
+  const locationsInventory = useSelector(
+    (state) => state.locationInventory.locations
+  );
 
-  const handleOpenModel = () => {
-    setShowModal(true);
-  };
+  useEffect(() => {
+    dispatch(getLocationInventory());
+  }, []);
 
-  const handleConfirmSave = () => {
-    // Your save logic here
-    setShowModal(false);
-  };
-  const navigate = useNavigate();
+  console.log("locationsInventory:", locationsInventory);
   return (
     <>
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className=" py-12 px-8 bg-gray-50 w-[100%]">
-          <div className="flex justify-between items-end">
-            <h1 className="font-bold text-lg">Inventory Item</h1>
-
-            <div className="flex gap-3">
-              <button
-                className="border border-gray-400 text-gray-400 px-6 py-2 rounded"
-                onClick={() => navigate("/inventory")}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-blue-600 text-white px-6 py-2 rounded"
-                onClick={handleOpenModel}
-              >
-                Save
-              </button>
-            </div>
+        <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
+          <div className="flex justify-between">
+            <h1 className="font-bold text-lg">Edit Inventory Item</h1>
           </div>
 
           <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
@@ -49,7 +37,7 @@ const EditInventory = () => {
 
             <div className="grid grid-cols-3 gap-8">
               <div className="flex flex-col gap-2">
-                <label className="font-normal text-sm">Make</label>
+                <label className="font-normal text-base">Make</label>
                 <input
                   placeholder="Type"
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
@@ -58,7 +46,7 @@ const EditInventory = () => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-normal text-sm">Model</label>
+                <label className="font-normal text-base">Model</label>
                 <input
                   placeholder="Type"
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
@@ -67,7 +55,7 @@ const EditInventory = () => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-normal text-sm">Device Type</label>
+                <label className="font-normal text-base">Device Type</label>
 
                 <input
                   placeholder="Type"
@@ -76,7 +64,7 @@ const EditInventory = () => {
                 />
               </div>
               <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">Quantity</label>
+                <label className="font-normal text-base">Quantity</label>
                 <input
                   placeholder="Type"
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
@@ -85,7 +73,7 @@ const EditInventory = () => {
               </div>
 
               <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">Color</label>
+                <label className="font-normal text-base">Color</label>
                 <input
                   placeholder="Type"
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
@@ -94,7 +82,7 @@ const EditInventory = () => {
               </div>
 
               <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">GC</label>
+                <label className="font-normal text-base">GC</label>
                 <input
                   placeholder="Type"
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
@@ -103,16 +91,19 @@ const EditInventory = () => {
               </div>
 
               <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">Location</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
+                <label className="font-normal text-base">Location</label>
+                <select className="px-3 border border-gray-200 h-10 text-sm rounded">
+                  <option>Select Location</option>
+                  {locationsInventory?.map((ele) => (
+                    <option className="capitalize" key={ele.id}>
+                      {ele.location}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">Size</label>
+                <label className="font-normal text-base">Size</label>
                 <input
                   placeholder="Type"
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
@@ -120,7 +111,7 @@ const EditInventory = () => {
                 />
               </div>
               <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">Label</label>
+                <label className="font-normal text-base">Label</label>
                 <input
                   placeholder="Type"
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
@@ -144,7 +135,7 @@ const EditInventory = () => {
                 />
               </div>
               <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">UPC</label>
+                <label className="font-normal text-base">UPC</label>
                 <input
                   placeholder="Type"
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
@@ -153,49 +144,44 @@ const EditInventory = () => {
               </div>
 
               <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">SKU</label>
+                <label className="font-normal text-base">SKU</label>
                 <input
                   placeholder="Type"
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
                   required
                 />
               </div>
+              <div className="flex flex-col gap-2 relative">
+                <label className="font-normal text-base">QR code</label>
+                <label className="flex justify-center items-center gap-4 bg-gray-200  rounded-md shadow-sm px-3 py-2 border border-gray-200 text-sm">
+                  <span>Click here to upload</span>
+                  <input
+                    type="file"
+                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                    placeholder="Select"
+                  />
+                  <MdCloudUpload />
+                </label>
+              </div>
             </div>
             <div className="flex flex-col gap-2 ">
-              <label className="font-normal text-sm">Description</label>
+              <label className="font-normal text-base">Description</label>
               <textarea
                 placeholder="Type"
                 className="w-[100%] px-2 py-2 border border-gray-200 h-24 text-sm rounded"
                 required
               />
             </div>
+
+            <div className="flex flex-row gap-10 justify-center mt-7 items-center">
+              <button className="border w-1/3 py-2  rounded">Cancel</button>
+              <button className="border bg-indigo-600 w-1/3 py-2 text-white rounded">
+                Submit
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="flex flex-col gap-2 bg-white p-8 rounded shadow-lg w-[20%] m-auto text-center">
-            <p>Are you sure you want to save this information?</p>
-            <div className="items-center flex justify-center">
-              <img className="w-[30%]" src={save} alt="save image" />
-            </div>
-            <div className="flex justify-center gap-4 mt-4">
-              <button
-                className=" px-4 py-2 text-white bg-blue-600 rounded"
-                onClick={handleConfirmSave}
-              >
-                Save
-              </button>
-              <button
-                className="px-4 py-2 text-black border bg-gray-300 border-gray-300 rounded"
-                onClick={() => navigate("/inventory")}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };
