@@ -30,7 +30,6 @@ const locationsInventorySlice = createSlice({
     },
 
     postLocationInventorySuccess: (state, action) => {
-      state.locations = [...state.locations, action.payload];
       state.loading = false;
       state.error = null;
     },

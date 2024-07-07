@@ -1,10 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import save from "../../Images/save.png";
 import { MdCloudUpload } from "react-icons/md";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { getLocationInventory } from "../../actions/locationsInventoryAction";
 

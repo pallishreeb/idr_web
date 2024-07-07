@@ -1,4 +1,6 @@
-const API_BASE_URL = "https://idr.ensyncit.com";
+// const API_BASE_URL = 'https://idr.ensyncit.com'
+const API_BASE_URL = 'https://api.portal.idrtechnologysolutions.com'
+
 const apiConfig = {
   setPassword: "/users/set_password",
   createUser: "/users/create",
