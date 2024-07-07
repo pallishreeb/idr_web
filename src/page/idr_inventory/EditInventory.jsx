@@ -1,183 +1,277 @@
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { MdCloudUpload } from "react-icons/md";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { useDispatch, useSelector } from "react-redux";
 import { getLocationInventory } from "../../actions/locationsInventoryAction";
+import {
+  getInventoryById,
+  updateInventory,
+} from "../../actions/inventoryAction";
+import { useNavigate, useParams } from "react-router-dom";
+import Loader from "../../Images/ZZ5H.gif";
 
 const EditInventory = () => {
   const dispatch = useDispatch();
-  const locationsInventory = useSelector(
-    (state) => state.locationInventory.locations
-  );
+  const navigate = useNavigate();
+  const { inventory_id } = useParams();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(false); // State to track loading status
+  const loadingInventory = useSelector((state) => state.inventory.loading);
+
+  const [editableFields, setEditableFields] = useState({
+    quantity: "",
+    label: "",
+    sku: "",
+    description: "",
+  });
+
+  const [readOnlyFields, setReadOnlyFields] = useState({
+    make: "",
+    model: "",
+    device_type: "",
+    color: "",
+    size: "",
+    location: "",
+    location_id: "",
+    image: null,
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const { user_type } = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
 
   useEffect(() => {
     dispatch(getLocationInventory());
-  }, []);
+    if (inventory_id) {
+      setLoading(true);
+      dispatch(getInventoryById(inventory_id))
+        .then((data) => {
+          setLoading(false);
+          // Extract editable fields
+          setEditableFields({
+            quantity: data.quantity,
+            label: data.label,
+            sku: data.sku,
+            description: data.description,
+          });
+          // Extract read-only fields
+          setReadOnlyFields({
+            make: data.make,
+            model: data.model,
+            device_type: data.device_type,
+            color: data.color,
+            size: data.size,
+            location: data.location,
+            location_id: data.location_id,
+            image: data.image, // Assuming this is how you handle image data
+          });
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.error("Error fetching inventory item:", error);
+          // Handle error, e.g., show an error message
+        });
+    }
+  }, [dispatch, inventory_id]);
 
-  console.log("locationsInventory:", locationsInventory);
+  const handleInputChange = (e) => {
+    const { name, value, files } = e.target;
+    if (files) {
+      setReadOnlyFields((prevData) => ({ ...prevData, [name]: files[0] }));
+      const file = e.target.files[0];
+      setSelectedImage(file);
+    } else {
+      setEditableFields((prevData) => ({ ...prevData, [name]: value }));
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    editableFields.inventory_id = inventory_id;
+    dispatch(updateInventory(editableFields, navigate));
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <img className="w-20 h-20" src={Loader} alt="Loading..." />
+      </div>
+    );
+  }
+
   return (
     <>
       <Header />
       <div className="flex">
         <AdminSideNavbar />
         <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center mb-4">
             <h1 className="font-bold text-lg">Edit Inventory Item</h1>
+            { (access.includes(user_type) && !isEditing) && (
+              <button
+                className="bg-indigo-600 text-white px-6 py-2 rounded"
+                onClick={handleEditToggle}
+              >
+                Edit
+              </button>
+            )}
           </div>
-
-          <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
-            <div className="mb-2">
-              <h1 className="text-xl font-normal mb-2">Details</h1>
-              <div className="border border-gray-200"></div>
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6"
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h1 className="text-xl font-normal">Details</h1>
+              {isEditing && (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className="border py-2 px-4 rounded"
+                    onClick={() => navigate("/inventory")}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="border bg-indigo-600 py-2 px-4 text-white rounded"
+                  >
+                    {loadingInventory ? "Saving" : "Update"}
+                  </button>
+                </div>
+              )}
             </div>
-
-            <div className="grid grid-cols-3 gap-8">
+            <div className="border border-gray-200 mb-4"></div>
+            <div className="grid grid-cols-2 gap-8">
+              {/* Read-only fields */}
               <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">Make</label>
                 <input
-                  placeholder="Type"
+                  type="text"
+                  value={readOnlyFields.make}
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
+                  readOnly
                 />
               </div>
-
               <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">Model</label>
                 <input
-                  placeholder="Type"
+                  type="text"
+                  value={readOnlyFields.model}
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
+                  readOnly
                 />
               </div>
-
               <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">Device Type</label>
-
                 <input
-                  placeholder="Type"
+                  type="text"
+                  value={readOnlyFields.device_type}
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
+                  readOnly
                 />
               </div>
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-base">Quantity</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-2 ">
+              <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">Color</label>
                 <input
-                  placeholder="Type"
+                  type="text"
+                  value={readOnlyFields.color}
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
+                  readOnly
                 />
               </div>
-
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-base">GC</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-base">Location</label>
-                <select className="px-3 border border-gray-200 h-10 text-sm rounded">
-                  <option>Select Location</option>
-                  {locationsInventory?.map((ele) => (
-                    <option className="capitalize" key={ele.id}>
-                      {ele.location}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex flex-col gap-2 ">
+              <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">Size</label>
                 <input
-                  placeholder="Type"
+                  type="text"
+                  value={readOnlyFields.size}
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
+                  readOnly
                 />
               </div>
-              <div className="flex flex-col gap-2 ">
+              <div className="flex flex-col gap-2">
+                <label className="font-normal text-base">Location</label>
+                <input
+                  type="text"
+                  value={readOnlyFields.location}
+                  className="px-3 border border-gray-200 h-10 text-sm rounded"
+                  readOnly
+                />
+              </div>
+
+              {/* Editable fields */}
+              <div className="flex flex-col gap-2">
+                <label className="font-normal text-base">Quantity</label>
+                <input
+                  name="quantity"
+                  type="number"
+                  value={editableFields.quantity}
+                  placeholder="Type quantity"
+                  className="px-3 border border-gray-200 h-10 text-sm rounded"
+                  onChange={handleInputChange}
+                  required
+                  disabled={!isEditing}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">Label</label>
                 <input
-                  placeholder="Type"
+                  name="label"
+                  type="text"
+                  value={editableFields.label}
+                  placeholder="Type label"
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
+                  onChange={handleInputChange}
                   required
+                  disabled={!isEditing}
                 />
               </div>
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-base">List Price</label>
-                <input
-                  placeholder="$"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-base">Unit Cost</label>
-                <input
-                  placeholder="$"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-base">UPC</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-2 ">
+              <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">SKU</label>
                 <input
-                  placeholder="Type"
+                  name="sku"
+                  type="text"
+                  value={editableFields.sku}
+                  placeholder="Type SKU"
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
+                  onChange={handleInputChange}
                   required
+                  disabled={!isEditing}
                 />
               </div>
-              <div className="flex flex-col gap-2 relative">
+              <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">QR code</label>
-                <label className="flex justify-center items-center gap-4 bg-gray-200  rounded-md shadow-sm px-3 py-2 border border-gray-200 text-sm">
-                  <span>Click here to upload</span>
-                  <input
-                    type="file"
-                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-                    placeholder="Select"
-                  />
-                  <MdCloudUpload />
-                </label>
+                {/* Display the selected image if available */}
+                {selectedImage && (
+                  <div className="flex flex-col gap-2">
+                    <span className="font-normal text-base">
+                      Selected Image: {selectedImage.name}
+                    </span>
+                    <img
+                      src={URL.createObjectURL(selectedImage)}
+                      alt="Selected QR Code"
+                      className="w-24 h-24 object-cover rounded-md shadow"
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col gap-2 col-span-2">
+                <label className="font-normal text-base">Description</label>
+                <textarea
+                  name="description"
+                  value={editableFields.description}
+                  placeholder="Type description"
+                  className="px-3 py-2 border border-gray-200 text-sm rounded resize-y w-full col-span-2"
+                  onChange={handleInputChange}
+                  required
+                  rows={4} // Adjust rows as needed
+                  disabled={!isEditing}
+                />
               </div>
             </div>
-            <div className="flex flex-col gap-2 ">
-              <label className="font-normal text-base">Description</label>
-              <textarea
-                placeholder="Type"
-                className="w-[100%] px-2 py-2 border border-gray-200 h-24 text-sm rounded"
-                required
-              />
-            </div>
-
-            <div className="flex flex-row gap-10 justify-center mt-7 items-center">
-              <button className="border w-1/3 py-2  rounded">Cancel</button>
-              <button className="border bg-indigo-600 w-1/3 py-2 text-white rounded">
-                Submit
-              </button>
-            </div>
-          </div>
+          </form>
         </div>
       </div>
     </>

@@ -47,6 +47,11 @@ const apiConfig = {
   deleteNote: "/work_order/delete/note",
   getInventoryLocation: "/inv_loc/all",
   postInventoryLocation: "/inv_loc/add",
+  addInventory: '/inventory/add',
+  getInventories: '/inventory/all',
+  getInventoryById: '/inventory',
+  deleteInventory: '/inventory',
+  updateInventory: '/inventory/update',
 };
 
 export { API_BASE_URL, apiConfig };
