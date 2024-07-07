@@ -6,7 +6,7 @@ import SideNavbar from "../../Components/AdminSideNavbar";
 import NotesTable from "../../Components/NotesTable";
 import TechniciansCard from "../../Components/TechniciansCard";
 import WorkOrderCard from "../../Components/WorkOrderCard";
-import AssigneePeopleCard from "../../Components/AssigneePeopleCard"
+// import AssigneePeopleCard from "../../Components/AssigneePeopleCard"
 import ShowTechnicians from "../../Components/ShowTechnicians"
 import {
   getWorkOrderDetails,

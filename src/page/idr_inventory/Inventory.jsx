@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
@@ -6,31 +6,98 @@ import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { BiTransferAlt } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
-import { postLocationInventory } from "../../actions/locationsInventoryAction";
+import { postLocationInventory, getLocationInventory } from "../../actions/locationsInventoryAction";
+import { deleteInventory, getInventories } from "../../actions/inventoryAction";
 import { toast } from "react-toastify";
+import Loader from "../../Images/ZZ5H.gif";
+import Swal from "sweetalert2";
 
 const Inventory = () => {
   const [showModal, setShowModal] = useState(false);
-  const dispatch = useDispatch();
   const [location, setLocation] = useState("");
-
+  const [filters, setFilters] = useState({
+    search: "",
+    location: "",
+    model: "",
+    device_type: ""
+  });
+  const [searchTerm, setSearchTerm] = useState(""); // Separate state for the search term
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user_type } = useSelector((state) => state.user.user);
+  const access = ['Admin','Subadmin','IDR Employee']
   const loading = useSelector((state) => state.locationInventory.loading);
+  const loadingInventory = useSelector((state) => state.inventory.loading);
+  const inventoryList = useSelector((state) => state.inventory.inventories);
+  const locationsInventory = useSelector((state) => state.locationInventory.locations);
+  const locationsLoading = useSelector((state) => state.locationInventory.loading);
+
+  useEffect(() => {
+    dispatch(getLocationInventory());
+    dispatch(getInventories(filters));
+  }, [dispatch, filters]); // Fetch inventory initially and whenever filters (except search) change
+
+  const handleSearch = () => {
+    const newFilters = { ...filters, search: searchTerm };
+    dispatch(getInventories(newFilters));
+  };
+
+  const handleReset = () => {
+    setFilters({
+      search: "",
+      location: "",
+      model: "",
+      device_type: ""
+    });
+    setSearchTerm("");
+    dispatch(getInventories());
+  };
+
   const handleOpenModel = () => {
     setShowModal(true);
   };
+
   const handleConfirmSave = async () => {
     const data = {
-      location: location,
+      location: location
     };
-    if(data.location == ""){
-      toast.error("Please enter location.")
-      return
+    if (data.location === "") {
+      toast.error("Please enter location.");
+      return;
     }
-    dispatch(postLocationInventory(data));
-    setLocation("");
-    setShowModal(false);
+    dispatch(postLocationInventory(data)).then((res) => {
+      if(res){ //code=='IL201'
+        toast.success("Location  added successfully.");
+        setLocation("");
+        dispatch(getLocationInventory());
+        setShowModal(false)
+      }
+    });
+
   };
-  const navigate = useNavigate();
+
+  // console.log(inventoryList);
+  const handleDelete = (inventoryId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this Inventory?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteInventory(inventoryId))
+          .then(() => {
+            dispatch(getInventories(filters)); // Refresh the list after deletion
+          })
+          .catch((error) => {
+            console.log(error);
+            toast.error("Failed to delete the Inventory.");
+          });
+      }
+    });
+  };
 
   return (
     <>
@@ -45,25 +112,31 @@ const Inventory = () => {
             <div className="flex justify-between items-center">
               <div className="flex gap-4 w-[70%]">
                 <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">
-                    Filter by location
-                  </label>
+                  <label className="font-normal text-sm">Filter by location</label>
                   <select
                     name="client_name"
                     className="px-3 border border-gray-200 h-10 rounded"
+                    value={filters.location}
+                    onChange={(e) => setFilters({ ...filters, location: e.target.value })}
                   >
                     <option value="">All Location</option>
+                    {locationsInventory?.map((ele) => (
+                      <option key={ele.inventory_location_id} value={ele.location}>
+                        {ele.location}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">
-                    Filter by device type
-                  </label>
+                  <label className="font-normal text-sm">Filter by device type</label>
                   <select
                     name="client_name"
                     className="px-3 border border-gray-200 h-10 rounded"
+                    value={filters.device_type}
+                    onChange={(e) => setFilters({ ...filters, device_type: e.target.value })}
                   >
                     <option value="">All Type</option>
+                    {/* Add options for device types here */}
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -71,8 +144,11 @@ const Inventory = () => {
                   <select
                     name="client_name"
                     className="px-3 border border-gray-200 h-10 rounded"
+                    value={filters.model}
+                    onChange={(e) => setFilters({ ...filters, model: e.target.value })}
                   >
                     <option value="">All model</option>
+                    {/* Add options for models here */}
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -81,129 +157,161 @@ const Inventory = () => {
                     <input
                       className="flex-1 border-none text-xs font-normal px-2 py-2 rounded-l"
                       placeholder="Type"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <button className="border-none text-xs font-normal px-4 py-2 bg-gray-200 rounded-r">
+                    <button
+                      className="border-none text-xs font-normal px-4 py-2 bg-gray-200 rounded-r"
+                      onClick={handleSearch}
+                    >
                       Search
                     </button>
                   </div>
                 </div>
-               
-              </div>
+                <div className="flex flex-col gap-2">
+                  <label className="font-normal text-sm">&nbsp;</label>
                   <button
-                    className="bg-indigo-600 text-white px-6 py-2 rounded mt-7"
-                    onClick={handleOpenModel}
+                    className="border-none text-xs font-normal px-4 py-3 bg-gray-200 rounded"
+                    onClick={handleReset}
                   >
-                    Add Location
+                    Reset
                   </button>
-
+                </div>
+              </div>
+              <button
+                className="bg-indigo-600 text-white px-6 py-2 rounded mt-7"
+                onClick={handleOpenModel}
+              >
+                Add Location
+              </button>
               <Link to={"/addinventory"}>
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded mt-7">
                   Add Inventory
                 </button>
               </Link>
             </div>
-
             <table className="mt-2 w-full overflow-x-scroll">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
+                    Location
+                  </th>
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Device Type
                   </th>
-                  <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Make
                   </th>
-                  <th className="px-1 py-1 text-left text-sm  font-semibold tracking-wider border">
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Model
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold  tracking-wider border">
-                    Location
                   </th>
                   <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Label
                   </th>
-                  <th className="px-1 py-1 text-left text-sm  font-semibold  tracking-wider border">
-                    ListPrice
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
+                    SKU
                   </th>
-                  <th className="px-1 py-1 text-left text-sm  font-semibold  tracking-wider border">
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Quantity
                   </th>
-                  <th className="px-1 py-1 text-left text-sm  font-semibold  tracking-wider border">
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Size
                   </th>
-                  <th className="px-1 py-1 text-left text-sm  font-semibold tracking-wider border">
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Action
                   </th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="text-left ">
-                  <td className="border text-sm px-1 py-3">Pry Plate</td>
-                  <td className="border text-sm px-1 py-3">Pry Plate</td>
-                  <td className="border text-sm px-1 py-3">Pry Plate</td>
-                  <td className="border text-sm px-1 py-3">VAN #1</td>
-                  <td className="border text-sm px-1 py-3">-</td>
-                  <td className="border text-sm px-1 py-3">-</td>
-                  <td className="border text-sm px-1 py-3">1</td>
-                  <td className="border text-sm px-1 py-3">-</td>
-                  <td className="border text-sm px-1 py-3">
-                    <div className="flex gap-2">
-                      <div className="p-[4px] bg-gray-100 cursor-pointer">
-                        <BiSolidEditAlt
-                          onClick={() => navigate("/edit_inventory")}
-                        />
+                {loadingInventory ? (
+                  <tr>
+                    <td colSpan="9" className="text-center py-4">
+                      <div className="flex justify-center items-center">
+                        <img className="w-20 h-20" src={Loader} alt="Loading..." />
                       </div>
-                      <div className="p-[4px] bg-gray-100 cursor-pointer">
-                        <BiTransferAlt
-                          onClick={() =>
-                            navigate("/transfer-company-equipment")
-                          }
-                        />
-                      </div>
-                      <div className="p-[4px] bg-gray-100 cursor-pointer">
-                        <AiFillDelete />
-                      </div>
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                  </tr>
+                ) : inventoryList && inventoryList?.data?.length > 0 ? (
+                  inventoryList.data.map((item) => (
+                    <tr key={item.id} className="text-left">
+                      <td className="border text-sm px-1 py-3">{item.location}</td>
+                      <td className="border text-sm px-1 py-3">{item.device_type}</td>
+                      <td className="border text-sm px-1 py-3">{item.make}</td>
+                      <td className="border text-sm px-1 py-3">{item.model}</td>
+                      <td className="border text-sm px-1 py-3">{item.label}</td>
+                      <td className="border text-sm px-1 py-3">{item.sku}</td>
+                      <td className="border text-sm px-1 py-3">{item.quantity}</td>
+                      <td className="border text-sm px-1 py-3">{item.size}</td>
+                      <td className="border text-sm px-1 py-3">
+                        <div className="flex gap-2">
+                          <div className="p-[4px] bg-gray-100 cursor-pointer">
+                            <BiSolidEditAlt
+                              onClick={() => navigate(`/edit_inventory/${item.inventory_id}`)}
+                            />
+                          </div>
+                          <div className="p-[4px] bg-gray-100 cursor-pointer">
+                            <BiTransferAlt
+                              onClick={() => navigate(`/transfer-inventory/${item.inventory_id}`)}
+                            />
+                          </div>
+                          {user_type === "Admin" && (
+                              <div className="p-[4px] bg-gray-100 cursor-pointer">
+                                <AiFillDelete
+                                  onClick={() =>
+                                    handleDelete(item.inventory_id)
+                                  }
+                                />
+                              </div>
+                            )}
+                         
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="9" className="text-center py-4">
+                      <img src="not-found.png" alt="Data Not Found" className="mx-auto w-64 h-64 mt-4" />
+                      <p className="mt-4 text-gray-500">No data available</p>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
         </div>
       </div>
       {showModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-    <div className="flex flex-col gap-2 bg-white p-8 rounded shadow-lg w-[30%] m-auto text-center">
-      <p>Add Location</p>
-      <div className="flex border border-gray-200 h-10 rounded">
-        <input
-          className="flex-1 border-none text-xs font-normal px-2 py-2 rounded-l"
-          placeholder="Type Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
-      </div>
-      <div className="flex justify-end gap-2 mt-4">
-        <button
-          disabled={loading}
-          onClick={() => setShowModal(false)}
-          className="border-none text-xs font-normal px-4 py-2 bg-gray-200 rounded"
-        >
-          Cancel
-        </button>
-        <button
-          disabled={loading}
-          onClick={() => {
-            handleConfirmSave();
-          }}
-          className="border-none text-xs font-normal px-4 py-2 bg-gray-200 rounded"
-        >
-          Add
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="flex flex-col gap-2 bg-white p-8 rounded shadow-lg w-[30%] m-auto text-center">
+            <p>Add Location</p>
+            <div className="flex border border-gray-200 h-10 rounded">
+              <input
+                className="flex-1 border-none text-xs font-normal px-2 py-2 rounded-l"
+                placeholder="Type Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                disabled={loading}
+                onClick={() => setShowModal(false)}
+                className="border-none text-xs font-normal px-4 py-2 bg-gray-200 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                disabled={loading}
+                onClick={handleConfirmSave}
+                className="border-none text-xs font-normal px-4 py-2 bg-gray-200 rounded"
+              >
+              {locationsLoading ? 'Saving' : 'Add'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
