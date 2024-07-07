@@ -125,7 +125,7 @@ function App() {
           />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/addinventory" element={<AddInventory />} />
-          <Route path="/edit_inventory" element={<EditInventory />} />
+          <Route path="/edit_inventory/:inventory_id" element={<EditInventory />} />
           <Route path="/company-equipment" element={<ClientEquipment />} />
           <Route
             path="/add-company-equipment"
@@ -136,7 +136,7 @@ function App() {
             element={<EditClientEqiupment />}
           />
           <Route
-            path="/transfer-company-equipment"
+            path="/transfer-inventory/:inventory_id"
             element={<TransferInventory />}
           />
 

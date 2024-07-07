@@ -28,9 +28,8 @@ export const postLocationInventory = (data) => {
     dispatch(postLocationInventoryStart());
     try {
       const response = await axios.post(apiConfig.postInventoryLocation, data);
-      // console.log("check", response);
       dispatch(postLocationInventorySuccess(response.location));
-      toast.success("Location added.")
+      return response;
     } catch (error) {
       dispatch(postLocationInventoryFailure(error.message));
       toast.error("Error in adding location.")
