@@ -64,7 +64,7 @@ const AddInventory = () => {
     Object.keys(formData).forEach((key) => {
       data.append(key, formData[key]);
     });
-    console.log("FormData: ", Array.from(data.entries())); // Debugging line to check FormData content
+    // console.log("FormData: ", Array.from(data.entries())); // Debugging line to check FormData content
     dispatch(addInventory(data, navigate));
   };
 
@@ -167,7 +167,7 @@ const AddInventory = () => {
 
             <div className="flex flex-row gap-10 justify-center mt-7 items-center">
               <button type="button" className="border w-1/3 py-2 rounded" onClick={() => navigate('/inventory')}>Cancel</button>
-              <button type="submit" className="border bg-indigo-600 w-1/3 py-2 text-white rounded">{loadingInventory ? 'Saving' : 'Create'}</button>
+              <button type="submit" disabled={loadingInventory} className="border bg-indigo-600 w-1/3 py-2 text-white rounded">{loadingInventory ? 'Saving' : 'Create'}</button>
             </div>
           </form>
         </div>

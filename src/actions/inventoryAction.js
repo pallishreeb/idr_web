@@ -10,23 +10,28 @@ import {
   inventoryTransferStart,inventoryTransferSuccess,inventoryTransferFailure
 } from "../reducers/inventorySlice";
 import { apiConfig } from "../config";
+import { fetchJson } from '../fetch-config';
+
 
 // Add inventory
 export const addInventory = (inventoryData, navigate) => {
   return async (dispatch) => {
     dispatch(addInventoryStart());
+
     try {
-      const response = await axios.post(apiConfig.addInventory, inventoryData,{
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const data = await fetchJson(apiConfig.addInventory, {
+        method: 'POST',
+        body: inventoryData
       });
-      dispatch(addInventorySuccess(response.data));
+
+      dispatch(addInventorySuccess(data));
       toast.success("Inventory added successfully");
       navigate('/inventory');
     } catch (error) {
+      console.error('Error occurred:', error);
+
       dispatch(addInventoryFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to add inventory");
+      toast.error(error.message || "Failed to add inventory");
     }
   };
 };
@@ -110,13 +115,16 @@ export const inventoryWorkOrderAssign = (inventoryData, navigate) => {
   return async (dispatch) => {
     dispatch(inventoryWorkOrderAssignStart());
     try {
-      const response = await axios.post(apiConfig.inventoryWorkOrderAssign, inventoryData);
-      dispatch(inventoryWorkOrderAssignSuccess(response.data));
+      const data = await fetchJson(apiConfig.inventoryWorkOrderAssign, {
+        method: 'POST',
+        body: inventoryData
+      });
+      dispatch(inventoryWorkOrderAssignSuccess(data));
       toast.success("Inventory transferred to WorkOrder");
       navigate('/inventory');
     } catch (error) {
       dispatch(inventoryWorkOrderAssignFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to Assign Work Order");
+      toast.error(error.message || "Failed to Assign Work Order");
     }
   };
 };
@@ -126,13 +134,16 @@ export const inventoryTransfer = (inventoryData, navigate) => {
   return async (dispatch) => {
     dispatch(inventoryTransferStart());
     try {
-      const response = await axios.post(apiConfig.inventoryTransfer, inventoryData);
-      dispatch(inventoryTransferSuccess(response.data));
+      const data = await fetchJson(apiConfig.inventoryTransfer, {
+        method: 'POST',
+        body: inventoryData
+      });
+      dispatch(inventoryTransferSuccess(data));
       toast.success("Inventory added successfully");
       navigate('/inventory');
     } catch (error) {
       dispatch(inventoryTransferFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to Transfer Inventory");
+      toast.error(error.message || "Failed to Transfer Inventory");
     }
   };
 };
