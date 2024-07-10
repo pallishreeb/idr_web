@@ -4,6 +4,8 @@ const initialState = {
   inventories: [],
   inventory: null,
   loading: false,
+  loadingAssign: false,
+  loadingTransfer: false,
   error: null,
 };
 
@@ -80,27 +82,27 @@ const inventorySlice = createSlice({
       state.error = action.payload;
     },
     inventoryWorkOrderAssignSuccess: (state, action) => {
-      state.loading = false;
+      state.loadingAssign = false;
       state.error = null;
     },
     inventoryWorkOrderAssignFailure: (state, action) => {
-      state.loading = false;
+      state.loadingAssign = false;
       state.error = action.payload;
     },
     inventoryWorkOrderAssignStart: (state) => {
-      state.loading = true;
+      state.loadingAssign = true;
       state.error = null;
     },
     inventoryTransferSuccess: (state, action) => {
-      state.loading = false;
+      state.loadingTransfer = false;
       state.error = null;
     },
     inventoryTransferFailure: (state, action) => {
-      state.loading = false;
+      state.loadingTransfer = false;
       state.error = action.payload;
     },
     inventoryTransferStart: (state) => {
-      state.loading = true;
+      state.loadingTransfer = true;
       state.error = null;
     },
   },

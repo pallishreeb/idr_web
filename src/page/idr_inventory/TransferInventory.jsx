@@ -18,11 +18,11 @@ const TransferInventory = () => {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [quantityAssigned, setQuantityAssigned] = useState("");
   const [quantityTransferred, setQuantityTransferred] = useState("");
-
   const { clients, loading: clientsLoading } = useSelector((state) => state.client);
   const { workOrders, loading: workOrdersLoading } = useSelector((state) => state.workOrder);
   const locationsInventory = useSelector((state) => state.locationInventory.locations);
-
+  const loadingTransfer = useSelector((state) => state.inventory.loadingTransfer);
+  const loadingAssign = useSelector((state) => state.inventory.loadingAssign);
   useEffect(() => {
     dispatch(getClients()); // Fetch all clients on component mount
     dispatch(getLocationInventory()); // Fetch all inventory locations on component mount
@@ -42,6 +42,7 @@ const TransferInventory = () => {
 
   const handleTransferInventory = (e) => {
     e.preventDefault();
+    // console.log(selectedLocation)
     // API call to transfer inventory to another location
     dispatch(inventoryTransfer({ inventory_id: inventory_id, location_id: selectedLocation, quantity: quantityTransferred },navigate));
   };
@@ -75,8 +76,9 @@ const TransferInventory = () => {
                 <button 
                     className="bg-indigo-600 text-white px-6 py-2 rounded"
                     type="submit"
+                    disabled={loadingAssign}
                   >
-                    Assign inventory
+                  {loadingAssign ? 'Saving' : 'Assign inventory'}
                   </button>
               </div>
               <div className="border border-gray-200"></div>
@@ -147,8 +149,9 @@ const TransferInventory = () => {
                 <button 
                     className="bg-indigo-600 text-white px-6 py-2 rounded"
                     type="submit"
+                    disabled={loadingTransfer}
                   >
-                    Transfer inventory
+                   {loadingTransfer ? 'Saving' : 'Transfer inventory'}
                   </button>
               </div>
               <div className="border border-gray-200"></div>
@@ -167,7 +170,7 @@ const TransferInventory = () => {
                 >
                   <option value="">Select location</option>
                   {locationsInventory?.map((location) => (
-                    <option key={location.location_id} value={location.location_id}>{location.location}</option>
+                    <option key={location.inventory_location_id} value={location.inventory_location_id}>{location.location}</option>
                   ))}
                 </select>
               </div>
