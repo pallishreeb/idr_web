@@ -132,6 +132,7 @@ const AddInventory = () => {
           <input
             name="image"
             type="file"
+            accept="image/*"
             className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
             onChange={handleInputChange}
             required

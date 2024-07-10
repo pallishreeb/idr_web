@@ -5,7 +5,9 @@ import {
   getInventoriesStart, getInventoriesSuccess, getInventoriesFailure,
   getInventoryByIdStart, getInventoryByIdSuccess, getInventoryByIdFailure,
   deleteInventoryStart, deleteInventorySuccess, deleteInventoryFailure,
-  updateInventoryStart, updateInventorySuccess, updateInventoryFailure
+  updateInventoryStart, updateInventorySuccess, updateInventoryFailure,
+  inventoryWorkOrderAssignStart,inventoryWorkOrderAssignSuccess,inventoryWorkOrderAssignFailure,
+  inventoryTransferStart,inventoryTransferSuccess,inventoryTransferFailure
 } from "../reducers/inventorySlice";
 import { apiConfig } from "../config";
 
@@ -49,6 +51,7 @@ export const getInventories = ({ search, location, model, device_type } = {}) =>
       const response = await axios.get(url);
 
       dispatch(getInventoriesSuccess(response.data));
+      return response.data;
     } catch (error) {
       dispatch(getInventoriesFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to fetch inventories");
@@ -98,6 +101,38 @@ export const updateInventory = (inventoryData, navigate) => {
     } catch (error) {
       dispatch(updateInventoryFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to update inventory");
+    }
+  };
+};
+
+//  inventory work order assign
+export const inventoryWorkOrderAssign = (inventoryData, navigate) => {
+  return async (dispatch) => {
+    dispatch(inventoryWorkOrderAssignStart());
+    try {
+      const response = await axios.post(apiConfig.inventoryWorkOrderAssign, inventoryData);
+      dispatch(inventoryWorkOrderAssignSuccess(response.data));
+      toast.success("Inventory transferred to WorkOrder");
+      navigate('/inventory');
+    } catch (error) {
+      dispatch(inventoryWorkOrderAssignFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to Assign Work Order");
+    }
+  };
+};
+
+//  inventory transfer
+export const inventoryTransfer = (inventoryData, navigate) => {
+  return async (dispatch) => {
+    dispatch(inventoryTransferStart());
+    try {
+      const response = await axios.post(apiConfig.inventoryTransfer, inventoryData);
+      dispatch(inventoryTransferSuccess(response.data));
+      toast.success("Inventory added successfully");
+      navigate('/inventory');
+    } catch (error) {
+      dispatch(inventoryTransferFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to Transfer Inventory");
     }
   };
 };

@@ -79,6 +79,30 @@ const inventorySlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    inventoryWorkOrderAssignSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+    inventoryWorkOrderAssignFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    inventoryWorkOrderAssignStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    inventoryTransferSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+    inventoryTransferFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    inventoryTransferStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
   },
 });
 
@@ -98,6 +122,13 @@ export const {
   updateInventoryStart,
   updateInventorySuccess,
   updateInventoryFailure,
+  inventoryWorkOrderAssignStart,
+  inventoryWorkOrderAssignSuccess,
+  inventoryWorkOrderAssignFailure,
+  inventoryTransferStart,
+  inventoryTransferSuccess,
+  inventoryTransferFailure,
+  
 } = inventorySlice.actions;
 
 export default inventorySlice.reducer;
