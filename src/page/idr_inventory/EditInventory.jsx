@@ -33,7 +33,7 @@ const EditInventory = () => {
     size: "",
     location: "",
     location_id: "",
-    image: null,
+    qr: "",
   });
   const [isEditing, setIsEditing] = useState(false);
   const { user_type } = useSelector((state) => state.user.user);
@@ -66,7 +66,7 @@ const EditInventory = () => {
             size: data.size,
             location: data.location,
             location_id: data.location_id,
-            image: data.image, // Assuming this is how you handle image data
+            qr: data.qr, // Assuming this is how you handle image data
           });
         })
         .catch((error) => {
@@ -110,6 +110,7 @@ const EditInventory = () => {
         <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between items-center mb-4">
             <h1 className="font-bold text-lg">Edit Inventory Item</h1>
+            <div className="flex gap-2">
             { (access.includes(user_type) && !isEditing) && (
               <button
                 className="bg-indigo-600 text-white px-6 py-2 rounded"
@@ -118,6 +119,15 @@ const EditInventory = () => {
                 Edit
               </button>
             )}
+            <button
+                    type="button"
+                    className="border py-2 px-4 rounded"
+                    onClick={() => navigate("/inventory")}
+                  >
+                    Back
+                  </button>
+            </div>
+            
           </div>
           <form
             onSubmit={handleSubmit}
@@ -130,7 +140,7 @@ const EditInventory = () => {
                   <button
                     type="button"
                     className="border py-2 px-4 rounded"
-                    onClick={() => navigate("/inventory")}
+                    onClick={handleEditToggle}
                   >
                     Cancel
                   </button>
@@ -243,19 +253,13 @@ const EditInventory = () => {
               </div>
               <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">QR code</label>
-                {/* Display the selected image if available */}
-                {selectedImage && (
-                  <div className="flex flex-col gap-2">
-                    <span className="font-normal text-base">
-                      Selected Image: {selectedImage.name}
-                    </span>
+ 
                     <img
-                      src={URL.createObjectURL(selectedImage)}
-                      alt="Selected QR Code"
+                      src={`https://idr-app-images-bucket.s3.amazonaws.com/${readOnlyFields.qr}`}
+                      alt="QR Code"
                       className="w-24 h-24 object-cover rounded-md shadow"
                     />
-                  </div>
-                )}
+
               </div>
               <div className="flex flex-col gap-2 col-span-2">
                 <label className="font-normal text-base">Description</label>
