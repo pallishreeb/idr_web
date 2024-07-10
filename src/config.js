@@ -1,4 +1,3 @@
-// const API_BASE_URL = 'https://idr.ensyncit.com'
 const API_BASE_URL = 'https://api.portal.idrtechnologysolutions.com'
 
 const apiConfig = {
@@ -52,6 +51,9 @@ const apiConfig = {
   getInventoryById: '/inventory',
   deleteInventory: '/inventory',
   updateInventory: '/inventory/update',
+  inventoryWorkOrderAssign:'/inventory/work_order/assign',
+  inventoryTransfer:'/inventory/location/transfer',
+  workOrderByClient:'/work_order/by_client'
 };
 
 export { API_BASE_URL, apiConfig };

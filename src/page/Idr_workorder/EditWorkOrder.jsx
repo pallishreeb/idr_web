@@ -8,6 +8,7 @@ import TechniciansCard from "../../Components/TechniciansCard";
 import WorkOrderCard from "../../Components/WorkOrderCard";
 // import AssigneePeopleCard from "../../Components/AssigneePeopleCard"
 import ShowTechnicians from "../../Components/ShowTechnicians"
+import InventoryTable from "../../Components/InventoryTable"
 import {
   getWorkOrderDetails,
   updateNotes,
@@ -37,6 +38,7 @@ const EditWorkOrder = () => {
   const [technicians, setTechnicians] = useState([]);
   const [notes, setNotes] = useState([]);
   const [assignees, setAssignees] = useState([]);
+  const [inventories, setInventories] = useState([]);
 
   useEffect(() => {
     dispatch(getWorkOrderDetails(workOrderId));
@@ -51,6 +53,7 @@ const EditWorkOrder = () => {
       setTechnicians(workOrderDetails.technicians || []);
       setNotes(workOrderDetails.notes || []);
       setAssignees(workOrderDetails.assignees || []);
+      setInventories(workOrderDetails.inventories || []);
     }
   }, [workOrderDetails]);
   useEffect(() => {
@@ -312,6 +315,10 @@ const EditWorkOrder = () => {
             handleNoteChange={handleNoteChange}
             loading={loading}
             workOrderId={workOrderId}
+          />
+          {/* InventoryTable */}
+          <InventoryTable
+             inventories={inventories}
           />
         </div>
       </div>

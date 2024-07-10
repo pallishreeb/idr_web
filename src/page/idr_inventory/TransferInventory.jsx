@@ -1,21 +1,51 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import save from "../../Images/save.png";
+import { useNavigate,useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
+import { getClients } from "../../actions/clientActions"; // Action to fetch clients
+import { getWorkOrderListsByClientId } from "../../actions/workOrderActions"; // Action to fetch work orders for a client
+import { getLocationInventory } from "../../actions/locationsInventoryAction"; // Action to fetch inventory locations
+import { inventoryTransfer, inventoryWorkOrderAssign } from "../../actions/inventoryAction"; // Action to transfer inventory
 
 const TransferInventory = () => {
-  const [showModal, setShowModal] = useState(false);
-
-  const handleOpenModel = () => {
-    setShowModal(true);
-  };
-
-  const handleConfirmSave = () => {
-    // Your save logic here
-    setShowModal(false);
-  };
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { inventory_id } = useParams();
+  const [selectedClient, setSelectedClient] = useState("");
+  const [selectedWorkorder, setSelectedWorkorder] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [quantityAssigned, setQuantityAssigned] = useState("");
+  const [quantityTransferred, setQuantityTransferred] = useState("");
+
+  const { clients, loading: clientsLoading } = useSelector((state) => state.client);
+  const { workOrders, loading: workOrdersLoading } = useSelector((state) => state.workOrder);
+  const locationsInventory = useSelector((state) => state.locationInventory.locations);
+
+  useEffect(() => {
+    dispatch(getClients()); // Fetch all clients on component mount
+    dispatch(getLocationInventory()); // Fetch all inventory locations on component mount
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (selectedClient) {
+      dispatch(getWorkOrderListsByClientId(selectedClient)); // Fetch work orders when a client is selected
+    }
+  }, [selectedClient, dispatch]);
+
+  const handleAssignWorkorder = (e) => {
+    e.preventDefault();
+    // API call to assign inventory to work order
+    dispatch(inventoryWorkOrderAssign({ inventory_id: inventory_id, work_order_id: selectedWorkorder, quantity: quantityAssigned },navigate));
+  };
+
+  const handleTransferInventory = (e) => {
+    e.preventDefault();
+    // API call to transfer inventory to another location
+    dispatch(inventoryTransfer({ inventory_id: inventory_id, location_id: selectedLocation, quantity: quantityTransferred },navigate));
+  };
+
   return (
     <>
       <Header />
@@ -32,191 +62,22 @@ const TransferInventory = () => {
               >
                 Cancel
               </button>
-              <button
-                className="bg-indigo-600 text-white px-6 py-2 rounded"
-                onClick={handleOpenModel}
-              >
-                Save
-              </button>
             </div>
           </div>
 
-          {/* <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
-            <div className="mb-2">
-              <h1 className="text-xl font-normal mb-2">Details</h1>
-              <div className="border border-gray-200"></div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-8">
-              <div className="flex flex-col gap-2">
-                <label className="font-normal text-sm">Make</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="font-normal text-sm">Model</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="font-normal text-sm">Device Type</label>
-
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">Quantity</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">Color</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">GC</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">Location</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">Size</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">Label</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-base">List Price</label>
-                <input
-                  placeholder="$"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-base">Unit Cost</label>
-                <input
-                  placeholder="$"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">UPC</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">SKU</label>
-                <input
-                  placeholder="Type"
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  required
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 ">
-              <label className="font-normal text-sm">Description</label>
-              <textarea
-                placeholder="Type"
-                className="w-[100%] px-2 py-2 border border-gray-200 h-24 text-sm rounded"
-                required
-              />
-            </div>
-          </div> */}
-
-          {/* <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
-            <div className="mb-2">
-              <h1 className="font-normal text-xl mb-2">Retiring item</h1>
-              <div className="border border-gray-200"></div>
-            </div>
-
-            <div className="flex flex-col">
-              <label className="mb-2">Retire Item</label>
-              <div className="flex">
-                <div className="flex items-center mr-4">
-                  <input type="radio" name="retire" id="yes" defaultChecked />
-                  <label htmlFor="yes" className="ml-2 cursor-pointer">
-                    Yes
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input type="radio" name="retire" id="no" />
-                  <label htmlFor="no" className="ml-2 cursor-pointer">
-                    No
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-5">
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">
-                  Enter reason for retiring equipment here
-                </label>
-                <input
-                  placeholder="Type"
-                  className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
-                ></input>
-              </div>
-            </div>
-          </div> */}
-
+          <form onSubmit={handleAssignWorkorder}>
           <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
             <div className="mb-2">
               <div className="flex justify-between items-end mb-2">
                 <h1 className="text-xl font-normal mb-2">
                   Assign inventory to work order
                 </h1>
-                <button className="bg-indigo-600 text-white px-6 py-2 rounded">
-                  Assign inventory
-                </button>
+                <button 
+                    className="bg-indigo-600 text-white px-6 py-2 rounded"
+                    type="submit"
+                  >
+                    Assign inventory
+                  </button>
               </div>
               <div className="border border-gray-200"></div>
             </div>
@@ -226,35 +87,40 @@ const TransferInventory = () => {
                 <label className="font-normal text-sm">
                   Select client for WO choices and site locations
                 </label>
-                <select className="px-2 border border-gray-200 h-10 rounded text-sm">
-                  <option>IDR Technology Solution</option>
-                </select>
+                {clientsLoading ? (
+                  <div>Loading clients...</div>
+                ) : (
+                  <select 
+                    className="px-2 border border-gray-200 h-10 rounded text-sm"
+                    value={selectedClient}
+                    onChange={(e) => setSelectedClient(e.target.value)}
+                    required
+                  >
+                    <option value="">Select client</option>
+                    {clients?.data?.map((client) => (
+                      <option key={client.client_id} value={client.client_id}>{client.company_name}</option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div className="flex flex-col gap-2 ">
                 <label className="font-normal text-sm">Select WO</label>
-                <select className="px-2 border border-gray-200 h-10 rounded text-sm">
-                  <option>Select code</option>
-                </select>
-              </div>
-
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">
-                  Quantity estimated for this job
-                </label>
-                <input
-                  type="text"
-                  className="px-3 py-3 border  border-gray-200 h-10 text-sm rounded"
-                ></input>
-              </div>
-
-              <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">
-                  Shipped direct from supplier
-                </label>
-                <select className="px-2 border border-gray-200 h-10 rounded text-sm">
-                  <option>Yes</option>
-                </select>
+                {workOrdersLoading ? (
+                  <div>Loading work orders...</div>
+                ) : (
+                  <select 
+                    className="px-2 border border-gray-200 h-10 rounded text-sm"
+                    value={selectedWorkorder}
+                    onChange={(e) => setSelectedWorkorder(e.target.value)}
+                    required
+                  >
+                    <option value="">Select code</option>
+                    {workOrders?.workorders?.map((wo) => (
+                      <option key={wo.work_order_id} value={wo.work_order_id}>{wo.ticket_number}</option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div className="flex flex-col gap-2 ">
@@ -262,20 +128,28 @@ const TransferInventory = () => {
                 <input
                   type="text"
                   className="px-3 py-3 border  border-gray-200 h-10 text-sm rounded"
-                ></input>
+                  value={quantityAssigned}
+                  onChange={(e) => setQuantityAssigned(e.target.value)}
+                  required
+                />
               </div>
             </div>
           </div>
+         </form>
 
+         <form onSubmit={handleTransferInventory}>
           <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
             <div className="mb-2">
               <div className="flex justify-between items-end mb-2">
                 <h1 className="font-normal text-xl">
                   Transfer inventory to alternate location
                 </h1>
-                <button className="bg-indigo-600 text-white px-6 py-2 rounded">
-                  Transfer inventory
-                </button>
+                <button 
+                    className="bg-indigo-600 text-white px-6 py-2 rounded"
+                    type="submit"
+                  >
+                    Transfer inventory
+                  </button>
               </div>
               <div className="border border-gray-200"></div>
             </div>
@@ -285,47 +159,34 @@ const TransferInventory = () => {
                 <label className="font-normal text-sm">
                   Select location to transfer inventory to
                 </label>
-                <select className="px-2 border border-gray-200 h-10 rounded text-sm">
-                  <option>IDR Technology Solution</option>
+                <select 
+                  className="px-2 border border-gray-200 h-10 rounded text-sm"
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  required
+                >
+                  <option value="">Select location</option>
+                  {locationsInventory?.map((location) => (
+                    <option key={location.location_id} value={location.location_id}>{location.location}</option>
+                  ))}
                 </select>
               </div>
 
               <div className="flex flex-col gap-2 ">
-                <label className="font-normal text-sm">
-                  Quantity Transfered
-                </label>
-                <select className="px-2 border border-gray-200 h-10 rounded text-sm">
-                  <option>Select code</option>
-                </select>
+                <label className="font-normal text-sm">Quantity Transferred</label>
+                <input
+                  type="text"
+                  className="px-3 py-3 border  border-gray-200 h-10 text-sm rounded"
+                  value={quantityTransferred}
+                  onChange={(e) => setQuantityTransferred(e.target.value)}
+                  required
+                />
               </div>
             </div>
           </div>
+          </form>
         </div>
       </div>
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="flex flex-col gap-2 bg-white p-8 rounded shadow-lg w-[20%] m-auto text-center">
-            <p>Are you sure you want to save this information?</p>
-            <div className="items-center flex justify-center">
-              <img className="w-[30%]" src={save} alt="save image" />
-            </div>
-            <div className="flex justify-center gap-4 mt-4">
-              <button
-                className=" px-4 py-2 text-white bg-indigo-600 rounded"
-                onClick={handleConfirmSave}
-              >
-                Save
-              </button>
-              <button
-                className="px-4 py-2 text-black border bg-gray-300 border-gray-300 rounded"
-                onClick={() => navigate("/inventory")}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

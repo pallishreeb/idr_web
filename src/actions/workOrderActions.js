@@ -16,7 +16,7 @@ import {
   getWorkOrderByClientIdStart, getWorkOrderByClientIdSuccess, getWorkOrderByClientIdFailure,
   getWorkOrderDetailsStart,getWorkOrderDetailsSuccess,getWorkOrderDetailsFailure,
   assignPeopleToWorkOrderStart,assignPeopleToWorkOrderSuccess,assignPeopleToWorkOrderFailure,
-  deleteAssigneeSuccess, deleteNoteSuccess
+  deleteAssigneeSuccess, deleteNoteSuccess,getWorkOrderListsForClientSuccess
 } from "../reducers/workOrderSlice";
 import { apiConfig } from "../config";
 
@@ -249,6 +249,21 @@ export const deleteNote = (noteId) => {
     } catch (error) {
       dispatch(deleteWorkOrderFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to delete Comment");
+    }
+  };
+};
+
+export const getWorkOrderListsByClientId = (client_id) => {
+  return async (dispatch) => {
+    dispatch(getWorkOrderListsStart());
+    try {
+      const url = `${apiConfig.workOrderByClient}/${client_id}`;
+      const response = await axios.get(url);
+      // console.log(response)
+      dispatch(getWorkOrderListsForClientSuccess(response.data));
+    } catch (error) {
+      dispatch(getWorkOrderListsFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to fetch work order lists");
     }
   };
 };

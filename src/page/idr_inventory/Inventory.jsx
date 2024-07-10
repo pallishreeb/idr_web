@@ -21,11 +21,12 @@ const Inventory = () => {
     model: "",
     device_type: ""
   });
-  const [searchTerm, setSearchTerm] = useState(""); // Separate state for the search term
+  const [searchTerm, setSearchTerm] = useState(""); 
+  const [deviceType, setDeviceType] = useState("");
+  const [model, setModel] = useState(""); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user_type } = useSelector((state) => state.user.user);
-  const access = ['Admin','Subadmin','IDR Employee']
   const loading = useSelector((state) => state.locationInventory.loading);
   const loadingInventory = useSelector((state) => state.inventory.loading);
   const inventoryList = useSelector((state) => state.inventory.inventories);
@@ -37,8 +38,29 @@ const Inventory = () => {
     dispatch(getInventories(filters));
   }, [dispatch, filters]); // Fetch inventory initially and whenever filters (except search) change
 
+  // const [allDeviceTypes, setAllDeviceTypes] = useState([]);
+  // const [allModels, setAllModels] = useState([]);
+
+  // useEffect(() => {
+  //   // Extract unique device_types and models from the initial unfiltered inventory list
+  //   dispatch(getInventories({})).then((response) => {
+  //     if (response && response.data) {
+  //       const uniqueDeviceTypes = new Set();
+  //       const uniqueModels = new Set();
+
+  //       response.data.forEach(item => {
+  //         uniqueDeviceTypes.add(item.device_type);
+  //         uniqueModels.add(item.model);
+  //       });
+
+  //       setAllDeviceTypes([...uniqueDeviceTypes]);
+  //       setAllModels([...uniqueModels]);
+  //     }
+  //   });
+  // }, [dispatch]);
+
   const handleSearch = () => {
-    const newFilters = { ...filters, search: searchTerm };
+    const newFilters = { ...filters, search: searchTerm, device_type:deviceType, model:model };
     dispatch(getInventories(newFilters));
   };
 
@@ -50,6 +72,8 @@ const Inventory = () => {
       device_type: ""
     });
     setSearchTerm("");
+    setDeviceType("");
+    setModel("");
     dispatch(getInventories());
   };
 
@@ -66,17 +90,15 @@ const Inventory = () => {
       return;
     }
     dispatch(postLocationInventory(data)).then((res) => {
-      if(res){ //code=='IL201'
+      if (res) { //code=='IL201'
         toast.success("Location  added successfully.");
         setLocation("");
         dispatch(getLocationInventory());
         setShowModal(false)
       }
     });
-
   };
 
-  // console.log(inventoryList);
   const handleDelete = (inventoryId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -105,91 +127,120 @@ const Inventory = () => {
       <div className="flex">
         <AdminSideNavbar />
         <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <h1 className="font-bold text-lg">Inventory</h1>
-          </div>
-          <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
-            <div className="flex justify-between items-center">
-              <div className="flex gap-4 w-[70%]">
-                <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">Filter by location</label>
-                  <select
-                    name="client_name"
-                    className="px-3 border border-gray-200 h-10 rounded"
-                    value={filters.location}
-                    onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                  >
-                    <option value="">All Location</option>
-                    {locationsInventory?.map((ele) => (
-                      <option key={ele.inventory_location_id} value={ele.location}>
-                        {ele.location}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">Filter by device type</label>
-                  <select
-                    name="client_name"
-                    className="px-3 border border-gray-200 h-10 rounded"
-                    value={filters.device_type}
-                    onChange={(e) => setFilters({ ...filters, device_type: e.target.value })}
-                  >
-                    <option value="">All Type</option>
-                    {/* Add options for device types here */}
-                  </select>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">Filter by model</label>
-                  <select
-                    name="client_name"
-                    className="px-3 border border-gray-200 h-10 rounded"
-                    value={filters.model}
-                    onChange={(e) => setFilters({ ...filters, model: e.target.value })}
-                  >
-                    <option value="">All model</option>
-                    {/* Add options for models here */}
-                  </select>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">Search List</label>
-                  <div className="flex border border-gray-200 h-10 rounded">
-                    <input
-                      className="flex-1 border-none text-xs font-normal px-2 py-2 rounded-l"
-                      placeholder="Type"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <button
-                      className="border-none text-xs font-normal px-4 py-2 bg-gray-200 rounded-r"
-                      onClick={handleSearch}
-                    >
-                      Search
-                    </button>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">&nbsp;</label>
-                  <button
-                    className="border-none text-xs font-normal px-4 py-3 bg-gray-200 rounded"
-                    onClick={handleReset}
-                  >
-                    Reset
-                  </button>
-                </div>
-              </div>
+            <div className="flex gap-2">
               <button
-                className="bg-indigo-600 text-white px-6 py-2 rounded mt-7"
+                className="bg-indigo-600 text-white px-6 py-2 rounded"
                 onClick={handleOpenModel}
               >
                 Add Location
               </button>
               <Link to={"/addinventory"}>
-                <button className="bg-indigo-600 text-white px-6 py-2 rounded mt-7">
+                <button className="bg-indigo-600 text-white px-6 py-2 rounded">
                   Add Inventory
                 </button>
               </Link>
             </div>
+          </div>
+          <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
+            <div className="flex justify-between items-center">
+            <div className="flex gap-4 w-[70%]">
+          <div className="flex flex-col gap-2">
+            <label className="font-normal text-sm">Filter by location</label>
+            <select
+              name="client_name"
+              className="px-3 border border-gray-200 h-10 rounded"
+              value={filters.location}
+              onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+            >
+              <option value="">All Location</option>
+              {locationsInventory?.map((ele) => (
+                <option key={ele.inventory_location_id} value={ele.location}>
+                  {ele.location}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="font-normal text-sm">Search by device type</label>
+            <input
+              type="text"
+              className="px-3 border border-gray-200 h-10 rounded"
+              placeholder="Type"
+              value={deviceType}
+              onChange={(e) => setDeviceType(e.target.value )}
+            />
+            {/* Uncomment the following block if you want to use a dropdown instead
+            <select
+              name="device_type"
+              className="px-3 border border-gray-200 h-10 rounded"
+              value={filters.device_type}
+              onChange={(e) => setFilters({ ...filters, device_type: e.target.value })}
+            >
+              <option value="">All Type</option>
+              {allDeviceTypes.map((deviceType, index) => (
+                <option key={index} value={deviceType}>
+                  {deviceType}
+                </option>
+              ))}
+            </select> */}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="font-normal text-sm">Search by model</label>
+            <input
+              type="text"
+              className="px-3 border border-gray-200 h-10 rounded"
+              placeholder="Model"
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+            />
+            {/* Uncomment the following block if you want to use a dropdown instead
+            <select
+              name="model"
+              className="px-3 border border-gray-200 h-10 rounded"
+              value={filters.model}
+              onChange={(e) => setFilters({ ...filters, model: e.target.value })}
+            >
+              <option value="">All Models</option>
+              {allModels.map((model, index) => (
+                <option key={index} value={model}>
+                  {model}
+                </option>
+              ))}
+            </select> */}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="font-normal text-sm">Search by make</label>
+            <div className="flex border border-gray-200 h-10 rounded">
+              <input
+                className="flex-1 border-none text-xs font-normal px-2 py-2 rounded-l"
+                placeholder="Type"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="font-normal text-sm">&nbsp;</label>
+            <button
+              className="border-none text-xs font-normal px-4 py-3 bg-gray-200 rounded"
+              onClick={handleSearch}
+            >
+              Search
+            </button>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="font-normal text-sm">&nbsp;</label>
+            <button
+              className="border-none text-xs font-normal px-4 py-3 bg-gray-200 rounded"
+              onClick={handleReset}
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
             <table className="mt-2 w-full overflow-x-scroll">
               <thead>
                 <tr className="bg-gray-50">
@@ -255,15 +306,14 @@ const Inventory = () => {
                             />
                           </div>
                           {user_type === "Admin" && (
-                              <div className="p-[4px] bg-gray-100 cursor-pointer">
-                                <AiFillDelete
-                                  onClick={() =>
-                                    handleDelete(item.inventory_id)
-                                  }
-                                />
-                              </div>
-                            )}
-                         
+                            <div className="p-[4px] bg-gray-100 cursor-pointer">
+                              <AiFillDelete
+                                onClick={() =>
+                                  handleDelete(item.inventory_id)
+                                }
+                              />
+                            </div>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -306,7 +356,7 @@ const Inventory = () => {
                 onClick={handleConfirmSave}
                 className="border-none text-xs font-normal px-4 py-2 bg-gray-200 rounded"
               >
-              {locationsLoading ? 'Saving' : 'Add'}
+                {locationsLoading ? 'Saving' : 'Add'}
               </button>
             </div>
           </div>
