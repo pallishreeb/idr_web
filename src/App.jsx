@@ -40,6 +40,7 @@ import ClientEquipment from "./page/idr_client_equipment/ClientEquipment";
 import AddClientEqiupment from "./page/idr_client_equipment/AddClientEqupment";
 import EditClientEqiupment from "./page/idr_client_equipment/EditClientEqupment";
 import TransferInventory from "./page/idr_inventory/TransferInventory";
+import InventoryLocations from "./page/idr_inventory/InventoryLocations";
 function App() {
   const dispatch = useDispatch();
   const token = localStorage.getItem("user_idr_token");
@@ -124,6 +125,7 @@ function App() {
             element={<EditEmployeePage />}
           />
           <Route path="/inventory" element={<Inventory />} />
+          <Route path="/inventory-locations" element={<InventoryLocations />} />
           <Route path="/addinventory" element={<AddInventory />} />
           <Route path="/edit_inventory/:inventory_id" element={<EditInventory />} />
           <Route path="/company-equipment" element={<ClientEquipment />} />
