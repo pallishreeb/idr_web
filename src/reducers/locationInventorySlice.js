@@ -38,6 +38,20 @@ const locationsInventorySlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
+    deleteLocationInventoryStart: (state) => {
+      state.error = null;
+      state.loading = true;
+    },
+
+    deleteLocationInventorySuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+
+    deleteLocationInventoryFailure: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    },
   },
 });
 
@@ -48,6 +62,9 @@ export const {
   postLocationInventorySuccess,
   postLocationInventoryFailure,
   postLocationInventoryStart,
+  deleteLocationInventoryStart,
+  deleteLocationInventorySuccess,
+  deleteLocationInventoryFailure
 } = locationsInventorySlice.actions;
 
 export default locationsInventorySlice.reducer;

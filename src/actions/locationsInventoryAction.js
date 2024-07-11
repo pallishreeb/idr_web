@@ -7,8 +7,13 @@ import {
   postLocationInventoryFailure,
   postLocationInventoryStart,
   postLocationInventorySuccess,
+  deleteLocationInventoryStart,
+  deleteLocationInventorySuccess,
+  deleteLocationInventoryFailure
+
 } from "../reducers/locationInventorySlice";
 import { toast } from "react-toastify";
+import { fetchJson } from '../fetch-config';
 
 export const getLocationInventory = () => {
   return async (dispatch) => {
@@ -23,16 +28,39 @@ export const getLocationInventory = () => {
   };
 };
 
-export const postLocationInventory = (data) => {
+export const postLocationInventory = (location) => {
   return async (dispatch) => {
     dispatch(postLocationInventoryStart());
     try {
-      const response = await axios.post(apiConfig.postInventoryLocation, data);
-      dispatch(postLocationInventorySuccess(response.location));
-      return response;
+      const data = await fetchJson(apiConfig.postInventoryLocation, {
+        method: 'POST',
+        body: location
+      });
+      dispatch(postLocationInventorySuccess(data));
+      return data;
     } catch (error) {
       dispatch(postLocationInventoryFailure(error.message));
-      toast.error("Error in adding location.")
+      toast.error(error.message || "Error in adding location.");
+      return error;
+    }
+  };
+};
+
+
+export const deleteLocationInventory = (locationId) => {
+  return async (dispatch) => {
+    dispatch(deleteLocationInventoryStart());
+    try {
+      const response = await fetchJson(`${apiConfig.deleteInventoryLocation}/${locationId}`, {
+        method: 'DELETE',
+      });
+      dispatch(deleteLocationInventorySuccess(locationId));
+      toast.success("Location deleted successfully.");
+      return response;
+    } catch (error) {
+      dispatch(deleteLocationInventoryFailure(error.message));
+      toast.error(error.message || "Failed to delete location.");
+      return error;
     }
   };
 };
