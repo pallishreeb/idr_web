@@ -120,7 +120,7 @@ export const inventoryWorkOrderAssign = (inventoryData, navigate) => {
         body: inventoryData
       });
       dispatch(inventoryWorkOrderAssignSuccess(data));
-      toast.success("Inventory transferred to WorkOrder");
+      toast.success(data?.message ||"Inventory transferred to WorkOrder");
       navigate('/inventory');
     } catch (error) {
       dispatch(inventoryWorkOrderAssignFailure(error.message));
@@ -139,7 +139,7 @@ export const inventoryTransfer = (inventoryData, navigate) => {
         body: inventoryData
       });
       dispatch(inventoryTransferSuccess(data));
-      toast.success("Inventory added successfully");
+      toast.success(data?.message || "Inventory transferred successfully");
       navigate('/inventory');
     } catch (error) {
       dispatch(inventoryTransferFailure(error.message));
