@@ -186,6 +186,9 @@ const TransferInventory = () => {
                 <label className="font-normal text-sm">
                   Select location to transfer inventory to
                 </label>
+                {loading ? (
+                    <div>Loading locations...</div>
+                  ) : (
                 <select 
                   className="px-2 border border-gray-200 h-10 rounded text-sm"
                   value={selectedLocation}
@@ -197,6 +200,7 @@ const TransferInventory = () => {
                     <option key={location.inventory_location_id} value={location.inventory_location_id}>{location.location}</option>
                   ))}
                 </select>
+                )}
               </div>
 
               <div className="flex flex-col gap-2 ">
