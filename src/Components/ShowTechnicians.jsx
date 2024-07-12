@@ -58,10 +58,12 @@ const ShowTechnicians = ({
       cancelButtonText: 'No, keep it',
     }).then((result) => {
       if (result.isConfirmed) {
-         dispatch(deleteAssignee(assigneeId));
-         dispatch(getWorkOrderDetails(workOrderId));
-         dispatch(getClients());
-         dispatch(fetchIDREmployees());
+         dispatch(deleteAssignee(assigneeId)).then((res) =>{
+          dispatch(getWorkOrderDetails(workOrderId));
+          dispatch(getClients());
+          dispatch(fetchIDREmployees());
+         });
+
       }
   
     });

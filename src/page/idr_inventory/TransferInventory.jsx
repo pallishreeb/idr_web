@@ -8,7 +8,9 @@ import { getClients } from "../../actions/clientActions"; // Action to fetch cli
 import { getWorkOrderListsByClientId } from "../../actions/workOrderActions"; // Action to fetch work orders for a client
 import { getLocationInventory } from "../../actions/locationsInventoryAction"; // Action to fetch inventory locations
 import { inventoryTransfer, inventoryWorkOrderAssign } from "../../actions/inventoryAction"; // Action to transfer inventory
-
+import {
+  getInventoryById
+} from "../../actions/inventoryAction";
 const TransferInventory = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -18,15 +20,30 @@ const TransferInventory = () => {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [quantityAssigned, setQuantityAssigned] = useState("");
   const [quantityTransferred, setQuantityTransferred] = useState("");
+  const [assignedLocation, setAssignedLocation] = useState("");
+  const [loading, setLoading] = useState(false);
   const { clients, loading: clientsLoading } = useSelector((state) => state.client);
   const { workOrders, loading: workOrdersLoading } = useSelector((state) => state.workOrder);
   const locationsInventory = useSelector((state) => state.locationInventory.locations);
   const loadingTransfer = useSelector((state) => state.inventory.loadingTransfer);
   const loadingAssign = useSelector((state) => state.inventory.loadingAssign);
   useEffect(() => {
-    dispatch(getClients()); // Fetch all clients on component mount
-    dispatch(getLocationInventory()); // Fetch all inventory locations on component mount
-  }, [dispatch]);
+    dispatch(getClients());
+    dispatch(getLocationInventory()); 
+    if (inventory_id) {
+      setLoading(true);
+      dispatch(getInventoryById(inventory_id))
+        .then((data) => {
+          setLoading(false);
+          setAssignedLocation(data.location);
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.error("Error fetching inventory item:", error);
+          // Handle error, e.g., show an error message
+        });
+    }
+  }, [dispatch,inventory_id]);
 
   useEffect(() => {
     if (selectedClient) {
@@ -46,7 +63,9 @@ const TransferInventory = () => {
     // API call to transfer inventory to another location
     dispatch(inventoryTransfer({ inventory_id: inventory_id, location_id: selectedLocation, quantity: quantityTransferred },navigate));
   };
-
+  const availableLocations = locationsInventory?.filter(
+    (location) => location.location !== assignedLocation
+  );
   return (
     <>
       <Header />
@@ -174,7 +193,7 @@ const TransferInventory = () => {
                   required
                 >
                   <option value="">Select location</option>
-                  {locationsInventory?.map((location) => (
+                  {availableLocations?.map((location) => (
                     <option key={location.inventory_location_id} value={location.inventory_location_id}>{location.location}</option>
                   ))}
                 </select>
