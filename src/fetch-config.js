@@ -1,5 +1,4 @@
-const API_BASE_URL = 'https://api.portal.idrtechnologysolutions.com'; // Replace with your API base URL
-
+import { API_BASE_URL } from "./config";
 const fetchJson = async (url, options = {}) => {
   const token = localStorage.getItem('user_idr_token');
   const headers = {
