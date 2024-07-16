@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
-import React,{useState} from "react";
-import {  useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+
 const WorkOrderCard = ({
   workOrder,
   clients,
@@ -12,9 +13,25 @@ const WorkOrderCard = ({
   const [isEditing, setIsEditing] = useState(false);
   const { user_type } = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
+
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
   };
+
+  useEffect(() => {
+    if (workOrder.location_id) {
+      const selectedLocation = locations.find(location => location.location_id === workOrder.location_id);
+      if (selectedLocation) {
+        handleWorkOrderChange({ target: { name: "address_line_one", value: selectedLocation.address_line_one } });
+        handleWorkOrderChange({ target: { name: "city", value: selectedLocation.city } });
+        handleWorkOrderChange({ target: { name: "state", value: selectedLocation.state } });
+        handleWorkOrderChange({ target: { name: "zipcode", value: selectedLocation.zipcode } });
+        handleWorkOrderChange({ target: { name: "address_line_two", value: selectedLocation.address_line_two } });
+        handleWorkOrderChange({ target: { name: "address_line_three", value: selectedLocation.address_line_three } });
+      }
+    }
+  }, [workOrder.location_id, locations]);
+
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -36,7 +53,6 @@ const WorkOrderCard = ({
                Cancel
              </button>
             </>
-          
           ) : (
             <button
               className="bg-indigo-600 text-white px-6 py-2 rounded"
@@ -85,6 +101,61 @@ const WorkOrderCard = ({
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="font-normal text-base">Address Line 2</label>
+          <input
+            type="text"
+            name="address_line_two"
+            className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
+            value={workOrder.address_line_two || "NA"}
+            readOnly
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="font-normal text-base">Address Line 3</label>
+          <input
+            type="text"
+            name="address_line_three"
+            className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
+            value={workOrder.address_line_three || "NA"}
+            readOnly
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="font-normal text-base">City</label>
+          <input
+            type="text"
+            name="city"
+            className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
+            value={workOrder.city || ""}
+            readOnly
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="font-normal text-base">State</label>
+          <input
+            type="text"
+            name="state"
+            className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
+            value={workOrder.state || ""}
+            readOnly
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="font-normal text-base">Zip Code</label>
+          <input
+            type="text"
+            name="zipcode"
+            className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
+            value={workOrder.zipcode || ""}
+            readOnly
+          />
         </div>
 
         <div className="flex flex-col gap-2">

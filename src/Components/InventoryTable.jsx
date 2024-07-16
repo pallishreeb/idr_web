@@ -9,7 +9,7 @@ const InventoryTable = ({ inventories }) => {
     {inventories.length > 0 && (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
-        <h1 className="font-normal text-xl mb-2">Inventories</h1>
+        <h1 className="font-normal text-xl mb-2">Inventory Parts Used To Complete Service</h1>
 
       </div>
 
