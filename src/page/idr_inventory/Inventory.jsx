@@ -257,17 +257,15 @@ const Inventory = () => {
                     Model
                   </th>
                   <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Label
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    SKU
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Quantity
+                    Color
                   </th>
                   <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Size
                   </th>
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
+                    Quantity
+                  </th>
+                 
                   <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Action
                   </th>
@@ -289,10 +287,10 @@ const Inventory = () => {
                       <td className="border text-sm px-1 py-3">{item.device_type}</td>
                       <td className="border text-sm px-1 py-3">{item.make}</td>
                       <td className="border text-sm px-1 py-3">{item.model}</td>
-                      <td className="border text-sm px-1 py-3">{item.label}</td>
-                      <td className="border text-sm px-1 py-3">{item.sku}</td>
-                      <td className="border text-sm px-1 py-3">{item.quantity}</td>
+                      <td className="border text-sm px-1 py-3">{item.color}</td>
                       <td className="border text-sm px-1 py-3">{item.size}</td>
+                      <td className="border text-sm px-1 py-3">{item.quantity}</td>
+
                       <td className="border text-sm px-1 py-3">
                         <div className="flex gap-2">
                           <div className="p-[4px] bg-gray-100 cursor-pointer">

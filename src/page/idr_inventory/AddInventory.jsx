@@ -26,8 +26,8 @@ const AddInventory = () => {
     location: "",
     location_id: "",
     size: "",
-    label: "",
-    sku: "",
+    // label: "",
+    // sku: "",
     description: "",
     image: null,
   });
@@ -92,8 +92,8 @@ const AddInventory = () => {
                 { name: "quantity", label: "Quantity", type: "number" },
                 { name: "color", label: "Color", type: "text" },
                 { name: "size", label: "Size", type: "text" },
-                { name: "label", label: "Label", type: "text" },
-                { name: "sku", label: "SKU", type: "text" }
+                // { name: "label", label: "Label", type: "text" },
+                // { name: "sku", label: "SKU", type: "text" }
               ].map(({ name, label, type }) => (
                 <div key={name} className="flex flex-col gap-2">
                   <label className="font-normal text-base">{label}</label>

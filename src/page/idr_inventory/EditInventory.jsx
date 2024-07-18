@@ -20,8 +20,8 @@ const EditInventory = () => {
 
   const [editableFields, setEditableFields] = useState({
     quantity: "",
-    label: "",
-    sku: "",
+    // label: "",
+    // sku: "",
     description: "",
   });
 
@@ -53,8 +53,8 @@ const EditInventory = () => {
           // Extract editable fields
           setEditableFields({
             quantity: data.quantity,
-            label: data.label,
-            sku: data.sku,
+            // label: data.label,
+            // sku: data.sku,
             description: data.description,
           });
           // Extract read-only fields
@@ -226,7 +226,7 @@ const EditInventory = () => {
                   disabled={!isEditing}
                 />
               </div>
-              <div className="flex flex-col gap-2">
+              {/* <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">Label</label>
                 <input
                   name="label"
@@ -251,7 +251,7 @@ const EditInventory = () => {
                   required
                   disabled={!isEditing}
                 />
-              </div>
+              </div> */}
               <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">QR code</label>
  
