@@ -27,6 +27,8 @@ const TransferInventory = () => {
   const locationsInventory = useSelector((state) => state.locationInventory.locations);
   const loadingTransfer = useSelector((state) => state.inventory.loadingTransfer);
   const loadingAssign = useSelector((state) => state.inventory.loadingAssign);
+  const { user_type } = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
   useEffect(() => {
     dispatch(getClients());
     dispatch(getLocationInventory()); 
@@ -163,6 +165,7 @@ const TransferInventory = () => {
           </div>
          </form>
 
+         {access.includes(user_type) &&
          <form onSubmit={handleTransferInventory}>
           <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
             <div className="mb-2">
@@ -216,6 +219,7 @@ const TransferInventory = () => {
             </div>
           </div>
           </form>
+        }
         </div>
       </div>
     </>
