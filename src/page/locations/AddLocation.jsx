@@ -152,7 +152,7 @@ const AddLocation = () => {
                       htmlFor={`address_line_one`}
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Address Line 1
+                      Location Name
                     </label>
                     <input
                       type="text"
@@ -168,7 +168,7 @@ const AddLocation = () => {
                       htmlFor={`address_line_two`}
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Address Line 2
+                      Address Line 1
                     </label>
                     <input
                       type="text"
@@ -183,7 +183,7 @@ const AddLocation = () => {
                       htmlFor={`address_line_three`}
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Address Line 3
+                      Address line 2
                     </label>
                     <input
                       type="text"

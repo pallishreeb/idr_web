@@ -8,7 +8,9 @@ import { getClients } from "../../actions/clientActions"; // Action to fetch cli
 import { getWorkOrderListsByClientId } from "../../actions/workOrderActions"; // Action to fetch work orders for a client
 import { getLocationInventory } from "../../actions/locationsInventoryAction"; // Action to fetch inventory locations
 import { inventoryTransfer, inventoryWorkOrderAssign } from "../../actions/inventoryAction"; // Action to transfer inventory
-
+import {
+  getInventoryById
+} from "../../actions/inventoryAction";
 const TransferInventory = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -18,15 +20,32 @@ const TransferInventory = () => {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [quantityAssigned, setQuantityAssigned] = useState("");
   const [quantityTransferred, setQuantityTransferred] = useState("");
+  const [assignedLocation, setAssignedLocation] = useState("");
+  const [loading, setLoading] = useState(false);
   const { clients, loading: clientsLoading } = useSelector((state) => state.client);
   const { workOrders, loading: workOrdersLoading } = useSelector((state) => state.workOrder);
   const locationsInventory = useSelector((state) => state.locationInventory.locations);
   const loadingTransfer = useSelector((state) => state.inventory.loadingTransfer);
   const loadingAssign = useSelector((state) => state.inventory.loadingAssign);
+  const { user_type } = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
   useEffect(() => {
-    dispatch(getClients()); // Fetch all clients on component mount
-    dispatch(getLocationInventory()); // Fetch all inventory locations on component mount
-  }, [dispatch]);
+    dispatch(getClients());
+    dispatch(getLocationInventory()); 
+    if (inventory_id) {
+      setLoading(true);
+      dispatch(getInventoryById(inventory_id))
+        .then((data) => {
+          setLoading(false);
+          setAssignedLocation(data.location);
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.error("Error fetching inventory item:", error);
+          // Handle error, e.g., show an error message
+        });
+    }
+  }, [dispatch,inventory_id]);
 
   useEffect(() => {
     if (selectedClient) {
@@ -46,7 +65,9 @@ const TransferInventory = () => {
     // API call to transfer inventory to another location
     dispatch(inventoryTransfer({ inventory_id: inventory_id, location_id: selectedLocation, quantity: quantityTransferred },navigate));
   };
-
+  const availableLocations = locationsInventory?.filter(
+    (location) => location.location !== assignedLocation
+  );
   return (
     <>
       <Header />
@@ -144,6 +165,7 @@ const TransferInventory = () => {
           </div>
          </form>
 
+         {access.includes(user_type) &&
          <form onSubmit={handleTransferInventory}>
           <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
             <div className="mb-2">
@@ -167,6 +189,9 @@ const TransferInventory = () => {
                 <label className="font-normal text-sm">
                   Select location to transfer inventory to
                 </label>
+                {loading ? (
+                    <div>Loading locations...</div>
+                  ) : (
                 <select 
                   className="px-2 border border-gray-200 h-10 rounded text-sm"
                   value={selectedLocation}
@@ -174,10 +199,11 @@ const TransferInventory = () => {
                   required
                 >
                   <option value="">Select location</option>
-                  {locationsInventory?.map((location) => (
+                  {availableLocations?.map((location) => (
                     <option key={location.inventory_location_id} value={location.inventory_location_id}>{location.location}</option>
                   ))}
                 </select>
+                )}
               </div>
 
               <div className="flex flex-col gap-2 ">
@@ -193,6 +219,7 @@ const TransferInventory = () => {
             </div>
           </div>
           </form>
+        }
         </div>
       </div>
     </>

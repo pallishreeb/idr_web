@@ -229,9 +229,10 @@ export const deleteAssignee = (assigneeId) => {
   return async (dispatch) => {
     dispatch(deleteWorkOrderStart());
     try {
-      await axios.delete(`${apiConfig.deleteAssignee}/${assigneeId}`);
+      const res = await axios.delete(`${apiConfig.deleteAssignee}/${assigneeId}`);
       dispatch(deleteAssigneeSuccess(assigneeId));
       toast.success("Assignee deleted successfully");
+      return res;
     } catch (error) {
       dispatch(deleteWorkOrderFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to delete Assignee");
