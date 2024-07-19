@@ -32,7 +32,7 @@ const AdminSideNavbar = () => {
       roles: ["Admin", "Subadmin"],
     },
     {
-      title: "Client Equipments",
+      title: "Client Equipment",
       path: "/client-equipment",
       roles: ["Admin", "Subadmin"],
     },
@@ -57,6 +57,11 @@ const AdminSideNavbar = () => {
     {
       title: "Inventory",
       path: "/inventory",
+      roles: ["Admin", "Subadmin", "IDR Employee"],
+    },
+    {
+      title: "Inventory Locations",
+      path: "/inventory-locations",
       roles: ["Admin", "Subadmin", "IDR Employee"],
     },
     {

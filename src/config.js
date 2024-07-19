@@ -53,7 +53,8 @@ const apiConfig = {
   updateInventory: '/inventory/update',
   inventoryWorkOrderAssign:'/inventory/work_order/assign',
   inventoryTransfer:'/inventory/location/transfer',
-  workOrderByClient:'/work_order/by_client'
+  workOrderByClient:'/work_order/by_client',
+  deleteInventoryLocation:'/inv_loc'
 };
 
 export { API_BASE_URL, apiConfig };
