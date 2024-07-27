@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes,useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
@@ -43,6 +43,8 @@ import TransferInventory from "./page/idr_inventory/TransferInventory";
 import InventoryLocations from "./page/idr_inventory/InventoryLocations";
 function App() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const token = localStorage.getItem("user_idr_token");
   axios.defaults.headers.common.Authorization = `Bearer ${token}`;
   axios.interceptors.response.use(
@@ -54,6 +56,7 @@ function App() {
       if (res?.status === 401 && res?.config && !res?.config.__isRetryRequest) {
         localStorage.removeItem("user_idr_token");
         dispatch(logout());
+        navigate("/");
       }
     }
   );
