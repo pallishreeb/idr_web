@@ -140,7 +140,7 @@ const TransferInventory = () => {
                   >
                     <option value="">Select code</option>
                     {workOrders?.workorders
-                      ?.filter(wo => wo.status === 'Open')
+                      ?.filter(wo => wo.status !== 'Closed')
                       .map(wo => (
                         <option key={wo.work_order_id} value={wo.work_order_id}>
                           {wo.ticket_number}

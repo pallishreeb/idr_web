@@ -36,8 +36,8 @@ export const addInventory = (inventoryData, navigate) => {
   };
 };
 
-// Get all inventories with optional search and filter parameters
-export const getInventories = ({ search, location, model, device_type } = {}) => {
+// Get all inventories with optional search, filter, and sorting parameters
+export const getInventories = ({ search, location, model, device_type, sortBy, orderBy } = {}) => {
   return async (dispatch) => {
     dispatch(getInventoriesStart());
     try {
@@ -48,6 +48,8 @@ export const getInventories = ({ search, location, model, device_type } = {}) =>
       if (location) params.append('location', location);
       if (model) params.append('model', model);
       if (device_type) params.append('device_type', device_type);
+      if (sortBy) params.append('sortBy', sortBy);
+      if (orderBy) params.append('orderBy', orderBy);
 
       if (params.toString()) {
         url += `?${params.toString()}`;
@@ -63,6 +65,8 @@ export const getInventories = ({ search, location, model, device_type } = {}) =>
     }
   };
 };
+
+
 
 // Get inventory by ID
 export const getInventoryById = (inventoryId) => {

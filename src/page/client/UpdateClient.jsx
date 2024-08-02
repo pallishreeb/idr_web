@@ -206,7 +206,7 @@ const UpdateClient = () => {
                    <div className="flex flex-wrap -mx-2 mb-4">
               <div className="w-full md:w-1/3 px-2 mb-4">
                 <label htmlFor="addressLine1" className="block">
-                  Address Line 1
+                Job Location
                 </label>
                 <input
                   type="text"
@@ -219,7 +219,7 @@ const UpdateClient = () => {
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
                 <label htmlFor="addressLine2" className="block">
-                  Address Line 2
+                  Address Line 1
                 </label>
                 <input
                  type="text"
@@ -232,7 +232,7 @@ const UpdateClient = () => {
               </div>
               <div className="w-full md:w-1/3 px-2 mb-4">
                 <label htmlFor="addressLine3" className="block">
-                  Address Line 3
+                  Address Line 2
                 </label>
                 <input
                   type="text"
