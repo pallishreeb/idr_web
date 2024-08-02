@@ -21,6 +21,7 @@ const Inventory = () => {
     model: "",
     device_type: ""
   });
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
   const [searchTerm, setSearchTerm] = useState(""); 
   const [deviceType, setDeviceType] = useState("");
   const [model, setModel] = useState(""); 
@@ -76,7 +77,21 @@ const Inventory = () => {
     setModel("");
     dispatch(getInventories());
   };
-
+  const handleSort = (key) => {
+    let direction = "ASC";
+    if (sortConfig.key === key && sortConfig.direction === "ASC") {
+      direction = "DESC";
+    }
+    setSortConfig({ key, direction });
+    dispatch(getInventories({ ...filters, sortBy: key, orderBy: direction }));
+  };
+  
+  const getSortSymbol = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "ASC" ? "▲" : "▼";
+    }
+    return "↕";
+  };
   const handleOpenModel = () => {
     setShowModal(true);
   };
@@ -244,23 +259,23 @@ const Inventory = () => {
             <table className="mt-2 w-full overflow-x-scroll">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Location
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border" onClick={() => handleSort('location')}>
+                    Location <span className="ml-2">{getSortSymbol('location')}</span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Device Type
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border" onClick={() => handleSort('device_type')}>
+                    Device Type <span className="ml-2">{getSortSymbol('device_type')}</span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Make
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border" onClick={() => handleSort('make')}>
+                    Make <span className="ml-2">{getSortSymbol('make')}</span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Model
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"  onClick={() => handleSort('model')}>
+                    Model <span className="ml-2">{getSortSymbol('model')}</span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Color
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border" onClick={() => handleSort('color')}>
+                    Color <span className="ml-2">{getSortSymbol('color')}</span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Size
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border" onClick={() => handleSort('size')}>
+                    Size <span className="ml-2">{getSortSymbol('size')}</span>
                   </th>
                   <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Quantity

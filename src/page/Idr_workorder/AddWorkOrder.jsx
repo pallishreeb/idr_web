@@ -404,10 +404,10 @@ function AddWorkOrder() {
                   />
                 </div>
                 <div className="flex flex-col gap-2 ">
-                  <label className="font-normal text-base">Job Location*</label>
+                  <label className="font-normal text-base">Service Location*</label>
                   <input
                     type="text"
-                    placeholder="Type Job Location"
+                    placeholder="Type Service Location"
                     name="job_location"
                     className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
                     onChange={(e) => handleChange(e, setTicketData)}
