@@ -104,7 +104,7 @@ const WorkOrderCard = ({
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="font-normal text-base">Address Line 2</label>
+          <label className="font-normal text-base">Address Line 1</label>
           <input
             type="text"
             name="address_line_two"
@@ -115,7 +115,7 @@ const WorkOrderCard = ({
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="font-normal text-base">Address Line 3</label>
+          <label className="font-normal text-base">Address Line 2</label>
           <input
             type="text"
             name="address_line_three"
@@ -248,7 +248,7 @@ const WorkOrderCard = ({
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="font-normal text-base">Job Location</label>
+          <label className="font-normal text-base">Service Location</label>
           <input
             type="text"
             placeholder="Type job location"
