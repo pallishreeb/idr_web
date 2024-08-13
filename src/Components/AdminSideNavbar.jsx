@@ -66,7 +66,7 @@ const AdminSideNavbar = () => {
     },
     {
       title: "IDR Equipment and Tools",
-      path: "/company-equipment",
+      path: "/idr-equipment",
       roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"],
     },
     // {

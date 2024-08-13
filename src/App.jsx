@@ -141,7 +141,7 @@ function App() {
             element={<EditInventory />}
           />
           {/* equipmem */}
-          <Route path="/company-equipment" element={<IdrEquipment />} />
+          <Route path="/idr-equipment" element={<IdrEquipment />} />
           <Route path="/add-company-equipment" element={<AddIdrEquipment />} />
           <Route path="/edit-company-equipment" element={<EditEquipment />} />
           <Route

@@ -10,7 +10,7 @@ const initialState = {
 };
 
 const idrEquipmentSlice = createSlice({
-  name: "equipment",
+  name: "idrequipment",
   initialState,
   reducers: {
     addIdrEquipmentStart: (state) => {
@@ -105,6 +105,19 @@ const idrEquipmentSlice = createSlice({
       state.loadingTransfer = true;
       state.error = null;
     },
+    getIdrEquipmentsStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    getIdrEquipmentsSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+      state.equipments = action.payload;
+    },
+    getIdrEquipmentsFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -130,6 +143,9 @@ export const {
   idrEquipmentTransferSuccess,
   idrEquipmentTransferFailure,
   idrEquipmentTransferStart,
+  getIdrEquipmentsStart,
+  getIdrEquipmentsSuccess,
+  getIdrEquipmentsFailure,
 } = idrEquipmentSlice.actions;
 
 export default idrEquipmentSlice.reducer;
