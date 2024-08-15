@@ -4,6 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   loading: false,
+  loadingDetails: false,
   workOrders: [],
   technicians: [],
   notes: [],
@@ -182,16 +183,16 @@ const workOrderSlice = createSlice({
       state.error = action.payload;
     },
     getWorkOrderDetailsStart: (state) => {
-      state.loading = true;
+      state.loadingDetails = true;
       state.error = null;
     },
     getWorkOrderDetailsSuccess: (state, action) => {
-      state.loading = false;
+      state.loadingDetails = false;
       state.workOrderDetails = action.payload;
       state.error = null;
     },
     getWorkOrderDetailsFailure: (state, action) => {
-      state.loading = false;
+      state.loadingDetails = false;
       state.error = action.payload;
     },
     assignPeopleToWorkOrderStart: (state) => {

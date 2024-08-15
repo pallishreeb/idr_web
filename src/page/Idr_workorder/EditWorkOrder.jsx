@@ -24,7 +24,7 @@ import Loader from "../../Images/ZZ5H.gif"
 const EditWorkOrder = () => {
   const { workOrderId } = useParams();
   const dispatch = useDispatch();
-  const { workOrderDetails, loading, error } = useSelector(
+  const { workOrderDetails, loading, error,loadingDetails } = useSelector(
     (state) => state.workOrder
   );
   // Redux state selectors
@@ -250,7 +250,7 @@ const EditWorkOrder = () => {
     // dispatch(updateAssignees(filteredAssignees));
   };
 
-  if (loading) {
+  if (loadingDetails) {
     return (
       <div className="flex justify-center items-center h-screen">
         <img className="w-20 h-20" src={Loader} alt="Loading..." />
