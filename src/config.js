@@ -54,7 +54,20 @@ const apiConfig = {
   inventoryWorkOrderAssign:'/inventory/work_order/assign',
   inventoryTransfer:'/inventory/location/transfer',
   workOrderByClient:'/work_order/by_client',
-  deleteInventoryLocation:'/inv_loc'
+  deleteInventoryLocation:'/inv_loc',
+  techniciansListByWorkorder:'/work_order/technician/by_work_order',
+  addEquipment:'/equipment/add',
+  editEquipment:'/equipment/update',
+  deleteEquipment:'/equipment',
+  getEquipments:'/equipment/all',
+  getEquimentById:'/equipment',
+  transferEquipmentToWorkorder:'/equipments/transfer/work_order',
+  transferEquipmentToEmployee:'/equipment/assign',
+  equipmentConfirmReturnRequest:'/equipment/confirm/return',
+  equipmentReturnRequestList:'/equipment/requests/list',
+  equipmentAcceptRejectInvitations:'/equipment/accept',
+  equipmentInvitationsList:'/equipment/invitations',
+  confirmReturnedEquipment:'/equipment/confirm/return'
 };
 
 export { API_BASE_URL, apiConfig };

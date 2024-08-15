@@ -10,22 +10,22 @@ import Loader from "../../Images/ZZ5H.gif";
 const EditEquipment = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { equipment_id } = useParams();
+  const { idr_equipment_id } = useParams();
   const [loading, setLoading] = useState(false);
   const [editableFields, setEditableFields] = useState({
     serial_number: "",
-    label: "",
     make: "",
     model: "",
     device_type: "",
     mac_address: "",
-    location: "",
+    location_name: "",
     description: "",
     location_id: "",
   });
 
   const [readOnlyFields, setReadOnlyFields] = useState({
-    qr_code: "",
+    image: "",
+    serial_number: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -40,24 +40,25 @@ const EditEquipment = () => {
   };
 
   useEffect(() => {
-    if (equipment_id) {
+    if (idr_equipment_id) {
       setLoading(true);
-      dispatch(getIdrEquipmentById(equipment_id))
+      dispatch(getIdrEquipmentById(idr_equipment_id))
         .then((data) => {
           setLoading(false);
+          // console.log(data)
           setEditableFields({
-            serial_number: data.serial_number,
-            label: data.label,
-            make: data.make,
-            model: data.model,
-            device_type: data.device_type,
-            mac_address: data.mac_address,
-            location: data.location,
-            location_id: data.location_id,
-            description: data.description,
+            serial_number: data?.serial_number,
+            make: data?.make,
+            model: data?.model,
+            device_type: data?.device_type,
+            mac_address: data?.mac_address,
+            location_name: data?.location_name,
+            location_id: data?.location_id,
+            description: data?.description,
           });
           setReadOnlyFields({
-            qr_code: data.qr_code,
+            image: data?.qr_image,
+            serial_number: data?.serial_number,
           });
         })
         .catch((error) => {
@@ -66,7 +67,7 @@ const EditEquipment = () => {
         });
     }
     dispatch(getLocationInventory()); // Fetch locations
-  }, [dispatch, equipment_id]);
+  }, [dispatch, idr_equipment_id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -79,14 +80,14 @@ const EditEquipment = () => {
     );
     setEditableFields((prevData) => ({
       ...prevData,
-      location: selectedLocation.location,
+      location_name: selectedLocation.location,
       location_id: selectedLocation.inventory_location_id,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    editableFields.equipment_id = equipment_id;
+    editableFields.equipment_id = idr_equipment_id;
     dispatch(updateEquipment(editableFields, navigate));
   };
 
@@ -156,21 +157,11 @@ const EditEquipment = () => {
                 <input
                   name="serial_number"
                   type="text"
-                  value={editableFields.serial_number}
+                  value={readOnlyFields.serial_number}
                   className="px-3 border border-gray-200 h-10 text-sm rounded"
                   onChange={handleInputChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="font-normal text-base">Label</label>
-                <input
-                  name="label"
-                  type="text"
-                  value={editableFields.label}
-                  className="px-3 border border-gray-200 h-10 text-sm rounded"
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
+                  readOnly
+
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -224,7 +215,7 @@ const EditEquipment = () => {
                     name="location"
                     className="px-3 border border-gray-200 h-10 text-sm rounded"
                     onChange={handleLocationChange}
-                    value={editableFields.location}
+                    value={editableFields.location_name}
                   >
                     <option value="">Select Location</option>
                     {locationsInventory?.map((ele) => (
@@ -240,7 +231,7 @@ const EditEquipment = () => {
                   <input
                     name="location"
                     type="text"
-                    value={editableFields.location}
+                    value={editableFields.location_name}
                     className="px-3 border border-gray-200 h-10 text-sm rounded"
                     disabled
                   />
@@ -249,12 +240,12 @@ const EditEquipment = () => {
               <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">QR Code</label>
                 <img
-                  src={`https://idr-app-images-bucket.s3.amazonaws.com/${readOnlyFields.qr_code}`}
+                  src={`https://idr-app-images-bucket.s3.amazonaws.com/${readOnlyFields.image}`}
                   alt="QR Code"
                   className="w-24 h-24 object-cover rounded-md shadow"
                 />
               </div>
-              <div className="flex flex-col gap-2 col-span-2">
+              <div className="flex flex-col gap-2">
                 <label className="font-normal text-base">Description</label>
                 <textarea
                   name="description"

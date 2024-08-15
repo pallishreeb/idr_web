@@ -18,15 +18,14 @@ const AddIdrEquipment = () => {
   const loading = useSelector((state) => state.idrequipment.loading); // Replace with actual loading state
   const [formData, setFormData] = useState({
     serial_number: "",
-    label: "",
     make: "",
     model: "",
     device_type: "",
     mac_address: "",
-    location: "",
+    location_name: "",
     location_id: "",
     description: "",
-    qr_code: null,
+    image: null,
   });
 
   useEffect(() => {
@@ -50,7 +49,7 @@ const AddIdrEquipment = () => {
     );
     setFormData((prevData) => ({
       ...prevData,
-      location: selectedLocation.location,
+      location_name: selectedLocation.location,
       location_id: selectedLocation.inventory_location_id,
     }));
   };
@@ -83,7 +82,6 @@ const AddIdrEquipment = () => {
             <div className="grid grid-cols-3 gap-8">
               {[
                 { name: "serial_number", label: "Serial Number", type: "text" },
-                { name: "label", label: "Label", type: "text" },
                 { name: "make", label: "Make", type: "text" },
                 { name: "model", label: "Model", type: "text" },
                 { name: "device_type", label: "Device Type", type: "text" },
@@ -101,9 +99,10 @@ const AddIdrEquipment = () => {
                   />
                 </div>
               ))}
-
+            <div  className="flex flex-col gap-2">
+            <label className="font-normal text-base">Location</label>
               <select
-                name="location"
+                name="location_name"
                 className="px-3 border border-gray-200 h-10 text-sm rounded"
                 onChange={handleLocationChange}
                 required
@@ -115,13 +114,13 @@ const AddIdrEquipment = () => {
                   </option>
                 ))}
               </select>
-
+            </div>
               <div className="flex flex-col gap-2 relative">
                 <label className="font-normal text-base">QR code</label>
                 <label className="flex justify-center items-center bg-gray-200 rounded-md shadow-sm px-3 py-2 border border-gray-200 text-sm">
                   <span>Click here to upload</span>
                   <input
-                    name="qr_code"
+                    name="image"
                     type="file"
                     accept="image/*"
                     className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"

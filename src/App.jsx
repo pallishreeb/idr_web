@@ -39,7 +39,6 @@ import EditInventory from "./page/idr_inventory/EditInventory";
 import TransferInventory from "./page/idr_inventory/TransferInventory";
 import InventoryLocations from "./page/idr_inventory/InventoryLocations";
 import IdrEuipement from "./page/idr_equipment/Idr_equipment_tool";
-import EditEquipement from "./page/idr_equipment/Edit_Idr_Equipment";
 import IdrEquipment from "./page/idr_equipment/Idr_equipment_tool";
 import EditEquipment from "./page/idr_equipment/Edit_Idr_Equipment";
 import TransferIdrEquipment from "./page/idr_equipment/Idr_equipment_transfer";
@@ -143,9 +142,9 @@ function App() {
           {/* equipmem */}
           <Route path="/idr-equipment" element={<IdrEquipment />} />
           <Route path="/add-company-equipment" element={<AddIdrEquipment />} />
-          <Route path="/edit-company-equipment" element={<EditEquipment />} />
+          <Route path="/edit-company-equipment/:idr_equipment_id" element={<EditEquipment />} />
           <Route
-            path="/transfer-company-equipment"
+            path="/transfer-company-equipment/:idr_equipment_id"
             element={<TransferIdrEquipment />}
           />
 

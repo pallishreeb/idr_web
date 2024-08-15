@@ -5,11 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
-import { getWorkOrderListsByClientId } from "../../actions/workOrderActions";
+import {  getWorkOrderListsByClientId , getWorkOrderDetails} from "../../actions/workOrderActions";
 // import { getLocationInventory } from "../../actions/locationsInventoryAction";
-import { idrWorkOrderAssign } from "../../actions/idrEquipmentAction";
-import { getIdrEquipmentById } from "../../actions/idrEquipmentAction";
+import { idrWorkOrderAssign ,idrEmployeeAssign,getIdrEquipmentById} from "../../actions/idrEquipmentAction";
 import { fetchIDREmployees } from "../../actions/employeeActions";
+import Loader from "../../Images/ZZ5H.gif"
 
 const TransferIdrEquipment = () => {
   const navigate = useNavigate();
@@ -17,12 +17,15 @@ const TransferIdrEquipment = () => {
   const { idr_equipment_id } = useParams();
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedWorkorder, setSelectedWorkorder] = useState("");
+  const [selectedTechnician, setSelectedTechnician] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [signedInDate, setSignedInDate] = useState("");
+  const [idrSignedInDate, setIdrSignedInDate] = useState("");
   const [assignDesc, setAssignDesc] = useState("");
+  const [technicians, setTechnicians] = useState([]);
   const [loading, setLoading] = useState(false);
   const { clients, loading: clientsLoading } = useSelector((state) => state.client);
-  const { workOrders, loading: workOrdersLoading } = useSelector((state) => state.workOrder);
+  const { workOrders, loading: workOrdersLoading ,workOrderDetails,loadingDetails} = useSelector((state) => state.workOrder);
   const loadingAssign = useSelector((state) => state.idrequipment.loadingAssign);
   const { idrEmployees } = useSelector((state) => state.employee);
 
@@ -44,20 +47,75 @@ const TransferIdrEquipment = () => {
     if (selectedClient) {
       dispatch(getWorkOrderListsByClientId(selectedClient));
     }
-  }, [selectedClient, dispatch]);
+
+  }, [selectedClient,dispatch]);
+
+  useEffect(() => {
+    if (selectedWorkorder) {
+      dispatch(getWorkOrderDetails(selectedWorkorder));
+    }
+  }, [selectedWorkorder, dispatch]);
+
+  useEffect(() => {
+    // console.log("workOrderDetails:", workOrderDetails); // Debugging line
+    if (workOrderDetails) {
+      setTechnicians(workOrderDetails.assignees || []);
+    }
+  }, [workOrderDetails]);
 
   const handleAssignWorkorder = (e) => {
     e.preventDefault();
+    const formattedDateTime =  new Date(signedInDate).toLocaleString('en-US', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    })
     const assignData = {
       equipment_id: idr_equipment_id,
       work_order_id: selectedWorkorder,
-      user_id: selectedEmployee,
-      user_name: idrEmployees.find(emp => emp.user_id === selectedEmployee)?.user_name,
-      signed_in: new Date(signedInDate).toLocaleDateString('en-US'),
+      user_id: selectedTechnician,
+      user_name: technicians.find(emp => emp.technician_user_id  === selectedTechnician)?.technician_name,
+      signed_in: formattedDateTime,
     };
     dispatch(idrWorkOrderAssign(assignData, navigate));
   };
 
+  const handleAssignIDREmployee = (e) => {
+    e.preventDefault();
+    const selectedEmployeeData = idrEmployees.find(emp => emp.user_id === selectedEmployee);
+    const userName = selectedEmployeeData ? `${selectedEmployeeData.first_name} ${selectedEmployeeData.last_name}` : '';
+    const formattedDateTime =  new Date(idrSignedInDate).toLocaleString('en-US', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    })
+    const assignData = {
+      equipment_id: idr_equipment_id,
+      user_id: selectedEmployee,
+      user_name: userName,
+      signed_in: formattedDateTime,
+      assign_desc:assignDesc
+    };
+    dispatch(idrEmployeeAssign(assignData, navigate));
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <img className="w-20 h-20" src={Loader} alt="Loading..." />
+      </div>
+    );
+  }
   return (
     <>
       <Header />
@@ -141,25 +199,29 @@ const TransferIdrEquipment = () => {
 
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-sm">Assign to Technician</label>
+                  {loadingDetails ? (
+                    <div>Loading technicians...</div>
+                  ) : (
                   <select 
                     className="px-2 border border-gray-200 h-10 rounded text-sm"
-                    value={selectedEmployee}
-                    onChange={(e) => setSelectedEmployee(e.target.value)}
+                    value={selectedTechnician}
+                    onChange={(e) => setSelectedTechnician(e.target.value)}
                     required
                   >
-                    <option value="">Select employee</option>
-                    {idrEmployees?.map((employee) => (
-                      <option key={employee.user_id} value={employee.user_id}>
-                          {employee.first_name + employee.last_name}
+                    <option value="">Select Technician</option>
+                    {technicians?.map((employee) => (
+                      <option key={employee.technician_user_id} value={employee.technician_user_id}>
+                          {employee.technician_name}
                       </option>
                     ))}
                   </select>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-sm">Signed Out Date</label>
                   <input
-                    type="date"
+                    type="datetime-local"
                     className="px-3 py-3 border  border-gray-200 h-10 text-sm rounded"
                     value={signedInDate}
                     onChange={(e) => setSignedInDate(e.target.value)}
@@ -169,7 +231,7 @@ const TransferIdrEquipment = () => {
               </div>
             </div>
           </form>
-          <form onSubmit={handleAssignWorkorder}>
+          <form onSubmit={handleAssignIDREmployee}>
             <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
               <div className="mb-2">
                 <div className="flex justify-between items-end mb-2">
@@ -200,7 +262,7 @@ const TransferIdrEquipment = () => {
                     <option value="">Select employee</option>
                     {idrEmployees?.map((employee) => (
                       <option key={employee.user_id} value={employee.user_id}>
-                        {employee.first_name + employee.last_name}
+                        {employee.first_name + " " + employee.last_name}
                       </option>
                     ))}
                   </select>
@@ -211,8 +273,8 @@ const TransferIdrEquipment = () => {
                   <input
                     type="date"
                     className="px-3 py-3 border  border-gray-200 h-10 text-sm rounded"
-                    value={signedInDate}
-                    onChange={(e) => setSignedInDate(e.target.value)}
+                    value={idrSignedInDate}
+                    onChange={(e) => setIdrSignedInDate(e.target.value)}
                     required
                   />
                 </div>
