@@ -72,10 +72,6 @@ const idrEquipmentSlice = createSlice({
     updateIdrEquipmentSuccess: (state, action) => {
       state.loading = false;
       state.error = null;
-      // const index = state.equipments.findIndex(equipment => equipment.id === action.payload.id);
-      // if (index !== -1) {
-      //   state.equipments[index] = action.payload;
-      // }
     },
     updateIdrEquipmentFailure: (state, action) => {
       state.loading = false;

@@ -39,11 +39,7 @@ const AdminSideNavbar = () => {
     // Add more menu items as needed
   ];
   const idrMenuItems = [
-    // {
-    //   title: "Dashboard",
-    //   path: "/admin/dashboard",
-    //   roles: ["Admin","Subadmin", "IDR Employee", "Client Employee"],
-    // },
+
     {
       title: "IDR Employees",
       path: "/idr-employees",
@@ -68,6 +64,11 @@ const AdminSideNavbar = () => {
       title: "IDR Equipment and Tools",
       path: "/idr-equipment",
       roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"],
+    },
+    {
+      title: "Assigned Equipments",
+      path: "/assigned-equipment",
+      roles: ["Admin","Subadmin"],
     },
     // {
     //   title: "Upload CSV File",

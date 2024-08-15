@@ -1,35 +1,86 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getAssignedEquipments } from "../../actions/assignedEquipmentsAction"; // Action to fetch assigned equipments
+import { Link, useNavigate } from "react-router-dom";
+import { BiSolidEditAlt } from "react-icons/bi";
+import { BsCheckCircle } from "react-icons/bs";
+// import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
+// import { BiTransferAlt } from "react-icons/bi";
+import {
+  getAssignedEquipments,
+  getReturnedRequestEquipments,
+  confirmReturnedEquipment
+} from "../../actions/idrEquipmentAction";
+import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 const AssignedEquipments = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  // State for filters and search
+  const [selectedOption, setSelectedOption] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
 
-  // State for filters
-  const [statusFilter, setStatusFilter] = useState("");
-  const [isReturn, setIsReturn] = useState(false);
+  const { user_type } = useSelector((state) => state.user.user);
+  const loading = useSelector((state) => state.idrequipment.loading);
+  const equipmentData = useSelector((state) => state.idrequipment.equipments);
 
-  const assignedEquipments = useSelector(
-    (state) => state.assignedEquipments.data
-  );
 
   useEffect(() => {
-    const fetchAssignedEquipments = () => {
-      const filtersWithStatus = { status: statusFilter, isReturn: isReturn };
-      dispatch(getAssignedEquipments(filtersWithStatus)); // Fetch data based on selected filters
-    };
+    if (selectedOption === "returnRequestEquipments") {
+      dispatch(getReturnedRequestEquipments());
+    }else{
+      dispatch(getAssignedEquipments());
+    }
+  }, [dispatch, selectedOption]);
 
-    fetchAssignedEquipments();
-  }, [dispatch, statusFilter, isReturn]);
-
-  const handleStatusChange = (e) => {
-    setStatusFilter(e.target.value);
+  const handleConfirm = (equipmentId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to Confirm this return request?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, confirm it!",
+      cancelButtonText: "No, keep it",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(confirmReturnedEquipment(equipmentId))
+          .then(() => {
+            dispatch(getAssignedEquipments()); // Refresh the list after deletion
+          })
+          .catch((error) => {
+            console.log(error);
+            toast.error("Failed to Confirm the Equipment.");
+          });
+      }
+    });
   };
 
-  const handleReturnFilter = () => {
-    setIsReturn(true); // Set return filter
+  const handleSort = (key) => {
+    let direction = "ASC";
+    if (sortConfig.key === key && sortConfig.direction === "ASC") {
+      direction = "DESC";
+    }
+    setSortConfig({ key, direction });
+    // dispatch(getInventories({ ...filters, sortBy: key, orderBy: direction }));
+    if (selectedOption === "returnRequestEquipments") {
+      dispatch(getReturnedRequestEquipments({ sortBy: key, orderBy: direction }));
+    }else{
+      dispatch(getAssignedEquipments({ sortBy: key, orderBy: direction }));
+    }
+  };
+
+  const getSortSymbol = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "ASC" ? "▲" : "▼";
+    }
+    return "↕";
+  };
+
+  const truncateText = (text, maxLength) => {
+    if (text?.length <= maxLength) return text;
+    return text?.slice(0, maxLength) + "...";
   };
 
   return (
@@ -38,53 +89,77 @@ const AssignedEquipments = () => {
       <div className="flex">
         <AdminSideNavbar />
         <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
-          <h1 className="font-bold text-lg">Assigned Equipments</h1>
-          <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
-            <div className="flex gap-4">
-              <div className="flex flex-col gap-2">
-                <label className="font-normal text-sm">Filter by Status</label>
-                <select
-                  name="statusFilter"
-                  value={statusFilter}
-                  onChange={handleStatusChange}
-                  className="px-3 border border-gray-200 h-10 rounded w-40"
-                >
-                  <option value="">Select Status</option>
-                  <option value="accepted">Accepted</option>
-                  <option value="returned">Returned</option>
-                </select>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="font-normal text-sm">&nbsp;</label>
-                <button
-                  onClick={handleReturnFilter}
-                  className="border-none text-xs font-normal px-4 py-3 bg-gray-200 rounded"
-                >
-                  Filter by Returned
+          <div className="flex justify-between items-center">
+            <h1 className="font-bold text-lg">{selectedOption === "returnRequestEquipments" ? "Return Equipment Requests"  : "Assigned IDR Equipment"} </h1>
+            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
+                  {/* <label className="font-normal text-sm">
+                    Filter by location
+                  </label> */}
+                  <select
+                    name="equipmentFilters"
+                    className="px-3 border border-gray-200 h-10 rounded w-50"
+                    value={selectedOption}
+                    onChange={(e) => setSelectedOption(e.target.value)}
+                  >
+                    <option value="assignedEquipments" >Assigned Equipments</option>
+                    <option value="returnRequestEquipments">Return Equipments</option>
+                  
+                  </select>
+                </div>
+              <Link to="/add-company-equipment">
+                <button className="bg-indigo-600 text-white px-6 py-2 rounded">
+                  Add Inventory
                 </button>
-              </div>
+              </Link>
             </div>
+          </div>
+          <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
 
             <table className="mt-2 w-full overflow-x-scroll">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Location
+                  <th
+                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
+                    onClick={() => handleSort("location_name")}
+                  >
+                    Location{" "}
+                    <span className="ml-2">{getSortSymbol("location")}</span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Assigned To
+                  <th
+                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
+                    onClick={() => handleSort("assigned_to")}
+                  >
+                    Assigned To{" "}
+                    <span className="ml-2">{getSortSymbol("assigned_to")}</span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Serial Number
+                  <th
+                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
+                    onClick={() => handleSort("serial_number")}
+                  >
+                    Serial Number{" "}
+                    <span className="ml-2">
+                      {getSortSymbol("serial_number")}
+                    </span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Device Type
+                  <th
+                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
+                    onClick={() => handleSort("device_type")}
+                  >
+                    Device Type{" "}
+                    <span className="ml-2">{getSortSymbol("device_type")}</span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Make
+                  <th
+                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
+                    onClick={() => handleSort("make")}
+                  >
+                    Make <span className="ml-2">{getSortSymbol("make")}</span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Model
+                  <th
+                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
+                    onClick={() => handleSort("model")}
+                  >
+                    Model <span className="ml-2">{getSortSymbol("model")}</span>
                   </th>
                   <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Description
@@ -95,36 +170,94 @@ const AssignedEquipments = () => {
                 </tr>
               </thead>
               <tbody>
-                {assignedEquipments?.map((equipment, index) => (
-                  <tr key={index} className="text-left">
-                    <td className="border text-sm px-1 py-3">
-                      {equipment.location_name}
-                    </td>
-                    <td className="border text-sm px-1 py-3">
-                      {equipment.assigned_to || "NA"}
-                    </td>
-                    <td className="border text-sm px-1 py-3">
-                      {equipment.serial_number}
-                    </td>
-                    <td className="border text-sm px-1 py-3">
-                      {equipment.device_type}
-                    </td>
-                    <td className="border text-sm px-1 py-3">
-                      {equipment.make}
-                    </td>
-                    <td className="border text-sm px-1 py-3">
-                      {equipment.model}
-                    </td>
-                    <td className="border text-sm px-1 py-3">
-                      {equipment.description}
-                    </td>
-                    <td className="border text-sm px-1 py-3">
-                      <button className="bg-indigo-600 text-white px-2 py-1 rounded">
-                        Confirm
-                      </button>
-                    </td>
+
+            {/* show no data if length is 0 */}
+            {loading ? (
+                  <tr>
+                  <td colSpan="5" className="text-center">
+                  <p className="text-center">Loading Equipments...</p>
+                  </td>
                   </tr>
-                ))}
+              ) : (
+                <>
+
+                {equipmentData?.data?.length === 0 ? (
+                 <tr>
+                 <td colSpan="6" className="text-center">
+                 <p className="text-center">No Record Found</p>
+                 </td>
+              </tr>
+                ) : (
+                  <>
+                    {equipmentData?.data?.map((equipment, index) => (
+                      <tr key={index} className="text-left">
+                        <td className="border text-sm px-1 py-3">
+                          {equipment.equipments?.location_name}
+                        </td>
+                        <td className="border text-sm px-1 py-3">
+                          {equipment.equipments?.assigned_to ? equipment.equipments.assigned_to : "NA"}
+                        </td>
+                        <td className="border text-sm px-1 py-3">
+                          {equipment.equipments?.serial_number}
+                        </td>
+                        <td className="border text-sm px-1 py-3">
+                          {equipment.equipments?.device_type}
+                        </td>
+                        <td className="border text-sm px-1 py-3">
+                          {equipment.equipments?.make}
+                        </td>
+                        <td className="border text-sm px-1 py-3">
+                          {equipment.equipments?.model}
+                        </td>
+                        <td className="border text-sm px-1 py-3">
+                          {" "}
+                          {truncateText(equipment.equipments?.description, 30)}
+                        </td>
+                        <td className="border text-sm px-1 py-3">
+                          <div className="flex gap-2">
+                            <div className="p-[4px] bg-gray-100 cursor-pointer">
+                              <BiSolidEditAlt
+                                onClick={() =>
+                                  navigate(
+                                    `/edit-company-equipment/${equipment.equipments?.equipment_id}`
+                                  )
+                                }
+                              />
+                            </div>
+                            {/* <div className="p-[4px] bg-gray-100 cursor-pointer">
+                              <BiTransferAlt
+                                onClick={() =>
+                                  navigate(
+                                    `/transfer-company-equipment/${equipment.equipments?.equipment_id}`
+                                  )
+                                }
+                              />
+                            </div> */}
+                            {(user_type === "Admin" && selectedOption === "returnRequestEquipments" ) && (
+                              <div className="p-[4px] bg-gray-100 cursor-pointer">
+                                <BsCheckCircle
+                                  onClick={() =>
+                                    handleConfirm(equipment?.assign_equip_id)
+                                  }
+                                />
+                              </div>
+                            )}
+                            {/* {user_type === "Admin" && (
+                              <div className="p-[4px] bg-gray-100 cursor-pointer">
+                                <AiFillDelete
+                                  onClick={() =>
+                                    handleDelete(equipment.equipments.equipment_id)
+                                  }
+                                />
+                              </div>
+                            )} */}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </>
+                )}
+                </> )}
               </tbody>
             </table>
           </div>
@@ -133,5 +266,8 @@ const AssignedEquipments = () => {
     </>
   );
 };
+
+
+
 
 export default AssignedEquipments;

@@ -27,6 +27,7 @@ const TransferIdrEquipment = () => {
   const { clients, loading: clientsLoading } = useSelector((state) => state.client);
   const { workOrders, loading: workOrdersLoading ,workOrderDetails,loadingDetails} = useSelector((state) => state.workOrder);
   const loadingAssign = useSelector((state) => state.idrequipment.loadingAssign);
+  const loadingTransfer = useSelector((state) => state.idrequipment.loadingTransfer);
   const { idrEmployees } = useSelector((state) => state.employee);
 
   useEffect(() => {
@@ -241,9 +242,9 @@ const TransferIdrEquipment = () => {
                   <button 
                       className="bg-indigo-600 text-white px-6 py-2 rounded"
                       type="submit"
-                      disabled={loadingAssign}
+                      disabled={loadingTransfer}
                     >
-                    {loadingAssign ? 'Saving' : 'Assign equipment'}
+                    {loadingTransfer ? 'Saving' : 'Assign equipment'}
                   </button>
                 </div>
                 <div className="border border-gray-200"></div>

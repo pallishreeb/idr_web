@@ -43,6 +43,7 @@ import IdrEquipment from "./page/idr_equipment/Idr_equipment_tool";
 import EditEquipment from "./page/idr_equipment/Edit_Idr_Equipment";
 import TransferIdrEquipment from "./page/idr_equipment/Idr_equipment_transfer";
 import AddIdrEquipment from "./page/idr_equipment/Add_Idr_Equipment";
+import AssignedEquipments from "./page/idr_equipment/AssignedEquipments";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -141,6 +142,7 @@ function App() {
           />
           {/* equipmem */}
           <Route path="/idr-equipment" element={<IdrEquipment />} />
+          <Route path="/assigned-equipment" element={<AssignedEquipments />} />
           <Route path="/add-company-equipment" element={<AddIdrEquipment />} />
           <Route path="/edit-company-equipment/:idr_equipment_id" element={<EditEquipment />} />
           <Route

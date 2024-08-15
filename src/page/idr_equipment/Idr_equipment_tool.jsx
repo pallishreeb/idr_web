@@ -98,7 +98,7 @@ const IdrEquipment = () => {
       direction = "DESC";
     }
     setSortConfig({ key, direction });
-    // dispatch(getInventories({ ...filters, sortBy: key, orderBy: direction }));
+    dispatch(getIdrEquipments({ ...filters, sortBy: key, orderBy: direction }));
   };
 
   const getSortSymbol = (key) => {
@@ -109,8 +109,8 @@ const IdrEquipment = () => {
   };
 
   const truncateText = (text, maxLength) => {
-    if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength) + "...";
+    if (text?.length <= maxLength) return text;
+    return text?.slice(0, maxLength) + "...";
   };
 
   return (
@@ -122,24 +122,6 @@ const IdrEquipment = () => {
           <div className="flex justify-between items-center">
             <h1 className="font-bold text-lg">IDR Equipment</h1>
             <div className="flex gap-2">
-            <div className="flex flex-col gap-2">
-                  {/* <label className="font-normal text-sm">
-                    Filter by location
-                  </label> */}
-                  <select
-                    name="locationFilter"
-                    value={filters.location}
-                    onChange={(e) =>
-                      setFilters({ ...filters, location: e.target.value })
-                    }
-                    className="px-3 border border-gray-200 h-10 rounded w-40"
-                  >
-                    <option value="">All Equipments</option>
-                    <option value="">Assigned Equipments</option>
-                    <option value="">Return Equipments</option>
-                  
-                  </select>
-                </div>
               <Link to="/add-company-equipment">
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded">
                   Add Inventory
@@ -247,7 +229,7 @@ const IdrEquipment = () => {
                 <tr className="bg-gray-50">
                   <th
                     className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("location")}
+                    onClick={() => handleSort("location_name")}
                   >
                     Location{" "}
                     <span className="ml-2">{getSortSymbol("location")}</span>
@@ -296,33 +278,47 @@ const IdrEquipment = () => {
                 </tr>
               </thead>
               <tbody>
-                {loading ? (
-                  <p className="text-center">Loading Equipments...</p>
+                 {/* show no data if length is 0 */}
+            {loading ? (
+                 <tr>
+                 <td colSpan="6" className="text-center">
+                 <p className="text-center">Loading Equipments...</p>
+                 </td>
+                 </tr>
+              ) : (
+                <>
+                {equipmentData?.data?.length === 0 ? (
+               <tr>
+               <td colSpan="6" className="text-center">
+               <p className="text-center">No Record Found</p>
+               </td>
+             </tr>
+                
                 ) : (
                   <>
                     {equipmentData?.data?.map((equipment, index) => (
                       <tr key={index} className="text-left">
                         <td className="border text-sm px-1 py-3">
-                          {equipment.location_name}
+                          {equipment?.location_name}
                         </td>
                         <td className="border text-sm px-1 py-3">
-                          {equipment.assigned_to ? equipment.assigned_to : "NA"}
+                          {equipment?.assigned_to ? equipment?.assigned_to : "NA"}
                         </td>
                         <td className="border text-sm px-1 py-3">
-                          {equipment.serial_number}
+                          {equipment?.serial_number}
                         </td>
                         <td className="border text-sm px-1 py-3">
-                          {equipment.device_type}
+                          {equipment?.device_type}
                         </td>
                         <td className="border text-sm px-1 py-3">
-                          {equipment.make}
+                          {equipment?.make}
                         </td>
                         <td className="border text-sm px-1 py-3">
-                          {equipment.model}
+                          {equipment?.model}
                         </td>
                         <td className="border text-sm px-1 py-3">
                           {" "}
-                          {truncateText(equipment.description, 30)}
+                          {truncateText(equipment?.description, 30)}
                         </td>
                         <td className="border text-sm px-1 py-3">
                           <div className="flex gap-2">
@@ -330,7 +326,7 @@ const IdrEquipment = () => {
                               <BiSolidEditAlt
                                 onClick={() =>
                                   navigate(
-                                    `/edit-company-equipment/${equipment.equipment_id}`
+                                    `/edit-company-equipment/${equipment?.equipment_id}`
                                   )
                                 }
                               />
@@ -339,7 +335,7 @@ const IdrEquipment = () => {
                               <BiTransferAlt
                                 onClick={() =>
                                   navigate(
-                                    `/transfer-company-equipment/${equipment.equipment_id}`
+                                    `/transfer-company-equipment/${equipment?.equipment_id}`
                                   )
                                 }
                               />
@@ -348,7 +344,7 @@ const IdrEquipment = () => {
                               <div className="p-[4px] bg-gray-100 cursor-pointer">
                                 <AiFillDelete
                                   onClick={() =>
-                                    handleDelete(equipment.equipment_id)
+                                    handleDelete(equipment?.equipment_id)
                                   }
                                 />
                               </div>
@@ -359,6 +355,7 @@ const IdrEquipment = () => {
                     ))}
                   </>
                 )}
+                </>)}
               </tbody>
             </table>
           </div>

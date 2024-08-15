@@ -55,6 +55,7 @@ export const getIdrEquipments = ({
   location,
   model,
   device_type,
+  sortBy, orderBy
 } = {}) => {
   return async (dispatch) => {
     dispatch(getIdrEquipmentsStart());
@@ -66,7 +67,8 @@ export const getIdrEquipments = ({
       if (location) params.append("location_name", location);
       if (model) params.append("model", model);
       if (device_type) params.append("device_type", device_type);
-
+      if (sortBy) params.append('sortBy', sortBy);
+      if (orderBy) params.append('orderBy', orderBy);
       if (params.toString()) {
         url += `?${params.toString()}`;
       }
@@ -78,7 +80,7 @@ export const getIdrEquipments = ({
     } catch (error) {
       dispatch(getIdrEquipmentsFailure(error.message));
       toast.error(
-        error.response?.data?.message || "Failed to fetch inventories"
+        error.response?.data?.message || "Failed to fetch equipments"
       );
     }
   };
@@ -179,24 +181,15 @@ export const idrEmployeeAssign = (idrEquipmentData, navigate) => {
   };
 };
 
-// Get all returned equipments 
-export const getReturnedEquipments = ({
-  isReturn,
-  status,
-} = {}) => {
+// Get all returned request equipments 
+export const getReturnedRequestEquipments = (sortBy, orderBy) => {
   return async (dispatch) => {
     dispatch(getIdrEquipmentsStart());
     try {
-      let url = apiConfig.getEquipments;
+      let url = apiConfig.equipmentReturnRequestList;
       const params = new URLSearchParams();
-
-      if (status) params.append("status", status);
-      if (isReturn) params.append("isReturn", isReturn);
-
-      if (params.toString()) {
-        url += `?${params.toString()}`;
-      }
-
+      if (sortBy) params.append('sortBy', sortBy);
+      if (orderBy) params.append('orderBy', orderBy);
       const response = await axios.get(url);
 
       dispatch(getIdrEquipmentsSuccess(response.data));
@@ -204,23 +197,43 @@ export const getReturnedEquipments = ({
     } catch (error) {
       dispatch(getIdrEquipmentsFailure(error.message));
       toast.error(
-        error.response?.data?.message || "Failed to fetch inventories"
+        error.response?.data?.message || "Failed to fetch equipments"
+      );
+    }
+  };
+};
+// Get all returned equipments 
+export const getAssignedEquipments = (sortBy, orderBy) => {
+  return async (dispatch) => {
+    dispatch(getIdrEquipmentsStart());
+    try {
+      let url = apiConfig.equipmentAssigned;
+      const params = new URLSearchParams();
+      if (sortBy) params.append('sortBy', sortBy);
+      if (orderBy) params.append('orderBy', orderBy);
+      const response = await axios.get(url);
+
+      dispatch(getIdrEquipmentsSuccess(response.data));
+      return response.data;
+    } catch (error) {
+      dispatch(getIdrEquipmentsFailure(error.message));
+      toast.error(
+        error.response?.data?.message || "Failed to fetch equipments"
       );
     }
   };
 };
 
 // Confirm returned equipments
-export const confirmReturnedEquipment = (idrEquipmentData, navigate) => {
+export const confirmReturnedEquipment = (equipmentId, navigate) => {
   return async (dispatch) => {
     dispatch(updateIdrEquipmentStart());
     try {
       const response = await axios.patch(
-        `${apiConfig.confirmReturnedEquipment}`,
-        idrEquipmentData
+        `${apiConfig.confirmReturnedEquipment}/${equipmentId}`
       );
       dispatch(updateIdrEquipmentSuccess(response.data));
-      toast.success("Idr Equipment updated successfully");
+      toast.success("Equipment Return Confirmed");
       navigate(`/idr-equipment`);
     } catch (error) {
       dispatch(updateIdrEquipmentFailure(error.message));

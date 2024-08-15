@@ -61,13 +61,14 @@ const apiConfig = {
   deleteEquipment:'/equipment',
   getEquipments:'/equipment/all',
   getEquimentById:'/equipment',
-  transferEquipmentToWorkorder:'/equipments/transfer/work_order',
+  transferEquipmentToWorkorder:'/equipment/transfer/work_order',
   transferEquipmentToEmployee:'/equipment/assign',
-  equipmentConfirmReturnRequest:'/equipment/confirm/return',
-  equipmentReturnRequestList:'/equipment/requests/list',
+  equipmentReturnRequestList:'/equipment/list/return',
+  confirmReturnedEquipment:'/equipment/confirm/return',
+  equipmentAssigned:'/equipment/assigned',
   equipmentAcceptRejectInvitations:'/equipment/accept',
   equipmentInvitationsList:'/equipment/invitations',
-  confirmReturnedEquipment:'/equipment/confirm/return'
+
 };
 
 export { API_BASE_URL, apiConfig };
