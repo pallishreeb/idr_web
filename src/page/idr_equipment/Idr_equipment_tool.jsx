@@ -23,7 +23,7 @@ const IdrEquipment = () => {
     location: "",
     model: "",
     device_type: "",
-    signed_out: "",
+    signout: "", //signout
   });
   const [deviceTypeFilter, setDeviceTypeFilter] = useState("");
   const [modelFilter, setModelFilter] = useState("");
@@ -61,7 +61,7 @@ const IdrEquipment = () => {
       location: "",
       model: "",
       device_type: "",
-      signed_out: "",
+      signout: "",
     };
     setFilters(resetFilters);
     setDeviceTypeFilter("");
@@ -112,7 +112,12 @@ const IdrEquipment = () => {
     if (text?.length <= maxLength) return text;
     return text?.slice(0, maxLength) + "...";
   };
-
+  const convertDateFormat = (dateString) => {
+    // Split the date string into its components
+    const [year, month, day] = dateString.split('-');
+    // Return the date in the desired format
+    return `${month}/${day}/${year}`;
+  };
   return (
     <>
       <Header />
@@ -155,20 +160,20 @@ const IdrEquipment = () => {
                     ))}
                   </select>
                 </div>
-                <div className="flex flex-col gap-2">
+                {/* <div className="flex flex-col gap-2">
                   <label className="font-normal text-sm">
                     Filter by Signed Out
                   </label>
                   <input
                     type="date"
                     name="signedOutFilter"
-                    value={filters.signed_out}
+                    value={filters.signout}
                     onChange={(e) =>
-                      setFilters({ ...filters, signed_out: e.target.value })
+                      setFilters({ ...filters, signout: convertDateFormat(e.target.value) })
                     }
                     className="px-3 border border-gray-200 h-10 rounded w-40"
                   />
-                </div>
+                </div> */}
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-sm">
                     Filter by device type

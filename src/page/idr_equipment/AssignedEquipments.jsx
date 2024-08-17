@@ -19,6 +19,9 @@ const AssignedEquipments = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // State for filters and search
+  const [filters, setFilters] = useState({
+    signout: "",
+  });
   const [selectedOption, setSelectedOption] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
 
@@ -31,10 +34,16 @@ const AssignedEquipments = () => {
     if (selectedOption === "returnRequestEquipments") {
       dispatch(getReturnedRequestEquipments());
     }else{
-      dispatch(getAssignedEquipments());
+      dispatch(getAssignedEquipments(filters));
     }
-  }, [dispatch, selectedOption]);
-
+  }, [dispatch, selectedOption, filters]);
+  const handleReset = () => {
+    const resetFilters = {
+      signout: "",
+    };
+    setFilters(resetFilters);
+    dispatch(getAssignedEquipments(resetFilters));
+  };
   const handleConfirm = (equipmentId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -63,11 +72,10 @@ const AssignedEquipments = () => {
       direction = "DESC";
     }
     setSortConfig({ key, direction });
-    // dispatch(getInventories({ ...filters, sortBy: key, orderBy: direction }));
     if (selectedOption === "returnRequestEquipments") {
-      dispatch(getReturnedRequestEquipments({ sortBy: key, orderBy: direction }));
+      dispatch(getReturnedRequestEquipments({ ...filters, sortBy: key, orderBy: direction }));
     }else{
-      dispatch(getAssignedEquipments({ sortBy: key, orderBy: direction }));
+      dispatch(getAssignedEquipments({ ...filters,sortBy: key, orderBy: direction }));
     }
   };
 
@@ -82,7 +90,14 @@ const AssignedEquipments = () => {
     if (text?.length <= maxLength) return text;
     return text?.slice(0, maxLength) + "...";
   };
-
+  const formattedDateTime = (signoutDate) => {
+    return new Date(signoutDate).toLocaleString('en-US', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+  }  
   return (
     <>
       <Header />
@@ -115,7 +130,35 @@ const AssignedEquipments = () => {
             </div>
           </div>
           <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
-
+          <div className="flex justify-between items-center">
+              <div className="flex gap-4 w-[70%]">
+               
+                <div className="flex flex-col gap-2">
+                  <label className="font-normal text-sm">
+                    Filter by Signed Out
+                  </label>
+                  <input
+                    type="date"
+                    name="signedOutFilter"
+                    value={filters.signout}
+                    onChange={(e) =>
+                      setFilters({ ...filters, signout: formattedDateTime(e.target.value) })
+                    }
+                    className="px-3 border border-gray-200 h-10 rounded w-40"
+                  />
+                </div>
+               
+                <div className="flex flex-col gap-2">
+                  <label className="font-normal text-sm">&nbsp;</label>
+                  <button
+                    onClick={handleReset}
+                    className="border-none text-xs font-normal px-4 py-3 bg-gray-200 rounded"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </div>
             <table className="mt-2 w-full overflow-x-scroll">
               <thead>
                 <tr className="bg-gray-50">

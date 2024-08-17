@@ -9,6 +9,7 @@ import WorkOrderCard from "../../Components/WorkOrderCard";
 // import AssigneePeopleCard from "../../Components/AssigneePeopleCard"
 import ShowTechnicians from "../../Components/ShowTechnicians"
 import InventoryTable from "../../Components/InventoryTable"
+import EquipmentTable from "../../Components/EquipmentTable"
 import {
   getWorkOrderDetails,
   updateNotes,
@@ -39,7 +40,9 @@ const EditWorkOrder = () => {
   const [notes, setNotes] = useState([]);
   const [assignees, setAssignees] = useState([]);
   const [inventories, setInventories] = useState([]);
-
+  const [equipments, setEquipments] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isWorkOrderEditing, setIsWorkOrderEditing] = useState(false);
   useEffect(() => {
     dispatch(getWorkOrderDetails(workOrderId));
     dispatch(getClients());
@@ -54,6 +57,7 @@ const EditWorkOrder = () => {
       setNotes(workOrderDetails.notes || []);
       setAssignees(workOrderDetails.assignees || []);
       setInventories(workOrderDetails.inventories || []);
+      setEquipments(workOrderDetails.equipment || []);
     }
   }, [workOrderDetails]);
   useEffect(() => {
@@ -189,6 +193,7 @@ const EditWorkOrder = () => {
   const handleSaveTicket = () => {
     const filteredWorkOrder = getFilteredWorkOrder(workOrder);
     dispatch(updateTicket(filteredWorkOrder));
+    setIsEditing(!isEditing)
   };
   
 
@@ -210,6 +215,7 @@ const EditWorkOrder = () => {
   const handleSaveTechnician = (index) => {
     const filteredTechnician = getFilteredTechnician(technicians[index]);
     dispatch(updateTechnician(filteredTechnician));
+    setIsWorkOrderEditing(!isWorkOrderEditing)
   };
   
   const getFilteredNote = (note) => {
@@ -231,25 +237,6 @@ const EditWorkOrder = () => {
     dispatch(updateNotes(filteredNote));
   };
   
-  const getFilteredAssignees = (technician) => {
-    const allowedFields = [
-      "technician_id", "work_order_id", "technician_name", "project_manager","technician_user_id","pm_user_id"
-    ];
-    const filteredAssignees = {};
-    allowedFields.forEach(field => {
-      if (Object.prototype.hasOwnProperty.call(technician, field)) {
-        filteredAssignees[field] = technician[field];
-      }
-    });
-    return filteredAssignees;
-  };
-  
-  
-  const handleSaveAssignee = (index) => {
-    const filteredAssignees = getFilteredAssignees(technicians[index]);
-    // dispatch(updateAssignees(filteredAssignees));
-  };
-
   if (loadingDetails) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -258,9 +245,6 @@ const EditWorkOrder = () => {
     );
   }
 
-  // if (error) {
-  //   return <div>Error: {error}</div>;
-  // }
 
   if (!workOrder) {
     return <div className="text-center mt-5">No work order details found</div>;
@@ -291,6 +275,8 @@ const EditWorkOrder = () => {
             handleWorkOrderChange={handleWorkOrderChange}
             handleSaveTicket={handleSaveTicket}
             loading={loading}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
           />
           {/* update Technicians */}
           <TechniciansCard
@@ -298,13 +284,14 @@ const EditWorkOrder = () => {
             handleTechnicianChange={handleTechnicianChange}
             handleSaveTechnicians={handleSaveTechnician}
             loading={loading}
+            isWorkOrderEditing={isWorkOrderEditing}
+            setIsWorkOrderEditing={setIsWorkOrderEditing}
           />
             {/* update Assignee */}
             <ShowTechnicians
             assignees={assignees}
             idrEmployees={idrEmployees}
             handleAssigneeChange={handleAssigneeChange}
-            handleSaveAssignee={handleSaveAssignee}
             loading={loading}
             workOrderId={workOrderId}
           />
@@ -319,6 +306,10 @@ const EditWorkOrder = () => {
           {/* InventoryTable */}
           <InventoryTable
              inventories={inventories}
+          />
+          {/* Equipments Table */}
+          <EquipmentTable
+             equipments={equipments}
           />
         </div>
       </div>
