@@ -81,7 +81,7 @@ const TransferIdrEquipment = () => {
       work_order_id: selectedWorkorder,
       user_id: selectedTechnician,
       user_name: technicians.find(emp => emp.technician_user_id  === selectedTechnician)?.technician_name,
-      signed_in: formattedDateTime,
+      signed_out: formattedDateTime,
     };
     dispatch(idrWorkOrderAssign(assignData, navigate));
   };
@@ -104,7 +104,7 @@ const TransferIdrEquipment = () => {
       equipment_id: idr_equipment_id,
       user_id: selectedEmployee,
       user_name: userName,
-      signed_in: formattedDateTime,
+      signed_out: formattedDateTime,
       assign_desc:assignDesc
     };
     dispatch(idrEmployeeAssign(assignData, navigate));
@@ -272,7 +272,7 @@ const TransferIdrEquipment = () => {
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-sm">Signed Out Date</label>
                   <input
-                    type="date"
+                    type="datetime-local" //date
                     className="px-3 py-3 border  border-gray-200 h-10 text-sm rounded"
                     value={idrSignedInDate}
                     onChange={(e) => setIdrSignedInDate(e.target.value)}

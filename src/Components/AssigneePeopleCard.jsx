@@ -14,17 +14,14 @@ const AssigneePeopleCard = ({
   assignees,
   idrEmployees,
   handleAssigneeChange,
-  handleSaveAssignee,
   workOrderId,
 }) => {
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  // const [isEditing, setIsEditing] = useState(false);
   const { user_type } = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
-  };
+ 
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -69,38 +66,6 @@ const AssigneePeopleCard = ({
       <div className="grid grid-cols-1 gap-6">
         {assignees?.map((technician, index) => (
           <div key={index} className="border border-gray-200 p-4">
-             {/* <h2 className="font-semibold text-lg">Technician {index + 1}</h2> */}
-            <div className="flex justify-end items-center mb-4">
-             
-              {access.includes(user_type) && 
-              <div>
-          {isEditing ? (
-            <>
-            <button
-                className="bg-indigo-600 text-white px-4 py-1 rounded"
-                onClick={() => handleSaveAssignee(index)}
-              >
-                Save Work Order Details
-              </button>
-               <button
-               className="bg-gray-500 text-white px-6 py-2 rounded ml-2"
-               onClick={handleEditToggle}
-             >
-               Cancel
-             </button>
-            </>
-          
-          ) : (
-            <button
-              className="bg-indigo-600 text-white px-6 py-2 rounded"
-              onClick={handleEditToggle}
-            >
-              Edit
-            </button>
-          )}
-              </div>}
-
-            </div>
             <div className="grid grid-cols-2 gap-4">
               {/* Field 1 */}
               <div className="mb-4">

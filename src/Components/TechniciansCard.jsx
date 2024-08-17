@@ -6,14 +6,16 @@ const TechniciansCards = ({
   technicians,
   handleTechnicianChange,
   handleSaveTechnicians,
+  isWorkOrderEditing,
+  setIsWorkOrderEditing,
   loading
 }) => {
 
-  const [isEditing, setIsEditing] = useState(false);
+  // const [isWorkOrderEditing, setisWorkOrderEditing] = useState(false);
   const { user_type } = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
   const handleEditToggle = () => {
-    setIsEditing(!isEditing);
+    setIsWorkOrderEditing(!isWorkOrderEditing);
   };
 
   return (
@@ -29,7 +31,7 @@ const TechniciansCards = ({
             <div className="flex justify-end items-center mb-4">
               {access.includes(user_type) && 
               <div>
-          {isEditing ? (
+          {isWorkOrderEditing ? (
             <>
             <button
                 className="bg-indigo-600 text-white px-4 py-1 rounded"
@@ -65,7 +67,7 @@ const TechniciansCards = ({
                 value={technician.parts || ""}
                 onChange={(e) => handleTechnicianChange(index, e)}
                 rows={4}
-                disabled={!isEditing}
+                disabled={!isWorkOrderEditing}
               ></textarea>
             </div>
             <div className="mb-4">
@@ -78,7 +80,7 @@ const TechniciansCards = ({
                 name="labeling_methodology"
                 value={technician.labeling_methodology || ""}
                 onChange={(e) => handleTechnicianChange(index, e)}
-                disabled={!isEditing}
+                disabled={!isWorkOrderEditing}
               />
             </div>
             <div className="mb-4">
@@ -89,7 +91,7 @@ const TechniciansCards = ({
                 value={technician.other_details || ""}
                 onChange={(e) => handleTechnicianChange(index, e)}
                 rows={4} // Adjust the number of rows as needed
-                disabled={!isEditing}
+                disabled={!isWorkOrderEditing}
               />
             </div>
             <div className="mb-4">
@@ -100,7 +102,7 @@ const TechniciansCards = ({
                 value={technician.procedures || ""}
                 onChange={(e) => handleTechnicianChange(index, e)}
                 rows={4} // Adjust the number of rows as needed
-                disabled={!isEditing}
+                disabled={!isWorkOrderEditing}
               />
             </div>
             <div className="mb-4">
@@ -113,7 +115,7 @@ const TechniciansCards = ({
                 value={technician.required_deliverables || ""}
                 onChange={(e) => handleTechnicianChange(index, e)}
                 rows={4} // Adjust the number of rows as needed
-                disabled={!isEditing}
+                disabled={!isWorkOrderEditing}
               />
             </div>
             <div className="mb-4">
@@ -126,7 +128,7 @@ const TechniciansCards = ({
                 value={technician.deliverable_instructions || ""}
                 onChange={(e) => handleTechnicianChange(index, e)}
                 rows={4} // Adjust the number of rows as needed
-                disabled={!isEditing}
+                disabled={!isWorkOrderEditing}
               />
             </div>
           </div>

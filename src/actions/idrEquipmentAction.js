@@ -55,22 +55,28 @@ export const getIdrEquipments = ({
   location,
   model,
   device_type,
+  signout,
   sortBy, orderBy
 } = {}) => {
   return async (dispatch) => {
     dispatch(getIdrEquipmentsStart());
     try {
+
       let url = apiConfig.getEquipments;
       const params = new URLSearchParams();
-
+      const encodedDate = encodeURIComponent(signout);
+      // console.log(signout, encodedDate)
       if (search) params.append("search", search);
       if (location) params.append("location_name", location);
       if (model) params.append("model", model);
       if (device_type) params.append("device_type", device_type);
+      if (signout) params.append("signout", encodedDate);
       if (sortBy) params.append('sortBy', sortBy);
       if (orderBy) params.append('orderBy', orderBy);
       if (params.toString()) {
-        url += `?${params.toString()}`;
+        // url += `?${params.toString()}`;
+          // Replace '+' with '%20' to ensure spaces are encoded correctly
+         url += `?${params.toString().replace(/\+/g, '%20')}`;
       }
 
       const response = await axios.get(url);
@@ -182,7 +188,8 @@ export const idrEmployeeAssign = (idrEquipmentData, navigate) => {
 };
 
 // Get all returned request equipments 
-export const getReturnedRequestEquipments = (sortBy, orderBy) => {
+export const getReturnedRequestEquipments = ({ sortBy = "", orderBy = "" } = {}) => {
+  
   return async (dispatch) => {
     dispatch(getIdrEquipmentsStart());
     try {
@@ -190,6 +197,9 @@ export const getReturnedRequestEquipments = (sortBy, orderBy) => {
       const params = new URLSearchParams();
       if (sortBy) params.append('sortBy', sortBy);
       if (orderBy) params.append('orderBy', orderBy);
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
       const response = await axios.get(url);
 
       dispatch(getIdrEquipmentsSuccess(response.data));
@@ -203,16 +213,20 @@ export const getReturnedRequestEquipments = (sortBy, orderBy) => {
   };
 };
 // Get all returned equipments 
-export const getAssignedEquipments = (sortBy, orderBy) => {
+export const getAssignedEquipments = ({ signout = "",sortBy = "", orderBy = "" } = {}) => {
+  // console.log(sortBy, orderBy);
   return async (dispatch) => {
     dispatch(getIdrEquipmentsStart());
     try {
       let url = apiConfig.equipmentAssigned;
       const params = new URLSearchParams();
+      if (signout) params.append("signout", signout);
       if (sortBy) params.append('sortBy', sortBy);
       if (orderBy) params.append('orderBy', orderBy);
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
       const response = await axios.get(url);
-
       dispatch(getIdrEquipmentsSuccess(response.data));
       return response.data;
     } catch (error) {
