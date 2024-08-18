@@ -39,11 +39,11 @@ import EditInventory from "./page/idr_inventory/EditInventory";
 import TransferInventory from "./page/idr_inventory/TransferInventory";
 import InventoryLocations from "./page/idr_inventory/InventoryLocations";
 import IdrEuipement from "./page/idr_equipment/Idr_equipment_tool";
-import EditEquipement from "./page/idr_equipment/Edit_Idr_Equipment";
 import IdrEquipment from "./page/idr_equipment/Idr_equipment_tool";
 import EditEquipment from "./page/idr_equipment/Edit_Idr_Equipment";
 import TransferIdrEquipment from "./page/idr_equipment/Idr_equipment_transfer";
 import AddIdrEquipment from "./page/idr_equipment/Add_Idr_Equipment";
+import AssignedEquipments from "./page/idr_equipment/AssignedEquipments";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -141,11 +141,12 @@ function App() {
             element={<EditInventory />}
           />
           {/* equipmem */}
-          <Route path="/company-equipment" element={<IdrEquipment />} />
+          <Route path="/idr-equipment" element={<IdrEquipment />} />
+          <Route path="/assigned-equipment" element={<AssignedEquipments />} />
           <Route path="/add-company-equipment" element={<AddIdrEquipment />} />
-          <Route path="/edit-company-equipment" element={<EditEquipment />} />
+          <Route path="/edit-company-equipment/:idr_equipment_id" element={<EditEquipment />} />
           <Route
-            path="/transfer-company-equipment"
+            path="/transfer-company-equipment/:idr_equipment_id"
             element={<TransferIdrEquipment />}
           />
 

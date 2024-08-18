@@ -9,8 +9,10 @@ const WorkOrderCard = ({
   clientEmployees,
   handleWorkOrderChange,
   handleSaveTicket,
+  isEditing,
+  setIsEditing
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
+  // const [isEditing, setIsEditing] = useState(false);
   const { user_type } = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
 

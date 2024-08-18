@@ -52,7 +52,8 @@ export const getInventories = ({ search, location, model, device_type, sortBy, o
       if (orderBy) params.append('orderBy', orderBy);
 
       if (params.toString()) {
-        url += `?${params.toString()}`;
+        // url += `?${params.toString()}`;
+        url += `?${params.toString().replace(/\+/g, '%20')}`;
       }
 
       const response = await axios.get(url);
