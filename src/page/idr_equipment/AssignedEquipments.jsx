@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate , useLocation} from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { BsCheckCircle } from "react-icons/bs";
 // import { AiFillDelete } from "react-icons/ai";
@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 const AssignedEquipments = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   // State for filters and search
   const [filters, setFilters] = useState({
     signout: "",
@@ -30,13 +31,36 @@ const AssignedEquipments = () => {
   const equipmentData = useSelector((state) => state.idrequipment.equipments);
 
 
+  // useEffect(() => {
+  //   if (selectedOption === "returnRequestEquipments") {
+  //     dispatch(getReturnedRequestEquipments());
+  //   }else{
+  //     dispatch(getAssignedEquipments(filters));
+  //   }
+  // }, [dispatch, selectedOption, filters]);
+
+  const handleSelectChange = (e) => {
+    const selectedValue = e.target.value;
+    setSelectedOption(selectedValue);
+
+    // Navigate to the AssignedEquipments page with the appropriate param
+    const param = selectedValue === 'assignedEquipments' ? 'assignment' : 'returns';
+    navigate(`/assigned-equipment?type=${param}`);
+  };
   useEffect(() => {
-    if (selectedOption === "returnRequestEquipments") {
-      dispatch(getReturnedRequestEquipments());
-    }else{
+    // Retrieve the 'type' parameter from the URL
+    const params = new URLSearchParams(location.search);
+    const type = params.get('type');
+
+    // Call the appropriate function based on the 'type' param
+    if (type === 'assignment') {
       dispatch(getAssignedEquipments(filters));
+    } else if (type === 'returns') {
+      dispatch(getReturnedRequestEquipments(filters));
     }
-  }, [dispatch, selectedOption, filters]);
+  }, [location.search, dispatch,filters]);
+
+
   const handleReset = () => {
     const resetFilters = {
       signout: "",
@@ -72,11 +96,15 @@ const AssignedEquipments = () => {
       direction = "DESC";
     }
     setSortConfig({ key, direction });
-    if (selectedOption === "returnRequestEquipments") {
-      dispatch(getReturnedRequestEquipments({ ...filters, sortBy: key, orderBy: direction }));
-    }else{
-      dispatch(getAssignedEquipments({ ...filters,sortBy: key, orderBy: direction }));
-    }
+ // Use type parameter to determine which function to call
+ const params = new URLSearchParams(location.search);
+ const type = params.get('type');
+ 
+ if (type === 'returns') {
+   dispatch(getReturnedRequestEquipments({ ...filters, sortBy: key, orderBy: direction }));
+ } else {
+   dispatch(getAssignedEquipments({ ...filters, sortBy: key, orderBy: direction }));
+ }
   };
 
   const getSortSymbol = (key) => {
@@ -90,14 +118,7 @@ const AssignedEquipments = () => {
     if (text?.length <= maxLength) return text;
     return text?.slice(0, maxLength) + "...";
   };
-  const formattedDateTime = (signoutDate) => {
-    return new Date(signoutDate).toLocaleString('en-US', {
-      timeZone: 'America/New_York',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-  }  
+ 
   return (
     <>
       <Header />
@@ -105,7 +126,7 @@ const AssignedEquipments = () => {
         <AdminSideNavbar />
         <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between items-center">
-            <h1 className="font-bold text-lg">{selectedOption === "returnRequestEquipments" ? "Return Equipment Requests"  : "Assigned IDR Equipment"} </h1>
+            <h1 className="font-bold text-lg"> {location.search.includes("returns") ? "Return Equipment Requests" : "Assigned IDR Equipment"} </h1>
             <div className="flex gap-2">
             <div className="flex flex-col gap-2">
                   {/* <label className="font-normal text-sm">
@@ -115,16 +136,26 @@ const AssignedEquipments = () => {
                     name="equipmentFilters"
                     className="px-3 border border-gray-200 h-10 rounded w-50"
                     value={selectedOption}
-                    onChange={(e) => setSelectedOption(e.target.value)}
+                    onChange={handleSelectChange}
                   >
-                    <option value="assignedEquipments" >Assigned Equipments</option>
-                    <option value="returnRequestEquipments">Return Equipments</option>
+                    {location.search.includes("returns") ? 
+                  <>
+                   <option value="returnRequestEquipments">Return Equipments</option>
+                   <option value="assignedEquipments" >Assigned Equipments</option>      
+                  </>
+                  : 
+                  <>
+                   <option value="assignedEquipments" >Assigned Equipments</option>
+                   <option value="returnRequestEquipments">Return Equipments</option>
+                  </>
+                  }
+                   
                   
                   </select>
                 </div>
-              <Link to="/add-company-equipment">
+              <Link to="/idr-equipment">
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded">
-                  Add Inventory
+                 Back to Equipments
                 </button>
               </Link>
             </div>
@@ -142,7 +173,7 @@ const AssignedEquipments = () => {
                     name="signedOutFilter"
                     value={filters.signout}
                     onChange={(e) =>
-                      setFilters({ ...filters, signout: formattedDateTime(e.target.value) })
+                      setFilters({ ...filters, signout: e.target.value})
                     }
                     className="px-3 border border-gray-200 h-10 rounded w-40"
                   />
@@ -267,16 +298,8 @@ const AssignedEquipments = () => {
                                 }
                               />
                             </div>
-                            {/* <div className="p-[4px] bg-gray-100 cursor-pointer">
-                              <BiTransferAlt
-                                onClick={() =>
-                                  navigate(
-                                    `/transfer-company-equipment/${equipment.equipments?.equipment_id}`
-                                  )
-                                }
-                              />
-                            </div> */}
-                            {(user_type === "Admin" && selectedOption === "returnRequestEquipments" ) && (
+                            
+                            {(user_type === "Admin" && location.search.includes("returns") ) && (
                               <div className="p-[4px] bg-gray-100 cursor-pointer">
                                 <BsCheckCircle
                                   onClick={() =>

@@ -36,7 +36,16 @@ const IdrEquipment = () => {
   const { user_type } = useSelector((state) => state.user.user);
   const loading = useSelector((state) => state.idrequipment.loading);
   const equipmentData = useSelector((state) => state.idrequipment.equipments);
+  const [selectedOption, setSelectedOption] = useState('');
 
+  const handleSelectChange = (e) => {
+    const selectedValue = e.target.value;
+    setSelectedOption(selectedValue);
+
+    // Navigate to the AssignedEquipments page with the appropriate param
+    const param = selectedValue === 'assignedEquipments' ? 'assignment' : 'returns';
+    navigate(`/assigned-equipment?type=${param}`);
+  };
   useEffect(() => {
     dispatch(getLocationInventory()); // Fetch locations if needed
   }, [dispatch]);
@@ -112,12 +121,7 @@ const IdrEquipment = () => {
     if (text?.length <= maxLength) return text;
     return text?.slice(0, maxLength) + "...";
   };
-  const convertDateFormat = (dateString) => {
-    // Split the date string into its components
-    const [year, month, day] = dateString.split('-');
-    // Return the date in the desired format
-    return `${month}/${day}/${year}`;
-  };
+
   return (
     <>
       <Header />
@@ -127,9 +131,22 @@ const IdrEquipment = () => {
           <div className="flex justify-between items-center">
             <h1 className="font-bold text-lg">IDR Equipment</h1>
             <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
+                  <select
+                    name="equipmentFilters"
+                    className="px-3 border border-gray-200 h-10 rounded w-50"
+                    value={selectedOption}
+                    onChange={handleSelectChange}
+                  >
+                    <option value="" >Filter Equipments</option>
+                    <option value="assignedEquipments" >Assigned Equipments</option>
+                    <option value="returnRequestEquipments">Return Equipments</option>
+                  
+                  </select>
+                </div>
               <Link to="/add-company-equipment">
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded">
-                  Add Inventory
+                  Add Equipment
                 </button>
               </Link>
             </div>
@@ -160,20 +177,7 @@ const IdrEquipment = () => {
                     ))}
                   </select>
                 </div>
-                {/* <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">
-                    Filter by Signed Out
-                  </label>
-                  <input
-                    type="date"
-                    name="signedOutFilter"
-                    value={filters.signout}
-                    onChange={(e) =>
-                      setFilters({ ...filters, signout: convertDateFormat(e.target.value) })
-                    }
-                    className="px-3 border border-gray-200 h-10 rounded w-40"
-                  />
-                </div> */}
+               
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-sm">
                     Filter by device type
