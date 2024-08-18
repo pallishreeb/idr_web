@@ -188,13 +188,28 @@ export const idrEmployeeAssign = (idrEquipmentData, navigate) => {
 };
 
 // Get all returned request equipments 
-export const getReturnedRequestEquipments = ({ sortBy = "", orderBy = "" } = {}) => {
+export const getReturnedRequestEquipments = ({ signout = "", sortBy = "", orderBy = "" } = {}) => {
   
   return async (dispatch) => {
     dispatch(getIdrEquipmentsStart());
     try {
       let url = apiConfig.equipmentReturnRequestList;
       const params = new URLSearchParams();
+      const formattedDateTime = (signoutDate) => {
+        // Create a new Date object with the provided date string
+        const date = new Date(signoutDate);
+      
+        // Manually format the date to ensure there's no timezone shift
+        const formattedDate = date.toLocaleDateString('en-US', {
+          timeZone: 'UTC', // Force UTC to avoid shifting the date
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        });
+      
+        return formattedDate;
+        } 
+      if (signout) params.append("signout", formattedDateTime(signout));
       if (sortBy) params.append('sortBy', sortBy);
       if (orderBy) params.append('orderBy', orderBy);
       if (params.toString()) {
@@ -214,13 +229,28 @@ export const getReturnedRequestEquipments = ({ sortBy = "", orderBy = "" } = {})
 };
 // Get all returned equipments 
 export const getAssignedEquipments = ({ signout = "",sortBy = "", orderBy = "" } = {}) => {
+
   // console.log(sortBy, orderBy);
   return async (dispatch) => {
     dispatch(getIdrEquipmentsStart());
     try {
       let url = apiConfig.equipmentAssigned;
       const params = new URLSearchParams();
-      if (signout) params.append("signout", signout);
+      const formattedDateTime = (signoutDate) => {
+        // Create a new Date object with the provided date string
+        const date = new Date(signoutDate);
+      
+        // Manually format the date to ensure there's no timezone shift
+        const formattedDate = date.toLocaleDateString('en-US', {
+          timeZone: 'UTC', // Force UTC to avoid shifting the date
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        });
+      
+        return formattedDate;
+        } 
+      if (signout) params.append("signout", formattedDateTime(signout));
       if (sortBy) params.append('sortBy', sortBy);
       if (orderBy) params.append('orderBy', orderBy);
       if (params.toString()) {

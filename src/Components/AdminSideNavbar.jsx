@@ -65,11 +65,6 @@ const AdminSideNavbar = () => {
       path: "/idr-equipment",
       roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"],
     },
-    {
-      title: "Assigned Equipments",
-      path: "/assigned-equipment",
-      roles: ["Admin","Subadmin"],
-    },
     // {
     //   title: "Upload CSV File",
     //   path: "/upload-csv",
