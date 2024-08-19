@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate , useLocation} from "react-router-dom";
-import { BiSolidEditAlt } from "react-icons/bi";
+import { BiSolidShow } from "react-icons/bi";
 import { BsCheckCircle } from "react-icons/bs";
 // import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
@@ -80,7 +80,7 @@ const AssignedEquipments = () => {
       if (result.isConfirmed) {
         dispatch(confirmReturnedEquipment(equipmentId))
           .then(() => {
-            dispatch(getAssignedEquipments()); // Refresh the list after deletion
+            dispatch(getReturnedRequestEquipments(filters)); // Refresh the list after deletion
           })
           .catch((error) => {
             console.log(error);
@@ -289,15 +289,13 @@ const AssignedEquipments = () => {
                         </td>
                         <td className="border text-sm px-1 py-3">
                           <div className="flex gap-2">
-                            <div className="p-[4px] bg-gray-100 cursor-pointer">
-                              <BiSolidEditAlt
-                                onClick={() =>
-                                  navigate(
-                                    `/edit-company-equipment/${equipment.equipments?.equipment_id}`
-                                  )
-                                }
-                              />
-                            </div>
+                          <div className="p-[4px] bg-gray-100 cursor-pointer">
+                          <BiSolidShow
+                            onClick={() =>
+                              navigate(`/edit-company-equipment/${equipment.equipments?.equipment_id}?type=assign`)
+                            }
+                          />
+                        </div>
                             
                             {(user_type === "Admin" && location.search.includes("returns") ) && (
                               <div className="p-[4px] bg-gray-100 cursor-pointer">
