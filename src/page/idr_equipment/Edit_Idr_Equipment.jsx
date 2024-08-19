@@ -4,12 +4,15 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { useDispatch, useSelector } from "react-redux";
 import { getIdrEquipmentById, updateEquipment } from "../../actions/idrEquipmentAction"; 
 import { getLocationInventory } from "../../actions/locationsInventoryAction";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Loader from "../../Images/ZZ5H.gif";
 
 const EditEquipment = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const type = queryParams.get('type');
   const { idr_equipment_id } = useParams();
   const [loading, setLoading] = useState(false);
   const [editableFields, setEditableFields] = useState({
@@ -108,7 +111,7 @@ const EditEquipment = () => {
           <div className="flex justify-between items-center mb-4">
             <h1 className="font-bold text-lg">Edit IDR Equipment Item</h1>
             <div className="flex gap-2">
-              {(access.includes(user_type) && !isEditing) && (
+              {(access.includes(user_type) && !isEditing && type !== 'assign') && (
                 <button
                   className="bg-indigo-600 text-white px-6 py-2 rounded"
                   onClick={handleEditToggle}
@@ -119,7 +122,8 @@ const EditEquipment = () => {
               <button
                 type="button"
                 className="border py-2 px-4 rounded"
-                onClick={() => navigate("/idr-equipment")}
+                // onClick={() => navigate("/idr-equipment")}
+                onClick={() => navigate(-1)}
               >
                 Back
               </button>

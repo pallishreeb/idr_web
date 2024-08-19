@@ -269,7 +269,7 @@ export const getAssignedEquipments = ({ signout = "",sortBy = "", orderBy = "" }
 };
 
 // Confirm returned equipments
-export const confirmReturnedEquipment = (equipmentId, navigate) => {
+export const confirmReturnedEquipment = (equipmentId) => {
   return async (dispatch) => {
     dispatch(updateIdrEquipmentStart());
     try {
@@ -278,8 +278,8 @@ export const confirmReturnedEquipment = (equipmentId, navigate) => {
       );
       dispatch(updateIdrEquipmentSuccess(response.data));
       toast.success("Equipment Return Confirmed");
-      navigate(`/idr-equipment`);
     } catch (error) {
+      console.log(error)
       dispatch(updateIdrEquipmentFailure(error.message));
       toast.error(
         error.response?.data?.message || "Failed to update Idr Equipment"
