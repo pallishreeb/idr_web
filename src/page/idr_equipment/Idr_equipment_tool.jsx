@@ -33,6 +33,7 @@ const IdrEquipment = () => {
   const locationsInventory = useSelector(
     (state) => state.locationInventory.locations
   );
+  const { access } = useSelector((state) => state.user);
   const { user_type } = useSelector((state) => state.user.user);
   const loading = useSelector((state) => state.idrequipment.loading);
   const equipmentData = useSelector((state) => state.idrequipment.equipments);
@@ -129,7 +130,8 @@ const IdrEquipment = () => {
         <AdminSideNavbar />
         <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between items-center">
-            <h1 className="font-bold text-lg">IDR Equipment</h1>
+            <h1 className="font-bold text-lg">IDR Equipments</h1>
+            {access.includes(user_type) && 
             <div className="flex gap-2">
             <div className="flex flex-col gap-2">
                   <select
@@ -140,7 +142,7 @@ const IdrEquipment = () => {
                   >
                     <option value="" >Filter Equipments</option>
                     <option value="assignedEquipments" >Assigned Equipments</option>
-                    <option value="returnRequestEquipments">Return Equipments</option>
+                    <option value="returnRequestEquipments">Return Requests</option>
                   
                   </select>
                 </div>
@@ -149,7 +151,7 @@ const IdrEquipment = () => {
                   Add Equipment
                 </button>
               </Link>
-            </div>
+            </div> }
           </div>
           <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
             <div className="flex justify-between items-center">
@@ -243,13 +245,13 @@ const IdrEquipment = () => {
                     Location{" "}
                     <span className="ml-2">{getSortSymbol("location")}</span>
                   </th>
-                  <th
+                  {/* <th
                     className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
                     onClick={() => handleSort("assigned_to")}
                   >
                     Assigned To{" "}
                     <span className="ml-2">{getSortSymbol("assigned_to")}</span>
-                  </th>
+                  </th> */}
                   <th
                     className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
                     onClick={() => handleSort("serial_number")}
@@ -310,9 +312,9 @@ const IdrEquipment = () => {
                         <td className="border text-sm px-1 py-3">
                           {equipment?.location_name}
                         </td>
-                        <td className="border text-sm px-1 py-3">
+                        {/* <td className="border text-sm px-1 py-3">
                           {equipment?.assigned_to ? equipment?.assigned_to : "NA"}
-                        </td>
+                        </td> */}
                         <td className="border text-sm px-1 py-3">
                           {equipment?.serial_number}
                         </td>
@@ -340,6 +342,7 @@ const IdrEquipment = () => {
                                 }
                               />
                             </div>
+                            {access.includes(user_type) && 
                             <div className="p-[4px] bg-gray-100 cursor-pointer">
                               <BiTransferAlt
                                 onClick={() =>
@@ -348,7 +351,7 @@ const IdrEquipment = () => {
                                   )
                                 }
                               />
-                            </div>
+                            </div>}
                             {user_type === "Admin" && (
                               <div className="p-[4px] bg-gray-100 cursor-pointer">
                                 <AiFillDelete
