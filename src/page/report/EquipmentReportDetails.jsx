@@ -1,8 +1,15 @@
 import React from 'react'
-
+import Header from "../../Components/Header";
+import AdminSideNavbar from "../../Components/AdminSideNavbar";
 const EquipmentReportDetails = () => {
   return (
-    <div>EquipmentReportDetails</div>
+    <>
+    <Header />
+    <div className="flex">
+      <AdminSideNavbar />
+    <div className='text-center'>EquipmentReportDetails</div>
+    </div>
+    </>
   )
 }
 
