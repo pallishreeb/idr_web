@@ -25,7 +25,7 @@ const AssignedEquipments = () => {
   });
   const [selectedOption, setSelectedOption] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
-
+  const { access } = useSelector((state) => state.user);
   const { user_type } = useSelector((state) => state.user.user);
   const loading = useSelector((state) => state.idrequipment.loading);
   const equipmentData = useSelector((state) => state.idrequipment.equipments);
@@ -126,7 +126,7 @@ const AssignedEquipments = () => {
         <AdminSideNavbar />
         <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between items-center">
-            <h1 className="font-bold text-lg"> {location.search.includes("returns") ? "Return Equipment Requests" : "Assigned IDR Equipment"} </h1>
+            <h1 className="font-bold text-lg"> {location.search.includes("returns") ? "Return Equipment Requests" : "Assigned IDR Equipments"} </h1>
             <div className="flex gap-2">
             <div className="flex flex-col gap-2">
                   {/* <label className="font-normal text-sm">
@@ -140,13 +140,13 @@ const AssignedEquipments = () => {
                   >
                     {location.search.includes("returns") ? 
                   <>
-                   <option value="returnRequestEquipments">Return Equipments</option>
+                   <option value="returnRequestEquipments">Return Requests</option>
                    <option value="assignedEquipments" >Assigned Equipments</option>      
                   </>
                   : 
                   <>
                    <option value="assignedEquipments" >Assigned Equipments</option>
-                   <option value="returnRequestEquipments">Return Equipments</option>
+                   <option value="returnRequestEquipments">Return Requests</option>
                   </>
                   }
                    
@@ -297,7 +297,7 @@ const AssignedEquipments = () => {
                           />
                         </div>
                             
-                            {(user_type === "Admin" && location.search.includes("returns") ) && (
+                            {(access.includes(user_type) && location.search.includes("returns") ) && (
                               <div className="p-[4px] bg-gray-100 cursor-pointer">
                                 <BsCheckCircle
                                   onClick={() =>

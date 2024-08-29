@@ -68,7 +68,10 @@ const apiConfig = {
   equipmentAssigned:'/equipment/assigned',
   equipmentAcceptRejectInvitations:'/equipment/accept',
   equipmentInvitationsList:'/equipment/invitations',
-
+  getInventoryReportList:'/reports/inventory/all',
+  getInventoryReportById:'/reports/inventory',
+  getEquipmentReportList:'/reports/equipment/all',
+  getEquipmentReportById:'/reports/equipment',
 };
 
 export { API_BASE_URL, apiConfig };

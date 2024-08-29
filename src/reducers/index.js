@@ -9,6 +9,7 @@ import workOrderSlice from "./workOrderSlice";
 import locationsInventorySlice from "./locationInventorySlice";
 import inventorySlice from "./inventorySlice";
 import IdrEquipmentSlice from "./IdrEquipmentSlice";
+import reportSlice from "./reportSlice";
 
 const rootReducer = combineReducers({
   user: userReducer,
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   locationInventory: locationsInventorySlice,
   inventory: inventorySlice,
   idrequipment: IdrEquipmentSlice,
+  report:reportSlice
 });
 
 export default rootReducer;

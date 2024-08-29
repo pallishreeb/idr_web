@@ -44,6 +44,10 @@ import EditEquipment from "./page/idr_equipment/Edit_Idr_Equipment";
 import TransferIdrEquipment from "./page/idr_equipment/Idr_equipment_transfer";
 import AddIdrEquipment from "./page/idr_equipment/Add_Idr_Equipment";
 import AssignedEquipments from "./page/idr_equipment/AssignedEquipments";
+import EquipmentReport from "./page/report/EquipmentReport";
+import EquipmentReportDetails from "./page/report/EquipmentReportDetails";
+import InventoryReport from "./page/report/InventoryReport";
+import InventoryReportDetails from "./page/report/InventoryReportDetails";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -154,7 +158,11 @@ function App() {
             path="/transfer-inventory/:inventory_id"
             element={<TransferInventory />}
           />
-
+          {/* Report */}
+          <Route path="/equipment-report" element={<EquipmentReport />} />
+          <Route path="/inventory-report" element={<InventoryReport />} />
+          <Route path="/equipment-report/:equipmentRreportId" element={< EquipmentReportDetails />} />
+          <Route path="/inventory-report/:inventoryReportId" element={<InventoryReportDetails />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
         <Route path="/test" element={<IdrEuipement />} />
