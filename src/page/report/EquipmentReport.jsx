@@ -3,107 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { BiSolidShow } from "react-icons/bi";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { getLocationInventory } from "../../actions/locationsInventoryAction";
 import {
-  getIdrEquipments,
-} from "../../actions/idrEquipmentAction";
+  getEquipmentReportList,
+} from "../../actions/reportActions";
 import { useDispatch, useSelector } from "react-redux";
-// import Swal from "sweetalert2";
-// import { toast } from "react-toastify";
-// Mock data for demonstration
-const mockEquipmentData = {
-  data: [
-    {
-      equipment_id: "1",
-      location_name: "Warehouse A",
-      serial_number: "SN123456",
-      device_type: "Laptop",
-      make: "Dell",
-      model: "Latitude 5420",
-      description: "A high-performance laptop for business use.",
-      status: "Status",
-      performedBy: "John",
-      createdAt: "01/08/2024",
-      assigned_to: "Smith",
-    },
-    {
-      equipment_id: "2",
-      location_name: "Warehouse B",
-      serial_number: "SN7891011",
-      device_type: "Router",
-      make: "Cisco",
-      model: "RV340",
-      description: "A reliable small business router.",
-      status: "Status",
-      performedBy: "John",
-      createdAt: "01/08/2024",
-      assigned_to: "Smith",
-    },
-    {
-      equipment_id: "3",
-      location_name: "Warehouse C",
-      serial_number: "SN12131415",
-      device_type: "Printer",
-      make: "HP",
-      model: "LaserJet Pro M404n",
-      description: "A fast, efficient monochrome laser printer.",
-      status: "Status",
-      performedBy: "John",
-      createdAt: "01/08/2024",
-      assigned_to: "Smith",
-    },
-    {
-      equipment_id: "4",
-      location_name: "Warehouse D",
-      serial_number: "SN16171819",
-      device_type: "Monitor",
-      make: "Samsung",
-      model: "U28E590D",
-      description: "A 4K UHD monitor with stunning picture quality.",
-      status: "Status",
-      performedBy: "John",
-      createdAt: "01/08/2024",
-      assigned_to: "Smith",
-    },
-    {
-      equipment_id: "5",
-      location_name: "Warehouse E",
-      serial_number: "SN20212223",
-      device_type: "Server",
-      make: "HP",
-      model: "ProLiant DL360 Gen10",
-      description: "A powerful, scalable server for enterprise needs.",
-      status: "Status",
-      performedBy: "John",
-      createdAt: "01/08/2024",
-      assigned_to: "Smith",
-    },
-  ],
-};
 
 const EquipmentReport = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // State for filters and search
-  const [filters, setFilters] = useState({
-    search: "",
-    location: "",
-    model: "",
-    device_type: "",
-    signout: "", //signout
-  });
-  // const [deviceTypeFilter, setDeviceTypeFilter] = useState("");
-  // const [modelFilter, setModelFilter] = useState("");
-  // const [searchQuery, setSearchQuery] = useState("");
+
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
 
-  // const locationsInventory = useSelector(
-  //   (state) => state.locationInventory.locations
-  // );
+
+  const { equipments,loading } = useSelector((state) => state.report);
   const { access } = useSelector((state) => state.user);
   const { user_type } = useSelector((state) => state.user.user);
   const [selectedOption, setSelectedOption] = useState("");
-  const [loading, setLoading] = useState(false)
 
   const handleSelectChange = (e) => {
     const selectedValue = e.target.value;
@@ -116,39 +31,12 @@ const EquipmentReport = () => {
         : "/inventory-report";
     navigate(`${param}`);
   };
+
   useEffect(() => {
-    dispatch(getLocationInventory()); // Fetch locations if needed
+    dispatch(getEquipmentReportList());
   }, [dispatch]);
 
-  useEffect(() => {
-    dispatch(getIdrEquipments(filters));
-  }, [dispatch, filters]);
-
-  // const handleSearch = () => {
-  //   const newFilters = {
-  //     ...filters,
-  //     search: searchQuery,
-  //     device_type: deviceTypeFilter,
-  //     model: modelFilter,
-  //   };
-  //   setFilters(newFilters);
-  // };
-
-  // const handleReset = () => {
-  //   const resetFilters = {
-  //     search: "",
-  //     location: "",
-  //     model: "",
-  //     device_type: "",
-  //     signout: "",
-  //   };
-  //   setFilters(resetFilters);
-  //   setDeviceTypeFilter("");
-  //   setModelFilter("");
-  //   setSearchQuery("");
-  //   dispatch(getIdrEquipments(resetFilters));
-  // };
-
+// console.log(equipments,"equipments-------")
 
   const handleSort = (key) => {
     let direction = "ASC";
@@ -156,7 +44,7 @@ const EquipmentReport = () => {
       direction = "DESC";
     }
     setSortConfig({ key, direction });
-    dispatch(getIdrEquipments({ ...filters, sortBy: key, orderBy: direction }));
+    dispatch(getEquipmentReportList({ sortBy: key, orderBy: direction }));
   };
 
   const getSortSymbol = (key) => {
@@ -323,9 +211,9 @@ const EquipmentReport = () => {
                   >
                     Model <span className="ml-2">{getSortSymbol("model")}</span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
+                  {/* <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Status
-                  </th>
+                  </th> */}
                   <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Performed By
                   </th>
@@ -350,7 +238,7 @@ const EquipmentReport = () => {
                   </tr>
                 ) : (
                   <>
-                    {mockEquipmentData?.data?.length === 0 ? (
+                    {equipments?.data?.length === 0 ? (
                       <tr>
                         <td colSpan="6" className="text-center">
                           <p className="text-center">No Record Found</p>
@@ -358,43 +246,43 @@ const EquipmentReport = () => {
                       </tr>
                     ) : (
                       <>
-                        {mockEquipmentData?.data?.map((equipment, index) => (
+                        {equipments?.data?.map((equipment, index) => (
                           <tr key={index} className="text-left">
                             <td className="border text-sm px-1 py-3">
-                              {equipment?.location_name}
+                              {equipment?.equipments?.location_name}
                             </td>
                             <td className="border text-sm px-1 py-3">
-                              {equipment?.assigned_to
-                                ? equipment?.assigned_to
+                              {equipment?.equipments?.assigned_to
+                                ? equipment?.equipments?.assigned_to
                                 : "NA"}
                             </td>
                             <td className="border text-sm px-1 py-3">
-                              {equipment?.serial_number}
+                              {equipment?.equipments?.serial_number}
                             </td>
                             <td className="border text-sm px-1 py-3">
-                              {equipment?.device_type}
+                              {equipment?.equipments?.device_type}
                             </td>
                             <td className="border text-sm px-1 py-3">
-                              {equipment?.make}
+                              {equipment?.equipments?.make}
                             </td>
                             <td className="border text-sm px-1 py-3">
-                              {equipment?.model}
+                              {equipment?.equipments?.model}
+                            </td>
+                            {/* <td className="border text-sm px-1 py-3">
+                              {" "}
+                              {equipment?.equipments?.status}
+                            </td> */}
+                            <td className="border text-sm px-1 py-3">
+                              {" "}
+                              {equipment?.performed_by}
                             </td>
                             <td className="border text-sm px-1 py-3">
                               {" "}
-                              {equipment?.status}
+                              {equipment?.created_at}
                             </td>
                             <td className="border text-sm px-1 py-3">
                               {" "}
-                              {equipment?.performedBy}
-                            </td>
-                            <td className="border text-sm px-1 py-3">
-                              {" "}
-                              {equipment?.createdAt}
-                            </td>
-                            <td className="border text-sm px-1 py-3">
-                              {" "}
-                              Add,Edit,Trasnfer, to WO, Transfer to Technician
+                              {equipment?.performed_action}
                             </td>
                             <td className="border text-sm px-1 py-3">
                               <div className="flex gap-2">
@@ -402,7 +290,7 @@ const EquipmentReport = () => {
                                   <BiSolidShow
                                     onClick={() =>
                                       navigate(
-                                        `/equipment-report/${equipment?.equipment_id}`
+                                        `/equipment-report/${equipment?.equipment_report_id}`
                                       )
                                     }
                                   />

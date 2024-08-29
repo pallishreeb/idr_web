@@ -161,8 +161,8 @@ function App() {
           {/* Report */}
           <Route path="/equipment-report" element={<EquipmentReport />} />
           <Route path="/inventory-report" element={<InventoryReport />} />
-          <Route path="/equipment-report/:equipment-report-id" element={< EquipmentReportDetails />} />
-          <Route path="/inventory-report/:inventory-report-id" element={<InventoryReportDetails />} />
+          <Route path="/equipment-report/:equipmentRreportId" element={< EquipmentReportDetails />} />
+          <Route path="/inventory-report/:inventoryReportId" element={<InventoryReportDetails />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
         <Route path="/test" element={<IdrEuipement />} />
