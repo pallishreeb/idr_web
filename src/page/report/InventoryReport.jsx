@@ -1,58 +1,65 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation} from "react-router-dom";
 import { BiSolidShow } from "react-icons/bi";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import {
-  getInventoryReportList,
-} from "../../actions/reportActions";
+import { getInventoryReportList } from "../../actions/reportActions";
 import { useDispatch, useSelector } from "react-redux";
 
 const InventoryReport = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+  // const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
 
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
-
-  const { inventories,loading } = useSelector((state) => state.report);
+  const { inventories, loading } = useSelector((state) => state.report);
   const { access } = useSelector((state) => state.user);
   const { user_type } = useSelector((state) => state.user.user);
 
   const [selectedOption, setSelectedOption] = useState("");
 
+
   const handleSelectChange = (e) => {
     const selectedValue = e.target.value;
     setSelectedOption(selectedValue);
 
-    // Navigate to the AssignedEquipments page with the appropriate param
     const param =
       selectedValue === "equipmentReport"
         ? "/equipment-report"
         : "/inventory-report";
-    navigate(`${param}`);
+    navigate(param);
   };
 
-
+  // Update the selected option based on the current route
+  useEffect(() => {
+    if (location.pathname === "/equipment-report") {
+      setSelectedOption("equipmentReport");
+    } else if (location.pathname === "/inventory-report") {
+      setSelectedOption("inventoryReport");
+    } else {
+      setSelectedOption("");
+    }
+  }, [location.pathname]);
   useEffect(() => {
     dispatch(getInventoryReportList());
   }, [dispatch]);
 
   // console.log(inventories,"inventories-------inventories")
-  const handleSort = (key) => {
-    let direction = "ASC";
-    if (sortConfig.key === key && sortConfig.direction === "ASC") {
-      direction = "DESC";
-    }
-    setSortConfig({ key, direction });
-    dispatch(getInventoryReportList({  sortBy: key, orderBy: direction }));
-  };
+  // const handleSort = (key) => {
+  //   let direction = "ASC";
+  //   if (sortConfig.key === key && sortConfig.direction === "ASC") {
+  //     direction = "DESC";
+  //   }
+  //   setSortConfig({ key, direction });
+  //   dispatch(getInventoryReportList({  sortBy: key, orderBy: direction }));
+  // };
 
-  const getSortSymbol = (key) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === "ASC" ? "▲" : "▼";
-    }
-    return "↕";
-  };
+  // const getSortSymbol = (key) => {
+  //   if (sortConfig.key === key) {
+  //     return sortConfig.direction === "ASC" ? "▲" : "▼";
+  //   }
+  //   return "↕";
+  // };
 
   return (
     <>
@@ -76,53 +83,28 @@ const InventoryReport = () => {
                     <option value="inventoryReport">Inventory Reports</option>
                   </select>
                 </div>
-             
               </div>
             )}
           </div>
           <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
-           
             <table className="mt-2 w-full overflow-x-scroll">
               <thead>
                 <tr className="bg-gray-50">
-                  <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("color")}
-                  >
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Color{" "}
-                    <span className="ml-2">{getSortSymbol("location")}</span>
                   </th>
-                  {/* <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("assigned_to")}
-                  >
-                    Assigned To{" "}
-                    <span className="ml-2">{getSortSymbol("assigned_to")}</span>
-                  </th> */}
-                  <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("size")}
-                  >
-                    Size <span className="ml-2">{getSortSymbol("size")}</span>
+
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
+                    Size
                   </th>
-                  <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("device_type")}
-                  >
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Device Type{" "}
-                    <span className="ml-2">{getSortSymbol("device_type")}</span>
                   </th>
-                  <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("make")}
-                  >
-                    Make <span className="ml-2">{getSortSymbol("make")}</span>
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
+                    Make
                   </th>
-                  <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("model")}
-                  >
-                    Model <span className="ml-2">{getSortSymbol("model")}</span>
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
+                    Model
                   </th>
                   <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Quantity
@@ -137,7 +119,7 @@ const InventoryReport = () => {
                     Performed Action
                   </th>
                   <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                     Action
+                    Action
                   </th>
                 </tr>
               </thead>
@@ -164,9 +146,7 @@ const InventoryReport = () => {
                             <td className="border text-sm px-1 py-3">
                               {inventory?.inventories?.color}
                             </td>
-                            {/* <td className="border text-sm px-1 py-3">
-                          {equipment?.assigned_to ? equipment?.assigned_to : "NA"}
-                        </td> */}
+
                             <td className="border text-sm px-1 py-3">
                               {inventory?.inventories?.size}
                             </td>
@@ -189,7 +169,17 @@ const InventoryReport = () => {
                             </td>
                             <td className="border text-sm px-1 py-3">
                               {" "}
-                              {inventory?.created_at}
+                              {new Date(inventory?.created_at).toLocaleString('en-US', {
+                                timeZone: 'America/New_York',
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                                hour12: true,
+                              })}
+                              
                             </td>
                             <td className="border text-sm px-1 py-3">
                               {" "}
@@ -206,7 +196,6 @@ const InventoryReport = () => {
                                     }
                                   />
                                 </div>
-                              
                               </div>
                             </td>
                           </tr>

@@ -16,7 +16,7 @@ const InventoryReportDetails = () => {
       dispatch(getInventoryReportById(inventoryReportId))
         .then((response) => {
           setReportDetails(response?.data);
-          console.log(response)
+          // console.log(response)
         })
         .catch((error) => {
           console.error("Error fetching report details:", error);
