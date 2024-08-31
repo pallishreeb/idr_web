@@ -23,9 +23,9 @@ const EquipmentReportDetails = () => {
     }
   }, [dispatch, equipmentRreportId]);
 
-  if (!reportDetails) {
-    return <div>Loading...</div>;
-  }
+  // if (!reportDetails) {
+  //   return <div>Loading...</div>;
+  // }
   const goBack = () => {
     navigate(-1); // Navigate to the previous page
   };
