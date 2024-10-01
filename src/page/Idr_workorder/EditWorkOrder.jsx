@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+import { FaDownload } from "react-icons/fa";
+import axios from '../../axios-config';
 import Header from "../../Components/Header";
 import SideNavbar from "../../Components/AdminSideNavbar";
 import NotesTable from "../../Components/NotesTable";
@@ -43,6 +45,7 @@ const EditWorkOrder = () => {
   const [equipments, setEquipments] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isWorkOrderEditing, setIsWorkOrderEditing] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false); // Loading state
   useEffect(() => {
     dispatch(getWorkOrderDetails(workOrderId));
     dispatch(getClients());
@@ -236,6 +239,43 @@ const EditWorkOrder = () => {
     const filteredNote = getFilteredNote(notes[index]);
     dispatch(updateNotes(filteredNote));
   };
+
+  const handleDownloadPdf = async () => {
+    try {
+      setIsDownloading(true); // Start loading
+  
+      // Make sure the request is sending the correct headers
+      const response = await axios.post(
+        `/work_order/wo_pdf/${workOrderId}`, 
+        {},  // Sending an empty body, replace if needed
+        {
+          headers: {
+            'Content-Type': 'application/json', // If backend expects this
+          },
+          responseType: 'blob', // For PDF download
+        }
+      );
+  
+      // Debugging response
+      // console.log(response, "pdf response");
+  
+      const pdfBlob = new Blob([response.data], { type: "application/pdf" });
+      const downloadUrl = window.URL.createObjectURL(pdfBlob);
+      
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `${workOrder?.ticket_number}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      document.body.removeChild(link);
+      setIsDownloading(false); // Stop loading
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      setIsDownloading(false); // Stop loading in case of error
+    }
+  };
+  
   
   if (loadingDetails) {
     return (
@@ -264,6 +304,41 @@ const EditWorkOrder = () => {
                   Cancel
                 </button>
               </Link>
+              {/* Download PDF Button */}
+            <button
+              onClick={handleDownloadPdf}
+              className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
+              disabled={isDownloading}
+            >
+              {isDownloading ? (
+                // Display loading spinner while downloading
+                <svg
+                  className="animate-spin h-5 w-5 mr-2 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  ></path>
+                </svg>
+              ) : (
+                <>
+                Download WO PDF <FaDownload className="ml-1" />
+                </>
+                
+              )}
+            </button>
             </div>
           </div>
           {/* update Work order ticket details */}
