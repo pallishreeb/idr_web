@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate , useLocation} from "react-router-dom";
+import { useNavigate , useLocation, Link} from "react-router-dom";
 import { BiSolidShow } from "react-icons/bi";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
@@ -9,36 +9,36 @@ import { useDispatch, useSelector } from "react-redux";
 const EquipmentReport = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation(); 
+  // const location = useLocation(); 
   // const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
 
   const { equipments, loading } = useSelector((state) => state.report);
-  const { access } = useSelector((state) => state.user);
-  const { user_type } = useSelector((state) => state.user.user);
-  const [selectedOption, setSelectedOption] = useState("");
+  // const { access } = useSelector((state) => state.user);
+  // const { user_type } = useSelector((state) => state.user.user);
+  // const [selectedOption, setSelectedOption] = useState("");
 
 
-  const handleSelectChange = (e) => {
-    const selectedValue = e.target.value;
-    setSelectedOption(selectedValue);
+  // const handleSelectChange = (e) => {
+  //   const selectedValue = e.target.value;
+  //   setSelectedOption(selectedValue);
 
-    const param =
-      selectedValue === "equipmentReport"
-        ? "/equipment-report"
-        : "/inventory-report";
-    navigate(param);
-  };
+  //   const param =
+  //     selectedValue === "equipmentReport"
+  //       ? "/equipment-report"
+  //       : "/inventory-report";
+  //   navigate(param);
+  // };
 
-  // Update the selected option based on the current route
-  useEffect(() => {
-    if (location.pathname === "/equipment-report") {
-      setSelectedOption("equipmentReport");
-    } else if (location.pathname === "/inventory-report") {
-      setSelectedOption("inventoryReport");
-    } else {
-      setSelectedOption("");
-    }
-  }, [location.pathname]);
+  // // Update the selected option based on the current route
+  // useEffect(() => {
+  //   if (location.pathname === "/equipment-report") {
+  //     setSelectedOption("equipmentReport");
+  //   } else if (location.pathname === "/inventory-report") {
+  //     setSelectedOption("inventoryReport");
+  //   } else {
+  //     setSelectedOption("");
+  //   }
+  // }, [location.pathname]);
 
   useEffect(() => {
     dispatch(getEquipmentReportList());
@@ -68,9 +68,14 @@ const EquipmentReport = () => {
       <div className="flex">
         <AdminSideNavbar />
         <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
-          <div className="flex justify-between items-center">
-            <h1 className="font-bold text-lg">IDR Equipment Reports</h1>
-            {access.includes(user_type) && (
+          <div className="flex gap-6 items-center">
+            <h1 className="font-bold text-lg">Equipment Reports</h1>
+            <Link to="/inventory-report">
+                <button className="bg-indigo-600 text-white px-6 py-2 rounded">
+                 Inventory Reports
+                </button>
+              </Link>
+            {/* {access.includes(user_type) && (
               <div className="flex gap-2">
                 <div className="flex flex-col gap-2">
                   <select
@@ -85,7 +90,7 @@ const EquipmentReport = () => {
                   </select>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
           <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
             <table className="mt-2 w-full overflow-x-scroll">
