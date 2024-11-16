@@ -48,6 +48,8 @@ import EquipmentReport from "./page/report/EquipmentReport";
 import EquipmentReportDetails from "./page/report/EquipmentReportDetails";
 import InventoryReport from "./page/report/InventoryReport";
 import InventoryReportDetails from "./page/report/InventoryReportDetails";
+import PrivacyPolicy from "./page/PrivacyPolicy";
+import TermsAndConditions from "./page/TermsAndConditions";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -87,6 +89,8 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/set-password" element={<SetPasswordForm />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/" element={<PrivateRoute />}>
           <Route
             path="/set-user-password/:userId"
