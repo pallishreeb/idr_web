@@ -1,6 +1,7 @@
 // src/actions/workOrderActions.js
 
 import axios from '../axios-config';
+import { fetchJson } from '../fetch-config';
 import { toast } from "react-toastify";
 import {
   generateTicketStart, generateTicketSuccess, generateTicketFailure,
@@ -16,7 +17,8 @@ import {
   getWorkOrderByClientIdStart, getWorkOrderByClientIdSuccess, getWorkOrderByClientIdFailure,
   getWorkOrderDetailsStart,getWorkOrderDetailsSuccess,getWorkOrderDetailsFailure,
   assignPeopleToWorkOrderStart,assignPeopleToWorkOrderSuccess,assignPeopleToWorkOrderFailure,
-  deleteAssigneeSuccess, deleteNoteSuccess,getWorkOrderListsForClientSuccess
+  deleteAssigneeSuccess, deleteNoteSuccess,getWorkOrderListsForClientSuccess,returnInventoryStart,
+  returnInventorySuccess,returnInventoryFailure
 } from "../reducers/workOrderSlice";
 import { apiConfig } from "../config";
 
@@ -265,6 +267,29 @@ export const getWorkOrderListsByClientId = (client_id) => {
     } catch (error) {
       dispatch(getWorkOrderListsFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to fetch work order lists");
+    }
+  };
+};
+
+export const returnInventory = (inventoryData) => {
+  return async (dispatch) => {
+    dispatch(returnInventoryStart());
+
+    try {
+      const data = await fetchJson(apiConfig.returnInventory, {
+        method: 'POST',
+        body: inventoryData
+      });
+
+      dispatch(returnInventorySuccess(data));
+      toast.success("Inventory added successfully");
+      // Reload the current page
+      window.location.reload();
+    } catch (error) {
+      console.error('Error occurred:', error);
+
+      dispatch(returnInventoryFailure(error.message));
+      toast.error(error.message || "Failed to return inventory");
     }
   };
 };

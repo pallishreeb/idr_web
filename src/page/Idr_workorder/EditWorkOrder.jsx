@@ -381,6 +381,7 @@ const EditWorkOrder = () => {
           {/* InventoryTable */}
           <InventoryTable
              inventories={inventories}
+             work_order_id={workOrderId}
           />
           {/* Equipments Table */}
           <EquipmentTable

@@ -72,6 +72,7 @@ const apiConfig = {
   getInventoryReportById:'/reports/inventory',
   getEquipmentReportList:'/reports/equipment/all',
   getEquipmentReportById:'/reports/equipment',
+  returnInventory:'/work_order/return_inventory'
 };
 
 export { API_BASE_URL, apiConfig };

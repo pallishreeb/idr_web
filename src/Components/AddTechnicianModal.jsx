@@ -14,6 +14,8 @@ const AddTechnicianModal = ({
     technician_name: "",
     pm_user_id: "",
     project_manager: "",
+    technician_contact:"",
+    project_manager_contact:""
   });
 
   const handleChange = (e) => {
@@ -25,10 +27,12 @@ const AddTechnicianModal = ({
       const selectedTechnician = idrEmployees?.find(
         (employee) => employee.first_name + ' ' + employee.last_name === value
       );
+
       if (selectedTechnician) {
         setAssigns((prev) => ({
           ...prev,
           technician_user_id: selectedTechnician.user_id,
+          technician_contact: selectedTechnician.contact_number,
         }));
       }
     }
@@ -41,6 +45,7 @@ const AddTechnicianModal = ({
         setAssigns((prev) => ({
           ...prev,
           pm_user_id: selectedTechnician.user_id,
+          project_manager_contact: selectedTechnician.contact_number,
         }));
       }
     }
