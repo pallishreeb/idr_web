@@ -282,7 +282,7 @@ export const returnInventory = (inventoryData) => {
       });
 
       dispatch(returnInventorySuccess(data));
-      toast.success("Inventory added successfully");
+      toast.success("Inventory has been returned");
       // Reload the current page
       window.location.reload();
     } catch (error) {
