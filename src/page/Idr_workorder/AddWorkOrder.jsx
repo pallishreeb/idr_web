@@ -66,6 +66,8 @@ function AddWorkOrder() {
     technician_name: "",
     pm_user_id: "",
     project_manager: "",
+    technician_contact:"",
+    project_manager_contact:""
   });
 
   useEffect(() => {
@@ -123,6 +125,7 @@ function AddWorkOrder() {
         setAssigns((prev) => ({
           ...prev,
           technician_user_id: selectedTechnician.user_id,
+          technician_contact: selectedTechnician?.contact_number,
         }));
       }
     }
@@ -135,6 +138,7 @@ function AddWorkOrder() {
         setAssigns((prev) => ({
           ...prev,
           pm_user_id: selectedTechnician.user_id,
+          project_manager_contact: selectedTechnician?.contact_number,
         }));
       }
     }
