@@ -4,8 +4,9 @@ import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { addClientEmployee } from '../../actions/clientEmployeeActions'; // Import your client employee actions
-import { getClients } from "../../actions/clientActions"; // Import getUsers action
-import { getLocationByClient } from "../../actions/locationActions"; // Action to fetch client locations
+import { getClients } from "../../actions/clientActions"; // Import client actions
+import { getLocationByClient } from "../../actions/locationActions"; // Import location actions
+import MultiSelectDropdown from './MultiSelectDropdown';
 
 const AddEmployeePage = () => {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const AddEmployeePage = () => {
     email_id: '',
     contact_number: '',
     employee_type: '',
-    client_location_id: '',
+    client_location_id: [], // Initialize as an empty array for multiple locations
     access_to_website: true,
   });
 
@@ -40,26 +41,28 @@ const AddEmployeePage = () => {
     setFormData({ ...formData, [name]: value });
 
     if (name === 'client_id') {
-      setFormData({ ...formData, client_id: value, client_location_id: '' }); // Reset location if client changes
+      setFormData({ ...formData, client_id: value, client_location_id: [] }); // Reset locations if client changes
       dispatch(getLocationByClient(value));
     }
   };
 
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     // Create a copy of formData
     const updatedFormData = { ...formData };
-  
+
     // Remove client_location_id if employee_type is not "Location Admin"
     if (formData.employee_type !== "Location Admin") {
       delete updatedFormData.client_location_id;
     }
-  
+
     // Dispatch the updated formData
     dispatch(addClientEmployee(updatedFormData, navigate));
   };
+
   return (
     <>
       <Header />
@@ -112,27 +115,37 @@ const AddEmployeePage = () => {
                   </select>
                 </div>
 
-                {/* Conditional Location Dropdown */}
-                {formData.employee_type === 'Location Admin' && (
+                {/* Conditional Scrollable Checkbox List for Locations */}
+                {formData.employee_type === "Location Admin" && (
                   <div className="mb-4">
-                    <label htmlFor="client_location_id" className="block text-sm font-medium text-gray-700">Client Location</label>
-                    <select
-                      id="client_location_id"
-                      name="client_location_id"
-                      value={formData.client_location_id}
-                      onChange={handleChange}
-                      className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                      required
-                    >
-                      <option value="">Select a location</option>
-                      {locations?.map((location) => (
-                        <option key={location.location_id} value={location.location_id}>
-                          {location.address_line_one}
-                        </option>
-                      ))}
-                    </select>
+                    <label htmlFor="client_location_id" className="block text-sm font-medium text-gray-700">
+                      Client Locations
+                    </label>
+                    <MultiSelectDropdown
+                      options={locations.map((location) => ({
+                        value: location.location_id,
+                        label: location.address_line_one,
+                      }))}
+                      selectedValues={formData.client_location_id}
+                      onChange={(selectedValues) =>
+                        setFormData({ ...formData, client_location_id: selectedValues })
+                      }
+                    />
+                    {formData.client_location_id.length > 0 && (
+                      <div className="mt-2 text-sm text-gray-600">
+                        Selected Locations:{" "}
+                        {formData.client_location_id
+                          .map(
+                            (id) =>
+                              locations.find((location) => location.location_id === id)
+                                ?.address_line_one
+                          )
+                          .join(", ")}
+                      </div>
+                    )}
                   </div>
                 )}
+
 
                 {/* Other Fields */}
                 <div className="mb-4">

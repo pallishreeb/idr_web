@@ -9,6 +9,7 @@ import {
 } from "../../actions/clientEmployeeActions"; // Import your client employee actions
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions"; // Import location actions
+import MultiSelectDropdown from './MultiSelectDropdown'; // Import MultiSelectDropdown component
 
 const EditEmployeePage = () => {
   const dispatch = useDispatch();
@@ -28,7 +29,7 @@ const EditEmployeePage = () => {
     email_id: "",
     contact_number: "",
     employee_type: "",
-    client_location_id: "",
+    client_location_id: [], // Initialize as an array for multiple locations
     access_to_website: true,
   });
 
@@ -49,6 +50,12 @@ const EditEmployeePage = () => {
         client_location_id,
         access_to_website,
       } = employee;
+  
+      // Ensure client_location_id is an array
+      const locationIds = Array.isArray(client_location_id) 
+        ? client_location_id 
+        : client_location_id ? client_location_id.split(",") : [];
+  
       setFormData({
         client_id,
         first_name: first_name || "",
@@ -56,22 +63,23 @@ const EditEmployeePage = () => {
         email_id: email_id || "",
         contact_number: contact_number || "",
         employee_type: employee_type || "",
-        client_location_id: client_location_id || "",
+        client_location_id: locationIds, // Set as array
         access_to_website,
       });
-
+  
       if (client_id) {
         dispatch(getLocationByClient(client_id)); // Fetch locations if client is pre-selected
       }
     }
   }, [employee, dispatch]);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
     if (name === "client_id") {
-      setFormData({ ...formData, client_id: value, client_location_id: "" }); // Reset location if client changes
+      setFormData({ ...formData, client_id: value, client_location_id: [] }); // Reset location if client changes
       dispatch(getLocationByClient(value));
     }
   };
@@ -79,14 +87,18 @@ const EditEmployeePage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
   
-    // Create a copy of formData
     const updatedFormData = { ...formData };
+  
+    // Ensure client_location_id is an array
+    if (typeof updatedFormData.client_location_id === "string") {
+      updatedFormData.client_location_id = updatedFormData.client_location_id.split(",");
+    }
   
     // Remove client_location_id if employee_type is not "Location Admin"
     if (formData.employee_type !== "Location Admin") {
       delete updatedFormData.client_location_id;
-    }
-  
+    } 
+
     // Dispatch the updated formData
     dispatch(updateClientEmployee(employeeId, updatedFormData, navigate));
   };
@@ -148,27 +160,34 @@ const EditEmployeePage = () => {
                   </select>
                 </div>
 
-                {/* Conditional Location Dropdown */}
+                {/* Conditional Location Dropdown (Multiple Locations Selection) */}
                 {formData.employee_type === "Location Admin" && (
                   <div className="mb-4">
-                    <label htmlFor="client_location_id" className="block text-sm font-medium text-gray-700">
-                      Client Location
+                    <label htmlFor="client_location_ids" className="block text-sm font-medium text-gray-700">
+                      Client Locations
                     </label>
-                    <select
-                      id="client_location_id"
-                      name="client_location_id"
-                      value={formData.client_location_id}
-                      onChange={handleChange}
-                      className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                      required
-                    >
-                      <option value="">Select a location</option>
-                      {locations?.map((location) => (
-                        <option key={location.location_id} value={location.location_id}>
-                          {location.address_line_one}
-                        </option>
-                      ))}
-                    </select>
+                    <MultiSelectDropdown
+                        options={locations.map((location) => ({
+                          value: location.location_id,
+                          label: location.address_line_one,
+                        }))}
+                        selectedValues={formData.client_location_id || []} // Ensure this is always an array
+                        onChange={(selectedValues) =>
+                          setFormData({ ...formData, client_location_id: selectedValues })
+                        }
+                      />
+
+                  {Array.isArray(formData.client_location_id) && formData.client_location_id.length > 0 && (
+                        <div className="mt-2 text-sm text-gray-600">
+                          Selected Locations:{" "}
+                          {formData.client_location_id
+                            .map((id) =>
+                              locations.find((location) => location.location_id === id)?.address_line_one
+                            )
+                            .join(", ")}
+                        </div>
+                      )}
+
                   </div>
                 )}
 
