@@ -211,7 +211,7 @@ const ServiceTickets = () => {
                     serviceTickets?.map((order) => (
                       <tr key={order.service_ticket_id} className="text-left ">
                         <td className="border text-sm px-1 py-3">
-                          {order?.ticket_number ? order?.ticket_number : "NA"}
+                          {order?.service_ticket_number ? order?.service_ticket_number : "NA"}
                         </td>
                         <td className="border text-sm px-1 py-3">
                           {order?.client_name || 'NA'}
