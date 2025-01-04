@@ -51,6 +51,11 @@ const AdminSideNavbar = () => {
       roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"],
     },
     {
+      title: "Service Ticket",
+      path: "/service-tickets",
+      roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"],
+    },
+    {
       title: "Inventory",
       path: "/inventory",
       roles: ["Admin", "Subadmin", "IDR Employee"],

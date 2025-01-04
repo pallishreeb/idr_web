@@ -50,6 +50,10 @@ import InventoryReport from "./page/report/InventoryReport";
 import InventoryReportDetails from "./page/report/InventoryReportDetails";
 import PrivacyPolicy from "./page/PrivacyPolicy";
 import TermsAndConditions from "./page/TermsAndConditions";
+import ServiceTickets from './page/service-tickets/ServiceTickets'
+import AddServiceTicket from './page/service-tickets/AddServiceTicket'
+// import EditServiceTicket from './page/service-tickets/EditServiceTicket'
+
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -167,6 +171,11 @@ function App() {
           <Route path="/inventory-report" element={<InventoryReport />} />
           <Route path="/equipment-report/:equipmentRreportId" element={< EquipmentReportDetails />} />
           <Route path="/inventory-report/:inventoryReportId" element={<InventoryReportDetails />} />
+
+          {/* Service ticket */}
+          <Route path="/service-tickets" element={<ServiceTickets />} />
+          <Route path="/add-service-ticket" element={<AddServiceTicket />} />
+          {/* <Route path="/edit-service-ticket" element={<EditServiceTicket />} /> */}
           <Route path="*" element={<NotFoundPage />} />
         </Route>
         <Route path="/test" element={<IdrEuipement />} />
