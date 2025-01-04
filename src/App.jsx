@@ -52,7 +52,7 @@ import PrivacyPolicy from "./page/PrivacyPolicy";
 import TermsAndConditions from "./page/TermsAndConditions";
 import ServiceTickets from './page/service-tickets/ServiceTickets'
 import AddServiceTicket from './page/service-tickets/AddServiceTicket'
-// import EditServiceTicket from './page/service-tickets/EditServiceTicket'
+import EditServiceTicket from './page/service-tickets/EditServiceTicket'
 
 function App() {
   const dispatch = useDispatch();
@@ -175,7 +175,7 @@ function App() {
           {/* Service ticket */}
           <Route path="/service-tickets" element={<ServiceTickets />} />
           <Route path="/add-service-ticket" element={<AddServiceTicket />} />
-          {/* <Route path="/edit-service-ticket" element={<EditServiceTicket />} /> */}
+          <Route path="/edit-service-ticket/:serviceTicketId" element={<EditServiceTicket />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
         <Route path="/test" element={<IdrEuipement />} />

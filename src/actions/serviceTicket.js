@@ -19,9 +19,12 @@ import {
   assignPeopleToServiceTicketSuccess,
   assignPeopleToServiceTicketFailure,
   deleteAssigneeSuccess,
+  getServiceTicketDetailsStart,
+  getServiceTicketDetailsSuccess,
+  getServiceTicketDetailsFailure
 } from "../reducers/serviceTicketSlice";
 import { apiConfig } from "../config";
-import { fetchJson } from '../fetch-config';
+// import { fetchJson } from '../fetch-config';
 // Generate a new service ticket
 // export const generateServiceTicket = (ticketData) => {
 //     return async (dispatch) => {
@@ -106,11 +109,11 @@ export const deleteServiceTicket = (serviceTicketId) => {
 };
 
 // Update a service ticket
-export const updateServiceTicket = (ticketData) => {
+export const updateServiceTicket = (ticketData,serviceTicketId) => {
   return async (dispatch) => {
     dispatch(updateServiceTicketStart());
     try {
-      const response = await axios.post(`${apiConfig.updateServiceTicket}`, ticketData);
+      const response = await axios.post(`${apiConfig.updateServiceTicket}/${serviceTicketId}`, ticketData);
       dispatch(updateServiceTicketSuccess(response.data));
       toast.success("Service ticket updated successfully");
     } catch (error) {
@@ -121,14 +124,18 @@ export const updateServiceTicket = (ticketData) => {
 };
 
 // Assign people to a service ticket
-export const assignPeopleToServiceTicket = (technicians,navigate) => {
+export const assignPeopleToServiceTicket = (technicians,navigate,isEditing) => {
   return async (dispatch) => {
     dispatch(assignPeopleToServiceTicketStart());
     try {
       const response = await axios.post(`${apiConfig.assignPeopleToServiceTicket}`, technicians);
       dispatch(assignPeopleToServiceTicketSuccess(response?.data));
-    //   return response?.data;
-     navigate('/service-tickets');
+      if(isEditing){
+        return response?.data;
+        } else {
+          navigate('/service-tickets');
+      }
+
     } catch (error) {
       console.log(error);
       dispatch(assignPeopleToServiceTicketFailure(error.message));
@@ -164,6 +171,21 @@ export const getServiceTicketListsByClientId = (client_id) => {
     } catch (error) {
       dispatch(getServiceTicketListsFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to fetch service ticket lists");
+    }
+  };
+};
+
+export const getServiceTicketDetails = (serviceTicketId) => {
+  return async (dispatch) => {
+    dispatch(getServiceTicketDetailsStart());
+    try {
+      const url = `${apiConfig.serviceTicketByID}/${serviceTicketId}`;
+      const response = await axios.get(url);
+      
+      dispatch(getServiceTicketDetailsSuccess(response.data?.ticket));
+    } catch (error) {
+      dispatch(getServiceTicketDetailsFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to fetch service ticket details");
     }
   };
 };

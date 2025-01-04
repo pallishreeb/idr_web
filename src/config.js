@@ -76,7 +76,7 @@ const apiConfig = {
   generateServiceTicket: "/service_ticket/add",
   getServiceTicketLists: "/service_ticket/all",
   deleteServiceTicket: "/service_ticket",
-  updateServiceTicket: "/work_order/all",
+  updateServiceTicket: "/service_ticket/update",
   assignPeopleToServiceTicket: "/service_ticket/assignee",
   deleteAssigneeFromServiceTicket: "/service_ticket/delete/assignee",
   serviceTicketByClient: "/work_order/update_ticket",

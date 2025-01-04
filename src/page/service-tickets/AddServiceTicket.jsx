@@ -159,7 +159,7 @@ function AddServiceTicket() {
 
     try {
       console.log("technician data---154",assigns)
-      dispatch(assignPeopleToServiceTicket(assigns,navigate));
+      dispatch(assignPeopleToServiceTicket(assigns,navigate,false));
     } catch (error) {
       console.error("Failed to assign technicians:", error);
     }
@@ -183,7 +183,13 @@ function AddServiceTicket() {
             <h1 className="font-bold text-lg">New Service Ticket</h1>
           </div>
           {step === 1 && (
-            <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
+             <form 
+             className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6"
+             onSubmit={(e) => {
+               e.preventDefault(); // Prevent the default form submission
+               handleGenerateTicket(); // Call the ticket generation function
+             }}
+           >         
               <div className="mb-2">
                 <h1 className="text-xl font-normal mb-2">Service Ticket</h1>
                 <div className="border border-gray-200"></div>
@@ -409,16 +415,21 @@ function AddServiceTicket() {
               <div className="flex flex-col gap-2  justify-center mt-7 items-center">
                     <button
                       className="border bg-indigo-600 w-1/3 py-2 text-white rounded"
-                      onClick={handleGenerateTicket}
                     >
                       {loading ? "Saving" : "Generate Ticket"}
                     </button>
                   </div>
-            </div>
+            </form>
           )}
 
           {step === 2 && (
-            <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
+            <form
+            className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6"
+             onSubmit={(e) => {
+              e.preventDefault(); // Prevent the default form submission
+              handleAssignTechnicians();
+            }}
+            >
               <div className="mb-2">
                 <h1 className="text-xl font-normal mb-2">Assign Technicians</h1>
                 <div className="border border-gray-200"></div>
@@ -471,12 +482,11 @@ function AddServiceTicket() {
                 <div className="flex flex-col gap-2  justify-center mt-7 items-center">
                     <button
                       className="border bg-indigo-600 w-1/3 py-2 text-white rounded"
-                      onClick={handleAssignTechnicians}
                     >
                       {loading ? "Saving" : "Assign To Ticket"}
                     </button>
                 </div>
-            </div>
+            </form>
           )}
         </div>
       </div>
