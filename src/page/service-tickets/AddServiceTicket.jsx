@@ -7,18 +7,15 @@ import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { getClientEmployeeByClientId } from "../../actions/clientEmployeeActions";
 import { fetchIDREmployees } from "../../actions/employeeActions";
-import {
-  generateTicket,
-  addTechnicianToTicket,
-  assignPeopleToWorkOrder,
-} from "../../actions/workOrderActions";
-import { toast } from "react-toastify";
+import { generateServiceTicket, assignPeopleToServiceTicket } from "../../actions/serviceTicket";
 
-function AddWorkOrder() {
-  const [step, setStep] = useState(1);
-  const navigate = useNavigate();
+// import { toast } from "react-toastify";
+
+function AddServiceTicket() {
+//   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
   const locations = useSelector((state) => state.location.locations);
@@ -30,38 +27,24 @@ function AddWorkOrder() {
   const [ticketData, setTicketData] = useState({
     client_id: "",
     location_id: "",
-    client_name: "",
-    work_order_type: "abv",
-    generated_date: new Date().toLocaleDateString("en-US"),
-    generated_time: new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-    po_number: "",
-    client_site: "abv",
-    job_location: "",
+    customer_po: "", // Renamed from "po_number" to "customer_po"
     service_date: "",
+    service_location: "",
+    service_request: "",
+    status: "Open",
     contact_person: "",
     contact_phone_number: "",
-    contact_mail_id: "",
-    issue: "",
-    status: "Open",
-    local_onsite_person: "",
-    local_onsite_person_contact: "",
-    client_emp_user_id: "",
+    contact_email: "", // Renamed from "contact_mail_id" to "contact_email"
+    local_onsite_contact: "", // Optional
+    local_onsite_contact_number: "", // Optional
+    service_ticket_details: "", // Optional, added as per request
+    ticket_notes: "",// Optional
+    // client_name:""
   });
-  const [technicianData, setTechnicianData] = useState({
-    work_order_id: "",
-    other_details: "",
-    procedures: "",
-    parts: "",
-    labeling_methodology: "",
-    required_deliverables: "",
-    deliverable_instructions: "",
-  });
+  
 
   const [assigns, setAssigns] = useState({
-    work_order_id: "",
+    service_ticket_id: "",
     technician_user_id: "",
     technician_name: "",
     pm_user_id: "",
@@ -69,7 +52,9 @@ function AddWorkOrder() {
     technician_contact:"",
     project_manager_contact:""
   });
-
+  // State for generated ticket ID
+  const [serviceTicketId, setServiceTicketId] = useState(null);
+  const [clientName, setClientName] = useState("");
   useEffect(() => {
     // Fetch clients and IDR employees when component mounts
     dispatch(getClients());
@@ -88,10 +73,11 @@ function AddWorkOrder() {
         (client) => client.client_id === value
       );
       if (selectedClient) {
-        setTicketData((prev) => ({
-          ...prev,
-          client_name: selectedClient.company_name,
-        }));
+        setClientName(selectedClient?.company_name)
+        // setTicketData((prev) => ({
+        //   ...prev,
+        //   client_name: selectedClient.company_name,
+        // }));
       }
 
       // Fetch client employees by client_id
@@ -110,8 +96,7 @@ function AddWorkOrder() {
           contact_person:
             selectedEmployee.first_name + " " + selectedEmployee.last_name,
           contact_phone_number: selectedEmployee.contact_number,
-          contact_mail_id: selectedEmployee.email_id,
-          client_emp_user_id: selectedEmployee.user_id,
+          contact_email: selectedEmployee.email_id,
         }));
       }
     }
@@ -144,115 +129,41 @@ function AddWorkOrder() {
     }
   };
 
-  const handleNext = () => {
-    if (step === 1) {
-      // Validate step 1 fields
-      if (!validateStep1()) {
-        toast.error("Fill up all required fields.");
-        return;
+  const handleGenerateTicket = async () => {
+    try {
+      const response = await dispatch(generateServiceTicket(ticketData));
+      console.log("Ticket generate response:", response);
+  
+      if (response) {
+        setServiceTicketId(response?.service_ticket_id); // Save the generated ticket ID
+        setAssigns((prev) => ({
+          ...prev,
+          service_ticket_id: response?.service_ticket_id,
+        }));
+        setStep(2); // Move to the next step
+      } else {
+        console.error("No response received from ticket generation.");
       }
-
-      generateWorkOrderTicket();
-    } else if (step === 2) {
-      // Validate step 2 fields
-      if (!validateStep2()) {
-        toast.error("Fill up all required fields.");
-        return;
-      }
-
-      addTechnician();
-    } else if (step === 3) {
-      // Validate step 3 fields
-      if (!validateStep3()) {
-        toast.error("Please add Technicians.");
-        return;
-      }
-
-      addAssigns();
+    } catch (error) {
+      console.error("Failed to generate ticket:", error);
     }
   };
+  
 
-  const validateStep1 = () => {
-    // Example validation, adjust as per your field requirements
-    return (
-      ticketData.client_id !== "" &&
-      ticketData.location_id !== "" &&
-      ticketData.service_date !== "" &&
-      ticketData.issue !== "" &&
-      ticketData.contact_person !== "" &&
-      ticketData.job_location !== ""
-    );
+  const handleAssignTechnicians = async () => {
+    console.log("technician data---154",assigns)
+    if (!serviceTicketId) {
+      alert("Please generate a ticket first.");
+      return;
+    }
+
+    try {
+      console.log("technician data---154",assigns)
+      dispatch(assignPeopleToServiceTicket(assigns,navigate,false));
+    } catch (error) {
+      console.error("Failed to assign technicians:", error);
+    }
   };
-
-  const validateStep2 = () => {
-    // Example validation, adjust as per your field requirements
-    return (
-      technicianData.other_details !== "" &&
-      technicianData.procedures !== "" &&
-      technicianData.parts !== "" &&
-      technicianData.labeling_methodology !== "" &&
-      technicianData.required_deliverables !== "" &&
-      technicianData.deliverable_instructions !== ""
-    );
-  };
-
-  const validateStep3 = () => {
-    // Example validation, adjust as per your field requirements
-    return assigns.technician_name !== "" && assigns.project_manager !== "";
-  };
-
-  const generateWorkOrderTicket = () => {
-    dispatch(generateTicket(ticketData))
-      .then((response) => {
-        if (response?.work_order_id) {
-          setTechnicianData((prev) => ({
-            ...prev,
-            work_order_id: response?.work_order_id,
-          }));
-          setStep(2); // Proceed to next step
-        } else {
-          console.error("Error generating ticket:", response.error);
-        }
-      })
-      .catch((error) => {
-        console.error("API call error:", error);
-      });
-  };
-
-  const addTechnician = () => {
-    dispatch(addTechnicianToTicket(technicianData))
-      .then((response) => {
-        if (response.code == "WO201") {
-          setAssigns((prev) => ({
-            ...prev,
-            work_order_id: technicianData.work_order_id,
-          }));
-          setStep(3); // Proceed to next step
-          // navigate("/workorder");
-        } else {
-          console.error("Error adding technician:", response.error);
-        }
-      })
-      .catch((error) => {
-        console.error("API call error:", error);
-      });
-  };
-
-  const addAssigns = () => {
-    dispatch(assignPeopleToWorkOrder(assigns))
-      .then((response) => {
-        if (response.code == "WO201") {
-          toast.success("Work Order Created.")
-          navigate("/workorder");
-        } else {
-          console.error("Error adding assigns:", response.error);
-        }
-      })
-      .catch((error) => {
-        console.error("API call error:", error);
-      });
-  };
-
   // Helper function to get today's date in 'YYYY-MM-DD' format
   const getTodayDate = () => {
     const today = new Date();
@@ -269,13 +180,18 @@ function AddWorkOrder() {
         <AdminSideNavbar />
         <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between">
-            <h1 className="font-bold text-lg">New Work Orders</h1>
+            <h1 className="font-bold text-lg">New Service Ticket</h1>
           </div>
-
           {step === 1 && (
-            <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
+             <form 
+             className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6"
+             onSubmit={(e) => {
+               e.preventDefault(); // Prevent the default form submission
+               handleGenerateTicket(); // Call the ticket generation function
+             }}
+           >         
               <div className="mb-2">
-                <h1 className="text-xl font-normal mb-2">Generate Ticket</h1>
+                <h1 className="text-xl font-normal mb-2">Service Ticket</h1>
                 <div className="border border-gray-200"></div>
               </div>
 
@@ -323,8 +239,8 @@ function AddWorkOrder() {
                   <label className="font-normal text-base">Client Name*</label>
                   <input
                     type="text"
-                    name="client_name"
-                    value={ticketData.client_name}
+                    name="clientName"
+                    value={clientName}
                     className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
                     readOnly
                   />
@@ -374,9 +290,9 @@ function AddWorkOrder() {
                   <input
                     type="email"
                     placeholder="Type Contact Mail Id"
-                    name="contact_mail_id"
+                    name="contact_email"
                     className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
-                    value={ticketData.contact_mail_id}
+                    value={ticketData.contact_email}
                     onChange={(e) => handleChange(e, setTicketData)}
                     readOnly
                   />
@@ -389,7 +305,7 @@ function AddWorkOrder() {
                   <input
                     type="text"
                     placeholder="Type Customer PO Number"
-                    name="po_number"
+                    name="customer_po"
                     className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
                     onChange={(e) => handleChange(e, setTicketData)}
                   />
@@ -412,7 +328,7 @@ function AddWorkOrder() {
                   <input
                     type="text"
                     placeholder="Type Service Location"
-                    name="job_location"
+                    name="service_location"
                     className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
                     onChange={(e) => handleChange(e, setTicketData)}
                   />
@@ -424,7 +340,7 @@ function AddWorkOrder() {
                   <input
                     type="text"
                     placeholder="Type Service Request"
-                    name="issue"
+                    name="service_request"
                     className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
                     onChange={(e) => handleChange(e, setTicketData)}
                     required
@@ -439,9 +355,9 @@ function AddWorkOrder() {
                     onChange={(e) => handleChange(e, setTicketData)}
                   >
                     <option value="Open">Open</option>
-                    <option value="Design">Design</option>
+                    {/* <option value="Design">Design</option> */}
                     <option value="In Progress">In Progress</option>
-                    <option value="Reviewing">Reviewing</option>
+                    {/* <option value="Reviewing">Reviewing</option> */}
                     <option value="Closed">Closed</option>
                   </select>
                 </div>
@@ -452,7 +368,7 @@ function AddWorkOrder() {
                   <input
                     type="text"
                     placeholder="Type Local Onsite Contact"
-                    name="local_onsite_person"
+                    name="local_onsite_contact"
                     className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
                     onChange={(e) => handleChange(e, setTicketData)}
                   />
@@ -464,115 +380,56 @@ function AddWorkOrder() {
                   <input
                     type="text"
                     placeholder="Type  Local Person Contact Number"
-                    name="local_onsite_person_contact"
+                    name="local_onsite_contact_number"
                     className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
                     onChange={(e) => handleChange(e, setTicketData)}
                   />
                 </div>
                 {/* Other input fields */}
+                
               </div>
-
-              <div className="flex flex-col gap-2 justify-center mt-7 items-center">
-                <button
-                  className="border bg-indigo-600 w-1/3 py-2 text-white rounded"
-                  onClick={handleNext}
-                >
-                  {loading ? "Saving" : "Next"}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
-              <div className="mb-2">
-                <h1 className="text-xl font-normal mb-2">Work Order Details</h1>
-                <div className="border border-gray-200"></div>
-              </div>
-
-              <div className="flex flex-col gap-5">
-                <div className="flex flex-col gap-2 ">
+              <div className="grid grid-cols-1 gap-8">
+              <div className="flex flex-col gap-2">
                   <label className="font-normal text-base">
-                    Parts and Tools*
+                  Service Ticket Details
                   </label>
                   <textarea
-                    name="parts"
-                    className="px-3 py-2 border text-sm h-32 border-gray-200 rounded resize-y"
-                    onChange={(e) => handleChange(e, setTechnicianData)}
+                    name="service_ticket_details"
+                    className="px-3 py-3 border border-gray-200 h-32 text-sm rounded resize-y"
                     rows={3}
+                    onChange={(e) => handleChange(e, setTicketData)}
                   ></textarea>
-                </div>
-
-                <div className="flex flex-col gap-2 ">
-                  <label className="font-normal text-base">
-                    Labeling Methodology*
-                  </label>
-                  <input
-                    type="text"
-                    name="labeling_methodology"
-                    className="px-3 py-2 border text-sm border-gray-200 rounded"
-                    onChange={(e) => handleChange(e, setTechnicianData)}
-                  />
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-base">
-                    Service Details*
+                  Ticket Note
                   </label>
                   <textarea
-                    name="other_details"
+                    name="ticket_notes"
                     className="px-3 py-3 border border-gray-200 h-32 text-sm rounded resize-y"
                     rows={3}
-                    onChange={(e) => handleChange(e, setTechnicianData)}
+                    onChange={(e) => handleChange(e, setTicketData)}
                   ></textarea>
-                </div>
-                <div className="flex flex-col gap-2 ">
-                  <label className="font-normal text-base">Procedures*</label>
-                  <textarea
-                    name="procedures"
-                    className="px-3 py-3 border border-gray-200 h-32 text-sm rounded resize-y"
-                    rows={3}
-                    onChange={(e) => handleChange(e, setTechnicianData)}
-                  ></textarea>
-                </div>
-
-                <div className="flex flex-col gap-2 ">
-                  <label className="font-normal text-base">
-                    Require Deliverables*
-                  </label>
-                  <textarea
-                    name="required_deliverables"
-                    className="px-3 py-2 border text-sm border-gray-200 h-32 rounded resize-y"
-                    onChange={(e) => handleChange(e, setTechnicianData)}
-                    rows={3}
-                  ></textarea>
-                </div>
-
-                <div className="flex flex-col gap-2 ">
-                  <label className="font-normal text-base">
-                    Deliverable Instructions*
-                  </label>
-                  <textarea
-                    name="deliverable_instructions"
-                    className="px-3 py-2 border text-sm border-gray-200 h-32 rounded resize-y"
-                    onChange={(e) => handleChange(e, setTechnicianData)}
-                    rows={3}
-                  ></textarea>
-                </div>
-
-                <div className="flex flex-col gap-2 justify-center mt-7 items-center">
-                  <button
-                    className="border bg-indigo-600 w-1/3 py-2 text-white rounded"
-                    onClick={handleNext}
-                  >
-                    {loading ? "Saving" : "Next"}
-                  </button>
                 </div>
               </div>
-            </div>
+              <div className="flex flex-col gap-2  justify-center mt-7 items-center">
+                    <button
+                      className="border bg-indigo-600 w-1/3 py-2 text-white rounded"
+                    >
+                      {loading ? "Saving" : "Generate Ticket"}
+                    </button>
+                  </div>
+            </form>
           )}
 
-          {step === 3 && (
-            <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
+          {step === 2 && (
+            <form
+            className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6"
+             onSubmit={(e) => {
+              e.preventDefault(); // Prevent the default form submission
+              handleAssignTechnicians();
+            }}
+            >
               <div className="mb-2">
                 <h1 className="text-xl font-normal mb-2">Assign Technicians</h1>
                 <div className="border border-gray-200"></div>
@@ -621,16 +478,15 @@ function AddWorkOrder() {
                       ))}
                     </select>
                   </div>     
-                </div>
+              </div>
                 <div className="flex flex-col gap-2  justify-center mt-7 items-center">
                     <button
                       className="border bg-indigo-600 w-1/3 py-2 text-white rounded"
-                      onClick={handleNext}
                     >
-                      {loading ? "Saving" : "Submit"}
+                      {loading ? "Saving" : "Assign To Ticket"}
                     </button>
-                  </div>
-              </div>
+                </div>
+            </form>
           )}
         </div>
       </div>
@@ -638,4 +494,4 @@ function AddWorkOrder() {
   );
 }
 
-export default AddWorkOrder;
+export default AddServiceTicket;

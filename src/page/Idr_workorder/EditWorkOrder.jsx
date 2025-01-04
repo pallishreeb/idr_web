@@ -149,7 +149,7 @@ const EditWorkOrder = () => {
   
   const handleAssigneeChange = (index, e) => {
     const { name, value } = e.target;
-    const updatedAssignees = [...assigns];
+    const updatedAssignees = [...assignees];
     updatedAssignees[index] = { ...updatedAssignees[index], [name]: value };
     if (name === "technician_name") {
       const selectedTechnician = idrEmployees.find(
@@ -381,6 +381,7 @@ const EditWorkOrder = () => {
           {/* InventoryTable */}
           <InventoryTable
              inventories={inventories}
+             work_order_id={workOrderId}
           />
           {/* Equipments Table */}
           <EquipmentTable

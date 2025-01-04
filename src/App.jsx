@@ -48,6 +48,12 @@ import EquipmentReport from "./page/report/EquipmentReport";
 import EquipmentReportDetails from "./page/report/EquipmentReportDetails";
 import InventoryReport from "./page/report/InventoryReport";
 import InventoryReportDetails from "./page/report/InventoryReportDetails";
+import PrivacyPolicy from "./page/PrivacyPolicy";
+import TermsAndConditions from "./page/TermsAndConditions";
+import ServiceTickets from './page/service-tickets/ServiceTickets'
+import AddServiceTicket from './page/service-tickets/AddServiceTicket'
+import EditServiceTicket from './page/service-tickets/EditServiceTicket'
+
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -87,6 +93,8 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/set-password" element={<SetPasswordForm />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/" element={<PrivateRoute />}>
           <Route
             path="/set-user-password/:userId"
@@ -163,6 +171,11 @@ function App() {
           <Route path="/inventory-report" element={<InventoryReport />} />
           <Route path="/equipment-report/:equipmentRreportId" element={< EquipmentReportDetails />} />
           <Route path="/inventory-report/:inventoryReportId" element={<InventoryReportDetails />} />
+
+          {/* Service ticket */}
+          <Route path="/service-tickets" element={<ServiceTickets />} />
+          <Route path="/add-service-ticket" element={<AddServiceTicket />} />
+          <Route path="/edit-service-ticket/:serviceTicketId" element={<EditServiceTicket />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
         <Route path="/test" element={<IdrEuipement />} />

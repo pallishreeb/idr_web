@@ -72,6 +72,17 @@ const apiConfig = {
   getInventoryReportById:'/reports/inventory',
   getEquipmentReportList:'/reports/equipment/all',
   getEquipmentReportById:'/reports/equipment',
+  returnInventory:'/work_order/return_inventory',
+  generateServiceTicket: "/service_ticket/add",
+  getServiceTicketLists: "/service_ticket/all",
+  deleteServiceTicket: "/service_ticket",
+  updateServiceTicket: "/service_ticket/update",
+  assignPeopleToServiceTicket: "/service_ticket/assignee",
+  deleteAssigneeFromServiceTicket: "/service_ticket/delete/assignee",
+  serviceTicketByClient: "/work_order/update_ticket",
+  serviceTicketByID: "/service_ticket",
+  addAttachmentToServiceTicket:"/service_ticket/image/add"
+
 };
 
 export { API_BASE_URL, apiConfig };

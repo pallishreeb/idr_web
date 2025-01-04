@@ -9,14 +9,14 @@ import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import {
-  getWorkOrderLists,
-  deleteWorkOrder,
-} from "../../actions/workOrderActions";
+  getServiceTicketLists,
+  deleteServiceTicket,
+} from "../../actions/serviceTicket";
 import { getClients } from "../../actions/clientActions";
 import { fetchIDREmployees } from "../../actions/employeeActions";
 import { toast } from "react-toastify";
 
-const WorkOrder = () => {
+const ServiceTickets = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
@@ -27,12 +27,13 @@ const WorkOrder = () => {
   });
   const { user_type } = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
-  const { workOrders, loading } = useSelector((state) => state.workOrder);
+  // const { serviceTickets, loading } = useSelector((state) => state.workOrder);
+  const { serviceTickets, loading } = useSelector((state) => state.serviceTicket);
   const { clients } = useSelector((state) => state.client);
   const { idrEmployees } = useSelector((state) => state.employee);
 
   useEffect(() => {
-    dispatch(getWorkOrderLists(filters));
+    dispatch(getServiceTicketLists(filters));
     dispatch(getClients());
     dispatch(fetchIDREmployees());
   }, [dispatch, filters]);
@@ -45,23 +46,25 @@ const WorkOrder = () => {
     });
   };
 
+  console.log("serviceTickets",serviceTickets)
+
   const handleDelete = (orderId) => {
     Swal.fire({
       title: "Are you sure?",
-      text: "Do you really want to delete this work order?",
+      text: "Do you really want to delete this Service Ticket?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "No, keep it",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(deleteWorkOrder(orderId))
+        dispatch(deleteServiceTicket(orderId))
           .then(() => {
-            dispatch(getWorkOrderLists(filters)); // Refresh the list after deletion
+            dispatch(getServiceTicketLists(filters)); // Refresh the list after deletion
           })
           .catch((error) => {
             console.log(error);
-            toast.error("Failed to delete the work order");
+            toast.error("Failed to delete the Service Ticket");
           });
       }
     });
@@ -82,7 +85,7 @@ const WorkOrder = () => {
         <AdminSideNavbar />
         <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between">
-            <h1 className="font-bold text-lg">Work Orders</h1>
+            <h1 className="font-bold text-lg">Service Tickets</h1>
           </div>
           <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
             <div className="flex justify-between items-center">
@@ -98,9 +101,7 @@ const WorkOrder = () => {
                   >
                     <option value="">All</option>
                     <option value="Open">Open</option>
-                    <option value="Design">Design</option>
                     <option value="In Progress">In Progress</option>
-                    <option value="Reviewing">Reviewing</option>
                     <option value="Closed">Closed</option>
                   </select>
                 </div>
@@ -168,9 +169,9 @@ const WorkOrder = () => {
                 )}
               </div>
               {access.includes(user_type) && (
-                <Link to={"/add-work-order"}>
+                <Link to={"/add-service-ticket"}>
                   <button className="bg-indigo-600 text-white px-6 py-2 rounded mt-7">
-                    New Work Order
+                    New Service Ticket
                   </button>
                 </Link>
               )}
@@ -180,7 +181,7 @@ const WorkOrder = () => {
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
-                      Ticket Number
+                    Service  Ticket Number
                     </th>
                     <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
                       Client Name
@@ -206,14 +207,14 @@ const WorkOrder = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {workOrders && workOrders.workOrder?.length > 0 ? (
-                    workOrders.workOrder?.map((order) => (
-                      <tr key={order.id} className="text-left ">
+                  {serviceTickets && serviceTickets?.length > 0 ? (
+                    serviceTickets?.map((order) => (
+                      <tr key={order.service_ticket_id} className="text-left ">
                         <td className="border text-sm px-1 py-3">
                           {order?.ticket_number ? order?.ticket_number : "NA"}
                         </td>
                         <td className="border text-sm px-1 py-3">
-                          {order.client_name}
+                          {order?.client_name || 'NA'}
                         </td>
                         
                         <td className="border text-sm px-1 py-3">
@@ -234,7 +235,7 @@ const WorkOrder = () => {
                           {order.status}
                         </td>
                         <td className="border text-sm  px-1 py-3">
-                          {order.issue}
+                          {order.service_request}
                         </td>
                         <td className="border text-sm px-1 py-3">
                           <div className="flex gap-2">
@@ -242,7 +243,7 @@ const WorkOrder = () => {
                               <BiSolidEditAlt
                                 onClick={() =>
                                   navigate(
-                                    `/edit-work-order/${order.work_order_id}`
+                                    `/edit-service-ticket/${order?.service_ticket_id}`
                                   )
                                 }
                               />
@@ -251,7 +252,7 @@ const WorkOrder = () => {
                               <div className="p-[4px] bg-gray-100 cursor-pointer">
                                 <AiFillDelete
                                   onClick={() =>
-                                    handleDelete(order.work_order_id)
+                                    handleDelete(order?.service_ticket_id)
                                   }
                                 />
                               </div>
@@ -263,14 +264,14 @@ const WorkOrder = () => {
                   ) : (
                     <tr>
                       <td colSpan="8" className="text-center text-xs py-3">
-                        No work orders found
+                        No Service Ticket found
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             ) : (
-              "Loading Work orders..."
+              "Loading Service Tickets..."
             )}
           </div>
         </div>
@@ -279,4 +280,4 @@ const WorkOrder = () => {
   );
 };
 
-export default WorkOrder;
+export default ServiceTickets;

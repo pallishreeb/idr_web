@@ -99,6 +99,7 @@ const handleDeleteEmployee = (employeeId) => {
                       <th className="border px-4 py-2 text-left">Name</th>
                       <th className="border px-4 py-2 text-left">Email</th>
                       <th className="border px-4 py-2 text-left">Contact number</th>
+                      <th className="border px-4 py-2 text-left">Employee Type</th>
                       <th className="border px-4 py-2 text-left">Access to Website</th>
                       
                       <th className="border px-4 py-2">Actions</th>
@@ -121,6 +122,7 @@ const handleDeleteEmployee = (employeeId) => {
                         <td className="text-left border px-4 py-2">{employee.first_name}{" "}{employee.last_name}</td>   
                         <td className="text-left border px-4 py-2">{employee.email_id}</td>
                         <td className="text-left border px-4 py-2">{employee?.contact_number ? employee?.contact_number : "NA"}</td>
+                        <td className="text-left border px-4 py-2">{employee?.employee_type ? employee?.employee_type : "NA"}</td>
                         <td className="text-left border px-4 py-2">{employee.access_to_website == true ? 'Yes' : 'No'}</td>
                         <td className="text-left border px-4 py-2">
                         

@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 
 
-const AddTechnicianModal = ({
+const AddTechnicianToServiceTicket = ({
   isOpen,
   onClose,
   onSave,
-  workOrderId,
+  serviceTicketId,
   idrEmployees,
 }) => {
   const [assigns, setAssigns] = useState({
-    work_order_id: workOrderId,
+    service_ticket_id: serviceTicketId,
     technician_user_id: "",
     technician_name: "",
     pm_user_id: "",
@@ -145,4 +145,4 @@ const AddTechnicianModal = ({
   );
 };
 
-export default AddTechnicianModal;
+export default AddTechnicianToServiceTicket;
