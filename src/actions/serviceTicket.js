@@ -24,47 +24,47 @@ import {
   getServiceTicketDetailsFailure
 } from "../reducers/serviceTicketSlice";
 import { apiConfig } from "../config";
-// import { fetchJson } from '../fetch-config';
+import { fetchJson } from '../fetch-config';
 // Generate a new service ticket
-// export const generateServiceTicket = (ticketData) => {
-//     return async (dispatch) => {
-//       dispatch(serviceTicketStart());
-//       try {
-//         const data = await fetchJson(apiConfig.generateServiceTicket, {
-//           method: 'POST',
-//           body: ticketData
-//         });
-  
-//         dispatch(serviceTicketSuccess(data));
-//         toast.success("Service ticket generated successfully");
-//         return data;
-//         // navigate('/inventory');
-//       } catch (error) {
-//         console.error('Error occurred:', error);
-  
-//         dispatch(serviceTicketFailure(error.message));
-//         toast.error(error.message || "Failed to generate service ticket");
-//       }
-//     };
-//   };
-  
 export const generateServiceTicket = (ticketData) => {
     return async (dispatch) => {
       dispatch(serviceTicketStart());
       try {
-        const response = await axios.post(apiConfig.generateServiceTicket, ticketData);
-        // const ticket = response?.data?.tickets; // Extract the ticket data
-        dispatch(serviceTicketSuccess(response?.data?.service_ticket_id));
+        const data = await fetchJson(apiConfig.generateServiceTicket, {
+          method: 'POST',
+          body: ticketData
+        });
+  
+        dispatch(serviceTicketSuccess(data));
         toast.success("Service ticket generated successfully");
-        return response?.data; // Return the full ticket object
+        return data;
+        // navigate('/inventory');
       } catch (error) {
-        console.error("Error generating service ticket:", error);
+        console.error('Error occurred:', error);
+  
         dispatch(serviceTicketFailure(error.message));
-        toast.error(error.response?.data?.message || "Failed to generate service ticket");
-        throw error; // Throw the error so it can be caught in the component
+        toast.error(error.message || "Failed to generate service ticket");
       }
     };
   };
+  
+// export const generateServiceTicket = (ticketData) => {
+//     return async (dispatch) => {
+//       dispatch(serviceTicketStart());
+//       try {
+//         const response = await axios.post(apiConfig.generateServiceTicket, ticketData);
+//         // const ticket = response?.data?.tickets; // Extract the ticket data
+//         dispatch(serviceTicketSuccess(response?.data?.service_ticket_id));
+//         toast.success("Service ticket generated successfully");
+//         return response?.data; // Return the full ticket object
+//       } catch (error) {
+//         console.error("Error generating service ticket:", error);
+//         dispatch(serviceTicketFailure(error.message));
+//         toast.error(error.response?.data?.message || "Failed to generate service ticket");
+//         throw error; // Throw the error so it can be caught in the component
+//       }
+//     };
+//   };
   
 
 // Get all service ticket lists with optional filters
