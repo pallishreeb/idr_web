@@ -31,11 +31,16 @@ const AdminSideNavbar = () => {
       path: "/locations",
       roles: ["Admin", "Subadmin"],
     },
-    // {
-    //   title: "Client Equipment",
-    //   path: "/client-equipment",
-    //   roles: ["Admin", "Subadmin"],
-    // },
+    {
+      title: "Client Equipment",
+      path: "/client-equipments",
+      roles: ["Admin", "Subadmin"],
+    },
+    {
+      title: "Service Agreements",
+      path: "/service-agreements",
+      roles: ["Admin", "Subadmin"],
+    },
     // Add more menu items as needed
   ];
   const idrMenuItems = [

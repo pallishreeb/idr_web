@@ -81,7 +81,12 @@ const apiConfig = {
   deleteAssigneeFromServiceTicket: "/service_ticket/delete/assignee",
   serviceTicketByClient: "/work_order/update_ticket",
   serviceTicketByID: "/service_ticket",
-  addAttachmentToServiceTicket:"/service_ticket/image/add"
+  addAttachmentToServiceTicket:"/service_ticket/image/add",
+  addClientEquipment:'/work_order/return_inventory',
+  getClientEquipmentById: "/service_ticket/add",
+  getClientEquipments: "/service_ticket/all",
+  retireClientEquipment: "/service_ticket",
+  updateClientEquipment: "/service_ticket/update",
 
 };
 
