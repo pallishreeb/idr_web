@@ -185,14 +185,14 @@ function App() {
 
           {/* Client Equipment */}
           <Route path="/client-equipments" element={<ClientEquipments />} />
-          <Route path="/add-client-equipment" element={<AddClientEquipment />} />
+          <Route path="/add-client-equipment/:clientId" element={<AddClientEquipment />} />
           <Route path="/edit-client-equipment/:clientEquipmentId" element={<EditClientEquipment />} />
 
 
          {/* Service aagreements */}
          <Route path="/service-agreements" element={<ServiceAgreements />} />
-          <Route path="/add-service-agreement" element={<AddServiceAgreement />} />
-          <Route path="/edit-service-agreements/:serviceAgreementId" element={<EditServiceAgreement />} />
+          <Route path="/add-service-agreement/:clientId" element={<AddServiceAgreement />} />
+          <Route path="/edit-service-agreement/:agreementId" element={<EditServiceAgreement />} />
           
           <Route path="*" element={<NotFoundPage />} />
         </Route>

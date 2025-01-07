@@ -134,7 +134,7 @@ const ServiceTickets = () => {
                         onChange={handleFilterChange}
                       >
                         <option value="">All</option>
-                        {idrEmployees.map((employee) => (
+                        {idrEmployees?.map((employee) => (
                           <option
                             key={employee.idr_emp_id}
                             value={employee.first_name}
@@ -155,7 +155,7 @@ const ServiceTickets = () => {
                         onChange={handleFilterChange}
                       >
                         <option value="">All</option>
-                        {idrEmployees.map((employee) => (
+                        {idrEmployees?.map((employee) => (
                           <option
                             key={employee.idr_emp_id}
                             value={employee.first_name}

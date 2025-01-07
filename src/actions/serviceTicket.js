@@ -21,7 +21,10 @@ import {
   deleteAssigneeSuccess,
   getServiceTicketDetailsStart,
   getServiceTicketDetailsSuccess,
-  getServiceTicketDetailsFailure
+  getServiceTicketDetailsFailure,
+  serviceTicketImageStart,
+  serviceTicketImageSuccess,
+  serviceTicketImageFailure
 } from "../reducers/serviceTicketSlice";
 import { apiConfig } from "../config";
 import { fetchJson } from '../fetch-config';
@@ -186,6 +189,37 @@ export const getServiceTicketDetails = (serviceTicketId) => {
     } catch (error) {
       dispatch(getServiceTicketDetailsFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to fetch service ticket details");
+    }
+  };
+};
+
+
+export const uploadServiceTicketImages = (serviceTicketId, images) => {
+  return async (dispatch) => {
+    dispatch(serviceTicketImageStart());
+
+    const formData = new FormData();
+    formData.append("service_ticket_id", serviceTicketId);
+
+    images.forEach((image, index) => {
+      formData.append(`image_${index}`, image);
+    });
+
+    try {
+      const response = await axios.post(`${apiConfig.addAttachmentToServiceTicket}/${serviceTicketId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("response from image upload",response)
+      dispatch(serviceTicketImageSuccess(response));
+      toast.success("Images uploaded successfully.");
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      dispatch(serviceTicketImageFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to upload images.");
     }
   };
 };

@@ -11,7 +11,8 @@ import inventorySlice from "./inventorySlice";
 import IdrEquipmentSlice from "./IdrEquipmentSlice";
 import reportSlice from "./reportSlice";
 import serviceTickets from './serviceTicketSlice'
-import clientEquipmens from './clientEquipmentSlice'
+import clientEquipments from './clientEquipmentSlice'
+import serviceAgreementSlice from './serviceAgreementSlice'
 
 const rootReducer = combineReducers({
   user: userReducer,
@@ -25,7 +26,8 @@ const rootReducer = combineReducers({
   idrequipment: IdrEquipmentSlice,
   report:reportSlice,
   serviceTicket:serviceTickets,
-  clientEquipment:clientEquipmens
+  clientEquipment:clientEquipments,
+  serviceAgreement:serviceAgreementSlice
 });
 
 export default rootReducer;

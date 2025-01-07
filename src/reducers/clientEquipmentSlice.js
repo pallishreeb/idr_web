@@ -77,6 +77,7 @@ const clientEquipmentSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
     
   },
 });
@@ -96,7 +97,8 @@ export const {
     updateClientEquipmentFailure,
     retireClientEquipmentStart,
     retireClientEquipmentSuccess,
-    retireClientEquipmentFailure,
+    retireClientEquipmentFailure
+
 } = clientEquipmentSlice.actions;
 
 export default clientEquipmentSlice.reducer;

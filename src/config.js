@@ -87,6 +87,10 @@ const apiConfig = {
   getClientEquipments: "/service_ticket/all",
   retireClientEquipment: "/service_ticket",
   updateClientEquipment: "/service_ticket/update",
+  serviceAgreementAdd: "/service_agreement/add",
+  serviceAgreementUpdate: "/service_agreement/update",
+  serviceAgreementList: "/service_agreement/all",
+  serviceAgreementById: "/service_agreement",
 
 };
 

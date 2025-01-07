@@ -39,7 +39,7 @@ function AddServiceTicket() {
     local_onsite_contact_number: "", // Optional
     service_ticket_details: "", // Optional, added as per request
     ticket_notes: "",// Optional
-    // client_name:""
+    client_name:""
   });
   
 
@@ -74,10 +74,10 @@ function AddServiceTicket() {
       );
       if (selectedClient) {
         setClientName(selectedClient?.company_name)
-        // setTicketData((prev) => ({
-        //   ...prev,
-        //   client_name: selectedClient.company_name,
-        // }));
+        setTicketData((prev) => ({
+          ...prev,
+          client_name: selectedClient.company_name,
+        }));
       }
 
       // Fetch client employees by client_id

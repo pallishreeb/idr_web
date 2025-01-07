@@ -17,6 +17,7 @@ import { getLocationByClient } from "../../actions/locationActions";
 import { getClientEmployeeByClientId } from "../../actions/clientEmployeeActions";
 import { fetchIDREmployees } from "../../actions/employeeActions";
 import Loader from "../../Images/ZZ5H.gif"
+import ServiceTicketImages from "../../Components/ServiceTicketImages";
 
 const EditServiceTicket = () => {
   const { serviceTicketId } = useParams();
@@ -34,6 +35,7 @@ const EditServiceTicket = () => {
   const [serviceTicket, setServiceTicket] = useState(null);
   const [technicians, setTechnicians] = useState([]);
   const [assignees, setAssignees] = useState([]);
+  const [serviceTicketImages, setServiceTicketImages] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   // const [isDownloading, setIsDownloading] = useState(false); // Loading state
   useEffect(() => {
@@ -48,6 +50,7 @@ const EditServiceTicket = () => {
       setServiceTicket(serviceTicketDetails);
       setTechnicians(serviceTicketDetails?.technicians || []);
       setAssignees(serviceTicketDetails?.service_ticket_assignees || []);
+      setServiceTicketImages(serviceTicketDetails?.service_ticket_attachments  || []);
     }
   }, [serviceTicketDetails]);
   useEffect(() => {
@@ -274,6 +277,13 @@ const EditServiceTicket = () => {
             loading={loading}
             serviceTicketId={serviceTicketId}
           />
+
+           {/* Show Images  */}    
+           <ServiceTicketImages
+              images={serviceTicketImages} 
+              serviceTicketId={serviceTicketId} 
+            />
+     
         </div>
       </div>
     </>

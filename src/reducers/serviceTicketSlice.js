@@ -110,6 +110,18 @@ const serviceTicketSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+    serviceTicketImageStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    serviceTicketImageSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+    serviceTicketImageFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -136,7 +148,9 @@ export const {
   assignPeopleToServiceTicketSuccess,
   assignPeopleToServiceTicketFailure,
   deleteAssigneeSuccess,
-  
+  serviceTicketImageStart,
+  serviceTicketImageSuccess,
+  serviceTicketImageFailure
 
 } = serviceTicketSlice.actions;
 
