@@ -37,7 +37,7 @@ const ServiceTicketCard = ({
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
-        <h1 className="text-xl font-normal mb-2">Work Order Ticket - {serviceTicket?.ticket_number}</h1>
+        <h1 className="text-xl font-normal mb-2">Service Ticket - {serviceTicket?.service_ticket_number }</h1>
         {access.includes(user_type) && 
         <div>
           {isEditing ? (

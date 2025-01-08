@@ -241,7 +241,7 @@ const ClientEquipments = () => {
             </button>
             <Link
               to={`/add-client-equipment/${selectedClient}`}
-              className="bg-green-600 text-white px-4 py-2 rounded"
+              className="bg-indigo-600 text-white px-4 py-2 rounded flex-end"
               disabled={!selectedClient}
             >
               Add New Equipment

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AiFillDelete } from "react-icons/ai";
-import Swal from "sweetalert2";
+// import { AiFillDelete } from "react-icons/ai";
+// import Swal from "sweetalert2";
+import { FaDownload } from "react-icons/fa";
 import { uploadServiceTicketImages } from "../actions/serviceTicket";
 import { getServiceTicketDetails } from "../actions/serviceTicket";
 import { toast } from "react-toastify";
+import { S3_BASE_URL } from "../config";
 
 const ServiceTicketImages = ({ images, serviceTicketId }) => {
   const dispatch = useDispatch();
@@ -40,25 +42,30 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
       });
   };
 
-  const handleDelete = (imageId) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you really want to delete this image?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, keep it",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log("Image is removed")
-        // dispatch(deleteImage(imageId)).then(() => {
-        //   toast.success("Image deleted successfully.");
-        //   dispatch(getServiceTicketDetails(serviceTicketId));
-        // });
-      }
-    });
+  // const handleDelete = (imageId) => {
+  //   Swal.fire({
+  //     title: "Are you sure?",
+  //     text: "Do you really want to delete this image?",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonText: "Yes, delete it!",
+  //     cancelButtonText: "No, keep it",
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       console.log("Image is removed")
+  //       // dispatch(deleteImage(imageId)).then(() => {
+  //       //   toast.success("Image deleted successfully.");
+  //       //   dispatch(getServiceTicketDetails(serviceTicketId));
+  //       // });
+  //     }
+  //   });
+  // };
+  const handleDownload = (url, filename) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename || "image.jpg";
+    link.click();
   };
-
   return (
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -73,32 +80,50 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
         )}
       </div>
 
-      {/* Image Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {images?.map((image, index) => (
-          <div key={index} className="relative">
-            <img
-              src={image?.url} // Replace with the actual image URL
-              alt={`Service Ticket Image ${index + 1}`}
-              className="w-full h-40 object-cover rounded"
-            />
-            {user_type === "Admin" && (
-              <button
-                className="absolute top-2 right-2 p-2 bg-gray-100 rounded-full"
-                onClick={() => handleDelete(image.id)} // Use actual image ID
-              >
-                <AiFillDelete size={20} />
-              </button>
-            )}
-          </div>
-        ))}
+      {/* Image table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-gray-200 border rounded">
+          <thead>
+            <tr className="bg-gray-300 text-left">
+              <th className="border px-4 py-2">Photos</th>
+              <th className="border px-4 py-2">User Name</th>
+              <th className="border px-4 py-2">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {images?.map((image, index) => (
+              <tr key={index} className="bg-white text-sm">
+                <td className="border px-4 py-2">
+                 
+                    <img
+                      src={`${S3_BASE_URL}/${image?.attachment_url}`} // Replace with the actual image URL
+                      alt={`Service Ticket Image ${index + 1}`}
+                      className="w-20 h-20 object-cover rounded"
+                    />
+                </td>
+                <td className="border px-4 py-2">{image?.by_user_id}</td>
+                <td className="border px-4 py-2">
+                  <button
+                    onClick={() =>
+                      handleDownload(
+                        `${S3_BASE_URL}/${image?.attachment_url}`,
+                        `image-${index + 1}.jpg`
+                      )
+                    }
+                    className="bg-blue-500 text-white px-3 py-3 rounded"
+                  >
+                     <FaDownload />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* Add Image Modal */}
       {isModalOpen && (
-        <div
-          className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center"
-        >
+        <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-4 my-8 max-h-[95vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4 text-center">Add Images</h2>
             <div className="mb-4">

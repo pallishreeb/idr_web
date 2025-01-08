@@ -1,5 +1,5 @@
-const API_BASE_URL = 'https://api.portal.idrtechnologysolutions.com'
-
+const API_BASE_URL = 'https://api.portal.idrtechnologysolutions.com';
+const S3_BASE_URL = 'https://idr-app-images-bucket.s3.amazonaws.com';
 const apiConfig = {
   setPassword: "/users/set_password",
   createUser: "/users/create",
@@ -82,6 +82,8 @@ const apiConfig = {
   serviceTicketByClient: "/work_order/update_ticket",
   serviceTicketByID: "/service_ticket",
   addAttachmentToServiceTicket:"/service_ticket/image/add",
+  serviceTicketLinkDevice:"/service_ticket/link_device",
+  addNoteToDevice:"/service_ticket/device_history",
   addClientEquipment:'/equip_client/add',
   getClientEquipmentById: "/equip_client",
   getClientEquipments: "/equip_client/all",
@@ -91,7 +93,8 @@ const apiConfig = {
   serviceAgreementUpdate: "/service_agreement/update",
   serviceAgreementList: "/service_agreement/all",
   serviceAgreementById: "/service_agreement",
+  
 
 };
 
-export { API_BASE_URL, apiConfig };
+export { API_BASE_URL, apiConfig,S3_BASE_URL };
