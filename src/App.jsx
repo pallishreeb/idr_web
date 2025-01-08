@@ -53,7 +53,12 @@ import TermsAndConditions from "./page/TermsAndConditions";
 import ServiceTickets from './page/service-tickets/ServiceTickets'
 import AddServiceTicket from './page/service-tickets/AddServiceTicket'
 import EditServiceTicket from './page/service-tickets/EditServiceTicket'
-
+import ClientEquipments from "./page/client-equipment/ClientEquipments";
+import AddClientEquipment from "./page/client-equipment/AddClientEquipment";
+import EditClientEquipment from "./page/client-equipment/EditClientEquipment";
+import ServiceAgreements from "./page/service-agreements/ServiceAgreements";
+import AddServiceAgreement from "./page/service-agreements/AddServiceAgreement";
+import EditServiceAgreement from "./page/service-agreements/EditServiceAgreement";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -176,6 +181,19 @@ function App() {
           <Route path="/service-tickets" element={<ServiceTickets />} />
           <Route path="/add-service-ticket" element={<AddServiceTicket />} />
           <Route path="/edit-service-ticket/:serviceTicketId" element={<EditServiceTicket />} />
+
+
+          {/* Client Equipment */}
+          <Route path="/client-equipments" element={<ClientEquipments />} />
+          <Route path="/add-client-equipment/:clientId" element={<AddClientEquipment />} />
+          <Route path="/edit-client-equipment/:clientEquipmentId" element={<EditClientEquipment />} />
+
+
+         {/* Service aagreements */}
+         <Route path="/service-agreements" element={<ServiceAgreements />} />
+          <Route path="/add-service-agreement/:clientId" element={<AddServiceAgreement />} />
+          <Route path="/edit-service-agreement/:agreementId" element={<EditServiceAgreement />} />
+          
           <Route path="*" element={<NotFoundPage />} />
         </Route>
         <Route path="/test" element={<IdrEuipement />} />

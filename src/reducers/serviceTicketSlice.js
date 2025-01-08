@@ -110,6 +110,42 @@ const serviceTicketSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+    serviceTicketImageStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    serviceTicketImageSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+    serviceTicketImageFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    linkDeviceToServiceTicketStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    linkDeviceToServiceTicketSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+    linkDeviceToServiceTicketFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    addNoteToDeviceStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    addNoteToDeviceSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+    addNoteToDeviceFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -136,8 +172,15 @@ export const {
   assignPeopleToServiceTicketSuccess,
   assignPeopleToServiceTicketFailure,
   deleteAssigneeSuccess,
-  
-
+  serviceTicketImageStart,
+  serviceTicketImageSuccess,
+  serviceTicketImageFailure,
+  linkDeviceToServiceTicketStart,
+  linkDeviceToServiceTicketSuccess,
+  linkDeviceToServiceTicketFailure,
+  addNoteToDeviceStart,
+  addNoteToDeviceSuccess,
+  addNoteToDeviceFailure,
 } = serviceTicketSlice.actions;
 
 export default serviceTicketSlice.reducer;

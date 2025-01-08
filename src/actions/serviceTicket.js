@@ -21,7 +21,16 @@ import {
   deleteAssigneeSuccess,
   getServiceTicketDetailsStart,
   getServiceTicketDetailsSuccess,
-  getServiceTicketDetailsFailure
+  getServiceTicketDetailsFailure,
+  serviceTicketImageStart,
+  serviceTicketImageSuccess,
+  serviceTicketImageFailure,
+  linkDeviceToServiceTicketStart,
+  linkDeviceToServiceTicketSuccess,
+  linkDeviceToServiceTicketFailure,
+  addNoteToDeviceStart,
+  addNoteToDeviceSuccess,
+  addNoteToDeviceFailure,
 } from "../reducers/serviceTicketSlice";
 import { apiConfig } from "../config";
 import { fetchJson } from '../fetch-config';
@@ -186,6 +195,83 @@ export const getServiceTicketDetails = (serviceTicketId) => {
     } catch (error) {
       dispatch(getServiceTicketDetailsFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to fetch service ticket details");
+    }
+  };
+};
+
+
+export const uploadServiceTicketImages = (serviceTicketId, images) => {
+  return async (dispatch) => {
+    dispatch(serviceTicketImageStart());
+
+    const formData = new FormData();
+    formData.append("service_ticket_id", serviceTicketId);
+
+    images.forEach((image, index) => {
+      formData.append(`image`, image);
+    });
+
+    try {
+      const response = await axios.post(`${apiConfig.addAttachmentToServiceTicket}/${serviceTicketId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("response from image upload",response)
+      dispatch(serviceTicketImageSuccess(response));
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      dispatch(serviceTicketImageFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to upload images.");
+    }
+  };
+};
+
+// add a new device to service ticket
+export const linkDeviceToServiceTicket = (deviceData) => {
+  return async (dispatch) => {
+    dispatch(linkDeviceToServiceTicketStart());
+    try {
+      const data = await fetchJson(apiConfig.serviceTicketLinkDevice, {
+        method: 'POST',
+        body: deviceData
+      });
+
+      dispatch(linkDeviceToServiceTicketSuccess(data));
+      toast.success("Device Added To ServiceTicket successfully");
+      return data;
+      // navigate('/inventory');
+    } catch (error) {
+      console.error('Error occurred:', error);
+
+      dispatch(linkDeviceToServiceTicketFailure(error.message));
+      toast.error(error.message || "Failed to add device service ticket");
+    }
+  };
+};
+
+
+// add a note to device 
+export const addNoteToDevice = (note) => {
+  return async (dispatch) => {
+    dispatch(addNoteToDeviceStart());
+    try {
+      const data = await fetchJson(apiConfig.addNoteToDevice, {
+        method: 'POST',
+        body: note
+      });
+
+      dispatch(addNoteToDeviceSuccess(data));
+      toast.success("Note Added To Device successfully");
+      return data;
+      // navigate('/inventory');
+    } catch (error) {
+      console.error('Error occurred:', error);
+
+      dispatch(addNoteToDeviceFailure(error.message));
+      toast.error(error.message || "Failed to add note to device");
     }
   };
 };
