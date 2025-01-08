@@ -4,6 +4,7 @@ const initialState = {
   equipments: [],
   equipment: null,
   loading: false,
+  loadingDetails: false,
   loadingAssign: false,
   loadingTransfer: false,
   error: null,
@@ -40,16 +41,16 @@ const clientEquipmentSlice = createSlice({
       state.error = action.payload;
     },
     getClientEquipmentByIdStart: (state) => {
-      state.loading = true;
+      state.loadingDetails = true;
       state.error = null;
     },
     getClientEquipmentByIdSuccess: (state, action) => {
-      state.loading = false;
+      state.loadingDetails = false;
       state.error = null;
       state.equipment = action.payload;
     },
     getClientEquipmentByIdFailure: (state, action) => {
-      state.loading = false;
+      state.loadingDetails = false;
       state.error = action.payload;
     },
     retireClientEquipmentStart: (state) => {

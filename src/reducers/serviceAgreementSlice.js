@@ -68,6 +68,19 @@ const serviceAgreementSlice = createSlice({
       state.loadingDetails = false;
       state.error = action.payload;
     },
+
+    updateServiceAgreementStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    updateServiceAgreementSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+    updateServiceAgreementFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -84,6 +97,9 @@ export const {
   deleteServiceAgreementStart,
   deleteServiceAgreementSuccess,
   deleteServiceAgreementFailure,
+  updateServiceAgreementStart,
+  updateServiceAgreementSuccess,
+  updateServiceAgreementFailure
 
 } = serviceAgreementSlice.actions;
 

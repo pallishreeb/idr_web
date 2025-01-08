@@ -2,84 +2,99 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { addLocation } from "../../actions/locationActions";
-import { getClientEmployeeByClientId} from '../../actions/clientEmployeeActions'; 
-import { getClients} from "../../actions/clientActions"; // Import action to fetch client employees
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { getClients } from "../../actions/clientActions";
+import { getLocationByClient } from "../../actions/locationActions";
+import { getClientEquipmentById, updateClientEquipment } from "../../actions/clientEquipment"; // Actions to fetch and update client equipment
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const EditClientEquipment = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { clientId } = useParams();
+  const { clientEquipmentId } = useParams(); // Get client equipment ID from route params
 
-  // Fetch clients and clientEmployees from Redux store
+  // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
+  const clientLocations = useSelector((state) => state.location.locations);
   const loadingClients = useSelector((state) => state.client.loading);
-  const loadinglocations = useSelector((state) => state.location.loading);
-  const clientEmployees = useSelector((state) => state.clientEmployee.clientEmployees);
-  const loadingClientEmployees = useSelector((state) => state.clientEmployee.loading);
+  const loadingLocations = useSelector((state) => state.location.loading);
+  const loadingEquipmentDetails = useSelector((state) => state.clientEquipment.loadingDetails);
+  const loading = useSelector((state) => state.clientEquipment.loading);
 
-  // Component state
-  const [locations, setLocations] = useState({
-    client_id: clientId ? clientId : "",
-    contact_person_firstname: "",
-    contact_person_lastname: "",
-    contact_person_mail_id: "",
-    address_line_one: "",
-    address_line_two: "",
-    address_line_three: "",
-    city: "",
-    state: "",
-    zipcode: "",
-    fax_number: "",
-    phone_number: "",
-    cell_number: "",
-    active: true
+  // State for form data
+  const [clientEquipment, setClientEquipment] = useState({
+    client_id: "",
+    client_name: "",
+    location_id: "",
+    device_type: "",
+    device_id: "",
+    manufacturer: "",
+    model: "",
+    serial_number: "",
+    mac_address: "", // Optional
+    lan_ip_address: "", // Optional
+    wan_ip_address: "", // Optional
+    general_info: "", // Optional
   });
 
-  const [selectedClientEmployee, setSelectedClientEmployee] = useState("");
-
-  // Fetch clients and clientEmployees when component mounts
+  // Fetch clients when the component mounts
   useEffect(() => {
     dispatch(getClients());
   }, [dispatch]);
 
-  // Function to fetch client employees when a client is selected
+  // Fetch client equipment details using clientEquipmentId
   useEffect(() => {
-    if (locations.client_id) {
-      dispatch(getClientEmployeeByClientId(locations.client_id));
+    if (clientEquipmentId) {
+      dispatch(getClientEquipmentById(clientEquipmentId)).then((data) => {
+        if (data) {
+          setClientEquipment({
+            client_id: data.client_id || "",
+            client_name: data.client_name || "",
+            location_id: data.location_id || "",
+            device_type: data.device_type || "",
+            device_id: data.device_id || "",
+            manufacturer: data.manufacturer || "",
+            model: data.model || "",
+            serial_number: data.serial_number || "",
+            mac_address: data.mac_address || "",
+            lan_ip_address: data.lan_ip_address || "",
+            wan_ip_address: data.wan_ip_address || "",
+            general_info: data.general_info || "",
+          });
+
+          if (data.client_id) {
+            dispatch(getLocationByClient(data.client_id));
+          }
+        }
+      });
     }
-  }, [dispatch, locations.client_id]);
+  }, [dispatch, clientEquipmentId]);
+
+  // Fetch locations based on client_id
+  useEffect(() => {
+    if (clientEquipment.client_id) {
+      dispatch(getLocationByClient(clientEquipment.client_id));
+    }
+  }, [dispatch, clientEquipment.client_id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setLocations({ ...locations, [name]: value });
+    setClientEquipment((prev) => ({ ...prev, [name]: value }));
 
-    if (name === 'client_id') {
-      setLocations({ ...locations, client_id: value });
-      setSelectedClientEmployee(""); // Clear selected client employee when client changes
-    } 
-    if (name === 'selected_client_employee') {
-      setSelectedClientEmployee(value);
-      // Populate fields based on selected client employee
-      const selectedEmployee = clientEmployees.find(emp => emp.client_emp_id === value);
-      // console.log(selectedEmployee,value)
-      if (selectedEmployee) {
-        setLocations({
-          ...locations,
-          contact_person_firstname: selectedEmployee.first_name,
-          contact_person_lastname: selectedEmployee.last_name,
-          contact_person_mail_id: selectedEmployee.email_id,
-          cell_number: selectedEmployee.contact_number
-        });
+    if (name === "client_id") {
+      const selectedClient = clients?.data?.find((client) => client.client_id === value);
+      if (selectedClient) {
+        setClientEquipment((prev) => ({
+          ...prev,
+          client_name: selectedClient.company_name,
+        }));
       }
+      dispatch(getLocationByClient(value));
     }
   };
 
   const handleSave = (e) => {
     e.preventDefault();
-    delete locations?.selected_client_employee;
-    dispatch(addLocation(locations, navigate));
+    dispatch(updateClientEquipment(clientEquipment, navigate));
   };
 
   return (
@@ -89,275 +104,236 @@ const EditClientEquipment = () => {
         <AdminSideNavbar />
         <div className="container mx-auto p-4">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-2">
-              Add Location
-            </h2>
-            <form onSubmit={handleSave}>
-              <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col mb-4">
-                <label htmlFor="client_id" className="mr-2">
-                  Select Client:
-                </label>
-                <select
-                  id="client_id"
-                  name="client_id"
-                  className="border border-gray-300 rounded px-3 py-1 w-full"
-                  value={locations.client_id}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select a client</option>
-                  {loadingClients ? (
-                    <option value="" disabled>
-                      Loading...
-                    </option>
-                  ) : (
-                    clients?.data?.map((client) => (
-                      <option key={client.client_id} value={client.client_id}>
-                        {client.company_name}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </div>
-              <div className="flex flex-col mb-4">
-                <label htmlFor="selected_client_employee" className="mr-2">
-                  Select Client Employee:
-                </label>
-                <select
-                  id="selected_client_employee"
-                  name="selected_client_employee"
-                  className="border border-gray-300 rounded px-3 py-1 w-full"
-                  value={selectedClientEmployee}
-                  onChange={handleChange}
-                >
-                  <option value="">Select a client employee</option>
-                  {loadingClientEmployees ? (
-                    <option value="" disabled>
-                      Loading...
-                    </option>
-                  ) : (
-                    clientEmployees?.map((employee) => (
-                      <option key={employee.client_emp_id} value={employee.client_emp_id}>
-                        {employee.first_name} {employee.last_name}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </div>
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-              <div className="col-span-1">
+            <h2 className="text-xl font-semibold mb-2">Edit Client Device</h2>
+            {loadingEquipmentDetails ? (
+              <p>Loading equipment details...</p>
+            ) : (
+              <form onSubmit={handleSave}>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col mb-4">
+                    <label htmlFor="client_id" className="mr-2">
+                      Select Client:
+                    </label>
+                    <select
+                      id="client_id"
+                      name="client_id"
+                      className="border border-gray-300 rounded px-3 py-1 w-full"
+                      value={clientEquipment.client_id}
+                      onChange={handleChange}
+                      required
+                      disabled
+                    >
+                      <option value="">Select a client</option>
+                      {loadingClients ? (
+                        <option value="" disabled>
+                          Loading...
+                        </option>
+                      ) : (
+                        clients?.data?.map((client) => (
+                          <option key={client.client_id} value={client.client_id}>
+                            {client.company_name}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
+                  <div className="flex flex-col mb-4">
+                    <label htmlFor="location_id" className="mr-2">
+                      Select Location:
+                    </label>
+                    <select
+                      id="location_id"
+                      name="location_id"
+                      className="border border-gray-300 rounded px-3 py-1 w-full"
+                      value={clientEquipment.location_id}
+                      onChange={handleChange}
+                      disabled={!clientEquipment.client_id}
+                    >
+                      <option value="">Select a location</option>
+                      {loadingLocations ? (
+                        <option value="" disabled>
+                          Loading...
+                        </option>
+                      ) : (
+                        clientLocations?.map((location) => (
+                          <option key={location.location_id} value={location.location_id}>
+                            {location.address_line_one} {location.address_line_two}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Device Details */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
                     <label
-                      htmlFor={`address_line_one`}
+                      htmlFor="device_type"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Location Name
+                      Device Type*
                     </label>
                     <input
                       type="text"
-                      name={`address_line_one`}
-                      value={locations.address_line_one}
-                      onChange={handleChange}
+                      name="device_type"
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      required
-                    />
-                  </div>
-                  <div className="col-span-1">
-                    <label
-                      htmlFor={`address_line_two`}
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Address Line 1
-                    </label>
-                    <input
-                      type="text"
-                      name={`address_line_two`}
-                      value={locations.address_line_two}
+                      value={clientEquipment.device_type}
                       onChange={handleChange}
-                      className=" w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
-                  <div className="col-span-1">
+                  <div>
                     <label
-                      htmlFor={`address_line_three`}
+                      htmlFor="device_id"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Address line 2
+                      Device ID*
                     </label>
                     <input
                       type="text"
-                      name={`address_line_three`}
-                      value={locations.address_line_three}
+                      name="device_id"
+                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      value={clientEquipment.device_id}
                       onChange={handleChange}
-                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    />
-                  </div>
-              </div>
-              {/* End fax, phone, cell fields */}
-              <div className="grid grid-cols-3 gap-4">
-                  <div className="col-span-1">
-                    <label
-                      htmlFor={`city`}
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={locations.city}
-                      onChange={handleChange}
-                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                       required
-                    />
-                  </div>
-                  <div className="col-span-1">
-                    <label
-                      htmlFor={`state`}
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      State
-                    </label>
-                    <input
-                      type="text"
-                      name="state"
-                      value={locations.state}
-                      onChange={(e) => handleChange( e)}
-                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                      required
-                    />
-                  </div>
-                  <div className="col-span-1">
-                    <label
-                      htmlFor={`zipcode`}
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Zipcode
-                    </label>
-                    <input
-                      type="text"
-                      name="zipcode"
-                      value={locations.zipcode}
-                      onChange={(e) => handleChange( e)}
-                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                      required
+                      disabled
                     />
                   </div>
                 </div>
+
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="col-span-1">
+                  <div>
                     <label
-                      htmlFor={`fax_number`}
+                      htmlFor="manufacturer"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Fax Number
+                      Manufacturer*
                     </label>
                     <input
                       type="text"
-                      name="fax_number"
-                      value={locations.fax_number}
-                      onChange={(e) => handleChange( e)}
-                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    />
-                  </div>
-                  <div className="col-span-1">
-                    <label
-                      htmlFor={`phone_number`}
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Phone Number
-                    </label>
-                    <input
-                      type="text"
-                      name="phone_number"
-                      value={locations.phone_number}
+                      name="manufacturer"
+                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      value={clientEquipment.manufacturer}
                       onChange={handleChange}
-                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
                     />
                   </div>
-                  <div className="col-span-1">
+                  <div>
                     <label
-                      htmlFor={`cell_number`}
+                      htmlFor="model"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Cell Number
+                      Model
                     </label>
                     <input
                       type="text"
-                      name="cell_number"
-                      value={locations.cell_number}
+                      name="model"
+                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      value={clientEquipment.model}
                       onChange={handleChange}
-                      readOnly={!!selectedClientEmployee}
-                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="serial_number"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Serial Number*
+                    </label>
+                    <input
+                      type="text"
+                      name="serial_number"
+                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      value={clientEquipment.serial_number}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
-              {/* Contact person fields */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="col-span-1">
-                  <label
-                    htmlFor={`contact_person_firstname`}
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Contact Person First Name
-                  </label>
-                  <input
-                    type="text"
-                    name="contact_person_firstname"
-                    value={locations.contact_person_firstname}
-                    readOnly={!!selectedClientEmployee}
-                    className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    required
-                  />
+
+                {/* Optional Details */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label
+                      htmlFor="mac_address"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      MAC Address
+                    </label>
+                    <input
+                      type="text"
+                      name="mac_address"
+                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      value={clientEquipment.mac_address}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="lan_ip_address"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      LAN IP Address
+                    </label>
+                    <input
+                      type="text"
+                      name="lan_ip_address"
+                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      value={clientEquipment.lan_ip_address}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="wan_ip_address"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      WAN IP Address
+                    </label>
+                    <input
+                      type="text"
+                      name="wan_ip_address"
+                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      value={clientEquipment.wan_ip_address}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
-                <div className="col-span-1">
-                  <label
-                    htmlFor={`contact_person_lastname`}
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Contact Person Last Name
-                  </label>
-                  <input
-                    type="text"
-                    name="contact_person_lastname"
-                    value={locations.contact_person_lastname}
-                    readOnly={!!selectedClientEmployee}
-                    className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    required
-                  />
+
+                {/* General Notes */}
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label
+                      htmlFor="general_info"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      General Device Information
+                    </label>
+                    <textarea
+                      name="general_info"
+                      rows={5}
+                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      value={clientEquipment.general_info}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
-                <div className="col-span-1">
-                  <label
-                    htmlFor={`contact_person_mail_id`}
-                    className="block text-sm font-medium text-gray-700"
+
+                <div className="flex justify-end mt-4">
+                  <button type="submit" className="bg-indigo-700 text-white px-4 py-2 rounded">
+                    {loading ? "Updating..." : "Update Client Device"}
+                  </button>
+                  <Link
+                    to="/client-equipments"
+                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"
                   >
-                    Contact Person Email ID
-                  </label>
-                  <input
-                    type="text"
-                    name="contact_person_mail_id"
-                    value={locations.contact_person_mail_id}
-                    readOnly={!!selectedClientEmployee}
-                    className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    required
-                  />
+                    Cancel
+                  </Link>
                 </div>
-              </div>
-              <div className="flex justify-end mb-4">
-                <button
-                  className="bg-indigo-700 text-white px-4 py-2 rounded m-2"
-                >
-                  {loadinglocations ? 'Saving' : 'Save'}
-                </button>
-                <button
-                  type="button"
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
-                >
-                  <Link to={'/locations'}>Cancel</Link>
-                </button>
-              </div>
-            </form>
+              </form>
+            )}
           </div>
         </div>
       </div>

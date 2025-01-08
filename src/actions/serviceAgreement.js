@@ -15,7 +15,9 @@ getServiceAgreementListsFailure,
 deleteServiceAgreementStart,
 deleteServiceAgreementSuccess,
 deleteServiceAgreementFailure,
-
+updateServiceAgreementStart,
+updateServiceAgreementSuccess,
+updateServiceAgreementFailure
 
 } from "../reducers/serviceAgreementSlice";
 import { apiConfig } from "../config";
@@ -71,16 +73,17 @@ export const getServiceAgreementLists = (filters) => {
 };
 
 // Update a service ticket
-export const updateServiceAgreement = (serviceAgreementId) => {
+export const updateServiceAgreement = (agreementData,navigate) => {
   return async (dispatch) => {
-    dispatch(deleteServiceAgreementStart());
+    dispatch(updateServiceAgreementStart());
     try {
-      await axios.delete(`${apiConfig.serviceAgreementUpdate}/${serviceAgreementId}`);
-      dispatch(deleteServiceAgreementSuccess(serviceAgreementId));
-      toast.success("Service ticket deleted successfully");
+      const response = await axios.patch(`${apiConfig.serviceAgreementUpdate}`, agreementData);
+      dispatch(updateServiceAgreementSuccess(response.data));
+      toast.success("Service agreement updated successfully");
+      navigate('/service-agreements')
     } catch (error) {
-      dispatch(deleteServiceAgreementFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to delete service ticket");
+      dispatch(updateServiceAgreementFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to update service agreement");
     }
   };
 };

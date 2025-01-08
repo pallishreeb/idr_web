@@ -163,12 +163,12 @@ const ServiceAgreements = () => {
                         >
                           <BiSolidEditAlt />
                         </button>
-                        <button
+                        {/* <button
                           className="p-[4px] bg-gray-100 cursor-pointer"
                           onClick={() => handleDelete(agreement.agreement_id)}
                         >
                           <AiFillDelete />
-                        </button>
+                        </button> */}
                       </td>
                     </tr>
                   ))

@@ -16,7 +16,7 @@ const EditServiceAgreement = () => {
   const clientLocations = useSelector((state) => state.location.locations);
   const loadingClients = useSelector((state) => state.client.loading);
   const loadingLocations = useSelector((state) => state.location.loading);
-  const { loadingDetails } = useSelector((state) => state.serviceAgreement);
+  const { loadingDetails, loading } = useSelector((state) => state.serviceAgreement);
 
   const [serviceAgreement, setServiceAgreement] = useState({
     client_id: "",
@@ -43,12 +43,13 @@ const EditServiceAgreement = () => {
             client_id: data.client_id || "",
             client_name: data.client_name || "",
             location_id: data.location_id || "",
-            start_date: formatDateFromDDMMYYYY(data.start_date) || "",
-            expiration_date: formatDateFromDDMMYYYY(data.expiration_date) || "",
-            parts_covered: data.parts_covered || "",
+            start_date: formatDateToYYYYMMDD(data.start_date) || "",
+            expiration_date: formatDateToYYYYMMDD(data.expiration_date) || "",
+            parts_covered: data.parts_covered === true ? "true" : "false",
             price: data.price || "",
             service_details: data.service_details || "",
           });
+          setSelectedClientLocation(data.location_id || "");
           if (data.client_id) {
             dispatch(getLocationByClient(data.client_id));
           }
@@ -78,7 +79,7 @@ const EditServiceAgreement = () => {
     }
   };
 
-  const formatDateFromDDMMYYYY = (date) => {
+  const formatDateToYYYYMMDD = (date) => {
     if (!date) return "";
     const [day, month, year] = date.split("/");
     return `${year}-${month}-${day}`;
@@ -93,13 +94,15 @@ const EditServiceAgreement = () => {
   const handleSave = (e) => {
     e.preventDefault();
 
+    delete serviceAgreement?.selected_client_location;
     const formattedServiceAgreement = {
       ...serviceAgreement,
       start_date: formatDateToDDMMYYYY(serviceAgreement.start_date),
       expiration_date: formatDateToDDMMYYYY(serviceAgreement.expiration_date),
+      agreement_id:agreementId
     };
 
-    dispatch(updateServiceAgreement(agreementId, formattedServiceAgreement, navigate));
+    dispatch(updateServiceAgreement(formattedServiceAgreement, navigate));
   };
 
   const getTodayDate = () => {
@@ -225,6 +228,7 @@ const EditServiceAgreement = () => {
                       className="border border-gray-300 rounded px-3 py-1 w-full"
                       value={serviceAgreement.parts_covered}
                       onChange={handleChange}
+                      required
                     >
                       <option value="">Select</option>
                       <option value="true">Yes</option>
@@ -266,9 +270,9 @@ const EditServiceAgreement = () => {
                   <button
                     type="submit"
                     className="bg-indigo-700 text-white px-4 py-2 rounded m-2"
-                    disabled={loadingLocations}
+                    disabled={loading}
                   >
-                    {loadingLocations ? "Saving" : "Update Service Agreement"}
+                    {loading ? "Saving" : "Update Service Agreement"}
                   </button>
                   <Link
                     to="/service-agreements"
