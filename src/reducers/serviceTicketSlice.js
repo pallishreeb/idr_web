@@ -5,6 +5,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   loading: false,
   loadingDetails: false,
+  loadingAssign: false,
+  loadingAssignImage:false,
   serviceTickets: [],
   technicians: [],
   service_ticket_id: null,
@@ -111,27 +113,27 @@ const serviceTicketSlice = createSlice({
       state.error = null;
     },
     serviceTicketImageStart: (state) => {
-      state.loading = true;
+      state.loadingAssignImage = true;
       state.error = null;
     },
     serviceTicketImageSuccess: (state, action) => {
-      state.loading = false;
+      state.loadingAssignImage = false;
       state.error = null;
     },
     serviceTicketImageFailure: (state, action) => {
-      state.loading = false;
+      state.loadingAssignImage = false;
       state.error = action.payload;
     },
     linkDeviceToServiceTicketStart: (state) => {
-      state.loading = true;
+      state.loadingAssign = true;
       state.error = null;
     },
     linkDeviceToServiceTicketSuccess: (state, action) => {
-      state.loading = false;
+      state.loadingAssign = false;
       state.error = null;
     },
     linkDeviceToServiceTicketFailure: (state, action) => {
-      state.loading = false;
+      state.loadingAssign = false;
       state.error = action.payload;
     },
     addNoteToDeviceStart: (state) => {

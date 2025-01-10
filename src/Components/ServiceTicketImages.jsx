@@ -11,6 +11,7 @@ import { S3_BASE_URL } from "../config";
 const ServiceTicketImages = ({ images, serviceTicketId }) => {
   const dispatch = useDispatch();
   const { user_type } = useSelector((state) => state.user.user);
+  const { loadingAssignImage } = useSelector((state) => state.serviceTicket);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -101,7 +102,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                       className="w-20 h-20 object-cover rounded"
                     />
                 </td>
-                <td className="border px-4 py-2">{image?.by_user_id}</td>
+                <td className="border px-4 py-2">{image?.user_name || "NA"}</td>
                 <td className="border px-4 py-2">
                   <button
                     onClick={() =>
@@ -143,7 +144,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                 className="bg-indigo-600 text-white px-4 py-2 rounded"
                 onClick={handleUpload}
               >
-                Upload
+                {loadingAssignImage ? "Uploading" : "Upload"}
               </button>
               <button
                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"

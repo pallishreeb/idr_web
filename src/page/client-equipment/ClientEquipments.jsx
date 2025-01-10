@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { BiSolidEditAlt } from "react-icons/bi";
-import { AiFillDelete } from "react-icons/ai";
+import { AiFillCheckCircle, AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { Link, useNavigate } from "react-router-dom";
@@ -92,6 +92,7 @@ const ClientEquipments = () => {
       status: "",
     });
     setSelectedLocation(null);
+    setSelectedClient(null)
     if (selectedClient) fetchEquipments(); // Fetch default list
   };
 
@@ -114,7 +115,15 @@ const ClientEquipments = () => {
       reason: "",
     });
   };
-
+  const equipment = equipments?.find(
+    (item) => item?.client_equipment_id === decommissionModal?.equipmentId
+  );
+  
+  const buttonText = equipment
+    ? equipment.is_deleted
+      ? "Activate"
+      : "Decommission"
+    : "Not Found";
   const handleDecommission = () => {
     const payload = {
       id: decommissionModal.equipmentId,
@@ -125,13 +134,84 @@ const ClientEquipments = () => {
     closeDecommissionModal();
   };
 
+  const newLocal = <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
+    <div className="flex justify-between items-center">
+      <div className="flex gap-4 w-[70%]">
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium">Device Type</label>
+          <input
+            type="text"
+            name="device_type"
+            value={filters.device_type}
+            onChange={handleFilterChange}
+            className="px-3 border border-gray-200 h-10 rounded"
+            placeholder="Enter device type" />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium">Model</label>
+          <input
+            type="text"
+            name="model"
+            value={filters.model}
+            onChange={handleFilterChange}
+            className="px-3 border border-gray-200 h-10 rounded"
+            placeholder="Enter model" />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium">Status</label>
+          <select
+            name="status"
+            value={filters.status}
+            onChange={handleFilterChange}
+            className="px-3 border border-gray-200 h-10 rounded"
+          >
+            <option value="">All</option>
+            <option value="false">Active</option>
+            <option value="true">Retired</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="font-normal text-sm">&nbsp;</label>
+          <button
+            className="border-none text-xs font-normal px-4 py-3 bg-gray-200 rounded"
+            onClick={handleSearch}
+          >
+            Search
+          </button>
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="font-normal text-sm">&nbsp;</label>
+          <button
+            className="border-none text-xs font-normal px-4 py-3 bg-gray-200 rounded"
+            onClick={handleReset}
+          >
+            Reset
+          </button>
+        </div>
+
+  
+      </div>
+    </div>
+  </div>;
   return (
     <>
       <Header />
       <div className="flex">
         <AdminSideNavbar />
         <div className="container mx-auto p-4 bg-gray-50">
-          <h2 className="text-xl font-semibold mb-4">Client Equipments</h2>
+        <div className="flex justify-between items-center">
+            <h1 className="font-bold text-lg">Client Equipments</h1>
+            <div className="flex gap-2">
+            <Link
+              to={`/add-client-equipment/${selectedClient}`}
+              className="bg-indigo-600 text-white px-4 py-2 rounded flex-end"
+              disabled={!selectedClient}
+            >
+              Add New Equipment
+            </Link>
+            </div>
+          </div>
+ 
 
           {/* Client and Location Filters */}
           <div className="grid grid-cols-2 gap-4 mb-4">
@@ -187,66 +267,7 @@ const ClientEquipments = () => {
           </div>
 
           {/* Filters */}
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="flex flex-col">
-              <label className="text-sm font-medium">Device Type</label>
-              <input
-                type="text"
-                name="device_type"
-                value={filters.device_type}
-                onChange={handleFilterChange}
-                className="border border-gray-300 rounded px-3 py-1 w-full"
-                placeholder="Enter device type"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-sm font-medium">Model</label>
-              <input
-                type="text"
-                name="model"
-                value={filters.model}
-                onChange={handleFilterChange}
-                className="border border-gray-300 rounded px-3 py-1 w-full"
-                placeholder="Enter model"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-sm font-medium">Status</label>
-              <select
-                name="status"
-                value={filters.status}
-                onChange={handleFilterChange}
-                className="border border-gray-300 rounded px-3 py-1 w-full"
-              >
-                <option value="">All</option>
-                <option value="false">Active</option>
-                <option value="true">Retired</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-4 mb-4">
-            <button
-              onClick={handleSearch}
-              className="bg-indigo-700 text-white px-4 py-2 rounded"
-            >
-              Search
-            </button>
-            <button
-              onClick={handleReset}
-              className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-            >
-              Reset
-            </button>
-            <Link
-              to={`/add-client-equipment/${selectedClient}`}
-              className="bg-indigo-600 text-white px-4 py-2 rounded flex-end"
-              disabled={!selectedClient}
-            >
-              Add New Equipment
-            </Link>
-          </div>
+          {newLocal}
 
           {/* Equipment Table */}
           {loadingEquipments ? (
@@ -285,7 +306,14 @@ const ClientEquipments = () => {
                         >
                           <BiSolidEditAlt />
                         </button>
-                        {equipment?.isDecomission === false &&
+                        {equipment?.is_deleted === true ?
+                         <button
+                         onClick={() => openDecommissionModal(equipment.client_equipment_id)}
+                         className="p-2 bg-gray-100"
+                       >
+                         <AiFillCheckCircle />
+                       </button>
+                        :
                         <button
                           onClick={() => openDecommissionModal(equipment.client_equipment_id)}
                           className="p-2 bg-gray-100"
@@ -312,7 +340,7 @@ const ClientEquipments = () => {
                     setDecommissionModal((prev) => ({ ...prev, reason: e.target.value }))
                   }
                   className="border border-gray-300 rounded w-full p-2 mb-4"
-                  placeholder="Enter decommission reason (optional)"
+                  placeholder="Enter reason (optional)"
                   rows={4}
                 ></textarea>
                 <div className="flex justify-end gap-4">
@@ -326,7 +354,7 @@ const ClientEquipments = () => {
                     onClick={handleDecommission}
                     className="bg-red-600 text-white px-4 py-2 rounded"
                   >
-                    Decommission
+                   {buttonText}
                   </button>
                 </div>
               </div>

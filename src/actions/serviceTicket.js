@@ -218,7 +218,7 @@ export const uploadServiceTicketImages = (serviceTicketId, images) => {
         },
       });
 
-      console.log("response from image upload",response)
+      // console.log("response from image upload",response)
       dispatch(serviceTicketImageSuccess(response));
       return response.data;
     } catch (error) {
@@ -241,8 +241,9 @@ export const linkDeviceToServiceTicket = (deviceData) => {
 
       dispatch(linkDeviceToServiceTicketSuccess(data));
       toast.success("Device Added To ServiceTicket successfully");
-      return data;
       // navigate('/inventory');
+      return data;
+
     } catch (error) {
       console.error('Error occurred:', error);
 
