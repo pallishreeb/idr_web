@@ -25,7 +25,7 @@ import ServiceTicketImages from "../../Components/ServiceTicketImages";
 const EditServiceTicket = () => {
   const { serviceTicketId } = useParams();
   const dispatch = useDispatch();
-  const { serviceTicketDetails, loading, error, loadingDetails } = useSelector(
+  const { serviceTicketDetails, loading, error, loadingDetails, loadingAssign } = useSelector(
     (state) => state.serviceTicket
   );
   // Redux state selectors
@@ -41,6 +41,7 @@ const EditServiceTicket = () => {
   const [assignees, setAssignees] = useState([]);
   const [serviceTicketImages, setServiceTicketImages] = useState([]);
   const [serviceTicketEquipments, setServiceTicketEquipments] = useState([]);
+  const [serviceTicketAgreement, setServiceTicketAgreement] = useState({});
   const [isEditing, setIsEditing] = useState(false);
 
   // Modal state
@@ -62,6 +63,7 @@ const EditServiceTicket = () => {
         serviceTicketDetails?.service_ticket_attachments || []
       );
       setServiceTicketEquipments(serviceTicketDetails?.linkedDevices || []);
+      setServiceTicketAgreement(serviceTicketDetails?.agreement || {})
       dispatch(
         getClientEquipments({
           client_id: serviceTicketDetails.client_id,
@@ -206,9 +208,19 @@ const EditServiceTicket = () => {
     };
 
     // Replace this with the action to link the device
-    dispatch(linkDeviceToServiceTicket(payload));
+    // dispatch(linkDeviceToServiceTicket(payload));
+    dispatch(linkDeviceToServiceTicket(payload))
+    .then(() => {
+      // toast.success("Adding device successfully.");
+      window.location.reload();
+      closeDeviceModal();
+    })
+    .catch((error) => {
+      console.error("Error adding device :", error);
+      // toast.error("Failed to upload images.");
+    });
 
-    closeDeviceModal();
+
   };
 
   const handleAddNote = (payload) => {
@@ -235,6 +247,12 @@ const EditServiceTicket = () => {
                   Cancel
                 </button>
               </Link>
+
+              {serviceTicketAgreement?.agreement_id &&  <Link to={`/edit-service-agreement/${serviceTicketAgreement?.agreement_id }`}>
+                <button className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center">
+                  Service Agreement
+                </button>
+              </Link>}
               {/* Add Device to Ticket Button */}
               <button
                 onClick={openDeviceModal}
@@ -283,10 +301,10 @@ const EditServiceTicket = () => {
                 <h3 className="text-lg font-semibold mb-4">Select Device</h3>
                 <table className="table-auto w-full border-collapse border border-gray-200">
                   <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border px-4 py-2">Device Type</th>
+                    <tr className="bg-gray-100 text-left">
+                      <th className="border px-4 py-2">Serial Number</th>
                       <th className="border px-4 py-2">Device ID</th>
-                      <th className="border px-4 py-2">Make</th>
+                      <th className="border px-4 py-2">Hostname</th>
                       <th className="border px-4 py-2">Model</th>
                       <th className="border px-4 py-2">Action</th>
                     </tr>
@@ -302,13 +320,13 @@ const EditServiceTicket = () => {
                       equipments?.map((equipment) => (
                         <tr key={equipment.client_equipment_id}>
                           <td className="border px-4 py-2">
-                            {equipment.device_type}
+                            {equipment.serial_number}
                           </td>
                           <td className="border px-4 py-2">
                             {equipment.device_id}
                           </td>
                           <td className="border px-4 py-2">
-                            {equipment.manufacturer}
+                            {equipment.mac_address}
                           </td>
                           <td className="border px-4 py-2">
                             {equipment.model}
@@ -322,7 +340,7 @@ const EditServiceTicket = () => {
                               }
                               className="bg-blue-500 text-white px-4 py-2 rounded"
                             >
-                              Add
+                              {loadingAssign ? "Saving" : "Add"}
                             </button>
                           </td>
                         </tr>

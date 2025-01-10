@@ -214,20 +214,6 @@ const Inventory = () => {
               value={model}
               onChange={(e) => setModel(e.target.value)}
             />
-            {/* Uncomment the following block if you want to use a dropdown instead
-            <select
-              name="model"
-              className="px-3 border border-gray-200 h-10 rounded"
-              value={filters.model}
-              onChange={(e) => setFilters({ ...filters, model: e.target.value })}
-            >
-              <option value="">All Models</option>
-              {allModels.map((model, index) => (
-                <option key={index} value={model}>
-                  {model}
-                </option>
-              ))}
-            </select> */}
           </div>
           <div className="flex flex-col gap-2">
             <label className="font-normal text-sm">Search by make</label>

@@ -19,9 +19,11 @@ const EditClientEquipment = () => {
   const loadingLocations = useSelector((state) => state.location.loading);
   const loadingEquipmentDetails = useSelector((state) => state.clientEquipment.loadingDetails);
   const loading = useSelector((state) => state.clientEquipment.loading);
+  const [clientEquipmentNotes, setClientEquipmentNotes] = useState([]);
 
   // State for form data
   const [clientEquipment, setClientEquipment] = useState({
+    client_equipment_id:clientEquipmentId,
     client_id: "",
     client_name: "",
     location_id: "",
@@ -47,6 +49,7 @@ const EditClientEquipment = () => {
       dispatch(getClientEquipmentById(clientEquipmentId)).then((data) => {
         if (data) {
           setClientEquipment({
+            client_equipment_id:clientEquipmentId,
             client_id: data.client_id || "",
             client_name: data.client_name || "",
             location_id: data.location_id || "",
@@ -60,7 +63,7 @@ const EditClientEquipment = () => {
             wan_ip_address: data.wan_ip_address || "",
             general_info: data.general_info || "",
           });
-
+            setClientEquipmentNotes(data?.client_equip_histories || [])
           if (data.client_id) {
             dispatch(getLocationByClient(data.client_id));
           }
@@ -147,7 +150,8 @@ const EditClientEquipment = () => {
                       className="border border-gray-300 rounded px-3 py-1 w-full"
                       value={clientEquipment.location_id}
                       onChange={handleChange}
-                      disabled={!clientEquipment.client_id}
+                      // disabled={!clientEquipment.client_id}
+                      disabled
                     >
                       <option value="">Select a location</option>
                       {loadingLocations ? (
@@ -197,7 +201,6 @@ const EditClientEquipment = () => {
                       value={clientEquipment.device_id}
                       onChange={handleChange}
                       required
-                      disabled
                     />
                   </div>
                 </div>
@@ -335,6 +338,48 @@ const EditClientEquipment = () => {
               </form>
             )}
           </div>
+                {/* Table for notes */}
+                {clientEquipmentNotes?.length > 0 && 
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-gray-200 border rounded">
+          <thead>
+            <tr className="bg-gray-300 text-left">
+              <th className="border px-4 py-2" style={{ width: '65%' }}>Notes</th>
+              <th className="border px-4 py-2" style={{ width: '15%' }}>User Name</th>
+              <th className="border px-4 py-2" style={{ width: '15%' }}>Date and Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {clientEquipmentNotes?.map((note, index) => (
+              <tr key={note.note_id} className="bg-white text-sm">
+                <td className="border px-4 py-2" style={{ width: '60%' }}>
+                  <textarea
+                    className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
+                    name="comments"
+                    value={note.comments || ""}
+                    rows={3}
+                  ></textarea>
+                </td>
+                <td className="border px-4 py-2" style={{ width: '15%' }}>
+                  {note?.created_by || "NA"}
+                </td>
+                <td className="border px-4 py-2" style={{ width: '15%' }}>
+                {new Date(note.created_at).toLocaleString('en-US', {
+                    timeZone: 'America/New_York',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true,
+                  })}
+                </td>                
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>}
         </div>
       </div>
     </>

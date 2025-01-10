@@ -20,7 +20,7 @@ const AddClientEquipment = () => {
 
   // State for form data
   const [clientEquipment, setClientEquipment] = useState({
-    client_id: clientId || "",
+    client_id: clientId && clientId !== "null" ? clientId : "",
     client_name: "",
     location_id: "",
     device_type: "",
@@ -41,10 +41,14 @@ const AddClientEquipment = () => {
 
   // Fetch locations based on client_id
   useEffect(() => {
-    if (clientEquipment.client_id) {
-      dispatch(getLocationByClient(clientEquipment.client_id));
+    if (clientEquipment?.client_id) {
+      console.log("Fetching locations for client_id:", clientEquipment.client_id);
+      dispatch(getLocationByClient(clientEquipment?.client_id));
+    } else {
+      console.log("No valid client_id selected, skipping location fetch.");
     }
-  }, [dispatch, clientEquipment.client_id]);
+  }, [dispatch, clientEquipment?.client_id]);
+  
 
 
   // Set `client_name` when `client_id` and clients data are available
