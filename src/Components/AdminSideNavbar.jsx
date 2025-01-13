@@ -1,110 +1,47 @@
 import { useState } from "react";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { MdDashboardCustomize } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-// import tem from "../Images/template.png";
+
 const AdminSideNavbar = () => {
   const { user_type } = useSelector((state) => state.user.user);
-  // console.log(user_type)
+  const location = useLocation(); // Get the current location
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(true);
   const [isSubMenuOpenClient, setIsSubMenuOpenClient] = useState(true);
+
   const menuItems = [
-    {
-      title: "Dashboard",
-      path: "/admin/dashboard",
-      roles: ["Admin", "Subadmin"],
-    },
-    // { title: "Users", path: "/users", roles: ["Admin"] },
-    {
-      title: "Clients",
-      path: "/clients",
-      roles: ["Admin", "Subadmin"],
-    },
-    {
-      title: "Client Employees",
-      path: "/client-employees",
-      roles: ["Admin", "Subadmin"],
-    },
-    {
-      title: "Client Locations",
-      path: "/locations",
-      roles: ["Admin", "Subadmin"],
-    },
-    {
-      title: "Client Equipments",
-      path: "/client-equipments",
-      roles: ["Admin", "Subadmin"],
-    },
-    {
-      title: "Service Agreements",
-      path: "/service-agreements",
-      roles: ["Admin", "Subadmin"],
-    },
-    // Add more menu items as needed
+    { title: "Dashboard", path: "/admin/dashboard", roles: ["Admin", "Subadmin"] },
+    { title: "Clients", path: "/clients", roles: ["Admin", "Subadmin"] },
+    { title: "Client Employees", path: "/client-employees", roles: ["Admin", "Subadmin"] },
+    { title: "Client Locations", path: "/locations", roles: ["Admin", "Subadmin"] },
+    { title: "Client Equipments", path: "/client-equipments", roles: ["Admin", "Subadmin"] },
+    { title: "Service Agreements", path: "/service-agreements", roles: ["Admin", "Subadmin"] },
   ];
+
   const idrMenuItems = [
-
-    {
-      title: "IDR Employees",
-      path: "/idr-employees",
-      roles: ["Admin", "Subadmin"],
-    },
-    {
-      title: "Work Order",
-      path: "/workorder",
-      roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"],
-    },
-    {
-      title: "Service Ticket",
-      path: "/service-tickets",
-      roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"],
-    },
-    {
-      title: "Inventory",
-      path: "/inventory",
-      roles: ["Admin", "Subadmin", "IDR Employee"],
-    },
-    {
-      title: "Inventory Locations",
-      path: "/inventory-locations",
-      roles: ["Admin", "Subadmin", "IDR Employee"],
-    },
-    {
-      title: "IDR Equipment and Tools",
-      path: "/idr-equipment",
-      roles: ["Admin", "Subadmin", "IDR Employee",],
-    },
-    {
-      title: "Reports",
-      path: "/equipment-report",
-      roles: ["Admin", "Subadmin",],
-    },
-    // Add more menu items as needed
+    { title: "IDR Employees", path: "/idr-employees", roles: ["Admin", "Subadmin"] },
+    { title: "Work Order", path: "/workorder", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"] },
+    { title: "Service Ticket", path: "/service-tickets", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"] },
+    { title: "Inventory", path: "/inventory", roles: ["Admin", "Subadmin", "IDR Employee"] },
+    { title: "Inventory Locations", path: "/inventory-locations", roles: ["Admin", "Subadmin", "IDR Employee"] },
+    { title: "IDR Equipment and Tools", path: "/idr-equipment", roles: ["Admin", "Subadmin", "IDR Employee"] },
+    { title: "Reports", path: "/equipment-report", roles: ["Admin", "Subadmin"] },
   ];
-  const mainMenu = ["Admin", "Subadmin"];
 
-  const toggleSubMenu = () => {
-    setIsSubMenuOpen(!isSubMenuOpen);
-  };
+  const toggleSubMenu = () => setIsSubMenuOpen(!isSubMenuOpen);
+  const toggleSubMenuClient = () => setIsSubMenuOpenClient(!isSubMenuOpenClient);
 
-  const toggleSubMenuClient = () => {
-    setIsSubMenuOpenClient(!isSubMenuOpenClient);
-  };
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
-      <aside className=" text-black w-64 flex-shrink-0 border-r border-gray-400">
+      <aside className="text-black w-64 flex-shrink-0 border-r border-gray-400">
         <nav>
           <ul>
-            {mainMenu.includes(user_type) && (
+            {["Admin", "Subadmin"].includes(user_type) && (
               <>
                 <li className="flex items-center justify-between px-4 py-2 bg-gray-300 font-semibold">
                   <span>CLIENT</span>
-                  <button
-                    onClick={toggleSubMenuClient}
-                    className="focus:outline-none"
-                  >
+                  <button onClick={toggleSubMenuClient} className="focus:outline-none">
                     {isSubMenuOpenClient ? (
                       <BsChevronUp className="h-5 w-5" />
                     ) : (
@@ -119,12 +56,15 @@ const AdminSideNavbar = () => {
                       (item) =>
                         item.roles.includes(user_type) && (
                           <Link to={item.path} key={item.title}>
-                            <div className="flex items-center gap-3 bg-gray-100 hover:bg-indigo-700 hover:text-white cursor-pointer">
-                              <MdDashboardCustomize
-                                size={20}
-                                className="ml-6"
-                              />
-                              <li className="py-2">{item.title}</li>
+                            <div
+                              className={`flex items-center gap-3 px-4 py-2 rounded ${
+                                location.pathname.includes(item.path)
+                                  ? "bg-indigo-700 text-white"
+                                  : "bg-gray-100 hover:bg-indigo-700 hover:text-white"
+                              } cursor-pointer`}
+                            >
+                              <MdDashboardCustomize size={20} />
+                              <li>{item.title}</li>
                             </div>
                           </Link>
                         )
@@ -145,11 +85,17 @@ const AdminSideNavbar = () => {
             </li>
             {isSubMenuOpen && (
               <ul className="flex flex-col gap-1 mt-1">
-                {!mainMenu.includes(user_type) && (
-                  <Link to={"/admin/dashboard"} key="/admin/dashboard">
-                    <div className="flex items-center gap-3 bg-gray-100 hover:bg-indigo-700 hover:text-white cursor-pointer">
-                      <MdDashboardCustomize size={20} className="ml-6" />
-                      <li className="py-2">Dashboard</li>
+                {!["Admin", "Subadmin"].includes(user_type) && (
+                  <Link to="/admin/dashboard">
+                    <div
+                      className={`flex items-center gap-3 px-4 py-2 rounded ${
+                        location.pathname === "/admin/dashboard"
+                          ? "bg-indigo-700 text-white"
+                          : "bg-gray-100 hover:bg-indigo-700 hover:text-white"
+                      } cursor-pointer`}
+                    >
+                      <MdDashboardCustomize size={20} />
+                      <li>Dashboard</li>
                     </div>
                   </Link>
                 )}
@@ -157,9 +103,15 @@ const AdminSideNavbar = () => {
                   (item) =>
                     item.roles.includes(user_type) && (
                       <Link to={item.path} key={item.title}>
-                        <div className="flex items-center gap-3 bg-gray-100 hover:bg-indigo-700 hover:text-white cursor-pointer">
-                          <MdDashboardCustomize size={20} className="ml-6" />
-                          <li className="py-2">{item.title}</li>
+                        <div
+                          className={`flex items-center gap-3 px-4 py-2 rounded ${
+                            location.pathname.includes(item.path)
+                              ? "bg-indigo-700 text-white"
+                              : "bg-gray-100 hover:bg-indigo-700 hover:text-white"
+                          } cursor-pointer`}
+                        >
+                          <MdDashboardCustomize size={20} />
+                          <li>{item.title}</li>
                         </div>
                       </Link>
                     )

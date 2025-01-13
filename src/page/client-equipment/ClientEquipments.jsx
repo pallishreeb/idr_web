@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { getClientEquipments, retireClientEquipment } from "../../actions/clientEquipment";
+import {clearClientEquipments} from "../../reducers/clientEquipmentSlice"
 
 const ClientEquipments = () => {
   const dispatch = useDispatch();
@@ -36,6 +37,12 @@ const ClientEquipments = () => {
     reason: "",
   });
 
+    // Reset client and location when unmounting or navigating back
+    useEffect(() => {
+      if(selectedClient == null){
+        dispatch(clearClientEquipments(selectedClient))
+      }
+    }, [selectedClient,dispatch]);
   // Fetch clients on component mount
   useEffect(() => {
     dispatch(getClients());
@@ -91,8 +98,8 @@ const ClientEquipments = () => {
       device_type: "",
       status: "",
     });
-    setSelectedLocation(null);
-    setSelectedClient(null)
+    // setSelectedLocation(null);
+    // setSelectedClient(null)
     if (selectedClient) fetchEquipments(); // Fetch default list
   };
 
@@ -124,15 +131,29 @@ const ClientEquipments = () => {
       ? "Activate"
       : "Decommission"
     : "Not Found";
-  const handleDecommission = () => {
-    const payload = {
-      id: decommissionModal.equipmentId,
-      isDecomission: true,
-      decomission_reason: decommissionModal.reason,
+    const handleDecommission = async () => {
+      const specificEquipment = equipments?.find(
+        (item) => item.client_equipment_id === decommissionModal.equipmentId
+      );
+      const payload = {
+        id: decommissionModal.equipmentId,
+        isDecomission: !specificEquipment.is_deleted, // true or false
+        decomission_reason: decommissionModal.reason,
+      };
+    
+      try {
+        // Dispatch the action to decommission equipment
+        await dispatch(retireClientEquipment(payload));
+        // Close the modal
+        closeDecommissionModal();
+        // Re-fetch the updated equipment list
+        fetchEquipments();
+      } catch (error) {
+        console.error("Failed to update equipment:", error);
+        Swal.fire("Error", "Failed to update equipment. Please try again.", "error");
+      }
     };
-    dispatch(retireClientEquipment(payload));
-    closeDecommissionModal();
-  };
+    
 
   const newLocal = <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
     <div className="flex justify-between items-center">

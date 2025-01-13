@@ -23,7 +23,10 @@ function AddServiceTicket() {
     (state) => state.clientEmployee.clientEmployees
   );
   const idrEmployees = useSelector((state) => state.employee.idrEmployees);
-  const { loading } = useSelector((state) => state.workOrder);
+  const loadingTicket = useSelector(
+    (state) => state.serviceTicket.loading
+  );
+
   const [ticketData, setTicketData] = useState({
     client_id: "",
     location_id: "",
@@ -416,7 +419,7 @@ function AddServiceTicket() {
                     <button
                       className="border bg-indigo-600 w-1/3 py-2 text-white rounded"
                     >
-                      {loading ? "Saving" : "Generate Ticket"}
+                      {loadingTicket ? "Saving" : "Generate Ticket"}
                     </button>
                   </div>
             </form>
@@ -483,7 +486,7 @@ function AddServiceTicket() {
                     <button
                       className="border bg-indigo-600 w-1/3 py-2 text-white rounded"
                     >
-                      {loading ? "Saving" : "Assign To Ticket"}
+                      {loadingTicket ? "Saving" : "Assign To Ticket"}
                     </button>
                 </div>
             </form>

@@ -219,7 +219,7 @@ export const uploadServiceTicketImages = (serviceTicketId, images) => {
       });
 
       // console.log("response from image upload",response)
-      dispatch(serviceTicketImageSuccess(response));
+      dispatch(serviceTicketImageSuccess(response?.data));
       return response.data;
     } catch (error) {
       console.error("Error uploading images:", error);
