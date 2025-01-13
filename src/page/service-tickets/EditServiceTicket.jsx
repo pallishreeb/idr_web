@@ -21,6 +21,7 @@ import { fetchIDREmployees } from "../../actions/employeeActions";
 import { getClientEquipments } from "../../actions/clientEquipment";
 import Loader from "../../Images/ZZ5H.gif";
 import ServiceTicketImages from "../../Components/ServiceTicketImages";
+import { toast } from "react-toastify";
 
 const EditServiceTicket = () => {
   const { serviceTicketId } = useParams();
@@ -43,7 +44,8 @@ const EditServiceTicket = () => {
   const [serviceTicketEquipments, setServiceTicketEquipments] = useState([]);
   const [serviceTicketAgreement, setServiceTicketAgreement] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-
+  // Track which row is being processed
+  const [processingId, setProcessingId] = useState(null);
   // Modal state
   const [showDeviceModal, setShowDeviceModal] = useState(false);
   // const [isDownloading, setIsDownloading] = useState(false); // Loading state
@@ -202,6 +204,7 @@ const EditServiceTicket = () => {
   };
 
   const handleAddDeviceToTicket = (equipmentId) => {
+    setProcessingId(equipmentId);
     const payload = {
       service_ticket_id: serviceTicketId,
       client_equipment_id: equipmentId,
@@ -211,13 +214,13 @@ const EditServiceTicket = () => {
     // dispatch(linkDeviceToServiceTicket(payload));
     dispatch(linkDeviceToServiceTicket(payload))
     .then(() => {
-      // toast.success("Adding device successfully.");
+      toast.success("Adding device successfully.");
       window.location.reload();
       closeDeviceModal();
     })
     .catch((error) => {
       console.error("Error adding device :", error);
-      // toast.error("Failed to upload images.");
+      // toast.error("Failed to add device.");
     });
 
 
@@ -339,8 +342,9 @@ const EditServiceTicket = () => {
                                 )
                               }
                               className="bg-blue-500 text-white px-4 py-2 rounded"
+                              disabled={processingId && processingId !== equipment.client_equipment_id} //disable other rows
                             >
-                              {loadingAssign ? "Saving" : "Add"}
+                             {processingId === equipment.client_equipment_id && loadingAssign ? "Saving" : "Add"}
                             </button>
                           </td>
                         </tr>

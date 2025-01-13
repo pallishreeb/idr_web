@@ -132,6 +132,7 @@ export const updateClientEquipment = ( updatedClientEquipment,navigate) => {
       // Dispatch success action if the update was successful
     
       dispatch(updateClientEquipmentSuccess(response.data));
+
       // Optionally, you can dispatch any additional actions or perform other logic here
       toast.success("Client Equipment updated successfully");
       navigate("/client-equipments");

@@ -361,7 +361,7 @@ const EditClientEquipment = () => {
                   ></textarea>
                 </td>
                 <td className="border px-4 py-2" style={{ width: '15%' }}>
-                  {note?.created_by || "NA"}
+                  {note?.user_name || "NA"}
                 </td>
                 <td className="border px-4 py-2" style={{ width: '15%' }}>
                 {new Date(note.created_at).toLocaleString('en-US', {

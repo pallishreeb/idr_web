@@ -60,7 +60,11 @@ const clientEquipmentSlice = createSlice({
     retireClientEquipmentSuccess: (state, action) => {
       state.loading = false;
       state.error = null;
-      // state.equipments = state.equipments.filter(equipment => equipment.id !== action.payload);
+      state.equipments = state.equipments.map((equipment) =>
+        equipment.client_equipment_id === action.payload.id
+          ? { ...equipment, is_deleted: action.payload.isDecomission }
+          : equipment
+      )
     },
     retireClientEquipmentFailure: (state, action) => {
       state.loading = false;
@@ -78,7 +82,11 @@ const clientEquipmentSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-
+    clearClientEquipments: (state, action) => {
+      state.loading = false;
+      state.error = null;
+      state.equipments = [];
+    },
     
   },
 });
@@ -98,7 +106,8 @@ export const {
     updateClientEquipmentFailure,
     retireClientEquipmentStart,
     retireClientEquipmentSuccess,
-    retireClientEquipmentFailure
+    retireClientEquipmentFailure,
+    clearClientEquipments
 
 } = clientEquipmentSlice.actions;
 

@@ -46,7 +46,7 @@ const ServiceTickets = () => {
     });
   };
 
-  console.log("serviceTickets",serviceTickets)
+  // console.log("serviceTickets",serviceTickets)
 
   const handleDelete = (orderId) => {
     Swal.fire({
