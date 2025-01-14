@@ -14,7 +14,7 @@ const ServiceTicketCard = ({
 }) => {
   // const [isEditing, setIsEditing] = useState(false);
   const { user_type } = useSelector((state) => state.user.user);
-  const { access } = useSelector((state) => state.user);
+  const { access ,technicianAccess} = useSelector((state) => state.user);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -38,7 +38,7 @@ const ServiceTicketCard = ({
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="text-xl font-normal mb-2">Service Ticket - {serviceTicket?.service_ticket_number }</h1>
-        {access.includes(user_type) && 
+        {technicianAccess.includes(user_type) && 
         <div>
           {isEditing ? (
             <>

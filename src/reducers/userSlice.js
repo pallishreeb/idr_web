@@ -19,7 +19,8 @@ const initialState = {
   user: getUserFromLocalStorage(),
   isAuthenticated:false,
   successMessage: "",
-  access : ['Admin', 'Subadmin']
+  access : ['Admin', 'Subadmin'],
+  technicianAccess : ['Admin', 'Subadmin','IDR Employee']
 };
 
 const userSlice = createSlice({

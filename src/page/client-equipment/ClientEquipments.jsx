@@ -22,7 +22,8 @@ const ClientEquipments = () => {
   const loadingEquipments = useSelector((state) => state.clientEquipment.loading);
   const loadingClients = useSelector((state) => state.client.loading);
   const loadingLocations = useSelector((state) => state.location.loading);
-
+  const { user_type } = useSelector((state) => state.user.user);
+  const { technicianAccess,access } = useSelector((state) => state.user);
   // Component state
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -222,6 +223,7 @@ const ClientEquipments = () => {
         <div className="container mx-auto p-4 bg-gray-50">
         <div className="flex justify-between items-center">
             <h1 className="font-bold text-lg">Client Equipments</h1>
+            {technicianAccess.includes(user_type)  &&
             <div className="flex gap-2">
             <Link
               to={`/add-client-equipment/${selectedClient}`}
@@ -230,11 +232,12 @@ const ClientEquipments = () => {
             >
               Add New Equipment
             </Link>
-            </div>
+            </div>}
           </div>
  
 
           {/* Client and Location Filters */}
+          {technicianAccess.includes(user_type)  &&
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col">
               <label htmlFor="client" className="text-sm font-medium">
@@ -285,7 +288,7 @@ const ClientEquipments = () => {
                 )}
               </select>
             </div>
-          </div>
+          </div> }
 
           {/* Filters */}
           {newLocal}
@@ -327,7 +330,10 @@ const ClientEquipments = () => {
                         >
                           <BiSolidEditAlt />
                         </button>
-                        {equipment?.is_deleted === true ?
+                        
+                        {access.includes(user_type) && 
+                        <>
+                         {equipment?.is_deleted === true ?
                          <button
                          onClick={() => openDecommissionModal(equipment.client_equipment_id)}
                          className="p-2 bg-gray-100"
@@ -341,6 +347,12 @@ const ClientEquipments = () => {
                         >
                           <AiFillDelete />
                         </button>}
+                        </>
+                        
+                        }
+                        
+                      
+                       
                       </td>
                     </tr>
                   ))

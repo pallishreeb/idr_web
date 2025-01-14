@@ -4,9 +4,12 @@ import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
-import { getServiceAgreementDetails, updateServiceAgreement } from "../../actions/serviceAgreement";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import Loader from "../../Images/ZZ5H.gif"
+import {
+  getServiceAgreementDetails,
+  updateServiceAgreement,
+} from "../../actions/serviceAgreement";
+import {  useNavigate, useParams } from "react-router-dom";
+import Loader from "../../Images/ZZ5H.gif";
 const EditServiceAgreement = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -16,7 +19,10 @@ const EditServiceAgreement = () => {
   const clientLocations = useSelector((state) => state.location.locations);
   const loadingClients = useSelector((state) => state.client.loading);
   const loadingLocations = useSelector((state) => state.location.loading);
-  const { loadingDetails, loading } = useSelector((state) => state.serviceAgreement);
+  const { loadingDetails, loading } = useSelector(
+    (state) => state.serviceAgreement
+  );
+  const { user_type } = useSelector((state) => state.user.user);
 
   const [serviceAgreement, setServiceAgreement] = useState({
     client_id: "",
@@ -63,7 +69,9 @@ const EditServiceAgreement = () => {
     setServiceAgreement((prev) => ({ ...prev, [name]: value }));
 
     if (name === "client_id") {
-      const selectedClient = clients?.data?.find((client) => client.client_id === value);
+      const selectedClient = clients?.data?.find(
+        (client) => client.client_id === value
+      );
       if (selectedClient) {
         setServiceAgreement((prev) => ({
           ...prev,
@@ -99,7 +107,7 @@ const EditServiceAgreement = () => {
       ...serviceAgreement,
       start_date: formatDateToDDMMYYYY(serviceAgreement.start_date),
       expiration_date: formatDateToDDMMYYYY(serviceAgreement.expiration_date),
-      agreement_id:agreementId
+      agreement_id: agreementId,
     };
 
     dispatch(updateServiceAgreement(formattedServiceAgreement, navigate));
@@ -113,6 +121,11 @@ const EditServiceAgreement = () => {
     return `${year}-${month}-${day}`;
   };
 
+  const handleCancel = () => {
+    navigate(-1); // Go to the previous page
+    console.log("inside handle cancel")
+  };
+
   return (
     <>
       <Header />
@@ -120,12 +133,14 @@ const EditServiceAgreement = () => {
         <AdminSideNavbar />
         <div className="container mx-auto p-4">
           {loadingDetails ? (
-              <div className="flex justify-center items-center h-screen">
+            <div className="flex justify-center items-center h-screen">
               <img className="w-20 h-20" src={Loader} alt="Loading..." />
             </div>
           ) : (
             <div className="mb-4">
-              <h2 className="text-xl font-semibold mb-2">Edit Client Service Agreement</h2>
+              <h2 className="text-xl font-semibold mb-2">
+                Edit Client Service Agreement
+              </h2>
               <form onSubmit={handleSave}>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col mb-4">
@@ -148,7 +163,10 @@ const EditServiceAgreement = () => {
                         </option>
                       ) : (
                         clients?.data?.map((client) => (
-                          <option key={client.client_id} value={client.client_id}>
+                          <option
+                            key={client.client_id}
+                            value={client.client_id}
+                          >
                             {client.company_name}
                           </option>
                         ))
@@ -174,8 +192,12 @@ const EditServiceAgreement = () => {
                         </option>
                       ) : (
                         clientLocations?.map((location) => (
-                          <option key={location.location_id} value={location.location_id}>
-                            {location.address_line_one} {location.address_line_two}
+                          <option
+                            key={location.location_id}
+                            value={location.location_id}
+                          >
+                            {location.address_line_one}{" "}
+                            {location.address_line_two}
                           </option>
                         ))
                       )}
@@ -184,7 +206,10 @@ const EditServiceAgreement = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="start_date"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Start Date*
                     </label>
                     <input
@@ -235,19 +260,24 @@ const EditServiceAgreement = () => {
                       <option value="false">No</option>
                     </select>
                   </div>
-                  <div>
-                    <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                      Annual Sale Price
-                    </label>
-                    <input
-                      type="text"
-                      name="price"
-                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                      value={serviceAgreement.price}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+                  {user_type === "Admin" && (
+                    <div>
+                      <label
+                        htmlFor="price"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Annual Sale Price
+                      </label>
+                      <input
+                        type="text"
+                        name="price"
+                        className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                        value={serviceAgreement.price}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="grid grid-cols-1 gap-4">
                   <div>
@@ -266,21 +296,25 @@ const EditServiceAgreement = () => {
                     />
                   </div>
                 </div>
+                {user_type === "Admin" && (
                 <div className="flex justify-end mb-4">
+                  
+                    <button
+                      type="submit"
+                      className="bg-indigo-700 text-white px-4 py-2 rounded m-2"
+                      disabled={loading}
+                    >
+                      {loading ? "Saving" : "Update Service Agreement"}
+                    </button>
+                  
                   <button
-                    type="submit"
-                    className="bg-indigo-700 text-white px-4 py-2 rounded m-2"
-                    disabled={loading}
-                  >
-                    {loading ? "Saving" : "Update Service Agreement"}
-                  </button>
-                  <Link
-                    to="/service-agreements"
+                    onClick={handleCancel}
                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
                   >
                     Cancel
-                  </Link>
+                  </button>
                 </div>
+              )}
               </form>
             </div>
           )}

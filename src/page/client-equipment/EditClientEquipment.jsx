@@ -20,7 +20,8 @@ const EditClientEquipment = () => {
   const loadingEquipmentDetails = useSelector((state) => state.clientEquipment.loadingDetails);
   const loading = useSelector((state) => state.clientEquipment.loading);
   const [clientEquipmentNotes, setClientEquipmentNotes] = useState([]);
-
+  const { user_type } = useSelector((state) => state.user.user);
+  const { technicianAccess } = useSelector((state) => state.user);
   // State for form data
   const [clientEquipment, setClientEquipment] = useState({
     client_equipment_id:clientEquipmentId,
@@ -325,9 +326,10 @@ const EditClientEquipment = () => {
                 </div>
 
                 <div className="flex justify-end mt-4">
+                {technicianAccess.includes(user_type)  &&
                   <button type="submit" className="bg-indigo-700 text-white px-4 py-2 rounded">
                     {loading ? "Updating..." : "Update Client Device"}
-                  </button>
+                  </button>}
                   <Link
                     to="/client-equipments"
                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"

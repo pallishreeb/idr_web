@@ -11,6 +11,7 @@ import { S3_BASE_URL } from "../config";
 const ServiceTicketImages = ({ images, serviceTicketId }) => {
   const dispatch = useDispatch();
   const { user_type } = useSelector((state) => state.user.user);
+  const {  technicianAccess} = useSelector((state) => state.user);
   const { loadingAssignImage } = useSelector((state) => state.serviceTicket);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -71,7 +72,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="font-normal text-xl mb-2">Service Ticket Images</h1>
-        {user_type === "Admin" && (
+         {technicianAccess.includes(user_type) &&   (
           <button
             className="bg-indigo-600 text-white px-6 py-2 rounded"
             onClick={handleOpenModal}

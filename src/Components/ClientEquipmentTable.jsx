@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-
+import { useSelector } from "react-redux";
 const ClientEquipmentTable = ({ equipments, onAddNote }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedEquipmentId, setSelectedEquipmentId] = useState(null);
   const [note, setNote] = useState("");
-
+  const { user_type } = useSelector((state) => state.user.user);
+  const {  technicianAccess} = useSelector((state) => state.user);
   const openModal = (equipmentId) => {
     setSelectedEquipmentId(equipmentId);
     setShowModal(true);
@@ -46,7 +47,8 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                 <tr className="bg-gray-300 text-left">
                   <th className="border px-4 py-2">Hostname</th>
                   <th className="border px-4 py-2">Serial Number</th>
-                  <th className="border px-4 py-2">Action</th>
+                  {technicianAccess.includes(user_type) && 
+                  <th className="border px-4 py-2">Action</th>}
                 </tr>
               </thead>
               <tbody>
@@ -61,6 +63,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                     <td className="border px-4 py-2">
                       {equipment?.client_equipments?.serial_number}
                     </td>
+                    {technicianAccess.includes(user_type) && 
                     <td className="border px-4 py-2">
                       <button
                         onClick={() => openModal(equipment.client_equipment_id)}
@@ -68,7 +71,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                       >
                         Add Note
                       </button>
-                    </td>
+                    </td>}
                   </tr>
                 ))}
               </tbody>
