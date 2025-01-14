@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 import { BiSolidEditAlt } from "react-icons/bi";
-import { AiFillDelete } from "react-icons/ai";
+// import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { Link, useNavigate } from "react-router-dom";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
-import { getServiceAgreementLists, deleteServiceAgreement } from "../../actions/serviceAgreement";
+import { getServiceAgreementLists } from "../../actions/serviceAgreement";
 
 const ServiceAgreements = () => {
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ const ServiceAgreements = () => {
   const loading = useSelector((state) => state.serviceAgreement.loading);
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
-
+  const { user_type } = useSelector((state) => state.user.user);
   useEffect(() => {
     dispatch(getClients());
   }, [dispatch]);
@@ -46,26 +46,26 @@ const ServiceAgreements = () => {
     navigate(`/edit-service-agreement/${agreementId}`);
   };
 
-  const handleDelete = (agreementId) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you really want to delete this service agreement?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, keep it",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        dispatch(deleteServiceAgreement(agreementId)).then(() => {
-          if (selectedLocation) {
-            dispatch(getServiceAgreementLists({ client_id: selectedClient, location_id: selectedLocation }));
-          } else {
-            dispatch(getServiceAgreementLists({ client_id: selectedClient }));
-          }
-        });
-      }
-    });
-  };
+  // const handleDelete = (agreementId) => {
+  //   Swal.fire({
+  //     title: "Are you sure?",
+  //     text: "Do you really want to delete this service agreement?",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonText: "Yes, delete it!",
+  //     cancelButtonText: "No, keep it",
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       dispatch(deleteServiceAgreement(agreementId)).then(() => {
+  //         if (selectedLocation) {
+  //           dispatch(getServiceAgreementLists({ client_id: selectedClient, location_id: selectedLocation }));
+  //         } else {
+  //           dispatch(getServiceAgreementLists({ client_id: selectedClient }));
+  //         }
+  //       });
+  //     }
+  //   });
+  // };
 
   return (
     <>
@@ -117,12 +117,13 @@ const ServiceAgreements = () => {
            {selectedClient ? 
            <>
           <div className="mb-4 flex justify-end">
+          { user_type === "Admin" &&
             <button
               className="bg-indigo-700 text-white px-4 py-2 rounded"
               disabled={!selectedClient}
             >
               <Link to={`/add-service-agreement/${selectedClient}`}>Add New Service Agreement</Link>
-            </button>
+            </button> }
           </div>
 
           {loading ? (
@@ -136,7 +137,8 @@ const ServiceAgreements = () => {
                   <th className="border px-4 py-2">Start Date</th>
                   <th className="border px-4 py-2">Expiration Date</th>
                   <th className="border px-4 py-2">Parts Covered</th>
-                  <th className="border px-4 py-2">Annual Sale Price</th>
+                  {user_type === "Admin" &&
+                  <th className="border px-4 py-2">Annual Sale Price</th> }
                   <th className="border px-4 py-2">Actions</th>
                 </tr>
               </thead>
@@ -155,7 +157,8 @@ const ServiceAgreements = () => {
                       <td className="border px-4 py-2">{agreement.start_date}</td>
                       <td className="border px-4 py-2">{agreement.expiration_date}</td>
                       <td className="border px-4 py-2">{agreement.parts_covered ? "Yes" : "No"}</td>
-                      <td className="border px-4 py-2">${agreement.price}</td>
+                      {user_type === "Admin" &&
+                      <td className="border px-4 py-2">${agreement.price}</td> }
                       <td className="border px-4 py-2 flex">
                         <button
                           className="p-[4px] bg-gray-100 cursor-pointer mr-2"
