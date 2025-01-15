@@ -42,7 +42,8 @@ function AddServiceTicket() {
     local_onsite_contact_number: "", // Optional
     service_ticket_details: "", // Optional, added as per request
     ticket_notes: "",// Optional
-    client_name:""
+    client_name:"",
+    client_emp_user_id:""
   });
   
 
@@ -100,6 +101,7 @@ function AddServiceTicket() {
             selectedEmployee.first_name + " " + selectedEmployee.last_name,
           contact_phone_number: selectedEmployee.contact_number,
           contact_email: selectedEmployee.email_id,
+          client_emp_user_id:selectedEmployee?.client_emp_id
         }));
       }
     }

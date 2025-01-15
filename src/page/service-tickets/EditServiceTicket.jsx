@@ -187,6 +187,7 @@ const EditServiceTicket = () => {
     const filteredWorkOrder = getFilteredServiceTicket(serviceTicket);
     dispatch(updateServiceTicket(filteredWorkOrder, serviceTicketId));
     setIsEditing(!isEditing);
+    dispatch(getServiceTicketDetails(serviceTicketId));
   };
 
   if (loadingDetails) {
@@ -230,6 +231,7 @@ const EditServiceTicket = () => {
 
   const handleAddNote = (payload) => {
     dispatch(addNoteToDevice(payload));
+    dispatch(getServiceTicketDetails(serviceTicketId));
   };
 
   if (!serviceTicket) {
