@@ -7,6 +7,7 @@ import { uploadServiceTicketImages } from "../actions/serviceTicket";
 import { getServiceTicketDetails } from "../actions/serviceTicket";
 import { toast } from "react-toastify";
 import { S3_BASE_URL } from "../config";
+import ImageModal from "./ImageModal";
 
 const ServiceTicketImages = ({ images, serviceTicketId }) => {
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
   const { loadingAssignImage } = useSelector((state) => state.serviceTicket);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
-
+  const [selectedImageUrl, setSelectedImageUrl] = useState(null);
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -68,6 +69,15 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
     link.download = filename || "image.jpg";
     link.click();
   };
+
+  const handleImageClick = (imageUrl) => {
+    setSelectedImageUrl(imageUrl); // Set the image URL for the modal
+  };
+
+  const closeImageModal = () => {
+    setSelectedImageUrl(null); // Close the image modal
+  };
+
   return (
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -101,6 +111,9 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                       src={`${S3_BASE_URL}/${image?.attachment_url}`} // Replace with the actual image URL
                       alt={`Service Ticket Image ${index + 1}`}
                       className="w-20 h-20 object-cover rounded"
+                      onClick={() =>
+                        handleImageClick(`${S3_BASE_URL}/${image?.attachment_url}`)
+                      }
                     />
                 </td>
                 <td className="border px-4 py-2">{image?.user_name || "NA"}</td>
@@ -156,6 +169,11 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
             </div>
           </div>
         </div>
+      )}
+
+            {/* Image Modal */}
+            {selectedImageUrl && (
+        <ImageModal imageUrl={selectedImageUrl} onClose={closeImageModal} />
       )}
     </div>
   );
