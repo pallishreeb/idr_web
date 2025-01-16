@@ -81,6 +81,11 @@ const serviceAgreementSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    clearServiceAgreements: (state, action) => {
+      state.loading = false;
+      state.error = null;
+      state.serviceAgreements = [];
+    },
   },
 });
 
@@ -99,7 +104,8 @@ export const {
   deleteServiceAgreementFailure,
   updateServiceAgreementStart,
   updateServiceAgreementSuccess,
-  updateServiceAgreementFailure
+  updateServiceAgreementFailure,
+  clearServiceAgreements
 
 } = serviceAgreementSlice.actions;
 

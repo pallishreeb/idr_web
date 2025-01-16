@@ -32,20 +32,25 @@ export const getClientEquipments = ({
   status,
   sortBy,
   orderBy,
+  user_type
 } = {}) => {
   return async (dispatch) => {
-    if (!client_id || !location_id) {
+    // Skip client_id and location_id validation for "Client Employee"
+    if (user_type !== "Client Employee" && (!client_id || !location_id)) {
       toast.error("Client ID and Location ID are required to fetch equipment.");
       return;
     }
-
     dispatch(getClientEquipmentsStart());
     try {
       let url = apiConfig.getClientEquipments;
       const params = new URLSearchParams();
-
-      params.append("client_id", client_id);
-      params.append("location_id", location_id); // Mandatory params
+      // Append parameters conditionally
+      if (user_type !== "Client Employee") {
+        params.append("client_id", client_id);
+        params.append("location_id", location_id); // Include only for non-client employees
+      }
+      // params.append("client_id", client_id);
+      // params.append("location_id", location_id); // Mandatory params
       if (model) params.append("model", model);
       if (device_type) params.append("device_type", device_type);
       if (status) params.append("isDecomission", status);

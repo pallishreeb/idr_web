@@ -186,6 +186,7 @@ const EditClientEquipment = () => {
                       value={clientEquipment.device_type}
                       onChange={handleChange}
                       required
+                      readOnly={user_type === "Client Employee"}
                     />
                   </div>
                   <div>
@@ -202,6 +203,7 @@ const EditClientEquipment = () => {
                       value={clientEquipment.device_id}
                       onChange={handleChange}
                       required
+                      readOnly={user_type === "Client Employee"}
                     />
                   </div>
                 </div>
@@ -221,6 +223,7 @@ const EditClientEquipment = () => {
                       value={clientEquipment.manufacturer}
                       onChange={handleChange}
                       required
+                      readOnly={user_type === "Client Employee"}
                     />
                   </div>
                   <div>
@@ -237,6 +240,7 @@ const EditClientEquipment = () => {
                       value={clientEquipment.model}
                       onChange={handleChange}
                       required
+                      readOnly={user_type === "Client Employee"}
                     />
                   </div>
                   <div>
@@ -253,6 +257,7 @@ const EditClientEquipment = () => {
                       value={clientEquipment.serial_number}
                       onChange={handleChange}
                       required
+                      readOnly={user_type === "Client Employee"}
                     />
                   </div>
                 </div>
@@ -272,6 +277,7 @@ const EditClientEquipment = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={clientEquipment.mac_address}
                       onChange={handleChange}
+                      readOnly={user_type === "Client Employee"}
                     />
                   </div>
                   <div>
@@ -287,6 +293,7 @@ const EditClientEquipment = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={clientEquipment.lan_ip_address}
                       onChange={handleChange}
+                      readOnly={user_type === "Client Employee"}
                     />
                   </div>
                   <div>
@@ -302,6 +309,7 @@ const EditClientEquipment = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={clientEquipment.wan_ip_address}
                       onChange={handleChange}
+                      readOnly={user_type === "Client Employee"}
                     />
                   </div>
                 </div>
@@ -321,6 +329,7 @@ const EditClientEquipment = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={clientEquipment.general_info}
                       onChange={handleChange}
+                      readOnly={user_type === "Client Employee"}
                     />
                   </div>
                 </div>

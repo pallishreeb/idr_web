@@ -50,18 +50,31 @@ const ClientEquipments = () => {
   }, [dispatch]);
 
   // Fetch locations and equipments when client or location changes
-  useEffect(() => {
-    if (selectedClient) {
+  // useEffect(() => {
+  //   if (selectedClient) {
+  //     dispatch(getLocationByClient(selectedClient));
+  //     if (selectedLocation) {
+  //       fetchEquipments();
+  //     }
+  //   }
+  // }, [dispatch, selectedClient, selectedLocation]);
+   // Fetch locations and equipments when client or location changes
+   useEffect(() => {
+    if (user_type === "Client Employee") {
+      // console.log("user_type",user_type === "Client Employee")
+      // Call fetchEquipments without any parameters if user_type is Client Employee
+      fetchEquipments();
+    } else if (selectedClient) {
       dispatch(getLocationByClient(selectedClient));
       if (selectedLocation) {
-        fetchEquipments();
+        fetchEquipments(selectedLocation); // Call fetchEquipments with parameters
       }
     }
-  }, [dispatch, selectedClient, selectedLocation]);
+  }, [dispatch, selectedClient, selectedLocation, user_type]);
 
   const fetchEquipments = () => {
     const { model, device_type, status } = filters;
-    if (!selectedClient || !selectedLocation) {
+    if (user_type !== "Client Employee" && (!selectedClient || !selectedLocation)) {
       Swal.fire("Client and Location are required to fetch equipments");
       return;
     }
@@ -71,6 +84,7 @@ const ClientEquipments = () => {
       model: model || undefined,
       device_type: device_type || undefined,
       status: status || undefined,
+      user_type,
     };
     dispatch(getClientEquipments(params));
   };

@@ -46,31 +46,47 @@ export const generateServiceAgreement = (ticketData,navigate) => {
     };
 };
     
-// Get all service ticket lists with optional filters
-export const getServiceAgreementLists = (filters) => {
-  return async (dispatch) => {
+export const getServiceAgreementLists = (filters = {}) => {
+  return async (dispatch, getState) => {
+    const { user_type } = getState().user.user; // Get user_type from state
+
     dispatch(getServiceAgreementListsStart());
+
     try {
       const params = new URLSearchParams();
 
       for (const key in filters) {
         if (filters[key]) {
+          // Exclude client_id and location_id for Client Employee
+          if (
+            user_type === "Client Employee" &&
+            (key === "client_id" || key === "location_id")
+          ) {
+            continue;
+          }
           params.append(key, filters[key]);
         }
       }
 
       const queryString = params.toString();
-      const url = queryString ? `${apiConfig.serviceAgreementList}?${queryString}` : apiConfig.getServiceTicketLists;
+      const url = queryString
+        ? `${apiConfig.serviceAgreementList}?${queryString}`
+        : apiConfig.serviceAgreementList;
+
       const response = await axios.get(url);
- 
-      console.log("service ticket response", response)
+
+      console.log("Service agreement response:", response);
       dispatch(getServiceAgreementListsSuccess(response?.data?.Agreements));
     } catch (error) {
       dispatch(getServiceAgreementListsFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to fetch service ticket lists");
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to fetch service agreement lists"
+      );
     }
   };
 };
+
 
 // Update a service ticket
 export const updateServiceAgreement = (agreementData,navigate) => {
