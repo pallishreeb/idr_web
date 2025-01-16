@@ -154,7 +154,7 @@ const EditServiceAgreement = () => {
                       value={serviceAgreement.client_id}
                       onChange={handleChange}
                       required
-                      disabled={loadingClients}
+                      disabled={loadingClients || user_type !== "Admin"}
                     >
                       <option value="">Select a client</option>
                       {loadingClients ? (
@@ -183,7 +183,7 @@ const EditServiceAgreement = () => {
                       className="border border-gray-300 rounded px-3 py-1 w-full"
                       value={selectedClientLocation}
                       onChange={handleChange}
-                      disabled={loadingLocations}
+                      disabled={loadingLocations || user_type !== "Admin"}
                     >
                       <option value="">Select a client location</option>
                       {loadingLocations ? (
@@ -220,6 +220,7 @@ const EditServiceAgreement = () => {
                       onChange={handleChange}
                       min={getTodayDate()}
                       required
+                      disabled={user_type !== "Admin"}
                     />
                   </div>
                   <div>
@@ -237,6 +238,7 @@ const EditServiceAgreement = () => {
                       onChange={handleChange}
                       min={getTodayDate()}
                       required
+                      disabled={user_type !== "Admin"}
                     />
                   </div>
                 </div>
@@ -254,6 +256,7 @@ const EditServiceAgreement = () => {
                       value={serviceAgreement.parts_covered}
                       onChange={handleChange}
                       required
+                      disabled={user_type !== "Admin"} 
                     >
                       <option value="">Select</option>
                       <option value="true">Yes</option>
@@ -275,6 +278,7 @@ const EditServiceAgreement = () => {
                         value={serviceAgreement.price}
                         onChange={handleChange}
                         required
+                        disabled={user_type !== "Admin"}
                       />
                     </div>
                   )}
@@ -293,6 +297,7 @@ const EditServiceAgreement = () => {
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                       value={serviceAgreement.service_details}
                       onChange={handleChange}
+                      readOnly={user_type !== "Admin"}
                     />
                   </div>
                 </div>

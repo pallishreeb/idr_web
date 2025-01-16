@@ -5,11 +5,12 @@ import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const AdminSideNavbar = () => {
-  const { user_type } = useSelector((state) => state.user.user);
+  const { user_type,client_type } = useSelector((state) => state.user.user);
   const location = useLocation(); // Get the current location
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(true);
   const [isSubMenuOpenClient, setIsSubMenuOpenClient] = useState(true);
   // console.log("User type:", user_type);
+  // console.log("client_type:", client_type);
 
   const menuItems = [
     { title: "Dashboard", path: "/admin/dashboard", roles: ["Admin", "Subadmin"] },
@@ -22,7 +23,12 @@ const AdminSideNavbar = () => {
 
   const idrMenuItems = [
     { title: "IDR Employees", path: "/idr-employees", roles: ["Admin", "Subadmin"] },
-    { title: "Client Equipments", path: "/client-equipments", roles: ["IDR Employee","Client Employee"] },
+    { title: "Service Agreements", path: "/service-agreements", roles: client_type !== "User" 
+      ? ["Client Employee"] 
+      : [""],},
+    { title: "Client Equipments", path: "/client-equipments",     roles: client_type !== "User" 
+      ? ["IDR Employee", "Client Employee"] 
+      : ["IDR Employee"],  },
     { title: "Work Order", path: "/workorder", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"] },
     { title: "Service Ticket", path: "/service-tickets", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"] },
     { title: "Inventory", path: "/inventory", roles: ["Admin", "Subadmin", "IDR Employee"] },

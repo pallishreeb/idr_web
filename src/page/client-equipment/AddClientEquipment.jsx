@@ -17,7 +17,7 @@ const AddClientEquipment = () => {
   const clientLocations = useSelector((state) => state.location.locations);
   const loadingClients = useSelector((state) => state.client.loading);
   const loadingLocations = useSelector((state) => state.location.loading);
-
+  const loading = useSelector((state) => state.clientEquipment.loading);
   // State for form data
   const [clientEquipment, setClientEquipment] = useState({
     client_id: clientId && clientId !== "null" ? clientId : "",
@@ -277,7 +277,7 @@ const AddClientEquipment = () => {
 
               <div className="flex justify-end mt-4">
                 <button type="submit" className="bg-indigo-700 text-white px-4 py-2 rounded">
-                  {loadingLocations ? "Saving..." : "Add Client Device"}
+                  {loading ? "Saving..." : "Add Client Device"}
                 </button>
                 <Link to="/client-equipments" className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2">
                   Cancel
