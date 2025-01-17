@@ -9,27 +9,27 @@ import { Link, useNavigate } from "react-router-dom";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { getServiceAgreementLists } from "../../actions/serviceAgreement";
-import { clearServiceAgreements } from "../../reducers/serviceAgreementSlice"
+import { clearServiceAgreements } from "../../reducers/serviceAgreementSlice";
 
 const ServiceAgreements = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const clients = useSelector((state) => state.client.clients);
   const locations = useSelector((state) => state.location.locations);
-  const serviceAgreements = useSelector((state) => state.serviceAgreement.serviceAgreements);
+  const serviceAgreements = useSelector(
+    (state) => state.serviceAgreement.serviceAgreements
+  );
   const loading = useSelector((state) => state.serviceAgreement.loading);
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const { user_type } = useSelector((state) => state.user.user);
 
-
-      // Reset client and location when unmounting or navigating back
-      useEffect(() => {
-        if(selectedClient == null){
-          dispatch(clearServiceAgreements(selectedClient))
-        }
-      }, [selectedClient,dispatch]);
-
+  // Reset client and location when unmounting or navigating back
+  useEffect(() => {
+    if (selectedClient == null) {
+      dispatch(clearServiceAgreements(selectedClient));
+    }
+  }, [selectedClient, dispatch]);
 
   useEffect(() => {
     if (user_type === "Client Employee") {
@@ -38,8 +38,6 @@ const ServiceAgreements = () => {
       dispatch(getClients()); // Load clients for other user types
     }
   }, [dispatch, user_type]);
-
-
 
   const handleClientChange = (clientId) => {
     setSelectedClient(clientId);
@@ -54,7 +52,12 @@ const ServiceAgreements = () => {
   const handleLocationChange = (locationId) => {
     setSelectedLocation(locationId);
     if (selectedClient && locationId) {
-      dispatch(getServiceAgreementLists({ client_id: selectedClient, location_id: locationId }));
+      dispatch(
+        getServiceAgreementLists({
+          client_id: selectedClient,
+          location_id: locationId,
+        })
+      );
     } else {
       dispatch(getServiceAgreementLists({ client_id: selectedClient }));
     }
@@ -70,7 +73,9 @@ const ServiceAgreements = () => {
       <div className="flex">
         <AdminSideNavbar />
         <div className="container mx-auto p-4 bg-gray-50">
-          <h2 className="text-xl font-semibold mb-4">Client Service Agreements</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Client Service Agreements
+          </h2>
 
           {user_type !== "Client Employee" && (
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -105,7 +110,10 @@ const ServiceAgreements = () => {
                 >
                   <option value="">Select a location</option>
                   {locations?.map((location) => (
-                    <option key={location.location_id} value={location.location_id}>
+                    <option
+                      key={location.location_id}
+                      value={location.location_id}
+                    >
                       {location.address_line_one} {location.address_line_two}
                     </option>
                   ))}
@@ -113,14 +121,17 @@ const ServiceAgreements = () => {
               </div>
             </div>
           )}
-   <div className="mb-4 flex justify-end">
-          { user_type === "Admin" &&
-            <button
-              className="bg-indigo-700 text-white px-4 py-2 rounded"
-              disabled={!selectedClient}
-            >
-              <Link to={`/add-service-agreement/${selectedClient}`}>Add New Service Agreement</Link>
-            </button> }
+          <div className="mb-4 flex justify-end">
+            {user_type === "Admin" && (
+              <button
+                className="bg-indigo-700 text-white px-4 py-2 rounded"
+                disabled={!selectedClient}
+              >
+                <Link to={`/add-service-agreement/${selectedClient}`}>
+                  Add New Service Agreement
+                </Link>
+              </button>
+            )}
           </div>
           {loading ? (
             <p>Loading Service Agreements...</p>
@@ -132,7 +143,9 @@ const ServiceAgreements = () => {
                   <th className="border px-4 py-2">Start Date</th>
                   <th className="border px-4 py-2">Expiration Date</th>
                   <th className="border px-4 py-2">Parts Covered</th>
-                  {user_type === "Admin" && <th className="border px-4 py-2">Annual Sale Price</th>}
+                  {user_type === "Admin" && (
+                    <th className="border px-4 py-2">Annual Sale Price</th>
+                  )}
                   <th className="border px-4 py-2">Actions</th>
                 </tr>
               </thead>
@@ -146,10 +159,18 @@ const ServiceAgreements = () => {
                 ) : (
                   serviceAgreements?.map((agreement) => (
                     <tr key={agreement?.agreement_id}>
-                      <td className="border px-4 py-2">{agreement.client_name}</td>
-                      <td className="border px-4 py-2">{agreement.start_date}</td>
-                      <td className="border px-4 py-2">{agreement.expiration_date}</td>
-                      <td className="border px-4 py-2">{agreement.parts_covered ? "Yes" : "No"}</td>
+                      <td className="border px-4 py-2">
+                        {agreement.client_name}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {agreement.start_date}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {agreement.expiration_date}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {agreement.parts_covered ? "Yes" : "No"}
+                      </td>
                       {user_type === "Admin" && (
                         <td className="border px-4 py-2">${agreement.price}</td>
                       )}
