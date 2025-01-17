@@ -171,7 +171,7 @@ const ServiceAgreements = () => {
                       <td className="border px-4 py-2">
                         {agreement.parts_covered ? "Yes" : "No"}
                       </td>
-                      {user_type === "Admin" && (
+                      {(user_type === "Admin" || user_type === "Client Employee") && (
                         <td className="border px-4 py-2">${agreement.price}</td>
                       )}
                       <td className="border px-4 py-2 flex">
