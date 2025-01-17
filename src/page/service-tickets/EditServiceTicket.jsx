@@ -44,7 +44,7 @@ const EditServiceTicket = () => {
   const [serviceTicketEquipments, setServiceTicketEquipments] = useState([]);
   const [serviceTicketAgreement, setServiceTicketAgreement] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-  const { user_type } = useSelector((state) => state.user.user);
+  const { user_type,client_type } = useSelector((state) => state.user.user);
   const { technicianAccess } = useSelector((state) => state.user);
   // Track which row is being processed
   const [processingId, setProcessingId] = useState(null);
@@ -253,13 +253,18 @@ const EditServiceTicket = () => {
                 <button className="border border-gray-400 text-gray-400 px-6 py-2 rounded">
                   Cancel
                 </button>
-              </Link>
+               
 
+              </Link>
+              {client_type !== "User" && 
+              <>
               {serviceTicketAgreement?.agreement_id &&  <Link to={`/edit-service-agreement/${serviceTicketAgreement?.agreement_id }`}>
                 <button className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center">
                   Service Agreement
                 </button>
               </Link>}
+              </>}
+              
               {/* Add Device to Ticket Button */}
               {technicianAccess.includes(user_type) && 
               <button
