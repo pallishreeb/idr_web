@@ -4,14 +4,13 @@ import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
-import { createLicense } from "../../actions/licenseActions"; // Assuming you have this action
-import { useNavigate } from "react-router-dom";
-
+import { createLicense } from "../../actions/licenseActions";
+import { useNavigate, useParams } from "react-router-dom";
 
 const CreateLicense = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const { clientId } = useParams();
   const clients = useSelector((state) => state.client.clients);
   const clientLocations = useSelector((state) => state.location.locations);
   const loadingClients = useSelector((state) => state.client.loading);
@@ -20,23 +19,45 @@ const CreateLicense = () => {
   const { loading } = useSelector((state) => state.license);
 
   const [licenseData, setLicenseData] = useState({
-    client_id: "",
+    client_id: clientId || "",
     client_name: "",
     location_id: "",
-    qty_licenses: "",
+    quantity: "",
     manufacturer: "",
     license_type: "",
     start_date: "",
     expiration_date: "",
     idr_cost: "",
-    sale_price: "",
+    sale_cost: "",
   });
 
-  const [selectedClientLocation, setSelectedClientLocation] = useState("");
-
   useEffect(() => {
-    dispatch(getClients());
-  }, [dispatch]);
+    if (user_type !== "Client Employee") {
+      dispatch(getClients());
+    }
+  }, [dispatch, user_type]);
+
+    // Set client_name if clientId is provided via URL params
+    useEffect(() => {
+      if (clientId && clients?.data?.length) {
+        const selectedClient = clients.data.find((client) => client.client_id === clientId);
+        if (selectedClient) {
+          setLicenseData((prev) => ({
+            ...prev,
+            client_name: selectedClient.company_name,
+          }));
+          dispatch(getLocationByClient(clientId));
+        }
+      }
+    }, [clientId, clients, dispatch]);
+
+  // useEffect(() => {
+  //   const clientId = searchParams.get("clientId");
+  //   if (clientId) {
+  //     setLicenseData((prev) => ({ ...prev, client_id: clientId }));
+  //     dispatch(getLocationByClient(clientId));
+  //   }
+  // }, [searchParams, dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,16 +76,9 @@ const CreateLicense = () => {
       dispatch(getLocationByClient(value));
     }
 
-    if (name === "selected_client_location") {
-      setSelectedClientLocation(value);
+    if (name === "location_id") {
       setLicenseData((prev) => ({ ...prev, location_id: value }));
     }
-  };
-
-  const formatDateToYYYYMMDD = (date) => {
-    if (!date) return "";
-    const [day, month, year] = date.split("/");
-    return `${year}-${month}-${day}`;
   };
 
   const formatDateToDDMMYYYY = (date) => {
@@ -76,12 +90,17 @@ const CreateLicense = () => {
   const handleSave = (e) => {
     e.preventDefault();
 
-    delete licenseData?.selected_client_location;
     const formattedLicenseData = {
       ...licenseData,
       start_date: formatDateToDDMMYYYY(licenseData.start_date),
       expiration_date: formatDateToDDMMYYYY(licenseData.expiration_date),
     };
+
+    if (user_type === "Client Employee") {
+      delete formattedLicenseData.client_id;
+      delete formattedLicenseData.location_id;
+      delete formattedLicenseData.client_name;
+    }
 
     dispatch(createLicense(formattedLicenseData, navigate));
   };
@@ -101,197 +120,173 @@ const CreateLicense = () => {
         <AdminSideNavbar />
         <div className="container mx-auto p-4">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-2">
-              Create License Information
-            </h2>
+            <h2 className="text-xl font-semibold mb-2">Create License Information</h2>
             <form onSubmit={handleSave}>
+              {user_type !== "Client Employee" && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col mb-4">
+                    <label htmlFor="client_id" className="mr-2">
+                      Choose Customer:
+                    </label>
+                    <select
+                      id="client_id"
+                      name="client_id"
+                      className="border border-gray-300 rounded px-3 py-1 w-full"
+                      value={licenseData.client_id}
+                      onChange={handleChange}
+                      required
+                      disabled={loadingClients}
+                    >
+                      <option value="">Select a customer</option>
+                      {loadingClients ? (
+                        <option value="" disabled>
+                          Loading...
+                        </option>
+                      ) : (
+                        clients?.data?.map((client) => (
+                          <option
+                            key={client.client_id}
+                            value={client.client_id}
+                          >
+                            {client.company_name}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
+                  <div className="flex flex-col mb-4">
+                    <label htmlFor="location_id" className="mr-2">
+                      Choose Location:
+                    </label>
+                    <select
+                      id="location_id"
+                      name="location_id"
+                      className="border border-gray-300 rounded px-3 py-1 w-full"
+                      value={licenseData.location_id}
+                      onChange={handleChange}
+                      disabled={loadingLocations}
+                    >
+                      <option value="">Select a location</option>
+                      {loadingLocations ? (
+                        <option value="" disabled>
+                          Loading...
+                        </option>
+                      ) : (
+                        clientLocations?.map((location) => (
+                          <option
+                            key={location.location_id}
+                            value={location.location_id}
+                          >
+                            {location.address_line_one} {location.address_line_two}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col mb-4">
-                  <label htmlFor="client_id" className="mr-2">
-                    Choose Customer:
-                  </label>
-                  <select
-                    id="client_id"
-                    name="client_id"
-                    className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={licenseData.client_id}
-                    onChange={handleChange}
-                    required
-                    disabled={loadingClients}
-                  >
-                    <option value="">Select a customer</option>
-                    {loadingClients ? (
-                      <option value="" disabled>
-                        Loading...
-                      </option>
-                    ) : (
-                      clients?.data?.map((client) => (
-                        <option key={client.client_id} value={client.client_id}>
-                          {client.company_name}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                </div>
-                <div className="flex flex-col mb-4">
-                  <label htmlFor="selected_client_location" className="mr-2">
-                    Choose Location:
-                  </label>
-                  <select
-                    id="selected_client_location"
-                    name="selected_client_location"
-                    className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={selectedClientLocation}
-                    onChange={handleChange}
-                    disabled={loadingLocations}
-                  >
-                    <option value="">Select a location</option>
-                    {loadingLocations ? (
-                      <option value="" disabled>
-                        Loading...
-                      </option>
-                    ) : (
-                      clientLocations?.map((location) => (
-                        <option
-                          key={location.location_id}
-                          value={location.location_id}
-                        >
-                          {location.address_line_one}{" "}
-                          {location.address_line_two}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="qty_licenses"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Qty of Licenses
+                  <label htmlFor="quantity" className="mr-2">
+                    Quantity of Licenses:
                   </label>
                   <input
                     type="number"
-                    name="qty_licenses"
-                    className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                    value={licenseData.qty_licenses}
+                    id="quantity"
+                    name="quantity"
+                    className="border border-gray-300 rounded px-3 py-1 w-full"
+                    value={licenseData.quantity}
                     onChange={handleChange}
                     required
                   />
                 </div>
-                <div>
-                  <label
-                    htmlFor="manufacturer"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Manufacturer
+                <div className="flex flex-col mb-4">
+                  <label htmlFor="manufacturer" className="mr-2">
+                    Manufacturer:
                   </label>
                   <input
                     type="text"
+                    id="manufacturer"
                     name="manufacturer"
-                    className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                    className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.manufacturer}
                     onChange={handleChange}
                     required
                   />
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="license_type"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    License Type
+                <div className="flex flex-col mb-4">
+                  <label htmlFor="license_type" className="mr-2">
+                    License Type:
                   </label>
-                  <select
+                  <input
+                    type="text"
+                    id="license_type"
                     name="license_type"
                     className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.license_type}
                     onChange={handleChange}
                     required
-                  >
-                    <option value="">Select License Type</option>
-                    <option value="Standard">Standard</option>
-                    <option value="Premium">Premium</option>
-                  </select>
+                  />
                 </div>
-                <div>
-                  <label
-                    htmlFor="start_date"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Start Date
+                <div className="flex flex-col mb-4">
+                  <label htmlFor="start_date" className="mr-2">
+                    Start Date:
                   </label>
                   <input
                     type="date"
+                    id="start_date"
                     name="start_date"
-                    className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                    className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.start_date}
                     onChange={handleChange}
                     min={getTodayDate()}
                     required
                   />
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="expiration_date"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Expiration Date
+                <div className="flex flex-col mb-4">
+                  <label htmlFor="expiration_date" className="mr-2">
+                    Expiration Date:
                   </label>
                   <input
                     type="date"
+                    id="expiration_date"
                     name="expiration_date"
-                    className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                    className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.expiration_date}
                     onChange={handleChange}
-                    min={getTodayDate()}
+                    min={licenseData.start_date}
                     required
                   />
                 </div>
-                {user_type === "Admin" && (
-                  <div>
-                    <label
-                      htmlFor="idr_cost"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      IDR Cost
-                    </label>
-                    <input
-                      type="text"
-                      name="idr_cost"
-                      className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                      value={licenseData.idr_cost}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label
-                    htmlFor="sale_price"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Sale Price
+                <div className="flex flex-col mb-4">
+                  <label htmlFor="idr_cost" className="mr-2">
+                    IDR Cost:
                   </label>
                   <input
-                    type="text"
-                    name="sale_price"
-                    className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    value={licenseData.sale_price}
+                    type="number"
+                    id="idr_cost"
+                    name="idr_cost"
+                    className="border border-gray-300 rounded px-3 py-1 w-full"
+                    value={licenseData.idr_cost}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col mb-4">
+                  <label htmlFor="sale_cost" className="mr-2">
+                    Sale Price:
+                  </label>
+                  <input
+                    type="number"
+                    id="sale_cost"
+                    name="sale_cost"
+                    className="border border-gray-300 rounded px-3 py-1 w-full"
+                    value={licenseData.sale_cost}
                     onChange={handleChange}
                     required
                   />
                 </div>
               </div>
-
               <div className="flex justify-end mb-4">
                 <button
                   type="submit"
@@ -300,7 +295,6 @@ const CreateLicense = () => {
                 >
                   {loading ? "Saving" : "Create License"}
                 </button>
-
                 <button
                   onClick={() => navigate(-1)}
                   className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
