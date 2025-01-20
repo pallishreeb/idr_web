@@ -59,6 +59,13 @@ import EditClientEquipment from "./page/client-equipment/EditClientEquipment";
 import ServiceAgreements from "./page/service-agreements/ServiceAgreements";
 import AddServiceAgreement from "./page/service-agreements/AddServiceAgreement";
 import EditServiceAgreement from "./page/service-agreements/EditServiceAgreement";
+import AddLicense from "./page/client-licensing/AddLicense"
+import EditLicense from "./page/client-licensing/EditLicense"
+import ClientLicenses from "./page/client-licensing/ClientLicenses"
+
+
+
+
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -194,6 +201,13 @@ function App() {
           <Route path="/add-service-agreement/:clientId" element={<AddServiceAgreement />} />
           <Route path="/edit-service-agreement/:agreementId" element={<EditServiceAgreement />} />
           
+
+
+         {/* client licensing  */}
+         <Route path="/client-licensing" element={<ClientLicenses />} />
+          <Route path="/add-client-licensing/:clientId" element={<AddLicense />} />
+          <Route path="/edit-client-licensing/:licenseId" element={<EditLicense />} />
+
           <Route path="*" element={<NotFoundPage />} />
         </Route>
         <Route path="/test" element={<IdrEuipement />} />

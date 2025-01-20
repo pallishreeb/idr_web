@@ -2,53 +2,56 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
+import Swal from 'sweetalert2';
+import { AiFillDelete } from "react-icons/ai";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
-import { getLicenseLists } from "../../actions/licenseActions";
+import { getLicenseLists , deleteLicense} from "../../actions/licenseActions";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import Header from "../../Components/Header";
 import Loader from "../../Images/ZZ5H.gif";
+import { clearLicense } from "../../reducers/licenseSlice";
 const ClientLicenseList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { clients } = useSelector((state) => state.client);
   const { locations } = useSelector((state) => state.location);
-  const { licenses } = useSelector((state) => state.license);
-  const { loading } = useSelector((state) => state.license);
-  const { user_type } = useSelector((state) => state.user.user); 
-  const [selectedClient, setSelectedClient] = useState(null);
+  const { licenses, loading } = useSelector((state) => state.license);
+  const { user_type } = useSelector((state) => state.user.user);
   const [filters, setFilters] = useState({
     client_id: "",
     location_id: "",
     manufacturer: "",
   });
+  const [selectedClient, setSelectedClient] = useState(null);
 
+    // Reset client and location when unmounting or navigating back
+    useEffect(() => {
+      if (selectedClient == null) {
+        dispatch(clearLicense(selectedClient));
+      }
+    }, [selectedClient, dispatch]);
   useEffect(() => {
     if (user_type === "Client Employee") {
-      dispatch(getLicenseLists({ manufacturer: filters.manufacturer }));
+      dispatch(getLicenseLists({}));
     } else {
       dispatch(getClients());
-      dispatch(getLicenseLists(filters)); // Fetch licenses with applied filters
     }
-  }, [dispatch, filters, user_type]);
-
-//   const handleFilterChange = (e) => {
-//     const { name, value } = e.target;
-//     setFilters((prevFilters) => ({
-//       ...prevFilters,
-//       [name]: value,
-//     }));
-//   };
+  }, [dispatch, user_type]);
 
   const handleClientChange = (e) => {
     const { value } = e.target;
     setFilters((prevFilters) => ({
       ...prevFilters,
       client_id: value,
-      location_id: "", // Reset location filter when client changes
+      location_id: "",
+      manufacturer: "",
     }));
-    setSelectedClient(value)
+    setSelectedClient(value);
     dispatch(getLocationByClient(value)); // Fetch locations for the selected client
+    if (value) {
+      dispatch(getLicenseLists({ client_id: value })); // Fetch licenses for the client
+    }
   };
 
   const handleLocationChange = (e) => {
@@ -57,6 +60,9 @@ const ClientLicenseList = () => {
       ...prevFilters,
       location_id: value,
     }));
+    if (filters.client_id && value) {
+      dispatch(getLicenseLists({ client_id: filters.client_id, location_id: value })); // Fetch licenses for the client and location
+    }
   };
 
   const handleManufacturerChange = (e) => {
@@ -67,9 +73,44 @@ const ClientLicenseList = () => {
     }));
   };
 
+  const handleSearch = () => {
+    const { client_id, location_id, manufacturer } = filters;
+    const query = {
+      ...(client_id && { client_id }),
+      ...(location_id && { location_id }),
+      ...(manufacturer && { manufacturer }),
+    };
+    dispatch(getLicenseLists(query)); // Fetch licenses based on all applied filters
+  };
 
+  const handleReset = () => {
+    setFilters({
+      client_id: "",
+      location_id: "",
+      manufacturer: "",
+    });
+    if (user_type === "Client Employee") {
+      dispatch(getLicenseLists({}));
+    }else{
+      dispatch(clearLicense(selectedClient));
+    }
+  };
+  const handleDeleteLicense = (licenseId) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to delete this license?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteLicense(licenseId));
+      }
+    });
+  };
   const handleEdit = (licenseId) => {
-    navigate(`/edit-client-license/${licenseId}`);
+    navigate(`/edit-client-licensing/${licenseId}`);
   };
 
   return (
@@ -108,7 +149,9 @@ const ClientLicenseList = () => {
                   <select
                     id="location_id"
                     name="location_id"
-                    className="border border-gray-300 rounded px-3 py-1"
+                    className={`border border-gray-300 rounded px-3 py-1 ${
+                      !filters.client_id ? "bg-gray-100 text-gray-500" : ""
+                    }`}
                     value={filters.location_id}
                     onChange={handleLocationChange}
                     disabled={!filters.client_id}
@@ -123,35 +166,51 @@ const ClientLicenseList = () => {
                 </div>
               </form>
             )}
-
-            <div className="flex flex-col">
-              <label htmlFor="manufacturer" className="text-sm mb-2">
-                Filter by Manufacturer:
-              </label>
-              <input
-                type="text"
-                id="manufacturer"
-                name="manufacturer"
-                className="border border-gray-300 rounded px-3 py-1"
-                value={filters.manufacturer}
-                onChange={handleManufacturerChange}
-              />
+            <div className="flex flex-row items-end gap-2">
+              <div className="flex flex-col">
+                <label htmlFor="manufacturer" className="text-sm mb-2">
+                  Filter by Manufacturer:
+                </label>
+                <input
+                  type="text"
+                  id="manufacturer"
+                  name="manufacturer"
+                  className="border border-gray-300 rounded px-3 py-1"
+                  value={filters.manufacturer}
+                  onChange={handleManufacturerChange}
+                />
+              </div>
+              <button
+                className="bg-indigo-600 text-white px-4 py-2 rounded"
+                onClick={handleSearch}
+              >
+                Search
+              </button>
+              <button
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                onClick={handleReset}
+              >
+                Reset
+              </button>
             </div>
+
           </div>
+
           <div className="mb-4 flex justify-end">
             {user_type === "Admin" && (
               <button
                 className="bg-indigo-700 text-white px-4 py-2 rounded"
                 disabled={!selectedClient}
               >
-                <Link  to={`/add-client-license/${selectedClient}`}>
-                  Add New Service Agreement
+                <Link to={`/add-client-licensing/${selectedClient}`}>
+                  Add New Client License
                 </Link>
               </button>
             )}
           </div>
+
           <div className="overflow-x-auto">
-            <table className="min-w-full table-auto">
+            <table className="min-w-full table-auto text-left">
               <thead>
                 <tr className="bg-gray-100">
                   <th className="px-4 py-2">Client</th>
@@ -161,47 +220,52 @@ const ClientLicenseList = () => {
                   <th className="px-4 py-2">License Type</th>
                   <th className="px-4 py-2">Start Date</th>
                   <th className="px-4 py-2">Expiration Date</th>
-                  {user_type === "Admin" && (
-                  <th className="px-4 py-2">IDR Cost</th>)}
+                  {user_type === "Admin" && <th className="px-4 py-2">IDR Cost</th>}
                   <th className="px-4 py-2">Sale Price</th>
+                  <th className="px-4 py-2">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="7" className="text-center py-4">
-                      <img src={Loader} alt="Loading..." />
+                    <td colSpan={user_type === "Admin" ? "9" : "8"} className="py-4">
+                      <div className="flex justify-center items-center">
+                        <img src={Loader} alt="Loading..." className="h-16 w-16" />
+                      </div>
                     </td>
                   </tr>
-                ) : licenses?.data?.length === 0 ? (
+                ) : licenses?.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="text-center py-4">
+                    <td colSpan="9" className="text-center py-4">
                       No licenses found
                     </td>
                   </tr>
                 ) : (
-                  licenses?.data?.map((license) => (
+                  licenses?.map((license) => (
                     <tr key={license.license_id}>
                       <td className="px-4 py-2">{license.client_name}</td>
-                      <td className="px-4 py-2">{license.location_name}</td>
-                      <td className="px-4 py-2">{license.qty}</td>
+                      <td className="px-4 py-2">{license.location_name || "NA"}</td>
+                      <td className="px-4 py-2">{license.quantity}</td>
                       <td className="px-4 py-2">{license.manufacturer}</td>
                       <td className="px-4 py-2">{license.license_type}</td>
                       <td className="px-4 py-2">{license.start_date}</td>
                       <td className="px-4 py-2">{license.expiration_date}</td>
-                      {user_type === "Admin" && (
-                      <td className="px-4 py-2">{license.idr_cost}</td>)}
-                      
-                      <td className="px-4 py-2">{license.sale_price}</td>
+                      {user_type === "Admin" && <td className="px-4 py-2">{license.idr_cost}</td>}
+                      <td className="px-4 py-2">{license.sale_cost}</td>
                       <td className="px-4 py-2">
-                      <button
-                          onClick={() =>
-                            handleEdit(license.license_id)
-                          }
+                        <button
+                          onClick={() => handleEdit(license.license_id)}
                           className="p-2 bg-gray-100"
                         >
                           <BiSolidEditAlt />
                         </button>
+                        {user_type === "Admin" && 
+                        <button
+                        onClick={() => handleDeleteLicense(license.license_id)}
+                        className="p-2 bg-gray-100"
+                      >
+                        <AiFillDelete />
+                      </button>}
                       </td>
                     </tr>
                   ))

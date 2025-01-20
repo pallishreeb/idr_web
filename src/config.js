@@ -93,11 +93,11 @@ const apiConfig = {
   serviceAgreementUpdate: "/service_agreement/update",
   serviceAgreementList: "/service_agreement/all",
   serviceAgreementById: "/service_agreement",
-  getLicenseList: "/users/set_password",
-  createLicense: "/users/create",
-  updateLicense: "/users/login",
-  licenseDetailsById: "/service_agreement",
-  deleteLicense: "/service_agreement",
+  getLicenseList: "/license/all",
+  createLicense: "/license/add",
+  updateLicense: "/license/update",
+  licenseDetailsById: "/license",
+  deleteLicense: "/license/delete",
 };
 
 export { API_BASE_URL, apiConfig,S3_BASE_URL };

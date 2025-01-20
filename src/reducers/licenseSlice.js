@@ -46,7 +46,7 @@ const licenseSlice = createSlice({
     },
     deleteLicenseSuccess: (state, action) => {
       state.loading = false;
-      state.licenseDetails = state.licenses?.filter(
+      state.licenses = state.licenses?.filter(
         (ticket) => ticket.license_id !== action.payload
       );
       state.error = null;
@@ -61,7 +61,7 @@ const licenseSlice = createSlice({
     },
     getLicenseDetailsSuccess: (state, action) => {
       state.loadingDetails = false;
-      state.serviceTicketDetails = action.payload;
+      state.licenseDetails = action.payload;
       state.error = null;
     },
     getLicenseDetailsFailure: (state, action) => {

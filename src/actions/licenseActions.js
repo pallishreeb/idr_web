@@ -34,7 +34,7 @@ export const createLicense = (licenseData,navigate) => {
   
         dispatch(licenseSuccess(data));
         toast.success("License generated successfully");
-        navigate('/client-licenses');
+        navigate('/client-licensing');
         return data;
         
       } catch (error) {
@@ -75,8 +75,8 @@ export const getLicenseLists = (filters = {}) => {
 
       const response = await axios.get(url);
 
-      console.log("License response:", response);
-      dispatch(getLicenseListsSuccess(response?.data?.Agreements));
+      // console.log("License response:", response);
+      dispatch(getLicenseListsSuccess(response?.data?.Licenses));
     } catch (error) {
       dispatch(getLicenseListsFailure(error.message));
       toast.error(
@@ -89,14 +89,14 @@ export const getLicenseLists = (filters = {}) => {
 
 
 // Update a service ticket
-export const updateLicense = (agreementData,navigate) => {
+export const updateLicense = (licenseData,navigate) => {
   return async (dispatch) => {
     dispatch(updateLicenseStart());
     try {
-      const response = await axios.patch(`${apiConfig.updateLicense}`, agreementData);
+      const response = await axios.patch(`${apiConfig.updateLicense}`, licenseData);
       dispatch(updateLicenseSuccess(response.data));
       toast.success("License updated successfully");
-      navigate('/client-licenses')
+      navigate('/client-licensing')
     } catch (error) {
       dispatch(updateLicenseFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to update License");
@@ -125,9 +125,9 @@ export const getLicenseDetails = (licenseId) => {
     try {
       const url = `${apiConfig.licenseDetailsById}/${licenseId}`;
       const response = await axios.get(url);
-      
-      dispatch(getLicenseDetailsSuccess(response.data?.license));
-      return response?.data?.license;
+      // console.log("license details", response.data?.LicenseRec)
+      dispatch(getLicenseDetailsSuccess(response.data?.LicenseRec));
+      return response?.data?.LicenseRec;
     } catch (error) {
       dispatch(getLicenseDetailsFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to fetch license details");
