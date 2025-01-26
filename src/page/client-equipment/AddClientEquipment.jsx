@@ -10,7 +10,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 const AddClientEquipment = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { clientId } = useParams();
+  const { clientId,locationId } = useParams();
 
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
@@ -22,7 +22,7 @@ const AddClientEquipment = () => {
   const [clientEquipment, setClientEquipment] = useState({
     client_id: clientId && clientId !== "null" ? clientId : "",
     client_name: "",
-    location_id: "",
+    location_id: locationId && locationId !== "null" ? locationId : "",
     device_type: "",
     device_id: "",
     manufacturer: "",
@@ -49,8 +49,6 @@ const AddClientEquipment = () => {
     }
   }, [dispatch, clientEquipment?.client_id]);
   
-
-
   // Set `client_name` when `client_id` and clients data are available
   useEffect(() => {
     if (clientId && clients?.data?.length) {
@@ -63,6 +61,20 @@ const AddClientEquipment = () => {
       }
     }
   }, [clientId, clients]);
+    // Pre-select location if locationId is provided
+    useEffect(() => {
+      if (locationId && clientLocations?.length) {
+        const selectedLocation = clientLocations.find(
+          (location) => location.location_id === locationId
+        );
+        if (selectedLocation) {
+          setClientEquipment((prev) => ({
+            ...prev,
+            location_id: selectedLocation.location_id,
+          }));
+        }
+      }
+    }, [locationId, clientLocations]);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setClientEquipment((prev) => ({ ...prev, [name]: value }));
@@ -73,6 +85,7 @@ const AddClientEquipment = () => {
         setClientEquipment((prev) => ({
           ...prev,
           client_name: selectedClient.company_name,
+          location_id: "", // Reset location when client changes
         }));
       }
       dispatch(getLocationByClient(value));

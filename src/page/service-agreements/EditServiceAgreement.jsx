@@ -217,7 +217,7 @@ const EditServiceAgreement = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={serviceAgreement.start_date}
                       onChange={handleChange}
-                      min={getTodayDate()}
+                      // min={getTodayDate()}
                       required
                       disabled={user_type !== "Admin"}
                     />
@@ -235,7 +235,7 @@ const EditServiceAgreement = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={serviceAgreement.expiration_date}
                       onChange={handleChange}
-                      min={getTodayDate()}
+                      // min={getTodayDate()}
                       required
                       disabled={user_type !== "Admin"}
                     />

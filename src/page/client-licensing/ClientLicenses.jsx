@@ -24,7 +24,7 @@ const ClientLicenseList = () => {
     manufacturer: "",
   });
   const [selectedClient, setSelectedClient] = useState(null);
-
+  const [selectedLocation, setSelectedLocation] = useState(null);
     // Reset client and location when unmounting or navigating back
     useEffect(() => {
       if (selectedClient == null) {
@@ -35,6 +35,7 @@ const ClientLicenseList = () => {
     if (user_type === "Client Employee") {
       dispatch(getLicenseLists({}));
     } else {
+      dispatch(getLicenseLists({}));
       dispatch(getClients());
     }
   }, [dispatch, user_type]);
@@ -63,6 +64,7 @@ const ClientLicenseList = () => {
     if (filters.client_id && value) {
       dispatch(getLicenseLists({ client_id: filters.client_id, location_id: value })); // Fetch licenses for the client and location
     }
+    setSelectedLocation(value);
   };
 
   const handleManufacturerChange = (e) => {
@@ -202,7 +204,7 @@ const ClientLicenseList = () => {
                 className="bg-indigo-700 text-white px-4 py-2 rounded"
                 disabled={!selectedClient}
               >
-                <Link to={`/add-client-licensing/${selectedClient}`}>
+                <Link to={`/add-client-licensing/${selectedClient}/${selectedLocation}`}>
                   Add New Client License
                 </Link>
               </button>

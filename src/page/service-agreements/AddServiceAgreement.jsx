@@ -10,7 +10,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 const AddServiceAgreement = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { clientId } = useParams();
+  const { clientId,locationId } = useParams();
 
   // Fetch clients and client locations from Redux store
   const clients = useSelector((state) => state.client.clients);
@@ -21,7 +21,7 @@ const AddServiceAgreement = () => {
   const [serviceAgreement, setServiceAgreement] = useState({
     client_id: clientId || "",
     client_name: "",
-    location_id: "",
+    location_id: locationId && locationId !== "null" ? locationId : "",
     start_date: "",
     expiration_date: "",
     parts_covered: "",
@@ -36,6 +36,15 @@ const AddServiceAgreement = () => {
     dispatch(getClients());
   }, [dispatch]);
 
+  // Fetch locations based on client_id
+  useEffect(() => {
+    if (serviceAgreement?.client_id) {
+      // console.log("Fetching locations for client_id:", serviceAgreement.client_id);
+      dispatch(getLocationByClient(serviceAgreement?.client_id));
+    } else {
+      console.log("No valid client_id selected, skipping location fetch.");
+    }
+  }, [dispatch, serviceAgreement?.client_id]);
   // Set client_name if clientId is provided via URL params
   useEffect(() => {
     if (clientId && clients?.data?.length) {
@@ -45,17 +54,24 @@ const AddServiceAgreement = () => {
           ...prev,
           client_name: selectedClient.company_name,
         }));
+        dispatch(getLocationByClient(clientId));
       }
     }
-  }, [clientId, clients]);
-
-  // Fetch client locations when client_id changes
-  useEffect(() => {
-    if (serviceAgreement.client_id) {
-      dispatch(getLocationByClient(serviceAgreement.client_id));
-    }
-  }, [dispatch, serviceAgreement.client_id]);
-
+  }, [clientId, clients,dispatch]);
+    // Pre-select location if locationId is provided
+    useEffect(() => {
+      if (locationId && clientLocations?.length) {
+        const selectedLocation = clientLocations.find(
+          (location) => location.location_id === locationId
+        );
+        if (selectedLocation) {
+          setServiceAgreement((prev) => ({
+            ...prev,
+            location_id: selectedLocation.location_id,
+          }));
+        }
+      }
+    }, [locationId, clientLocations]);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setServiceAgreement((prev) => ({ ...prev, [name]: value }));
@@ -66,6 +82,7 @@ const AddServiceAgreement = () => {
         setServiceAgreement((prev) => ({
           ...prev,
           client_name: selectedClient.company_name,
+          location_id: "", // Reset location when client changes
         }));
       }
       dispatch(getLocationByClient(value));
@@ -151,7 +168,7 @@ const AddServiceAgreement = () => {
                     id="selected_client_location"
                     name="selected_client_location"
                     className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={selectedClientLocation}
+                    value={serviceAgreement?.location_id}
                     onChange={handleChange}
                   >
                     <option value="">Select a client location</option>
@@ -180,7 +197,7 @@ const AddServiceAgreement = () => {
                     className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                     value={serviceAgreement.start_date}
                     onChange={handleChange}
-                    min={getTodayDate()}
+                    // min={getTodayDate()}
                     required
                   />
                 </div>
@@ -197,7 +214,7 @@ const AddServiceAgreement = () => {
                     className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                     value={serviceAgreement.expiration_date}
                     onChange={handleChange}
-                    min={getTodayDate()}
+                    // min={getTodayDate()}
                     required
                   />
                 </div>

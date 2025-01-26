@@ -246,7 +246,7 @@ const EditLicense = () => {
                     className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.start_date}
                     onChange={handleChange}
-                    min={getTodayDate()}
+                    // min={getTodayDate()}
                     required
                     disabled={user_type !== "Admin"}
                   />
@@ -262,7 +262,7 @@ const EditLicense = () => {
                     className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.expiration_date}
                     onChange={handleChange}
-                    min={getTodayDate()}
+                    // min={getTodayDate()}
                     required
                     disabled={user_type !== "Admin"}
                   />

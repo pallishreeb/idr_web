@@ -173,6 +173,8 @@ const EditServiceTicket = () => {
       "local_onsite_contact_number",
       "service_ticket_details",
       "ticket_notes",
+      "client_name",
+      "client_emp_user_id"
     ];
     const filteredWorkOrder = {};
     allowedFields.forEach((field) => {

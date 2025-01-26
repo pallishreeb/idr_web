@@ -10,7 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const CreateLicense = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { clientId } = useParams();
+  const { clientId ,locationId } = useParams();
   const clients = useSelector((state) => state.client.clients);
   const clientLocations = useSelector((state) => state.location.locations);
   const loadingClients = useSelector((state) => state.client.loading);
@@ -21,7 +21,7 @@ const CreateLicense = () => {
   const [licenseData, setLicenseData] = useState({
     client_id: clientId || "",
     client_name: "",
-    location_id: "",
+    location_id: locationId && locationId !== "null" ? locationId : "",
     quantity: "",
     manufacturer: "",
     license_type: "",
@@ -36,7 +36,15 @@ const CreateLicense = () => {
       dispatch(getClients());
     }
   }, [dispatch, user_type]);
-
+  // Fetch locations based on client_id
+  useEffect(() => {
+    if (licenseData?.client_id) {
+      // console.log("Fetching locations for client_id:", licenseData.client_id);
+      dispatch(getLocationByClient(licenseData?.client_id));
+    } else {
+      console.log("No valid client_id selected, skipping location fetch.");
+    }
+  }, [dispatch, licenseData?.client_id]);
     // Set client_name if clientId is provided via URL params
     useEffect(() => {
       if (clientId && clients?.data?.length) {
@@ -50,14 +58,20 @@ const CreateLicense = () => {
         }
       }
     }, [clientId, clients, dispatch]);
-
-  // useEffect(() => {
-  //   const clientId = searchParams.get("clientId");
-  //   if (clientId) {
-  //     setLicenseData((prev) => ({ ...prev, client_id: clientId }));
-  //     dispatch(getLocationByClient(clientId));
-  //   }
-  // }, [searchParams, dispatch]);
+    // Pre-select location if locationId is provided
+    useEffect(() => {
+      if (locationId && clientLocations?.length) {
+        const selectedLocation = clientLocations.find(
+          (location) => location.location_id === locationId
+        );
+        if (selectedLocation) {
+          setLicenseData((prev) => ({
+            ...prev,
+            location_id: selectedLocation.location_id,
+          }));
+        }
+      }
+    }, [locationId, clientLocations]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,6 +85,7 @@ const CreateLicense = () => {
         setLicenseData((prev) => ({
           ...prev,
           client_name: selectedClient.company_name,
+          location_id: "", // Reset location when client changes
         }));
       }
       dispatch(getLocationByClient(value));
@@ -239,7 +254,7 @@ const CreateLicense = () => {
                     className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.start_date}
                     onChange={handleChange}
-                    min={getTodayDate()}
+                    // min={getTodayDate()}
                     required
                   />
                 </div>
@@ -254,7 +269,7 @@ const CreateLicense = () => {
                     className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.expiration_date}
                     onChange={handleChange}
-                    min={licenseData.start_date}
+                    // min={licenseData.start_date}
                     required
                   />
                 </div>

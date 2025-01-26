@@ -35,6 +35,7 @@ const ServiceAgreements = () => {
     if (user_type === "Client Employee") {
       dispatch(getServiceAgreementLists()); // Fetch without client_id and location_id
     } else {
+      dispatch(getServiceAgreementLists());
       dispatch(getClients()); // Load clients for other user types
     }
   }, [dispatch, user_type]);
@@ -127,7 +128,7 @@ const ServiceAgreements = () => {
                 className="bg-indigo-700 text-white px-4 py-2 rounded"
                 disabled={!selectedClient}
               >
-                <Link to={`/add-service-agreement/${selectedClient}`}>
+                <Link to={`/add-service-agreement/${selectedClient}/${selectedLocation}`}>
                   Add New Service Agreement
                 </Link>
               </button>
