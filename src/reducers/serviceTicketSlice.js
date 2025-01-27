@@ -148,6 +148,30 @@ const serviceTicketSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    addNotesToTicketStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    addNotesToTicketSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+    addNotesToTicketFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    deleteServiceNoteStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    deleteServiceNoteSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+    deleteServiceNoteFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -183,6 +207,12 @@ export const {
   addNoteToDeviceStart,
   addNoteToDeviceSuccess,
   addNoteToDeviceFailure,
+  addNotesToTicketStart,
+  addNotesToTicketSuccess,
+  addNotesToTicketFailure,
+  deleteServiceNoteStart,
+  deleteServiceNoteSuccess,
+  deleteServiceNoteFailure,
 } = serviceTicketSlice.actions;
 
 export default serviceTicketSlice.reducer;

@@ -334,7 +334,7 @@ const ServiceTicketCard = ({
             disabled={!isEditing}
           ></textarea>
         </div>
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <label className="font-normal text-base">Ticket Notes</label>
           <textarea
             rows={3}
@@ -344,7 +344,7 @@ const ServiceTicketCard = ({
             onChange={(e) => handleServiceTicketChange(e)}
             disabled={!isEditing}
           ></textarea>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -98,6 +98,8 @@ const apiConfig = {
   updateLicense: "/license/update",
   licenseDetailsById: "/license",
   deleteLicense: "/license/delete",
+  addNotesToServiceTicket:"/service_ticket/add_st_notes",
+  deleteServiceNote:"/service_ticket/delete_st_notes"
 };
 
 export { API_BASE_URL, apiConfig,S3_BASE_URL };
