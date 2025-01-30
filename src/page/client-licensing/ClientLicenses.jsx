@@ -215,16 +215,16 @@ const ClientLicenseList = () => {
             <table className="min-w-full table-auto text-left">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="px-4 py-2">Client</th>
-                  <th className="px-4 py-2">Location</th>
-                  <th className="px-4 py-2">Qty</th>
-                  <th className="px-4 py-2">Manufacturer</th>
-                  <th className="px-4 py-2">License Type</th>
-                  <th className="px-4 py-2">Start Date</th>
-                  <th className="px-4 py-2">Expiration Date</th>
-                  {user_type === "Admin" && <th className="px-4 py-2">IDR Cost</th>}
-                  <th className="px-4 py-2">Sale Price</th>
-                  <th className="px-4 py-2">Action</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Client</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Location</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Qty</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Manufacturer</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">License Type</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Start Date</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Expiration Date</th>
+                  {user_type === "Admin" && <th className="px-4 py-2 text-sm font-semibold tracking-wider border">IDR Cost</th>}
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Sale Price</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -245,16 +245,16 @@ const ClientLicenseList = () => {
                 ) : (
                   licenses?.map((license) => (
                     <tr key={license.license_id}>
-                      <td className="px-4 py-2">{license.client_name}</td>
-                      <td className="px-4 py-2">{license.location_name || "NA"}</td>
-                      <td className="px-4 py-2">{license.quantity}</td>
-                      <td className="px-4 py-2">{license.manufacturer}</td>
-                      <td className="px-4 py-2">{license.license_type}</td>
-                      <td className="px-4 py-2">{license.start_date}</td>
-                      <td className="px-4 py-2">{license.expiration_date}</td>
-                      {user_type === "Admin" && <td className="px-4 py-2">{license.idr_cost}</td>}
-                      <td className="px-4 py-2">{license.sale_cost}</td>
-                      <td className="px-4 py-2">
+                      <td className="border text-sm px-1 py-3">{license.client_name}</td>
+                      <td className="border text-sm px-1 py-3">{`${license?.location_details?.address_line_one}`  || "NA"}</td>
+                      <td className="border text-sm px-1 py-3">{license.quantity}</td>
+                      <td className="border text-sm px-1 py-3">{license.manufacturer}</td>
+                      <td className="border text-sm px-1 py-3">{license.license_type}</td>
+                      <td className="border text-sm px-1 py-3">{license.start_date}</td>
+                      <td className="border text-sm px-1 py-3">{license.expiration_date}</td>
+                      {user_type === "Admin" && <td className="border text-sm px-1 py-3">{license.idr_cost}</td>}
+                      <td className="border text-sm px-1 py-3">{license.sale_cost}</td>
+                      <td className="border text-sm px-1 py-3">
                         <button
                           onClick={() => handleEdit(license.license_id)}
                           className="p-2 bg-gray-100"

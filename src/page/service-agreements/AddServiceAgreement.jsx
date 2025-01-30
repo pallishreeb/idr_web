@@ -19,7 +19,7 @@ const AddServiceAgreement = () => {
   const loadingLocations = useSelector((state) => state.location.loading);
 
   const [serviceAgreement, setServiceAgreement] = useState({
-    client_id: clientId || "",
+    client_id: clientId && clientId !== "null" ? clientId : "",
     client_name: "",
     location_id: locationId && locationId !== "null" ? locationId : "",
     start_date: "",

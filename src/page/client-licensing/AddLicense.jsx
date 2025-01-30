@@ -19,7 +19,7 @@ const CreateLicense = () => {
   const { loading } = useSelector((state) => state.license);
 
   const [licenseData, setLicenseData] = useState({
-    client_id: clientId || "",
+    client_id: clientId && clientId !== "null" ? clientId : "",
     client_name: "",
     location_id: locationId && locationId !== "null" ? locationId : "",
     quantity: "",
