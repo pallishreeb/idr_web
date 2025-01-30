@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 // import { FaDownload } from "react-icons/fa";
-// import axios from '../../axios-config';
 import Header from "../../Components/Header";
 import SideNavbar from "../../Components/AdminSideNavbar";
 import ServiceTicketCard from "../../Components/ServiceTicketCard";
 import ShowTechnicians from "../../Components/ServiceTicketAssigneePeopleCard";
 import ClientEquipmentTable from "../../Components/ClientEquipmentTable";
+import ServiceTicketNotes from "../../Components/ServiceTicketNotes";
 import {
   getServiceTicketDetails,
   updateServiceTicket,
@@ -40,6 +40,7 @@ const EditServiceTicket = () => {
   const [serviceTicket, setServiceTicket] = useState(null);
   const [technicians, setTechnicians] = useState([]);
   const [assignees, setAssignees] = useState([]);
+  const [notes, setNotes] = useState([]);
   const [serviceTicketImages, setServiceTicketImages] = useState([]);
   const [serviceTicketEquipments, setServiceTicketEquipments] = useState([]);
   const [serviceTicketAgreement, setServiceTicketAgreement] = useState({});
@@ -62,6 +63,7 @@ const EditServiceTicket = () => {
     if (serviceTicketDetails) {
       setServiceTicket(serviceTicketDetails);
       setTechnicians(serviceTicketDetails?.technicians || []);
+      setNotes(serviceTicketDetails.serviceTicketNotes || []);
       setAssignees(serviceTicketDetails?.service_ticket_assignees || []);
       setServiceTicketImages(
         serviceTicketDetails?.service_ticket_attachments || []
@@ -172,7 +174,8 @@ const EditServiceTicket = () => {
       "local_onsite_contact",
       "local_onsite_contact_number",
       "service_ticket_details",
-      "ticket_notes",
+      "client_name",
+      "client_emp_user_id"
     ];
     const filteredWorkOrder = {};
     allowedFields.forEach((field) => {
@@ -306,6 +309,13 @@ const EditServiceTicket = () => {
           {/* Show Images  */}
           <ServiceTicketImages
             images={serviceTicketImages}
+            serviceTicketId={serviceTicketId}
+          />
+
+          {/* Ticket Notes */}
+          <ServiceTicketNotes
+            notes={notes}
+            loading={loading}
             serviceTicketId={serviceTicketId}
           />
           {showDeviceModal && (

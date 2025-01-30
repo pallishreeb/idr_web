@@ -31,6 +31,12 @@ import {
   addNoteToDeviceStart,
   addNoteToDeviceSuccess,
   addNoteToDeviceFailure,
+  addNotesToTicketStart,
+  addNotesToTicketSuccess,
+  addNotesToTicketFailure,
+  deleteServiceNoteStart,
+  deleteServiceNoteSuccess,
+  deleteServiceNoteFailure,
 } from "../reducers/serviceTicketSlice";
 import { apiConfig } from "../config";
 import { fetchJson } from '../fetch-config';
@@ -273,6 +279,43 @@ export const addNoteToDevice = (note) => {
 
       dispatch(addNoteToDeviceFailure(error.message));
       toast.error(error.message || "Failed to add note to device");
+    }
+  };
+};
+
+export const addNotesToServiceTicket = ( notesData) => {
+  return async (dispatch) => {
+    dispatch(addNotesToTicketStart());
+    try {
+      const response = await axios.post(`${apiConfig.addNotesToServiceTicket}`, notesData);
+      // console.log("res",response)
+      if(response?.data){
+        dispatch(addNotesToTicketSuccess(response?.data));
+        toast.success("Notes added to ticket successfully");
+        return response?.data
+      }else{
+        dispatch(addNotesToTicketFailure(response?.data?.message));
+         toast.error("Failed to add notes to ticket");
+      }
+   
+    } catch (error) {
+      console.log("err",error)
+      dispatch(addNotesToTicketFailure(error?.message));
+      toast.error(error?.message || error?.response?.data?.message || "Failed to add notes to ticket");
+    }
+  };
+};
+
+export const deleteServiceNote = (noteId) => {
+  return async (dispatch) => {
+    dispatch(deleteServiceNoteStart());
+    try {
+      await axios.delete(`${apiConfig.deleteServiceNote}/${noteId}`);
+      dispatch(deleteServiceNoteSuccess(noteId));
+      toast.success("Comment deleted successfully");
+    } catch (error) {
+      dispatch(deleteServiceNoteFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to delete Comment");
     }
   };
 };

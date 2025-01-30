@@ -253,7 +253,7 @@ const ClientEquipments = () => {
             {technicianAccess.includes(user_type) && (
               <div className="flex gap-2">
                 <Link
-                  to={`/add-client-equipment/${selectedClient}`}
+                  to={`/add-client-equipment/${selectedClient}/${selectedLocation}`}
                   className="bg-indigo-600 text-white px-4 py-2 rounded flex-end"
                   disabled={!selectedClient}
                 >

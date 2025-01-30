@@ -17,7 +17,7 @@ const AdminSideNavbar = () => {
     { title: "Clients", path: "/clients", roles: ["Admin", "Subadmin"] },
     { title: "Client Employees", path: "/client-employees", roles: ["Admin", "Subadmin"] },
     { title: "Client Locations", path: "/locations", roles: ["Admin", "Subadmin"] },
-    { title: "Client Equipments", path: "/client-equipments", roles: ["Admin", "Subadmin"] },
+    { title: "Client Equipment", path: "/client-equipments", roles: ["Admin", "Subadmin"] },
     { title: "Service Agreements", path: "/service-agreements", roles: ["Admin", "Subadmin"] },
     { title: "Client Licensing", path: "/client-licensing", roles: ["Admin", "Subadmin"] },
   ];
@@ -27,7 +27,7 @@ const AdminSideNavbar = () => {
     { title: "Service Agreements", path: "/service-agreements", roles: client_type !== "User" 
       ? ["Client Employee"] 
       : [""],},
-    { title: "Client Equipments", path: "/client-equipments",     roles: client_type !== "User" 
+    { title: "Client Equipment", path: "/client-equipments",     roles: client_type !== "User" 
       ? ["IDR Employee", "Client Employee"] 
       : ["IDR Employee"],  },
     { title: "Client Licensing", path: "/client-licensing", roles: client_type !== "User" 

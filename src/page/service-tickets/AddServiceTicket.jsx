@@ -41,7 +41,7 @@ function AddServiceTicket() {
     local_onsite_contact: "", // Optional
     local_onsite_contact_number: "", // Optional
     service_ticket_details: "", // Optional, added as per request
-    ticket_notes: "",// Optional
+    // ticket_notes: "",// Optional
     client_name:"",
     client_emp_user_id:""
   });
@@ -405,7 +405,7 @@ function AddServiceTicket() {
                     onChange={(e) => handleChange(e, setTicketData)}
                   ></textarea>
                 </div>
-                <div className="flex flex-col gap-2">
+                {/* <div className="flex flex-col gap-2">
                   <label className="font-normal text-base">
                   Ticket Note
                   </label>
@@ -415,7 +415,7 @@ function AddServiceTicket() {
                     rows={3}
                     onChange={(e) => handleChange(e, setTicketData)}
                   ></textarea>
-                </div>
+                </div> */}
               </div>
               <div className="flex flex-col gap-2  justify-center mt-7 items-center">
                     <button
