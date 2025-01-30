@@ -67,7 +67,12 @@ const ServiceAgreements = () => {
   const handleEdit = (agreementId) => {
     navigate(`/edit-service-agreement/${agreementId}`);
   };
-
+  const formatDateToMDY = (dateString) => {
+    if (!dateString) return ""; // Handle empty values
+  
+    const [day, month, year] = dateString.split("/"); // Extract parts
+    return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
+  };
   return (
     <>
       <Header />
@@ -164,21 +169,10 @@ const ServiceAgreements = () => {
                         {agreement.client_name}
                       </td>
                       <td className="border px-4 py-2">
-                      <input
-                            type="date"
-                            value={agreement.start_date || ""}
-                            readOnly
-                            className="outline-none border-none"
-                          />
-                       
+                      {formatDateToMDY(agreement.start_date) || ""}
                       </td>
                       <td className="border px-4 py-2">
-                      <input
-                            type="date"
-                            value={agreement.expiration_date || ""}
-                            readOnly
-                            className="outline-none border-none"
-                          />
+                      {formatDateToMDY(agreement.expiration_date) || ""}
                       </td>
                       <td className="border px-4 py-2">
                         {agreement.parts_covered ? "Yes" : "No"}

@@ -115,6 +115,14 @@ const ClientLicenseList = () => {
     navigate(`/edit-client-licensing/${licenseId}`);
   };
 
+  const formatDateToMDY = (dateString) => {
+    if (!dateString) return ""; // Handle empty values
+  
+    const [day, month, year] = dateString.split("/"); // Extract parts
+    return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
+  };
+  
+
   return (
     <>
       <Header />
@@ -251,21 +259,10 @@ const ClientLicenseList = () => {
                       <td className="border text-sm px-1 py-3">{license.manufacturer}</td>
                       <td className="border text-sm px-1 py-3">{license.license_type}</td>
                       <td className="border text-sm px-1 py-3">
-                        <input
-                            type="date"
-                            value={license.start_date || ""}
-                            readOnly
-                            className="outline-none border-none"
-                          />
+                      {formatDateToMDY(license.start_date) || ""}
                         </td>
                       <td className="border text-sm px-1 py-3">
-                      <input
-                            type="date"
-                            value={license.expiration_date || ""}
-                            readOnly
-                            className="outline-none border-none"
-                          />
-                        
+                      {formatDateToMDY(license.expiration_date) || ""}   
                         </td>
                       {user_type === "Admin" && <td className="border text-sm px-1 py-3">{license.idr_cost}</td>}
                       <td className="border text-sm px-1 py-3">{license.sale_cost}</td>
