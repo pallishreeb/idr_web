@@ -250,8 +250,23 @@ const ClientLicenseList = () => {
                       <td className="border text-sm px-1 py-3">{license.quantity}</td>
                       <td className="border text-sm px-1 py-3">{license.manufacturer}</td>
                       <td className="border text-sm px-1 py-3">{license.license_type}</td>
-                      <td className="border text-sm px-1 py-3">{license.start_date}</td>
-                      <td className="border text-sm px-1 py-3">{license.expiration_date}</td>
+                      <td className="border text-sm px-1 py-3">
+                        <input
+                            type="date"
+                            value={license.start_date || ""}
+                            readOnly
+                            className="outline-none border-none"
+                          />
+                        </td>
+                      <td className="border text-sm px-1 py-3">
+                      <input
+                            type="date"
+                            value={license.expiration_date || ""}
+                            readOnly
+                            className="outline-none border-none"
+                          />
+                        
+                        </td>
                       {user_type === "Admin" && <td className="border text-sm px-1 py-3">{license.idr_cost}</td>}
                       <td className="border text-sm px-1 py-3">{license.sale_cost}</td>
                       <td className="border text-sm px-1 py-3">

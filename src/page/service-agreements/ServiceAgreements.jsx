@@ -164,10 +164,21 @@ const ServiceAgreements = () => {
                         {agreement.client_name}
                       </td>
                       <td className="border px-4 py-2">
-                        {agreement.start_date}
+                      <input
+                            type="date"
+                            value={agreement.start_date || ""}
+                            readOnly
+                            className="outline-none border-none"
+                          />
+                       
                       </td>
                       <td className="border px-4 py-2">
-                        {agreement.expiration_date}
+                      <input
+                            type="date"
+                            value={agreement.expiration_date || ""}
+                            readOnly
+                            className="outline-none border-none"
+                          />
                       </td>
                       <td className="border px-4 py-2">
                         {agreement.parts_covered ? "Yes" : "No"}
