@@ -73,6 +73,17 @@ const ServiceAgreements = () => {
     const [day, month, year] = dateString.split("/"); // Extract parts
     return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
   };
+
+
+    
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD", // Change to appropriate currency if needed
+      minimumFractionDigits: 2,
+    }).format(value);
+  };
+
   return (
     <>
       <Header />
@@ -178,7 +189,7 @@ const ServiceAgreements = () => {
                         {agreement.parts_covered ? "Yes" : "No"}
                       </td>
                       {(user_type === "Admin" || user_type === "Client Employee") && (
-                        <td className="border px-4 py-2">${agreement.price}</td>
+                        <td className="border px-4 py-2">{formatCurrency(agreement.price)}</td>
                       )}
                       <td className="border px-4 py-2 flex">
                         <button

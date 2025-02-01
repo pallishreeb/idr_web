@@ -194,7 +194,7 @@ const EditClientEquipment = () => {
                       htmlFor="device_id"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Device ID*
+                      Device ID(Hostname)*
                     </label>
                     <input
                       type="text"

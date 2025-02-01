@@ -122,6 +122,13 @@ const ClientLicenseList = () => {
     return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
   };
   
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD", // Change to appropriate currency if needed
+      minimumFractionDigits: 2,
+    }).format(value);
+  };
 
   return (
     <>
@@ -264,8 +271,8 @@ const ClientLicenseList = () => {
                       <td className="border text-sm px-1 py-3">
                       {formatDateToMDY(license.expiration_date) || ""}   
                         </td>
-                      {user_type === "Admin" && <td className="border text-sm px-1 py-3">${license.idr_cost}</td>}
-                      <td className="border text-sm px-1 py-3">${license.sale_cost}</td>
+                      {user_type === "Admin" && <td className="border text-sm px-1 py-3">{formatCurrency(license.idr_cost)}</td>}
+                      <td className="border text-sm px-1 py-3">{formatCurrency(license.sale_cost)}</td>
                       <td className="border text-sm px-1 py-3">
                         <button
                           onClick={() => handleEdit(license.license_id)}
