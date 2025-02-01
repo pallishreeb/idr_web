@@ -264,8 +264,8 @@ const ClientLicenseList = () => {
                       <td className="border text-sm px-1 py-3">
                       {formatDateToMDY(license.expiration_date) || ""}   
                         </td>
-                      {user_type === "Admin" && <td className="border text-sm px-1 py-3">{license.idr_cost}</td>}
-                      <td className="border text-sm px-1 py-3">{license.sale_cost}</td>
+                      {user_type === "Admin" && <td className="border text-sm px-1 py-3">${license.idr_cost}</td>}
+                      <td className="border text-sm px-1 py-3">${license.sale_cost}</td>
                       <td className="border text-sm px-1 py-3">
                         <button
                           onClick={() => handleEdit(license.license_id)}

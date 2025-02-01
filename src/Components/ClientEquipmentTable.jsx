@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const ClientEquipmentTable = ({ equipments, onAddNote }) => {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [selectedEquipmentId, setSelectedEquipmentId] = useState(null);
   const [note, setNote] = useState("");
@@ -74,7 +76,8 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                   <React.Fragment key={equipment.client_equipment_id}>
                     <tr className="bg-white text-sm">
                       <td className="border px-4 py-2">
-                        {equipment?.client_equipments?.mac_address}
+                        {/* {equipment?.client_equipments?.mac_address} */}
+                        {equipment?.client_equipments?.model}
                       </td>
                       <td className="border px-4 py-2">
                         {equipment?.client_equipments?.serial_number}
@@ -85,9 +88,17 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                             onClick={() =>
                               openModal(equipment.client_equipment_id)
                             }
-                            className="bg-blue-500 text-white px-3 py-1 rounded"
+                            className="bg-indigo-600 text-white px-3 py-1 rounded"
                           >
                             Add Note
+                          </button>
+                          <button
+                            onClick={() =>
+                              navigate(`/edit-client-equipment/${equipment.client_equipment_id}`)
+                            }
+                            className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
+                          >
+                            View Equipment
                           </button>
                           <button
                             onClick={() =>
