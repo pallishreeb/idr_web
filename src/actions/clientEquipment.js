@@ -101,7 +101,7 @@ export const addClientEquipment = (equipmentData,navigate) => {
       const response = await axios.post(apiConfig.addClientEquipment, equipmentData);
       dispatch(addClientEquipmentSuccess(response.data.location));
       toast.success("Client Equipment added successfully!");
-      navigate("/client-equipments");
+      navigate(`/add-client-equipment/${equipmentData?.client_id}/${equipmentData?.location_id}`);
     } catch (error) {
       dispatch(addClientEquipmentFailure(error.message));
       toast.error(error.response?.data?.message || "Error adding Client Equipment");

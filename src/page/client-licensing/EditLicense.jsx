@@ -16,7 +16,8 @@ const EditLicense = () => {
   const clientLocations = useSelector((state) => state.location.locations);
   const loadingClients = useSelector((state) => state.client.loading);
   const loadingLocations = useSelector((state) => state.location.loading);
-  const { user_type } = useSelector((state) => state.user.user);
+  const { user_type ,client_type} = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
   const { licenseDetails, loading, loadingDetails } = useSelector((state) => state.license);
 
   const [licenseData, setLicenseData] = useState({
@@ -267,7 +268,7 @@ const EditLicense = () => {
                     disabled={user_type !== "Admin"}
                   />
                 </div>
-                {user_type === "Admin" && (
+                {access.includes(user_type) && (
                   <div className="flex flex-col mb-4">
                     <label htmlFor="idr_cost" className="mr-2">
                       IDR Cost:
@@ -283,6 +284,7 @@ const EditLicense = () => {
                     />
                   </div>
                 )}
+               {(access.includes(user_type) || client_type !== "User" ) &&
                 <div className="flex flex-col mb-4">
                   <label htmlFor="sale_cost" className="mr-2">
                     Sale Price:
@@ -297,7 +299,7 @@ const EditLicense = () => {
                     disabled={user_type !== "Admin"}
                     required
                   />
-                </div>
+                </div>}
               </div>
               <div className="flex justify-end mb-4">
                 {user_type === "Admin" &&

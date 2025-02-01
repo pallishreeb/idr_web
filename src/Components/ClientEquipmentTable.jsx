@@ -77,7 +77,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                     <tr className="bg-white text-sm">
                       <td className="border px-4 py-2">
                         {/* {equipment?.client_equipments?.mac_address} */}
-                        {equipment?.client_equipments?.model}
+                        {equipment?.client_equipments?.device_id}
                       </td>
                       <td className="border px-4 py-2">
                         {equipment?.client_equipments?.serial_number}

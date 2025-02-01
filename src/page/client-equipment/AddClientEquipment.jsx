@@ -95,6 +95,17 @@ const AddClientEquipment = () => {
   const handleSave = (e) => {
     e.preventDefault();
     dispatch(addClientEquipment(clientEquipment, navigate));
+    setClientEquipment({
+      device_type: "",
+      device_id: "",
+      manufacturer: "",
+      model: "",
+      serial_number: "",
+      mac_address: "", // Optional
+      lan_ip_address: "", // Optional
+      wan_ip_address: "", // Optional
+      general_info: "", 
+    })
   };
 
   return (
@@ -177,7 +188,7 @@ const AddClientEquipment = () => {
                 </div>
                 <div>
                   <label htmlFor="device_id" className="block text-sm font-medium text-gray-700">
-                    Device ID*
+                    Device ID(Hostname)*
                   </label>
                   <input
                     type="text"

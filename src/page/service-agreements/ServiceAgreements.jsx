@@ -22,7 +22,8 @@ const ServiceAgreements = () => {
   const loading = useSelector((state) => state.serviceAgreement.loading);
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const { user_type } = useSelector((state) => state.user.user);
+  const { user_type ,client_type} = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
 
   // Reset client and location when unmounting or navigating back
   useEffect(() => {
@@ -73,6 +74,17 @@ const ServiceAgreements = () => {
     const [day, month, year] = dateString.split("/"); // Extract parts
     return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
   };
+
+
+    
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD", // Change to appropriate currency if needed
+      minimumFractionDigits: 2,
+    }).format(value);
+  };
+
   return (
     <>
       <Header />
@@ -149,7 +161,7 @@ const ServiceAgreements = () => {
                   <th className="border px-4 py-2">Start Date</th>
                   <th className="border px-4 py-2">Expiration Date</th>
                   <th className="border px-4 py-2">Parts Covered</th>
-                  {user_type === "Admin" && (
+                  {(access.includes(user_type) || client_type !== "User" ) &&  (
                     <th className="border px-4 py-2">Annual Sale Price</th>
                   )}
                   <th className="border px-4 py-2">Actions</th>
@@ -177,8 +189,8 @@ const ServiceAgreements = () => {
                       <td className="border px-4 py-2">
                         {agreement.parts_covered ? "Yes" : "No"}
                       </td>
-                      {(user_type === "Admin" || user_type === "Client Employee") && (
-                        <td className="border px-4 py-2">${agreement.price}</td>
+                      {(access.includes(user_type) || client_type !== "User" ) &&  (
+                        <td className="border px-4 py-2">{formatCurrency(agreement.price)}</td>
                       )}
                       <td className="border px-4 py-2 flex">
                         <button
