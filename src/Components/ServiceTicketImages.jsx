@@ -74,10 +74,13 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
     setSelectedImageUrl(imageUrl); // Set the image URL for the modal
   };
 
+  // const handleMediaClick = (mediaUrl) => {
+  //   setSelectedMediaUrl(mediaUrl);
+  // };
   const closeImageModal = () => {
     setSelectedImageUrl(null); // Close the image modal
   };
-
+  const isVideo = (fileName) => /\.(mp4|mov|avi|webm|mkv)$/i.test(fileName);
   return (
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -87,7 +90,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
             className="bg-indigo-600 text-white px-6 py-2 rounded"
             onClick={handleOpenModal}
           >
-            Add Images
+            Add Images/Videos
           </button>
         )}
       </div>
@@ -103,26 +106,35 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
             </tr>
           </thead>
           <tbody>
-            {images?.map((image, index) => (
+            {images?.map((image, index) =>{
+               const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
+             return (
+              
               <tr key={index} className="bg-white text-sm">
                 <td className="border px-4 py-2">
                  
-                    <img
-                      src={`${S3_BASE_URL}/${image?.attachment_url}`} // Replace with the actual image URL
-                      alt={`Service Ticket Image ${index + 1}`}
-                      className="w-20 h-20 object-cover rounded"
-                      onClick={() =>
-                        handleImageClick(`${S3_BASE_URL}/${image?.attachment_url}`)
-                      }
-                    />
+                {isVideo(image?.attachment_url) ? (
+                      <video
+                        src={fileUrl}
+                        className="w-20 h-20 object-cover rounded"
+                        controls
+                        onClick={() => handleImageClick(fileUrl)}
+                      />
+                    ) : (
+                      <img
+                        src={fileUrl}
+                        alt={`Attachment ${index + 1}`}
+                        className="w-20 h-20 object-cover rounded"
+                        onClick={() => handleImageClick(fileUrl)}
+                      />
+                    )}
                 </td>
                 <td className="border px-4 py-2">{image?.user_name || "NA"}</td>
                 <td className="border px-4 py-2">
                   <button
                     onClick={() =>
                       handleDownload(
-                        `${S3_BASE_URL}/${image?.attachment_url}`,
-                        `image-${index + 1}.jpg`
+                        fileUrl, `attachment-${index + 1}`
                       )
                     }
                     className="bg-blue-500 text-white px-3 py-3 rounded"
@@ -131,7 +143,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                   </button>
                 </td>
               </tr>
-            ))}
+            )})}
           </tbody>
         </table>
       </div>
@@ -147,7 +159,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
               </label>
               <input
                 type="file"
-                accept="image/*"
+                // accept="image/*"
                 multiple
                 onChange={handleFileChange}
                 className="block w-full text-sm text-gray-500 border border-gray-300 rounded cursor-pointer"
