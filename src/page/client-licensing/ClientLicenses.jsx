@@ -17,7 +17,8 @@ const ClientLicenseList = () => {
   const { clients } = useSelector((state) => state.client);
   const { locations } = useSelector((state) => state.location);
   const { licenses, loading } = useSelector((state) => state.license);
-  const { user_type } = useSelector((state) => state.user.user);
+  const { user_type ,client_type} = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
   const [filters, setFilters] = useState({
     client_id: "",
     location_id: "",
@@ -237,15 +238,15 @@ const ClientLicenseList = () => {
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">License Type</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Start Date</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Expiration Date</th>
-                  {user_type === "Admin" && <th className="px-4 py-2 text-sm font-semibold tracking-wider border">IDR Cost</th>}
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Sale Price</th>
+                  {access.includes(user_type) && <th className="px-4 py-2 text-sm font-semibold tracking-wider border">IDR Cost</th>}
+                  {(access.includes(user_type) || client_type !== "User" ) && <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Sale Price</th>}
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={user_type === "Admin" ? "9" : "8"} className="py-4">
+                    <td colSpan={"9"} className="py-4">
                       <div className="flex justify-center items-center">
                         <img src={Loader} alt="Loading..." className="h-16 w-16" />
                       </div>
@@ -271,8 +272,8 @@ const ClientLicenseList = () => {
                       <td className="border text-sm px-1 py-3">
                       {formatDateToMDY(license.expiration_date) || ""}   
                         </td>
-                      {user_type === "Admin" && <td className="border text-sm px-1 py-3">{formatCurrency(license.idr_cost)}</td>}
-                      <td className="border text-sm px-1 py-3">{formatCurrency(license.sale_cost)}</td>
+                      {access.includes(user_type) && <td className="border text-sm px-1 py-3">{formatCurrency(license.idr_cost)}</td>}
+                      {(access.includes(user_type) || client_type !== "User" ) && <td className="border text-sm px-1 py-3">{formatCurrency(license.sale_cost)}</td>}
                       <td className="border text-sm px-1 py-3">
                         <button
                           onClick={() => handleEdit(license.license_id)}

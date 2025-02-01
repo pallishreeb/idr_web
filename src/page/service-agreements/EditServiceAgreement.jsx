@@ -22,7 +22,8 @@ const EditServiceAgreement = () => {
   const { loadingDetails, loading } = useSelector(
     (state) => state.serviceAgreement
   );
-  const { user_type } = useSelector((state) => state.user.user);
+  const { user_type ,client_type} = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
   const [serviceAgreement, setServiceAgreement] = useState({
     client_id: "",
     client_name: "",
@@ -262,7 +263,7 @@ const EditServiceAgreement = () => {
                       <option value="false">No</option>
                     </select>
                   </div>
-                  {(user_type === "Admin" || user_type === "Client Employee") && (
+                  {(access.includes(user_type) || client_type !== "User" ) &&  (
                     <div>
                       <label
                         htmlFor="price"
