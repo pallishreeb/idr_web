@@ -152,10 +152,10 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
       {isModalOpen && (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-4 my-8 max-h-[95vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4 text-center">Add Images</h2>
+            <h2 className="text-xl font-bold mb-4 text-center">Add Images/Videos</h2>
             <div className="mb-4">
               <label className="block font-normal text-base mb-2">
-                Select Images
+                Select File
               </label>
               <input
                 type="file"
