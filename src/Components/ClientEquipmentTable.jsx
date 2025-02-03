@@ -102,6 +102,14 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                           </button>
                           <button
                             onClick={() =>
+                              navigate(`/add-device-rma/${equipment.client_equipment_id}`)
+                            }
+                            className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
+                          >
+                            RMA
+                          </button>
+                          <button
+                            onClick={() =>
                               toggleNotes(equipment.device_linked_id)
                             }
                             className="ml-4 bg-gray-500 text-white px-3 py-1 rounded"

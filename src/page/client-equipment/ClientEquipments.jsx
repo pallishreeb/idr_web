@@ -247,7 +247,7 @@ const ClientEquipments = () => {
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4 bg-gray-50">
+        <div className="container mx-auto p-4 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between items-center">
             <h1 className="font-bold text-lg">Client Equipments</h1>
             {technicianAccess.includes(user_type) && (

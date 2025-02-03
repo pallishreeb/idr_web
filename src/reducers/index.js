@@ -14,6 +14,7 @@ import serviceTickets from './serviceTicketSlice'
 import clientEquipments from './clientEquipmentSlice'
 import serviceAgreementSlice from './serviceAgreementSlice'
 import licenseSlice from "./licenseSlice"
+import rmaSlice from "./rmaSlice"
 
 const rootReducer = combineReducers({
   user: userReducer,
@@ -29,7 +30,8 @@ const rootReducer = combineReducers({
   serviceTicket:serviceTickets,
   clientEquipment:clientEquipments,
   serviceAgreement:serviceAgreementSlice,
-  license:licenseSlice
+  license:licenseSlice,
+  rma:rmaSlice
 });
 
 export default rootReducer;

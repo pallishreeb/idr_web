@@ -90,7 +90,7 @@ const ServiceAgreements = () => {
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4 bg-gray-50">
+        <div className="container mx-auto p-4 bg-gray-50 w-full h-screen overflow-y-scroll">
           <h2 className="text-xl font-semibold mb-4">
             Client Service Agreements
           </h2>

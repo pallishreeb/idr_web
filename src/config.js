@@ -99,7 +99,15 @@ const apiConfig = {
   licenseDetailsById: "/license",
   deleteLicense: "/license/delete",
   addNotesToServiceTicket:"/service_ticket/add_st_notes",
-  deleteServiceNote:"/service_ticket/delete_st_notes"
+  deleteServiceNote:"/service_ticket/delete_st_notes",
+  generateRMA: "/rma/create",
+  getRMALists: "/rma/all",
+  deleteRMA: "/rma",
+  updateRMA:"/rma/update",
+  getRMAByID:"/rma",
+  addNoteToRma: "/rma/add_note",
+  addAttachmentToRma:"/rma/image/add",
+  deleteNoteForRma:"/rma/note",
 };
 
 export { API_BASE_URL, apiConfig,S3_BASE_URL };

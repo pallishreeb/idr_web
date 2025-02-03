@@ -2,22 +2,23 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { AiFillDelete } from "react-icons/ai";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
-import { getLicenseLists , deleteLicense} from "../../actions/licenseActions";
+import { getRmaLists, deleteRma } from "../../actions/rmaActions"; // Updated imports
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import Header from "../../Components/Header";
 import Loader from "../../Images/ZZ5H.gif";
-import { clearLicense } from "../../reducers/licenseSlice";
-const ClientLicenseList = () => {
+import { clearRma } from "../../reducers/rmaSlice"; // Updated import
+
+const RmaViewList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { clients } = useSelector((state) => state.client);
   const { locations } = useSelector((state) => state.location);
-  const { licenses, loading } = useSelector((state) => state.license);
-  const { user_type ,client_type} = useSelector((state) => state.user.user);
+  const { rmaList, loading } = useSelector((state) => state.rma); // Updated state
+  const { user_type, client_type } = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
   const [filters, setFilters] = useState({
     client_id: "",
@@ -26,17 +27,12 @@ const ClientLicenseList = () => {
   });
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
-    // Reset client and location when unmounting or navigating back
-    useEffect(() => {
-      if (selectedClient == null) {
-        dispatch(clearLicense(selectedClient));
-      }
-    }, [selectedClient, dispatch]);
+
   useEffect(() => {
     if (user_type === "Client Employee") {
-      dispatch(getLicenseLists({}));
+      dispatch(getRmaLists({}));
     } else {
-      dispatch(getLicenseLists({}));
+      dispatch(getRmaLists({}));
       dispatch(getClients());
     }
   }, [dispatch, user_type]);
@@ -50,9 +46,9 @@ const ClientLicenseList = () => {
       manufacturer: "",
     }));
     setSelectedClient(value);
-    dispatch(getLocationByClient(value)); // Fetch locations for the selected client
+    dispatch(getLocationByClient(value));
     if (value) {
-      dispatch(getLicenseLists({ client_id: value })); // Fetch licenses for the client
+      dispatch(getRmaLists({ client_id: value }));
     }
   };
 
@@ -63,7 +59,7 @@ const ClientLicenseList = () => {
       location_id: value,
     }));
     if (filters.client_id && value) {
-      dispatch(getLicenseLists({ client_id: filters.client_id, location_id: value })); // Fetch licenses for the client and location
+      dispatch(getRmaLists({ client_id: filters.client_id, location_id: value }));
     }
     setSelectedLocation(value);
   };
@@ -83,7 +79,7 @@ const ClientLicenseList = () => {
       ...(location_id && { location_id }),
       ...(manufacturer && { manufacturer }),
     };
-    dispatch(getLicenseLists(query)); // Fetch licenses based on all applied filters
+    dispatch(getRmaLists(query));
   };
 
   const handleReset = () => {
@@ -93,42 +89,35 @@ const ClientLicenseList = () => {
       manufacturer: "",
     });
     if (user_type === "Client Employee") {
-      dispatch(getLicenseLists({}));
-    }else{
-      dispatch(clearLicense(selectedClient));
+      dispatch(getRmaLists({}));
+    } else {
+      dispatch(clearRma());
     }
   };
-  const handleDeleteLicense = (licenseId) => {
+
+  const handleDeleteRma = (rmaId) => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you really want to delete this license?',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "Do you really want to delete this RMA?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it',
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(deleteLicense(licenseId));
+        dispatch(deleteRma(rmaId));
       }
     });
   };
-  const handleEdit = (licenseId) => {
-    navigate(`/edit-client-licensing/${licenseId}`);
+
+  const handleEdit = (rmaId) => {
+    navigate(`/edit-device-rma/${rmaId}`);
   };
 
   const formatDateToMDY = (dateString) => {
-    if (!dateString) return ""; // Handle empty values
-  
-    const [day, month, year] = dateString.split("/"); // Extract parts
-    return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
-  };
-  
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD", // Change to appropriate currency if needed
-      minimumFractionDigits: 2,
-    }).format(value);
+    if (!dateString) return "";
+    const [day, month, year] = dateString.split("/");
+    return `${month}/${day}/${year}`;
   };
 
   return (
@@ -137,7 +126,7 @@ const ClientLicenseList = () => {
       <div className="flex">
         <AdminSideNavbar />
         <div className="container mx-auto p-4 w-full h-screen overflow-y-scroll">
-          <h2 className="text-xl font-semibold mb-4">Client License List</h2>
+          <h2 className="text-xl font-semibold mb-4">RMA List</h2>
           <div className="mb-4">
             {user_type !== "Client Employee" && (
               <form className="grid grid-cols-3 gap-4">
@@ -211,7 +200,6 @@ const ClientLicenseList = () => {
                 Reset
               </button>
             </div>
-
           </div>
 
           <div className="mb-4 flex justify-end">
@@ -220,8 +208,8 @@ const ClientLicenseList = () => {
                 className="bg-indigo-700 text-white px-4 py-2 rounded"
                 disabled={!selectedClient}
               >
-                <Link to={`/add-client-licensing/${selectedClient}/${selectedLocation}`}>
-                  Add New Client License
+                <Link to={`/add-rma/${selectedClient}/${selectedLocation}`}>
+                  Add New RMA
                 </Link>
               </button>
             )}
@@ -233,61 +221,54 @@ const ClientLicenseList = () => {
                 <tr className="bg-gray-100">
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Client</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Location</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Qty</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Manufacturer</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">License Type</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Start Date</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Expiration Date</th>
-                  {access.includes(user_type) && <th className="px-4 py-2 text-sm font-semibold tracking-wider border">IDR Cost</th>}
-                  {(access.includes(user_type) || client_type !== "User" ) && <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Sale Price</th>}
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Model</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Serial</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Approved Date</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Approved By</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={"9"} className="py-4">
+                    <td colSpan={"8"} className="py-4">
                       <div className="flex justify-center items-center">
                         <img src={Loader} alt="Loading..." className="h-16 w-16" />
                       </div>
                     </td>
                   </tr>
-                ) : licenses?.length === 0 ? (
+                ) : rmaList?.length === 0 ? (
                   <tr>
-                    <td colSpan="9" className="text-center py-4">
-                      No licenses found
+                    <td colSpan="8" className="text-center py-4">
+                      No RMAs found
                     </td>
                   </tr>
                 ) : (
-                  licenses?.map((license) => (
-                    <tr key={license.license_id}>
-                      <td className="border text-sm px-1 py-3">{license.client_name}</td>
-                      <td className="border text-sm px-1 py-3">{`${license?.location_details?.address_line_one}`  || "NA"}</td>
-                      <td className="border text-sm px-1 py-3">{license.quantity}</td>
-                      <td className="border text-sm px-1 py-3">{license.manufacturer}</td>
-                      <td className="border text-sm px-1 py-3">{license.license_type}</td>
-                      <td className="border text-sm px-1 py-3">
-                      {formatDateToMDY(license.start_date) || ""}
-                        </td>
-                      <td className="border text-sm px-1 py-3">
-                      {formatDateToMDY(license.expiration_date) || ""}   
-                        </td>
-                      {access.includes(user_type) && <td className="border text-sm px-1 py-3">{formatCurrency(license.idr_cost)}</td>}
-                      {(access.includes(user_type) || client_type !== "User" ) && <td className="border text-sm px-1 py-3">{formatCurrency(license.sale_cost)}</td>}
+                  rmaList?.map((rma) => (
+                    <tr key={rma.rma_id}>
+                      <td className="border text-sm px-1 py-3">{rma.client_name}</td>
+                      <td className="border text-sm px-1 py-3">{`${rma?.location_details?.address_line_one}` || "NA"}</td>
+                      <td className="border text-sm px-1 py-3">{rma.manufacturer}</td>
+                      <td className="border text-sm px-1 py-3">{rma.model}</td>
+                      <td className="border text-sm px-1 py-3">{rma.serial}</td>
+                      <td className="border text-sm px-1 py-3">{formatDateToMDY(rma.aprooved_date)}</td>
+                      <td className="border text-sm px-1 py-3">{rma.aprooved_by}</td>
                       <td className="border text-sm px-1 py-3">
                         <button
-                          onClick={() => handleEdit(license.license_id)}
+                          onClick={() => handleEdit(rma.rma_id)}
                           className="p-2 bg-gray-100"
                         >
                           <BiSolidEditAlt />
                         </button>
-                        {user_type === "Admin" && 
-                        <button
-                        onClick={() => handleDeleteLicense(license.license_id)}
-                        className="p-2 bg-gray-100"
-                      >
-                        <AiFillDelete />
-                      </button>}
+                        {user_type === "Admin" && (
+                          <button
+                            onClick={() => handleDeleteRma(rma.rma_id)}
+                            className="p-2 bg-gray-100"
+                          >
+                            <AiFillDelete />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -301,4 +282,4 @@ const ClientLicenseList = () => {
   );
 };
 
-export default ClientLicenseList;
+export default RmaViewList;
