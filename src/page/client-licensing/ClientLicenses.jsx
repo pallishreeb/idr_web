@@ -124,6 +124,10 @@ const ClientLicenseList = () => {
   };
   
   const formatCurrency = (value) => {
+    if (typeof value === "string") {
+      value = value.replace(/,/g, ""); // Remove all commas
+    }
+  
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD", // Change to appropriate currency if needed
