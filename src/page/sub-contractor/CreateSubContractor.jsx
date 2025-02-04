@@ -1,6 +1,15 @@
 import React, { useState } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { Link, useNavigate } from "react-router-dom";
+// import { getSubcontractorLists, deleteSubcontractor } from "../../actions/subContractorAction";
+import AdminSideNavbar from "../../Components/AdminSideNavbar";
+import Header from "../../Components/Header";
 
 const CreateSubContractor = () => {
+  // const dispatch = useDispatch();
+  // const navigate = useNavigate();
+  // const { subcontractors, loading } = useSelector((state) => state.subcontractor);
+  // const { user_type } = useSelector((state) => state.user.user);
   // State for form data
   const [formData, setFormData] = useState({
     subcontractorName: "",
@@ -121,7 +130,11 @@ const CreateSubContractor = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <>
+    <Header />
+    <div className="flex">
+      <AdminSideNavbar />
+    <div className="container mx-auto p-4 w-full h-screen overflow-y-scroll">
       <h1 className="text-2xl font-bold mb-4">Create SubContractor</h1>
       <form onSubmit={handleSubmit}>
         {/* Subcontractor Information */}
@@ -536,12 +549,14 @@ const CreateSubContractor = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-indigo-600 text-white px-4 py-2 rounded"
         >
           Create SubContractor
         </button>
       </form>
     </div>
+    </div>
+    </>
   );
 };
 

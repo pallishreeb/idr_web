@@ -108,6 +108,15 @@ const apiConfig = {
   addNoteToRma: "/rma/add_note",
   addAttachmentToRma:"/rma/image/add",
   deleteNoteForRma:"/rma/note",
+  addSubcontractor:"",
+  getSubcontractorLists:"",
+  deleteSubcontractor:"",
+  updateSubcontractor:"",
+  getSubcontractorByID:"",
+  addNoteToSubcontractor:"",
+  deleteNoteForSubcontractor:"",
+  addAttachmentToWorkOrder:"/work_order/image/add",
+  activeDeactiveClient:""
 };
 
 export { API_BASE_URL, apiConfig,S3_BASE_URL };
