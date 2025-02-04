@@ -25,8 +25,8 @@ const RmaViewList = () => {
     location_id: "",
     manufacturer: "",
   });
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  // const [selectedClient, setSelectedClient] = useState(null);
+  // const [selectedLocation, setSelectedLocation] = useState(null);
 
   useEffect(() => {
     if (user_type === "Client Employee") {
@@ -45,7 +45,7 @@ const RmaViewList = () => {
       location_id: "",
       manufacturer: "",
     }));
-    setSelectedClient(value);
+    // setSelectedClient(value);
     dispatch(getLocationByClient(value));
     if (value) {
       dispatch(getRmaLists({ client_id: value }));
@@ -61,7 +61,7 @@ const RmaViewList = () => {
     if (filters.client_id && value) {
       dispatch(getRmaLists({ client_id: filters.client_id, location_id: value }));
     }
-    setSelectedLocation(value);
+    // setSelectedLocation(value);
   };
 
   const handleManufacturerChange = (e) => {
@@ -202,7 +202,7 @@ const RmaViewList = () => {
             </div>
           </div>
 
-          <div className="mb-4 flex justify-end">
+          {/* <div className="mb-4 flex justify-end">
             {user_type === "Admin" && (
               <button
                 className="bg-indigo-700 text-white px-4 py-2 rounded"
@@ -213,7 +213,7 @@ const RmaViewList = () => {
                 </Link>
               </button>
             )}
-          </div>
+          </div> */}
 
           <div className="overflow-x-auto">
             <table className="min-w-full table-auto text-left">

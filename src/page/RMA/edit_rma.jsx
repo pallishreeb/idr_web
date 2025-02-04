@@ -125,6 +125,8 @@ export default function EditRma() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    // Format date fields
     const formattedData = {
       ...formData,
       aprooved_date: formatDateToDDMMYYYY(formData.aprooved_date),
@@ -132,15 +134,20 @@ export default function EditRma() {
       inbound_date_shipped: formatDateToDDMMYYYY(formData.inbound_date_shipped),
       date_received: formatDateToDDMMYYYY(formData.date_received),
     };
+  
+    // Remove empty fields
+    const filteredData = Object.fromEntries(
+      Object.entries(formattedData).filter(([_, value]) => value !== "")
+    );
+  
     try {
-      await dispatch(updateRMA(formattedData, navigate));
+      await dispatch(updateRMA(filteredData, navigate));
       setIsEditing(false); // Disable editing after submission
-      toast.success("RMA updated successfully");
     } catch (error) {
       console.error("Error updating RMA", error);
-      toast.error("Failed to update RMA");
     }
   };
+  
 
   // Handle cancel edit
   const handleCancel = () => {
