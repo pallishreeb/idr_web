@@ -19,11 +19,12 @@ const RmaViewList = () => {
   const { locations } = useSelector((state) => state.location);
   const { rmaList, loading } = useSelector((state) => state.rma); // Updated state
   const { user_type, client_type } = useSelector((state) => state.user.user);
-  const { access } = useSelector((state) => state.user);
+  // const { access } = useSelector((state) => state.user);
   const [filters, setFilters] = useState({
     client_id: "",
     location_id: "",
     manufacturer: "",
+    status:""
   });
   // const [selectedClient, setSelectedClient] = useState(null);
   // const [selectedLocation, setSelectedLocation] = useState(null);
@@ -71,7 +72,13 @@ const RmaViewList = () => {
       manufacturer: value,
     }));
   };
-
+  const handleStatusChange = (e) => {
+    const { value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      status: value,
+    }));
+  };
   const handleSearch = () => {
     const { client_id, location_id, manufacturer } = filters;
     const query = {
@@ -171,9 +178,22 @@ const RmaViewList = () => {
                     ))}
                   </select>
                 </div>
+                <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium">Status</label>
+                <select
+                  name="status"
+                  value={filters.status}
+                  onChange={handleStatusChange}
+                  className="px-3 border border-gray-200 h-10 rounded"
+                >
+                  <option value="">All</option>
+                  <option value="false">Active</option>
+                  <option value="true">Retired</option>
+                </select>
+                </div>
               </form>
             )}
-            <div className="flex flex-row items-end gap-2">
+            <div className="flex flex-row items-end gap-2 mt-2">
               <div className="flex flex-col">
                 <label htmlFor="manufacturer" className="text-sm mb-2">
                   Filter by Manufacturer:

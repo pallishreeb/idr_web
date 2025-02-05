@@ -24,7 +24,7 @@ const ServiceAgreements = () => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const { user_type ,client_type} = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
-
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
   // Reset client and location when unmounting or navigating back
   useEffect(() => {
     if (selectedClient == null) {
@@ -87,7 +87,26 @@ const ServiceAgreements = () => {
       minimumFractionDigits: 2,
     }).format(value);
   };
+  const handleSort = (key) => {
+    let direction = "ASC";
+    if (sortConfig.key === key && sortConfig.direction === "ASC") {
+      direction = "DESC";
+    }
+    setSortConfig({ key, direction });
+    
+    dispatch(getServiceAgreementLists({          
+       client_id: selectedClient,
+       location_id: selectedLocation,
+       sortBy: key,
+       orderBy: direction }));
+  };
 
+  const getSortSymbol = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "ASC" ? "▲" : "▼";
+    }
+    return "↕";
+  };
   return (
     <>
       <Header />
@@ -160,12 +179,18 @@ const ServiceAgreements = () => {
             <table className="table-auto w-full border-collapse border border-gray-200">
               <thead>
                 <tr className="bg-gray-100 text-left">
-                  <th className="border px-4 py-2">Client Name</th>
+                  <th className="border px-4 py-2">Client Name
+                  <span className="ml-1" onClick={() => handleSort("client_name")}>{getSortSymbol("client_name")}</span>
+                  </th>
                   <th className="border px-4 py-2">Start Date</th>
-                  <th className="border px-4 py-2">Expiration Date</th>
+                  <th className="border px-4 py-2"  onClick={() => handleSort("expiration_date")}>Expiration Date  
+                    <span className="ml-1">
+                      {getSortSymbol("expiration_date")}
+                    </span></th>
                   <th className="border px-4 py-2">Parts Covered</th>
                   {(access.includes(user_type) || client_type !== "User" ) &&  (
-                    <th className="border px-4 py-2">Annual Sale Price</th>
+                    <th className="border px-4 py-2" onClick={() => handleSort("price")}>Annual Sale Price
+                       <span className="ml-1">{getSortSymbol("price")}</span></th>
                   )}
                   <th className="border px-4 py-2">Actions</th>
                 </tr>
