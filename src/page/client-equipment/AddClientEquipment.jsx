@@ -34,6 +34,8 @@ const AddClientEquipment = () => {
     general_info: "", // Optional
   });
 
+  const [file, setFile] = useState(null);
+
   // Fetch clients when the component mounts
   useEffect(() => {
     dispatch(getClients());
@@ -92,8 +94,26 @@ const AddClientEquipment = () => {
     }
   };
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
   const handleSave = (e) => {
     e.preventDefault();
+    // const formData = new FormData();
+    // formData.append("client_id", clientEquipment.client_id);
+    // formData.append("client_name", clientEquipment.client_name);
+    // formData.append("location_id", clientEquipment.location_id);
+
+    // if (file) {
+    //   formData.append("file", file);
+    // } else {
+    //   Object.keys(clientEquipment).forEach((key) => {
+    //     formData.append(key, clientEquipment[key]);
+    //   });
+    // }
+
+    // dispatch(addClientEquipment(formData, navigate));
     dispatch(addClientEquipment(clientEquipment, navigate));
     setClientEquipment({
       device_type: "",
@@ -171,6 +191,19 @@ const AddClientEquipment = () => {
                 </div>
               </div>
 
+                {/* Upload excel */}
+                <div className="grid grid-cols-2 gap-4 mt-4 mb-4">
+                      <div className="flex flex-col">
+                        <label htmlFor="file">Upload Excel File:</label>
+                        <input
+                          type="file"
+                          id="file"
+                          accept=".xlsx, .xls"
+                          className="border border-gray-300 rounded px-3 py-1"
+                          onChange={handleFileChange}
+                        />
+                      </div>
+                    </div>
               {/* Device Details */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
