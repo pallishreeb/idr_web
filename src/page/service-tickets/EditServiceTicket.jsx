@@ -431,6 +431,7 @@ const EditServiceTicket = () => {
               isOpen={isModalOpen}
               onClose={closeModal}
               onSave={handleSaveSignature}
+              serviceTicketId={serviceTicketId}
             />
           </div>
         </div>

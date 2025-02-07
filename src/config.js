@@ -100,6 +100,7 @@ const apiConfig = {
   deleteLicense: "/license/delete",
   addNotesToServiceTicket:"/service_ticket/add_st_notes",
   deleteServiceNote:"/service_ticket/delete_st_notes",
+  esignServiceTicket:"/service_ticket/sign",
   generateRMA: "/rma/create",
   getRMALists: "/rma/all",
   deleteRMA: "/rma",

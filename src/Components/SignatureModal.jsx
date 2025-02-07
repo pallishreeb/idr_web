@@ -1,11 +1,22 @@
 import React, { useRef, useState } from "react";
 import ReactModal from "react-modal";
+import { useDispatch, useSelector } from "react-redux";
+// import { AiFillDelete } from "react-icons/ai";
+// import Swal from "sweetalert2";
+// import { FaDownload } from "react-icons/fa";
+import { uploadServiceTicketSign,getServiceTicketDetails } from "../actions/serviceTicket";
+import { toast } from "react-toastify";
+// import { S3_BASE_URL } from "../config";
 import "./SignatureModal.css"; // Optional for styling
 
-const SignatureModal = ({ isOpen, onClose, onSave }) => {
+const SignatureModal = ({ isOpen, onClose, onSave ,serviceTicketId}) => {
+  const dispatch = useDispatch();
+
   const canvasRef = useRef(null); // Reference to the canvas element
   const [isDrawing, setIsDrawing] = useState(false); // Track drawing state
-
+  // const { user_type } = useSelector((state) => state.user.user);
+  // const {  technicianAccess} = useSelector((state) => state.user);
+  const { loadingAssignImage } = useSelector((state) => state.serviceTicket);
   // Start drawing
   const startDrawing = (event) => {
     const canvas = canvasRef.current;
@@ -46,13 +57,38 @@ const SignatureModal = ({ isOpen, onClose, onSave }) => {
   };
 
   // Save the signature as an image
-  const saveSignature = () => {
-    const canvas = canvasRef.current;
-    const image = canvas.toDataURL("image/png"); // Convert canvas to PNG
-    onSave(image); // Pass the image data to the parent component
-    onClose(); // Close the modal
-  };
+  // const saveSignature = () => {
+  //   const canvas = canvasRef.current;
+  //   const image = canvas.toDataURL("image/png"); // Convert canvas to PNG
+  //   onSave(image); // Pass the image data to the parent component
+  //   onClose(); // Close the modal
+  // };
 
+  const handleUpload = async() => {
+    const canvas = canvasRef.current;
+    const dataURL = canvas.toDataURL("image/png");
+    if (!dataURL) {
+      toast.error("Please select at least one image.");
+      return;
+    }
+
+    
+    // Convert Base64 to Blob
+    const blob = await fetch(dataURL).then(res => res.blob());
+
+    // Create a File object
+    const image = new File([blob], "signature.png", { type: "image/png" });
+    dispatch(uploadServiceTicketSign(serviceTicketId, image))
+      .then(() => {
+        toast.success("Signature uploaded successfully.");
+        dispatch(getServiceTicketDetails(serviceTicketId));
+        onClose(); 
+      })
+      .catch((error) => {
+        console.error("Error uploading signature:", error);
+        toast.error("Failed to upload signature.");
+      });
+  };
   return (
     <ReactModal
       isOpen={isOpen}
@@ -74,7 +110,7 @@ const SignatureModal = ({ isOpen, onClose, onSave }) => {
       />
       <div className="modal-actions">
         <button onClick={clearCanvas}>Clear</button>
-        <button onClick={saveSignature}>Save</button>
+        <button onClick={handleUpload}>{loadingAssignImage ? "uploading" : "Save"}</button>
         <button onClick={onClose}>Close</button>
       </div>
     </ReactModal>
