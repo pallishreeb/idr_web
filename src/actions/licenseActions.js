@@ -46,8 +46,9 @@ export const createLicense = (licenseData,navigate) => {
     };
 };
     
-export const getLicenseLists = (filters = {}) => {
+export const getLicenseLists = (filters = {},sortBy, orderBy) => {
   return async (dispatch, getState) => {
+    console.log(sortBy,orderBy)
     const { user_type } = getState().user.user; // Get user_type from state
 
     dispatch(getLicenseListsStart());
@@ -65,8 +66,13 @@ export const getLicenseLists = (filters = {}) => {
             continue;
           }
           params.append(key, filters[key]);
+    
         }
       }
+
+      if (sortBy) params.append('sort_by', sortBy);
+      if (orderBy) params.append('order', orderBy);
+
 
       const queryString = params.toString();
       const url = queryString

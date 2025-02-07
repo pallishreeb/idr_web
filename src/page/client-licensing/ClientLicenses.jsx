@@ -145,8 +145,8 @@ const ClientLicenseList = () => {
     }
     setSortConfig({ key, direction });
     
-    dispatch(getLicenseLists({ ...filters, sortBy: key, orderBy: direction }));
-  };
+    dispatch(getLicenseLists(filters, key,direction)); // Pass correctly
+};
 
   const getSortSymbol = (key) => {
     if (sortConfig.key === key) {
@@ -267,16 +267,16 @@ const ClientLicenseList = () => {
                   </th>
                   <th
                     className="px-2 py-2 text-sm tracking-wider border"
-                    onClick={() => handleSort("location")}
+                    onClick={() => handleSort("address_line_one")}
                   >
                     Location{" "}
                     <span className="ml-1">{getSortSymbol("location")}</span>
                   </th>
                   <th
                     className="px-2 py-2 text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("qty")}
+                    onClick={() => handleSort("quantity")}
                   >
-                    Qty <span className="ml-1">{getSortSymbol("qty")}</span>
+                    Qty <span className="ml-1">{getSortSymbol("quantity")}</span>
                   </th>
                   <th
                     className="px-2 py-2 text-sm font-semibold tracking-wider border"
@@ -324,7 +324,7 @@ const ClientLicenseList = () => {
                   {(access.includes(user_type) || client_type !== "User") && (
                     <th
                       className="px-2 py-2 text-sm font-semibold tracking-wider border"
-                      onClick={() => handleSort("sale_price")}
+                      onClick={() => handleSort("sale_cost")}
                     >
                       Sale Price{" "}
                       <span className="ml-1">

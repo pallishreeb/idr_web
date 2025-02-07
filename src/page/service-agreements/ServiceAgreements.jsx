@@ -93,13 +93,19 @@ const ServiceAgreements = () => {
       direction = "DESC";
     }
     setSortConfig({ key, direction });
-    
-    dispatch(getServiceAgreementLists({          
-       client_id: selectedClient,
-       location_id: selectedLocation,
-       sortBy: key,
-       orderBy: direction }));
+  
+    dispatch(
+      getServiceAgreementLists(
+        {
+          client_id: selectedClient,
+          location_id: selectedLocation,
+        },
+        key, // Pass key as sortBy
+        direction // Pass direction as orderBy
+      )
+    );
   };
+  
 
   const getSortSymbol = (key) => {
     if (sortConfig.key === key) {
@@ -182,7 +188,12 @@ const ServiceAgreements = () => {
                   <th className="border px-4 py-2">Client Name
                   <span className="ml-1" onClick={() => handleSort("client_name")}>{getSortSymbol("client_name")}</span>
                   </th>
-                  <th className="border px-4 py-2">Start Date</th>
+                  <th className="border px-4 py-2" onClick={() => handleSort("start_date")}>Start Date
+
+                  <span className="ml-1">
+                      {getSortSymbol("start_date")}
+                    </span>
+                  </th>
                   <th className="border px-4 py-2"  onClick={() => handleSort("expiration_date")}>Expiration Date  
                     <span className="ml-1">
                       {getSortSymbol("expiration_date")}
