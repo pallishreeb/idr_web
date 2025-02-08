@@ -24,7 +24,7 @@ const ServiceAgreements = () => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const { user_type ,client_type} = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
-
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
   // Reset client and location when unmounting or navigating back
   useEffect(() => {
     if (selectedClient == null) {
@@ -78,19 +78,48 @@ const ServiceAgreements = () => {
 
     
   const formatCurrency = (value) => {
+    if (typeof value === "string") {
+      // value = value.replace(/,/g, ""); // Remove all commas
+      value = value.replace(/[^0-9.]/g, ""); 
+    }
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD", // Change to appropriate currency if needed
       minimumFractionDigits: 2,
     }).format(value);
   };
+  const handleSort = (key) => {
+    let direction = "ASC";
+    if (sortConfig.key === key && sortConfig.direction === "ASC") {
+      direction = "DESC";
+    }
+    setSortConfig({ key, direction });
+  
+    dispatch(
+      getServiceAgreementLists(
+        {
+          client_id: selectedClient,
+          location_id: selectedLocation,
+        },
+        key, // Pass key as sortBy
+        direction // Pass direction as orderBy
+      )
+    );
+  };
+  
 
+  const getSortSymbol = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "ASC" ? "▲" : "▼";
+    }
+    return "↕";
+  };
   return (
     <>
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4 bg-gray-50">
+        <div className="container mx-auto p-4 bg-gray-50 w-full h-screen overflow-y-scroll">
           <h2 className="text-xl font-semibold mb-4">
             Client Service Agreements
           </h2>
@@ -157,12 +186,23 @@ const ServiceAgreements = () => {
             <table className="table-auto w-full border-collapse border border-gray-200">
               <thead>
                 <tr className="bg-gray-100 text-left">
-                  <th className="border px-4 py-2">Client Name</th>
-                  <th className="border px-4 py-2">Start Date</th>
-                  <th className="border px-4 py-2">Expiration Date</th>
+                  <th className="border px-4 py-2">Client Name
+                  <span className="ml-1" onClick={() => handleSort("client_name")}>{getSortSymbol("client_name")}</span>
+                  </th>
+                  <th className="border px-4 py-2" onClick={() => handleSort("start_date")}>Start Date
+
+                  <span className="ml-1">
+                      {getSortSymbol("start_date")}
+                    </span>
+                  </th>
+                  <th className="border px-4 py-2"  onClick={() => handleSort("expiration_date")}>Expiration Date  
+                    <span className="ml-1">
+                      {getSortSymbol("expiration_date")}
+                    </span></th>
                   <th className="border px-4 py-2">Parts Covered</th>
                   {(access.includes(user_type) || client_type !== "User" ) &&  (
-                    <th className="border px-4 py-2">Annual Sale Price</th>
+                    <th className="border px-4 py-2" onClick={() => handleSort("price")}>Annual Sale Price
+                       <span className="ml-1">{getSortSymbol("price")}</span></th>
                   )}
                   <th className="border px-4 py-2">Actions</th>
                 </tr>

@@ -46,7 +46,7 @@ export const generateServiceAgreement = (ticketData,navigate) => {
     };
 };
     
-export const getServiceAgreementLists = (filters = {}) => {
+export const getServiceAgreementLists = (filters = {},key,direction) => {
   return async (dispatch, getState) => {
     const { user_type } = getState().user.user; // Get user_type from state
 
@@ -67,7 +67,9 @@ export const getServiceAgreementLists = (filters = {}) => {
           params.append(key, filters[key]);
         }
       }
-
+      if (key) params.append('sort_by', key);
+      if (direction) params.append('order', direction);
+      
       const queryString = params.toString();
       const url = queryString
         ? `${apiConfig.serviceAgreementList}?${queryString}`
@@ -75,7 +77,7 @@ export const getServiceAgreementLists = (filters = {}) => {
 
       const response = await axios.get(url);
 
-      console.log("Service agreement response:", response);
+      // console.log("Service agreement response:", response);
       dispatch(getServiceAgreementListsSuccess(response?.data?.Agreements));
     } catch (error) {
       dispatch(getServiceAgreementListsFailure(error.message));

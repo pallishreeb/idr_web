@@ -62,6 +62,11 @@ import EditServiceAgreement from "./page/service-agreements/EditServiceAgreement
 import AddLicense from "./page/client-licensing/AddLicense"
 import EditLicense from "./page/client-licensing/EditLicense"
 import ClientLicenses from "./page/client-licensing/ClientLicenses"
+import AddRma from "./page/RMA/add_rma";
+import RmaViewList from "./page/RMA/view_rma";
+import EditRma from "./page/RMA/edit_rma";
+import CreateSubContractor from "./page/sub-contractor/CreateSubContractor"
+import SubContractorList from "./page/sub-contractor/SubContractorList"
 
 
 
@@ -207,6 +212,17 @@ function App() {
          <Route path="/client-licensing" element={<ClientLicenses />} />
           <Route path="/add-client-licensing/:clientId/:locationId" element={<AddLicense />} />
           <Route path="/edit-client-licensing/:licenseId" element={<EditLicense />} />
+
+          {/* RMA  */}
+          <Route path="/device-rma" element={<RmaViewList />} />
+          <Route path="/add-device-rma/:clientEquipmentId" element={<AddRma />} />
+          <Route path="/edit-device-rma/:rmaId" element={<EditRma />} />
+
+          {/* Sub contractor  */}
+         <Route path="/create-sub-contractor" element={<CreateSubContractor />} />
+         <Route path="/sub-contractors" element={<SubContractorList />} />
+          {/*
+          <Route path="/edit-client-licensing/:licenseId" element={<EditLicense />} /> */}
 
           <Route path="*" element={<NotFoundPage />} />
         </Route>

@@ -99,7 +99,25 @@ const apiConfig = {
   licenseDetailsById: "/license",
   deleteLicense: "/license/delete",
   addNotesToServiceTicket:"/service_ticket/add_st_notes",
-  deleteServiceNote:"/service_ticket/delete_st_notes"
+  deleteServiceNote:"/service_ticket/delete_st_notes",
+  esignServiceTicket:"/service_ticket/sign",
+  generateRMA: "/rma/create",
+  getRMALists: "/rma/all",
+  deleteRMA: "/rma",
+  updateRMA:"/rma/update",
+  getRMAByID:"/rma",
+  addNoteToRma: "/rma/add_note",
+  addAttachmentToRma:"/rma/image/add",
+  deleteNoteForRma:"/rma/note",
+  addSubcontractor:"",
+  getSubcontractorLists:"",
+  deleteSubcontractor:"",
+  updateSubcontractor:"",
+  getSubcontractorByID:"",
+  addNoteToSubcontractor:"",
+  deleteNoteForSubcontractor:"",
+  addAttachmentToWorkOrder:"/work_order/image/add",
+  activeDeactiveClient:""
 };
 
 export { API_BASE_URL, apiConfig,S3_BASE_URL };

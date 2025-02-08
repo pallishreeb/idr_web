@@ -3,17 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 // import { AiFillDelete } from "react-icons/ai";
 // import Swal from "sweetalert2";
 import { FaDownload } from "react-icons/fa";
-import { uploadServiceTicketImages } from "../actions/serviceTicket";
-import { getServiceTicketDetails } from "../actions/serviceTicket";
+import { getRMADetails, uploadRmaImages } from "../actions/rmaActions";
 import { toast } from "react-toastify";
 import { S3_BASE_URL } from "../config";
 import ImageModal from "./ImageModal";
 
-const ServiceTicketImages = ({ images, serviceTicketId }) => {
+const RmaImages = ({ images, rmaId }) => {
   const dispatch = useDispatch();
   const { user_type } = useSelector((state) => state.user.user);
   const {  technicianAccess} = useSelector((state) => state.user);
-  const { loadingAssignImage } = useSelector((state) => state.serviceTicket);
+  const { loadingAssignImage } = useSelector((state) => state.rma);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
@@ -33,11 +32,14 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
       return;
     }
 
-    dispatch(uploadServiceTicketImages(serviceTicketId, selectedFiles))
-      .then(() => {
-        toast.success("Images uploaded successfully.");
-        dispatch(getServiceTicketDetails(serviceTicketId));
-        handleCloseModal();
+    dispatch(uploadRmaImages(rmaId, selectedFiles))
+      .then((data) => {
+        if(data.code === "RMA201"){
+          toast.success("Images uploaded successfully.");
+          dispatch(getRMADetails(rmaId));
+          handleCloseModal();
+        }
+
       })
       .catch((error) => {
         console.error("Error uploading images:", error);
@@ -81,6 +83,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
     setSelectedImageUrl(null); // Close the image modal
   };
   const isVideo = (fileName) => /\.(mp4|mov|avi|webm|mkv)$/i.test(fileName);
+
   return (
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -191,4 +194,4 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
   );
 };
 
-export default ServiceTicketImages;
+export default RmaImages;

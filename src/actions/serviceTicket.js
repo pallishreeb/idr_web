@@ -319,3 +319,30 @@ export const deleteServiceNote = (noteId) => {
     }
   };
 };
+
+//esign in service ticket
+export const uploadServiceTicketSign = (serviceTicketId, image) => {
+  return async (dispatch) => {
+    dispatch(serviceTicketImageStart());
+
+    const formData = new FormData();
+    formData.append("service_ticket_id", serviceTicketId);
+    formData.append(`image`, image);
+
+    try {
+      const response = await axios.post(`${apiConfig.esignServiceTicket}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // console.log("response from image upload",response)
+      dispatch(serviceTicketImageSuccess(response?.data));
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading Sign:", error);
+      dispatch(serviceTicketImageFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to upload sign.");
+    }
+  };
+};

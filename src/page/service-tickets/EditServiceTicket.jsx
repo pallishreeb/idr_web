@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+import { S3_BASE_URL } from "../../config";
 // import { FaDownload } from "react-icons/fa";
 import Header from "../../Components/Header";
 import SideNavbar from "../../Components/AdminSideNavbar";
@@ -21,14 +22,26 @@ import { fetchIDREmployees } from "../../actions/employeeActions";
 import { getClientEquipments } from "../../actions/clientEquipment";
 import Loader from "../../Images/ZZ5H.gif";
 import ServiceTicketImages from "../../Components/ServiceTicketImages";
+import SignatureModal from "../../Components/SignatureModal";
+
 import { toast } from "react-toastify";
 
 const EditServiceTicket = () => {
   const { serviceTicketId } = useParams();
   const dispatch = useDispatch();
-  const { serviceTicketDetails, loading, error, loadingDetails, loadingAssign } = useSelector(
-    (state) => state.serviceTicket
-  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [signatureImage, setSignatureImage] = useState(null);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const {
+    serviceTicketDetails,
+    loading,
+    error,
+    loadingDetails,
+    loadingAssign,
+  } = useSelector((state) => state.serviceTicket);
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
   const locations = useSelector((state) => state.location.locations);
@@ -45,7 +58,7 @@ const EditServiceTicket = () => {
   const [serviceTicketEquipments, setServiceTicketEquipments] = useState([]);
   const [serviceTicketAgreement, setServiceTicketAgreement] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-  const { user_type,client_type } = useSelector((state) => state.user.user);
+  const { user_type, client_type } = useSelector((state) => state.user.user);
   const { technicianAccess } = useSelector((state) => state.user);
   // Track which row is being processed
   const [processingId, setProcessingId] = useState(null);
@@ -62,6 +75,7 @@ const EditServiceTicket = () => {
     // console.log("workOrderDetails:", workOrderDetails); // Debugging line
     if (serviceTicketDetails) {
       setServiceTicket(serviceTicketDetails);
+      setSignatureImage(serviceTicketDetails?.signature_url);
       setTechnicians(serviceTicketDetails?.technicians || []);
       setNotes(serviceTicketDetails.serviceTicketNotes || []);
       setAssignees(serviceTicketDetails?.service_ticket_assignees || []);
@@ -69,7 +83,7 @@ const EditServiceTicket = () => {
         serviceTicketDetails?.service_ticket_attachments || []
       );
       setServiceTicketEquipments(serviceTicketDetails?.linkedDevices || []);
-      setServiceTicketAgreement(serviceTicketDetails?.agreement || {})
+      setServiceTicketAgreement(serviceTicketDetails?.agreement || {});
       dispatch(
         getClientEquipments({
           client_id: serviceTicketDetails.client_id,
@@ -77,7 +91,7 @@ const EditServiceTicket = () => {
         })
       );
     }
-  }, [serviceTicketDetails]);
+  }, [serviceTicketDetails, dispatch]);
   useEffect(() => {
     if (serviceTicket?.client_id) {
       dispatch(getLocationByClient(serviceTicket?.client_id));
@@ -175,7 +189,7 @@ const EditServiceTicket = () => {
       "local_onsite_contact_number",
       "service_ticket_details",
       "client_name",
-      "client_emp_user_id"
+      "client_emp_user_id",
     ];
     const filteredWorkOrder = {};
     allowedFields.forEach((field) => {
@@ -219,23 +233,22 @@ const EditServiceTicket = () => {
     // Replace this with the action to link the device
     // dispatch(linkDeviceToServiceTicket(payload));
     dispatch(linkDeviceToServiceTicket(payload))
-    .then(() => {
-      toast.success("Adding device successfully.");
-      window.location.reload();
-      closeDeviceModal();
-    })
-    .catch((error) => {
-      console.error("Error adding device :", error);
-      // toast.error("Failed to add device.");
-    });
-
-
+      .then(() => {
+        toast.success("Adding device successfully.");
+        window.location.reload();
+        closeDeviceModal();
+      })
+      .catch((error) => {
+        console.error("Error adding device :", error);
+        // toast.error("Failed to add device.");
+      });
   };
 
   const handleAddNote = (payload) => {
     dispatch(addNoteToDevice(payload));
     dispatch(getServiceTicketDetails(serviceTicketId));
   };
+
 
   if (!serviceTicket) {
     return (
@@ -256,26 +269,30 @@ const EditServiceTicket = () => {
                 <button className="border border-gray-400 text-gray-400 px-6 py-2 rounded">
                   Cancel
                 </button>
-               
-
               </Link>
-              {client_type !== "User" && 
-              <>
-              {serviceTicketAgreement?.agreement_id &&  <Link to={`/edit-service-agreement/${serviceTicketAgreement?.agreement_id }`}>
-                <button className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center">
-                  Service Agreement
-                </button>
-              </Link>}
-              </>}
-              
+              {client_type !== "User" && (
+                <>
+                  {serviceTicketAgreement?.agreement_id && (
+                    <Link
+                      to={`/edit-service-agreement/${serviceTicketAgreement?.agreement_id}`}
+                    >
+                      <button className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center">
+                        Service Agreement
+                      </button>
+                    </Link>
+                  )}
+                </>
+              )}
+
               {/* Add Device to Ticket Button */}
-              {technicianAccess.includes(user_type) && 
-              <button
-                onClick={openDeviceModal}
-                className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
-              >
-                Add Device To Ticket
-              </button>}
+              {technicianAccess.includes(user_type) && (
+                <button
+                  onClick={openDeviceModal}
+                  className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
+                >
+                  Add Device To Ticket
+                </button>
+              )}
             </div>
           </div>
           {/* update Work order ticket details */}
@@ -362,9 +379,15 @@ const EditServiceTicket = () => {
                                 )
                               }
                               className="bg-blue-500 text-white px-4 py-2 rounded"
-                              disabled={processingId && processingId !== equipment.client_equipment_id} //disable other rows
+                              disabled={
+                                processingId &&
+                                processingId !== equipment.client_equipment_id
+                              } //disable other rows
                             >
-                             {processingId === equipment.client_equipment_id && loadingAssign ? "Saving" : "Add"}
+                              {processingId === equipment.client_equipment_id &&
+                              loadingAssign
+                                ? "Saving"
+                                : "Add"}
                             </button>
                           </td>
                         </tr>
@@ -383,6 +406,35 @@ const EditServiceTicket = () => {
               </div>
             </div>
           )}
+
+          {/* Segnature modal */}
+          <div className="p-6">
+            <button
+              onClick={openModal}
+              className="bg-indigo-600 text-white px-4 py-2 rounded"
+            >
+              Add Signature
+            </button>
+
+            {signatureImage && (
+            <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
+              <h2 className="text-lg font-semibold text-gray-700">Signature:</h2>
+              <img
+                src={`${S3_BASE_URL}/${signatureImage}`}
+                alt="Signature"
+                className="w-full max-w-xs h-auto border border-gray-400 rounded-md p-2 bg-white"
+              />
+            </div>
+          )}
+
+
+            <SignatureModal
+              isOpen={isModalOpen}
+              onClose={closeModal}
+              serviceTicketId={serviceTicketId}
+              
+            />
+          </div>
         </div>
       </div>
     </>

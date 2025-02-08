@@ -101,7 +101,7 @@ export const addClientEquipment = (equipmentData,navigate) => {
       const response = await axios.post(apiConfig.addClientEquipment, equipmentData);
       dispatch(addClientEquipmentSuccess(response.data.location));
       toast.success("Client Equipment added successfully!");
-      navigate(`/add-client-equipment/${equipmentData?.client_id}/${equipmentData?.location_id}`);
+      // navigate(`/add-client-equipment/${equipmentData?.client_id}/${equipmentData?.location_id}`);
     } catch (error) {
       dispatch(addClientEquipmentFailure(error.message));
       toast.error(error.response?.data?.message || "Error adding Client Equipment");
@@ -114,10 +114,13 @@ export const retireClientEquipment= (clientEquipment) => {
   return async (dispatch) => {
     dispatch(retireClientEquipmentStart());
     try {
-      
       await axios.patch(`${apiConfig.retireClientEquipment}`,clientEquipment).then(() =>{
         dispatch(retireClientEquipmentSuccess(clientEquipment.id));
-        toast.success("Client Equipment Decomissioned successfully!");
+        if (clientEquipment?.isDecomission === true) {
+          toast.success("Client Equipment Decommissioned successfully!");
+        } else {
+          toast.success("Client Equipment Activated successfully!");
+        }
       });
     } catch (error) {
       dispatch(retireClientEquipmentFailure(error.message));
@@ -128,7 +131,7 @@ export const retireClientEquipment= (clientEquipment) => {
 
 //update client equipment
 export const updateClientEquipment = ( updatedClientEquipment,navigate) => {
-  console.log(updatedClientEquipment, "updatedClientEquipment")
+  // console.log(updatedClientEquipment, "updatedClientEquipment")
   return async (dispatch) => {
     dispatch(updateClientEquipmentStart());
     try {
@@ -140,7 +143,7 @@ export const updateClientEquipment = ( updatedClientEquipment,navigate) => {
 
       // Optionally, you can dispatch any additional actions or perform other logic here
       toast.success("Client Equipment updated successfully");
-      navigate("/client-equipments");
+      // navigate("/client-equipments");
     } catch (error) {
       // Dispatch failure action if there was an error
       dispatch(updateClientEquipmentFailure(error.message));
