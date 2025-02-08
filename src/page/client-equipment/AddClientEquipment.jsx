@@ -194,7 +194,7 @@ const AddClientEquipment = () => {
               </div>
 
                 {/* Upload excel */}
-                <div className="grid grid-cols-2 gap-4 mt-4 mb-4">
+                {/* <div className="grid grid-cols-2 gap-4 mt-4 mb-4">
                       <div className="flex flex-col">
                         <label htmlFor="file">Upload Excel File:</label>
                         <input
@@ -205,7 +205,7 @@ const AddClientEquipment = () => {
                           onChange={handleFileChange}
                         />
                       </div>
-                    </div>
+                    </div> */}
               {/* Device Details */}
               <div className="grid grid-cols-2 gap-4">
                 <div>

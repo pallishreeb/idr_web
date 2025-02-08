@@ -77,6 +77,7 @@ const ClientEquipments = () => {
     }
   }, [dispatch, selectedClient, selectedLocation, user_type]);
 
+  
   const fetchEquipments = () => {
     const { model, device_type, status } = filters;
     if (
@@ -121,9 +122,16 @@ const ClientEquipments = () => {
       device_type: "",
       status: "",
     });
-    // setSelectedLocation(null);
-    // setSelectedClient(null)
-    if (selectedClient) fetchEquipments(); // Fetch default list
+    // fetchEquipments(); // Fetch default list
+    const params = {
+      client_id: selectedClient,
+      location_id: selectedLocation,
+      model: "",
+      device_type: "",
+      status: "",
+      user_type,
+    };
+    dispatch(getClientEquipments(params));
   };
 
   const handleEdit = (equipmentId) => {
@@ -373,31 +381,34 @@ const ClientEquipments = () => {
                         </button>
 
                         {access.includes(user_type) && (
-                          <>
-                            {equipment?.is_deleted === true ? (
-                              <button
-                                onClick={() =>
-                                  openDecommissionModal(
-                                    equipment.client_equipment_id
-                                  )
-                                }
-                                className="p-2 bg-gray-100"
-                              >
-                                <AiFillCheckCircle />
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() =>
-                                  openDecommissionModal(
-                                    equipment.client_equipment_id
-                                  )
-                                }
-                                className="p-2 bg-gray-100"
-                              >
-                                <AiFillDelete />
-                              </button>
-                            )}
-                          </>
+                     <>
+                     {equipment?.is_deleted === true ? (
+                       <div className="relative group">
+                         <button
+                           onClick={() => openDecommissionModal(equipment.client_equipment_id)}
+                           className="p-2 bg-gray-100"
+                         >
+                           <AiFillCheckCircle />
+                         </button>
+                         <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-700 text-white text-xs rounded py-1 px-2">
+                           Activate Equipment
+                         </span>
+                       </div>
+                     ) : (
+                       <div className="relative group">
+                         <button
+                           onClick={() => openDecommissionModal(equipment.client_equipment_id)}
+                           className="p-2 bg-gray-100"
+                         >
+                           <AiFillDelete />
+                         </button>
+                         <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-700 text-white text-xs rounded py-1 px-2">
+                           Decommission Equipment
+                         </span>
+                       </div>
+                     )}
+                   </>
+                   
                         )}
                       </td>
                     </tr>
@@ -412,7 +423,7 @@ const ClientEquipments = () => {
             <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
               <div className="bg-white rounded p-6 w-1/3">
                 <h3 className="text-lg font-semibold mb-4">
-                  Decommission Equipment
+                {buttonText} Equipment
                 </h3>
                 <textarea
                   name="reason"

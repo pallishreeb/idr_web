@@ -114,10 +114,13 @@ export const retireClientEquipment= (clientEquipment) => {
   return async (dispatch) => {
     dispatch(retireClientEquipmentStart());
     try {
-      
       await axios.patch(`${apiConfig.retireClientEquipment}`,clientEquipment).then(() =>{
         dispatch(retireClientEquipmentSuccess(clientEquipment.id));
-        toast.success("Client Equipment Decomissioned successfully!");
+        if (clientEquipment?.isDecomission === true) {
+          toast.success("Client Equipment Decommissioned successfully!");
+        } else {
+          toast.success("Client Equipment Activated successfully!");
+        }
       });
     } catch (error) {
       dispatch(retireClientEquipmentFailure(error.message));
