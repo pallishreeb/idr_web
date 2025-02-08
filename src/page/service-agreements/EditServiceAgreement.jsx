@@ -272,7 +272,7 @@ const EditServiceAgreement = () => {
                         Annual Sale Price
                       </label>
                       <input
-                        type="text"
+                        type="number"
                         name="price"
                         className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                         value={serviceAgreement.price}

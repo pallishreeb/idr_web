@@ -287,7 +287,7 @@ const ServiceTicketCard = ({
           >
             <option value="Open">Open</option>
             {/* <option value="Design">Design</option> */}
-            <option value="In Progress">In Progress</option>
+            {/* <option value="In Progress">In Progress</option> */}
             {/* <option value="Reviewing">Reviewing</option> */}
             <option value="Closed">Closed</option>
           </select>

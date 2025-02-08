@@ -119,7 +119,7 @@ export const retireClientEquipment= (clientEquipment) => {
         if (clientEquipment?.isDecomission === true) {
           toast.success("Client Equipment Decommissioned successfully!");
         } else {
-          toast.success("Client Equipment Activated successfully!");
+          toast.success("Client Equipment Re-activated successfully!");
         }
       });
     } catch (error) {
