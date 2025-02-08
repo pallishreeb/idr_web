@@ -274,7 +274,7 @@ const EditLicense = () => {
                       IDR Cost:
                     </label>
                     <input
-                      type="text"
+                      type="number"
                       id="idr_cost"
                       name="idr_cost"
                       className="border border-gray-300 rounded px-3 py-1 w-full"
@@ -290,7 +290,7 @@ const EditLicense = () => {
                     Sale Price:
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     id="sale_cost"
                     name="sale_cost"
                     className="border border-gray-300 rounded px-3 py-1 w-full"
