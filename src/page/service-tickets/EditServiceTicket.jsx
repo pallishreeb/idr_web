@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+import { S3_BASE_URL } from "../../config";
 // import { FaDownload } from "react-icons/fa";
 import Header from "../../Components/Header";
 import SideNavbar from "../../Components/AdminSideNavbar";
@@ -22,6 +23,7 @@ import { getClientEquipments } from "../../actions/clientEquipment";
 import Loader from "../../Images/ZZ5H.gif";
 import ServiceTicketImages from "../../Components/ServiceTicketImages";
 import SignatureModal from "../../Components/SignatureModal";
+
 import { toast } from "react-toastify";
 
 const EditServiceTicket = () => {
@@ -73,6 +75,7 @@ const EditServiceTicket = () => {
     // console.log("workOrderDetails:", workOrderDetails); // Debugging line
     if (serviceTicketDetails) {
       setServiceTicket(serviceTicketDetails);
+      setSignatureImage(serviceTicketDetails?.signature_url);
       setTechnicians(serviceTicketDetails?.technicians || []);
       setNotes(serviceTicketDetails.serviceTicketNotes || []);
       setAssignees(serviceTicketDetails?.service_ticket_assignees || []);
@@ -246,10 +249,7 @@ const EditServiceTicket = () => {
     dispatch(getServiceTicketDetails(serviceTicketId));
   };
 
-  const handleSaveSignature = (image) => {
-    setSignatureImage(image);
-    console.log("Signature saved as:", image);
-  };
+
   if (!serviceTicket) {
     return (
       <div className="text-center mt-5">No service ticket details found</div>
@@ -417,21 +417,22 @@ const EditServiceTicket = () => {
             </button>
 
             {signatureImage && (
-              <div>
-                <h2>Your Signature:</h2>
-                <img
-                  src={signatureImage}
-                  alt="Signature"
-                  style={{ border: "1px solid #000" }}
-                />
-              </div>
-            )}
+            <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
+              <h2 className="text-lg font-semibold text-gray-700">Signature:</h2>
+              <img
+                src={`${S3_BASE_URL}/${signatureImage}`}
+                alt="Signature"
+                className="w-full max-w-xs h-auto border border-gray-400 rounded-md p-2 bg-white"
+              />
+            </div>
+          )}
+
 
             <SignatureModal
               isOpen={isModalOpen}
               onClose={closeModal}
-              onSave={handleSaveSignature}
               serviceTicketId={serviceTicketId}
+              
             />
           </div>
         </div>

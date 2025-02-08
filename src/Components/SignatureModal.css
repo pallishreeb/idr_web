@@ -31,7 +31,7 @@
     cursor: pointer;
   }
   
-  .modal-actions button:nth-child(1) {
+  /* .modal-actions button:nth-child(1) {
     background: #ff4d4d;
     color: white;
   }
@@ -44,4 +44,4 @@
   .modal-actions button:nth-child(3) {
     background: #ccc;
     color: black;
-  }
+  } */

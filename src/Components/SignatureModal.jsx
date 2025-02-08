@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 // import { S3_BASE_URL } from "../config";
 import "./SignatureModal.css"; // Optional for styling
 
-const SignatureModal = ({ isOpen, onClose, onSave ,serviceTicketId}) => {
+const SignatureModal = ({ isOpen, onClose,serviceTicketId}) => {
   const dispatch = useDispatch();
 
   const canvasRef = useRef(null); // Reference to the canvas element
@@ -109,9 +109,9 @@ const SignatureModal = ({ isOpen, onClose, onSave ,serviceTicketId}) => {
         onMouseLeave={stopDrawing}
       />
       <div className="modal-actions">
-        <button onClick={clearCanvas}>Clear</button>
-        <button onClick={handleUpload}>{loadingAssignImage ? "uploading" : "Save"}</button>
-        <button onClick={onClose}>Close</button>
+        <button onClick={clearCanvas} className="bg-red-600 text-white px-4 py-2 rounded">Clear</button>
+        <button onClick={handleUpload} className="bg-indigo-600 text-white px-4 py-2 rounded">{loadingAssignImage ? "uploading" : "Save"}</button>
+        <button onClick={onClose} className="bg-gray-600 text-white px-4 py-2 rounded">Close</button>
       </div>
     </ReactModal>
   );

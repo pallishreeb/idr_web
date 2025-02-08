@@ -115,7 +115,9 @@ const AddClientEquipment = () => {
 
     // dispatch(addClientEquipment(formData, navigate));
     dispatch(addClientEquipment(clientEquipment, navigate));
-    setClientEquipment({
+    // Use functional update to maintain client_id and location_id
+    setClientEquipment((prev) => ({
+      ...prev,
       device_type: "",
       device_id: "",
       manufacturer: "",
@@ -124,8 +126,8 @@ const AddClientEquipment = () => {
       mac_address: "", // Optional
       lan_ip_address: "", // Optional
       wan_ip_address: "", // Optional
-      general_info: "", 
-    })
+      general_info: "",
+    }));
   };
 
   return (
