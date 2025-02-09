@@ -47,15 +47,13 @@ const EditEmployeePage = () => {
         email_id,
         contact_number,
         employee_type,
-        client_location_id,
         access_to_website,
+        locations, // Extract locations array
       } = employee;
-  
-      // Ensure client_location_id is an array
-      const locationIds = Array.isArray(client_location_id) 
-        ? client_location_id 
-        : client_location_id ? client_location_id.split(",") : [];
-  
+
+      // Extract assigned location IDs from the locations array
+      const assignedLocationIds = locations?.map((location) => location.client_location_id) || [];
+
       setFormData({
         client_id,
         first_name: first_name || "",
@@ -63,16 +61,15 @@ const EditEmployeePage = () => {
         email_id: email_id || "",
         contact_number: contact_number || "",
         employee_type: employee_type || "",
-        client_location_id: locationIds, // Set as array
+        client_location_id: assignedLocationIds, // Set assigned locations
         access_to_website,
       });
-  
+
       if (client_id) {
         dispatch(getLocationByClient(client_id)); // Fetch locations if client is pre-selected
       }
     }
   }, [employee, dispatch]);
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -86,23 +83,23 @@ const EditEmployeePage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     const updatedFormData = { ...formData };
-  
+
     // Ensure client_location_id is an array
     if (typeof updatedFormData.client_location_id === "string") {
       updatedFormData.client_location_id = updatedFormData.client_location_id.split(",");
     }
-  
+
     // Remove client_location_id if employee_type is not "Location Admin"
     if (formData.employee_type !== "Location Admin") {
       delete updatedFormData.client_location_id;
-    } 
+    }
 
     // Dispatch the updated formData
     dispatch(updateClientEmployee(employeeId, updatedFormData, navigate));
   };
-  
+
   return (
     <>
       <Header />
@@ -167,27 +164,26 @@ const EditEmployeePage = () => {
                       Client Locations
                     </label>
                     <MultiSelectDropdown
-                        options={locations.map((location) => ({
-                          value: location.location_id,
-                          label: location.address_line_one,
-                        }))}
-                        selectedValues={formData.client_location_id || []} // Ensure this is always an array
-                        onChange={(selectedValues) =>
-                          setFormData({ ...formData, client_location_id: selectedValues })
-                        }
-                      />
+                      options={locations.map((location) => ({
+                        value: location.location_id,
+                        label: location.address_line_one,
+                      }))}
+                      selectedValues={formData.client_location_id || []} // Pass assigned locations
+                      onChange={(selectedValues) =>
+                        setFormData({ ...formData, client_location_id: selectedValues })
+                      }
+                    />
 
-                  {Array.isArray(formData.client_location_id) && formData.client_location_id.length > 0 && (
-                        <div className="mt-2 text-sm text-gray-600">
-                          Selected Locations:{" "}
-                          {formData.client_location_id
-                            .map((id) =>
-                              locations.find((location) => location.location_id === id)?.address_line_one
-                            )
-                            .join(", ")}
-                        </div>
-                      )}
-
+                    {Array.isArray(formData.client_location_id) && formData.client_location_id.length > 0 && (
+                      <div className="mt-2 text-sm text-gray-600">
+                        Selected Locations:{" "}
+                        {formData.client_location_id
+                          .map((id) =>
+                            locations.find((location) => location.location_id === id)?.address_line_one
+                          )
+                          .join(", ")}
+                      </div>
+                    )}
                   </div>
                 )}
 
