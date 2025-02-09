@@ -85,6 +85,7 @@ const apiConfig = {
   serviceTicketLinkDevice:"/service_ticket/link_device",
   addNoteToDevice:"/service_ticket/device_history",
   addClientEquipment:'/equip_client/add',
+  addCsvClientEquipment:'/equip_client/import_csv',
   getClientEquipmentById: "/equip_client",
   getClientEquipments: "/equip_client/all",
   retireClientEquipment: "/equip_client/decomission",
