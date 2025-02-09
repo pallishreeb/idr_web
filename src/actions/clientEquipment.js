@@ -94,17 +94,36 @@ export const getClientEquipments = ({
   };
 
 //add client equipment
-export const addClientEquipment = (equipmentData,navigate) => {
+export const addClientEquipment = (equipmentData) => {
   return async (dispatch) => {
     dispatch(addClientEquipmentStart());
     try {
       const response = await axios.post(apiConfig.addClientEquipment, equipmentData);
       dispatch(addClientEquipmentSuccess(response.data.location));
       toast.success("Client Equipment added successfully!");
-      // navigate(`/add-client-equipment/${equipmentData?.client_id}/${equipmentData?.location_id}`);
     } catch (error) {
       dispatch(addClientEquipmentFailure(error.message));
       toast.error(error.response?.data?.message || "Error adding Client Equipment");
+    }
+  };
+};
+
+// addEquipmentThroughCsv action
+export const addEquipmentThroughCsv = (csvData) => {
+  return async (dispatch) => {
+    dispatch(addClientEquipmentStart()); // Reuse the same start action
+    try {
+      const response = await axios.post(apiConfig.addCsvClientEquipment, csvData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      dispatch(addClientEquipmentSuccess(response.data.location)); // Reuse the same success action
+      toast.success("Equipment added successfully via CSV!");
+    } catch (error) {
+      dispatch(addClientEquipmentFailure(error.message)); // Reuse the same failure action
+      toast.error(error.response?.data?.message || "Error adding equipment via CSV");
     }
   };
 };
