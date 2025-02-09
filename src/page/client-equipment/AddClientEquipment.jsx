@@ -122,12 +122,11 @@ const AddClientEquipment = () => {
       if (fileInputRef.current) {
         fileInputRef.current.value = ""; // Reset the file input
       }
-      setFile(null); // Clear the file state
     } else {
       // If no file is present, use the regular equipment action
       dispatch(addClientEquipment(clientEquipment));
     }
-
+    setFile(null); // Clear the file state
     // Reset the form fields after submission
     setClientEquipment((prev) => ({
       ...prev,
