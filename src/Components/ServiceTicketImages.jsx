@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import { AiFillDelete } from "react-icons/ai";
 // import Swal from "sweetalert2";
-import { FaDownload } from "react-icons/fa";
+import { FaDownload, FaSpinner } from "react-icons/fa";
 import { uploadServiceTicketImages } from "../actions/serviceTicket";
 import { getServiceTicketDetails } from "../actions/serviceTicket";
 import { toast } from "react-toastify";
@@ -12,7 +12,7 @@ import ImageModal from "./ImageModal";
 const ServiceTicketImages = ({ images, serviceTicketId }) => {
   const dispatch = useDispatch();
   const { user_type } = useSelector((state) => state.user.user);
-  const {  technicianAccess} = useSelector((state) => state.user);
+  const { technicianAccess } = useSelector((state) => state.user);
   const { loadingAssignImage } = useSelector((state) => state.serviceTicket);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -28,16 +28,49 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
   };
 
   const handleUpload = () => {
+    // Check if files are selected
     if (selectedFiles.length === 0) {
       toast.error("Please select at least one image.");
       return;
     }
 
+    // Check if any file exceeds 10 MB
+    const maxFileSize = 10 * 1024 * 1024; // 10 MB in bytes
+    const oversizedFiles = selectedFiles.filter(
+      (file) => file.size > maxFileSize
+    );
+
+    if (oversizedFiles.length > 0) {
+      toast.warning(
+        "File exceeds the 10 MB limit. Please upload smaller files."
+      );
+      return; // Stop the upload if any file is too large
+    }
+    // Determine if the uploaded files are videos or images
+    const isVideoFile = selectedFiles.some((file) =>
+      file.type.startsWith("video/")
+    );
+    const isImage = selectedFiles.some((file) =>
+      file.type.startsWith("image/")
+    );
+    // Upload files
     dispatch(uploadServiceTicketImages(serviceTicketId, selectedFiles))
-      .then(() => {
-        toast.success("Images uploaded successfully.");
-        dispatch(getServiceTicketDetails(serviceTicketId));
-        handleCloseModal();
+      .then((data) => {
+        // Check if the response contains the success code "ST201"
+        if (data?.code === "ST201") {
+          if (isVideoFile) {
+            toast.success("Video uploaded successfully.");
+          } else if (isImage) {
+            toast.success("Image uploaded successfully.");
+          } else {
+            toast.success("Files uploaded successfully.");
+          }
+          dispatch(getServiceTicketDetails(serviceTicketId));
+          handleCloseModal();
+        } else {
+          // Handle other response codes or unexpected responses
+          toast.error("Upload failed. Please try again.");
+        }
       })
       .catch((error) => {
         console.error("Error uploading images:", error);
@@ -85,7 +118,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="font-normal text-xl mb-2">Service Ticket Images</h1>
-         {technicianAccess.includes(user_type) &&   (
+        {technicianAccess.includes(user_type) && (
           <button
             className="bg-indigo-600 text-white px-6 py-2 rounded"
             onClick={handleOpenModal}
@@ -106,14 +139,12 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
             </tr>
           </thead>
           <tbody>
-            {images?.map((image, index) =>{
-               const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
-             return (
-              
-              <tr key={index} className="bg-white text-sm">
-                <td className="border px-4 py-2">
-                 
-                {isVideo(image?.attachment_url) ? (
+            {images?.map((image, index) => {
+              const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
+              return (
+                <tr key={index} className="bg-white text-sm">
+                  <td className="border px-4 py-2">
+                    {isVideo(image?.attachment_url) ? (
                       <video
                         src={fileUrl}
                         className="w-20 h-20 object-cover rounded"
@@ -128,22 +159,23 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                         onClick={() => handleImageClick(fileUrl)}
                       />
                     )}
-                </td>
-                <td className="border px-4 py-2">{image?.user_name || "NA"}</td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() =>
-                      handleDownload(
-                        fileUrl, `attachment-${index + 1}`
-                      )
-                    }
-                    className="bg-blue-500 text-white px-3 py-3 rounded"
-                  >
-                     <FaDownload />
-                  </button>
-                </td>
-              </tr>
-            )})}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {image?.user_name || "NA"}
+                  </td>
+                  <td className="border px-4 py-2">
+                    <button
+                      onClick={() =>
+                        handleDownload(fileUrl, `attachment-${index + 1}`)
+                      }
+                      className="bg-blue-500 text-white px-3 py-3 rounded"
+                    >
+                      <FaDownload />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -152,7 +184,9 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
       {isModalOpen && (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-4 my-8 max-h-[95vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4 text-center">Add Images/Videos</h2>
+            <h2 className="text-xl font-bold mb-4 text-center">
+              Add Images/Videos
+            </h2>
             <div className="mb-4">
               <label className="block font-normal text-base mb-2">
                 Select File
@@ -167,10 +201,17 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
             </div>
             <div className="flex justify-end">
               <button
-                className="bg-indigo-600 text-white px-4 py-2 rounded"
+                className="bg-indigo-600 text-white px-4 py-2 rounded flex items-center justify-center gap-2 min-w-[120px]"
                 onClick={handleUpload}
               >
-                {loadingAssignImage ? "Uploading" : "Upload"}
+                {loadingAssignImage ? (
+                  <>
+                    <FaSpinner className="animate-spin text-white" />
+                    Uploading
+                  </>
+                ) : (
+                  "Upload"
+                )}
               </button>
               <button
                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"
@@ -183,8 +224,8 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
         </div>
       )}
 
-            {/* Image Modal */}
-            {selectedImageUrl && (
+      {/* Image Modal */}
+      {selectedImageUrl && (
         <ImageModal imageUrl={selectedImageUrl} onClose={closeImageModal} />
       )}
     </div>
