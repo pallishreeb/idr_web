@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import axios from '../../axios-config';
 import { Link, useParams } from "react-router-dom";
 import { S3_BASE_URL } from "../../config";
-// import { FaDownload } from "react-icons/fa";
+import { FaDownload } from "react-icons/fa";
 import Header from "../../Components/Header";
 import SideNavbar from "../../Components/AdminSideNavbar";
 import ServiceTicketCard from "../../Components/ServiceTicketCard";
@@ -60,6 +61,7 @@ const EditServiceTicket = () => {
   const [isEditing, setIsEditing] = useState(false);
   const { user_type, client_type } = useSelector((state) => state.user.user);
   const { technicianAccess } = useSelector((state) => state.user);
+  const [isDownloading, setIsDownloading] = useState(false); // Loading state
   // Track which row is being processed
   const [processingId, setProcessingId] = useState(null);
   // Modal state
@@ -249,13 +251,53 @@ const EditServiceTicket = () => {
     dispatch(getServiceTicketDetails(serviceTicketId));
   };
 
+  const handleDownloadPdf = async () => {
+    try {
+      setIsDownloading(true); // Start loading
+  
+      // Make sure the request is sending the correct headers
+      const response = await axios.get(
+        `/service_ticket/pdf/${serviceTicketId}`, 
+        {},  // Sending an empty body, replace if needed
+        {
+          headers: {
+            'Content-Type': 'application/json', // If backend expects this
+          },
+          responseType: 'blob', // For PDF download
+        }
+      );
+  
+      // Debugging response
+      // console.log(response, "pdf response");
+  
+      const pdfBlob = new Blob([response.data], { type: "application/pdf" });
+      const downloadUrl = window.URL.createObjectURL(pdfBlob);
+      
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `${serviceTicket?.ticket_number}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      document.body.removeChild(link);
+      setIsDownloading(false); // Stop loading
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      setIsDownloading(false); // Stop loading in case of error
+    }
+  };
 
   if (!serviceTicket) {
     return (
       <div className="text-center mt-5">No service ticket details found</div>
     );
   }
+  const formatDateToMDY = (dateString) => {
+    if (!dateString) return ""; // Handle empty values
 
+    const [day, month, year] = dateString.split("/"); // Extract parts
+    return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
+  };
   return (
     <>
       <Header />
@@ -293,6 +335,42 @@ const EditServiceTicket = () => {
                   Add Device To Ticket
                 </button>
               )}
+
+                            {/* Download PDF Button */}
+            {/* <button
+              onClick={handleDownloadPdf}
+              className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
+              disabled={isDownloading}
+            >
+              {isDownloading ? (
+                // Display loading spinner while downloading
+                <svg
+                  className="animate-spin h-5 w-5 mr-2 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  ></path>
+                </svg>
+              ) : (
+                <>
+                Download Ticket PDF <FaDownload className="ml-1" />
+                </>
+                
+              )}
+            </button> */}
             </div>
           </div>
           {/* update Work order ticket details */}
@@ -413,19 +491,28 @@ const EditServiceTicket = () => {
               onClick={openModal}
               className="bg-indigo-600 text-white px-4 py-2 rounded"
             >
-              Add Signature
+               Sign Document
             </button>
 
             {signatureImage && (
-            <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
-              <h2 className="text-lg font-semibold text-gray-700">Signature:</h2>
-              <img
-                src={`${S3_BASE_URL}/${signatureImage}`}
-                alt="Signature"
-                className="w-full max-w-xs h-auto border border-gray-400 rounded-md p-2 bg-white"
-              />
-            </div>
-          )}
+  <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
+    <h2 className="text-lg font-semibold text-gray-700">Signature:</h2>
+    
+    {/* Signature Image */}
+    <img
+      src={`${S3_BASE_URL}/${signatureImage}`}
+      alt="Signature"
+      className="w-full max-w-xs h-auto border border-gray-400 rounded-md p-2 bg-white"
+    />
+
+    {/* Signature Name & Date */}
+    <div className="flex flex-col w-full text-gray-700">
+      <p className="text-sm font-medium">Signed by: <span className="font-semibold">{serviceTicket ? serviceTicket.signature_name : ''}</span></p>
+      <p className="text-sm font-medium">Date: <span className="font-semibold">{serviceTicket ? formatDateToMDY(serviceTicket.signature_date) : ''}</span></p>
+    </div>
+  </div>
+)}
+
 
 
             <SignatureModal

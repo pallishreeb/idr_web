@@ -321,13 +321,9 @@ export const deleteServiceNote = (noteId) => {
 };
 
 //esign in service ticket
-export const uploadServiceTicketSign = (serviceTicketId, image) => {
+export const uploadServiceTicketSign = (serviceTicketId, formData) => {
   return async (dispatch) => {
     dispatch(serviceTicketImageStart());
-
-    const formData = new FormData();
-    formData.append("service_ticket_id", serviceTicketId);
-    formData.append(`image`, image);
 
     try {
       const response = await axios.post(`${apiConfig.esignServiceTicket}`, formData, {

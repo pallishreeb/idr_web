@@ -37,6 +37,8 @@ const ClientEquipments = () => {
     device_type: "",
     status: "",
   });
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
+
   const [decommissionModal, setDecommissionModal] = useState({
     show: false,
     equipmentId: null,
@@ -78,15 +80,14 @@ const ClientEquipments = () => {
   }, [dispatch, selectedClient, selectedLocation, user_type]);
 
   
-  const fetchEquipments = () => {
+  const fetchEquipments = (sorting = {}) => {
     const { model, device_type, status } = filters;
-    if (
-      user_type !== "Client Employee" &&
-      (!selectedClient || !selectedLocation)
-    ) {
+  
+    if (user_type !== "Client Employee" && (!selectedClient || !selectedLocation)) {
       Swal.fire("Client and Location are required to fetch equipments");
       return;
     }
+  
     const params = {
       client_id: selectedClient,
       location_id: selectedLocation,
@@ -94,9 +95,14 @@ const ClientEquipments = () => {
       device_type: device_type || undefined,
       status: status || undefined,
       user_type,
+      sort_by: sorting.sort_by || sortConfig.key, // Ensure sort_by is passed
+      order_by: sorting.order_by || sortConfig.direction, // Ensure order_by is passed
     };
+  
+    // console.log("Fetching equipments with params:", params);
     dispatch(getClientEquipments(params));
   };
+  
 
   const handleClientChange = (clientId) => {
     setSelectedClient(clientId);
@@ -188,6 +194,24 @@ const ClientEquipments = () => {
       );
     }
   };
+
+  const handleSort = (key) => {
+    setSortConfig((prevSortConfig) => {
+      const direction = prevSortConfig.key === key && prevSortConfig.direction === "ASC" ? "DESC" : "ASC";
+      const updatedSort = { key, direction };
+      fetchEquipments({ sort_by: key, order_by: direction }); // Call with updated sort values
+      return updatedSort;
+    });
+  };
+  
+
+const getSortSymbol = (key) => {
+  if (sortConfig.key === key) {
+      return sortConfig.direction === "ASC" ? "▲" : "▼";
+  }
+  return "↕";
+};
+
 
   const newLocal = (
     <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
@@ -339,11 +363,21 @@ const ClientEquipments = () => {
             <table className="table-auto w-full border-collapse border border-gray-200">
               <thead>
                 <tr className="bg-gray-100 text-left">
-                  <th className="border px-4 py-2">Device Type</th>
-                  <th className="border px-4 py-2">Device ID</th>
-                  <th className="border px-4 py-2">Make</th>
-                  <th className="border px-4 py-2">Model</th>
-                  <th className="border px-4 py-2">Serial</th>
+                  <th className="border px-4 py-2" onClick={() => handleSort("device_type")}>Device Type
+                  <span className="ml-1">{getSortSymbol("device_type")}</span>
+                  </th>
+                  <th className="border px-4 py-2" onClick={() => handleSort("device_id")}>Device ID
+                  <span className="ml-1">{getSortSymbol("device_id")}</span>
+                  </th>
+                  <th className="border px-4 py-2" onClick={() => handleSort("manufacturer")}>Make
+                  <span className="ml-1">{getSortSymbol("manufacturer")}</span>
+                  </th>
+                  <th className="border px-4 py-2" onClick={() => handleSort("model")}>Model
+                  <span className="ml-1">{getSortSymbol("model")}</span>
+                  </th>
+                  <th className="border px-4 py-2" onClick={() => handleSort("serial_number")}>Serial
+                  <span className="ml-1">{getSortSymbol("serial_number")}</span>
+                  </th>
                   <th className="border px-4 py-2">Actions</th>
                 </tr>
               </thead>

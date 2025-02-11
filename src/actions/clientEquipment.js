@@ -30,9 +30,9 @@ export const getClientEquipments = ({
   model,
   device_type,
   status,
-  sortBy,
-  orderBy,
-  user_type
+  user_type,
+  sort_by,
+  order_by,
 } = {}) => {
   return async (dispatch) => {
     // Skip client_id and location_id validation for "Client Employee"
@@ -40,6 +40,7 @@ export const getClientEquipments = ({
       toast.error("Client ID and Location ID are required to fetch equipment.");
       return;
     }
+
     dispatch(getClientEquipmentsStart());
     try {
       let url = apiConfig.getClientEquipments;
@@ -54,8 +55,8 @@ export const getClientEquipments = ({
       if (model) params.append("model", model);
       if (device_type) params.append("device_type", device_type);
       if (status) params.append("isDecomission", status);
-      if (sortBy) params.append("sortBy", sortBy);
-      if (orderBy) params.append("orderBy", orderBy);
+      if (sort_by) params.append("sort_by", sort_by);
+      if (order_by) params.append("order", order_by);
 
       if (params.toString()) {
         url += `?${params.toString()}`;
