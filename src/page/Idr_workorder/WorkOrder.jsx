@@ -146,7 +146,7 @@ const WorkOrder = () => {
 
                     <div className="flex flex-col gap-2">
                       <label className="font-normal text-sm">
-                        Filter By Technician Manager
+                        Filter By Project Manager
                       </label>
                       <select
                         name="project_manager"
