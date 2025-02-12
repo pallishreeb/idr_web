@@ -335,7 +335,8 @@ const EditServiceTicket = () => {
                 </button>
               )}
 
-                            {/* Download PDF Button */}
+          {/* Download PDF Button */}
+          {technicianAccess.includes(user_type) && (
              <button
               onClick={handleDownloadPdf}
               className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
@@ -370,6 +371,7 @@ const EditServiceTicket = () => {
                 
               )}
             </button>
+          )}
             </div>
           </div>
           {/* update Work order ticket details */}
