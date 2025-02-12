@@ -257,8 +257,7 @@ const EditServiceTicket = () => {
   
       // Make sure the request is sending the correct headers
       const response = await axios.get(
-        `/service_ticket/pdf/${serviceTicketId}`, 
-        {},  // Sending an empty body, replace if needed
+        `/service_ticket/pdf/${serviceTicketId}`,
         {
           headers: {
             'Content-Type': 'application/json', // If backend expects this
@@ -275,7 +274,7 @@ const EditServiceTicket = () => {
       
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = `${serviceTicket?.ticket_number}.pdf`;
+      link.download = `${serviceTicket?.service_ticket_number}.pdf`;
       document.body.appendChild(link);
       link.click();
       
@@ -337,7 +336,7 @@ const EditServiceTicket = () => {
               )}
 
                             {/* Download PDF Button */}
-            {/* <button
+             <button
               onClick={handleDownloadPdf}
               className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
               disabled={isDownloading}
@@ -370,7 +369,7 @@ const EditServiceTicket = () => {
                 </>
                 
               )}
-            </button> */}
+            </button>
             </div>
           </div>
           {/* update Work order ticket details */}

@@ -99,7 +99,7 @@ export const getServiceTicketLists = (filters) => {
       const url = queryString ? `${apiConfig.getServiceTicketLists}?${queryString}` : apiConfig.getServiceTicketLists;
       const response = await axios.get(url);
  
-      console.log("service ticket response", response)
+      // console.log("service ticket response", response)
       dispatch(getServiceTicketListsSuccess(response?.data?.tickets));
     } catch (error) {
       dispatch(getServiceTicketListsFailure(error.message));

@@ -247,7 +247,7 @@ const getSortSymbol = (key) => {
               onChange={handleFilterChange}
               className="px-3 border border-gray-200 h-10 rounded"
             >
-              <option value="">All</option>
+              {/* <option value="">All</option> */}
               <option value="false">Active</option>
               <option value="true">Retired</option>
             </select>
