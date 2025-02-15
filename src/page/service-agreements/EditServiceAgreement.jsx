@@ -154,7 +154,7 @@ const EditServiceAgreement = () => {
                       value={serviceAgreement.client_id}
                       onChange={handleChange}
                       required
-                      disabled={loadingClients || user_type !== "Admin"}
+                      disabled={loadingClients || !access?.includes(user_type)}
                     >
                       <option value="">Select a client</option>
                       {loadingClients ? (
@@ -183,7 +183,7 @@ const EditServiceAgreement = () => {
                       className="border border-gray-300 rounded px-3 py-1 w-full"
                       value={selectedClientLocation}
                       onChange={handleChange}
-                      disabled={loadingLocations || user_type !== "Admin"}
+                      disabled={loadingLocations || !access?.includes(user_type)}
                     >
                       <option value="">Select a client location</option>
                       {loadingLocations ? (
@@ -220,7 +220,7 @@ const EditServiceAgreement = () => {
                       onChange={handleChange}
                       // min={getTodayDate()}
                       required
-                      disabled={user_type !== "Admin"}
+                      disabled={!access?.includes(user_type)}
                     />
                   </div>
                   <div>
@@ -238,7 +238,7 @@ const EditServiceAgreement = () => {
                       onChange={handleChange}
                       // min={getTodayDate()}
                       required
-                      disabled={user_type !== "Admin"}
+                      disabled={!access?.includes(user_type)}
                     />
                   </div>
                 </div>
@@ -256,14 +256,14 @@ const EditServiceAgreement = () => {
                       value={serviceAgreement.parts_covered}
                       onChange={handleChange}
                       required
-                      disabled={user_type !== "Admin"} 
+                      disabled={!access?.includes(user_type)}
                     >
                       <option value="">Select</option>
                       <option value="true">Yes</option>
                       <option value="false">No</option>
                     </select>
                   </div>
-                  {(access.includes(user_type) || client_type !== "User" ) &&  (
+                  {(user_type !== "IDR Employee"  && client_type !== "User" ) &&  (
                     <div>
                       <label
                         htmlFor="price"
@@ -278,7 +278,7 @@ const EditServiceAgreement = () => {
                         value={serviceAgreement.price}
                         onChange={handleChange}
                         required
-                        disabled={user_type !== "Admin"}
+                        disabled={!access?.includes(user_type)}
                       />
                     </div>
                   )}
@@ -297,11 +297,11 @@ const EditServiceAgreement = () => {
                       className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                       value={serviceAgreement.service_details}
                       onChange={handleChange}
-                      readOnly={user_type !== "Admin"}
+                      readOnly={!access?.includes(user_type)}
                     />
                   </div>
                 </div>
-                {user_type === "Admin" && (
+                {access?.includes(user_type) && (
                 <div className="flex justify-end mb-4">
                   
                     <button

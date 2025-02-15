@@ -34,7 +34,7 @@ export const createLicense = (licenseData,navigate) => {
   
         dispatch(licenseSuccess(data));
         toast.success("License generated successfully");
-        navigate('/client-licensing');
+        // navigate('/client-licensing');
         return data;
         
       } catch (error) {
@@ -102,7 +102,7 @@ export const updateLicense = (licenseData,navigate) => {
       const response = await axios.patch(`${apiConfig.updateLicense}`, licenseData);
       dispatch(updateLicenseSuccess(response.data));
       toast.success("License updated successfully");
-      navigate('/client-licensing')
+      // navigate('/client-licensing')
     } catch (error) {
       dispatch(updateLicenseFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to update License");

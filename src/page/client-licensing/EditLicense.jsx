@@ -140,7 +140,7 @@ const EditLicense = () => {
                       className="border border-gray-300 rounded px-3 py-1 w-full"
                       value={licenseData.client_id}
                       onChange={handleChange}
-                      disabled={user_type !== "Admin" || loadingClients}
+                      disabled={!access?.includes(user_type) || loadingClients}
                     >
                       <option value="">Select a customer</option>
                       {loadingClients ? (
@@ -169,7 +169,7 @@ const EditLicense = () => {
                       className="border border-gray-300 rounded px-3 py-1 w-full"
                       value={licenseData.location_id}
                       onChange={handleChange}
-                      disabled={user_type !== "Admin" || loadingLocations}
+                      disabled={!access?.includes(user_type) || loadingLocations}
                     >
                       <option value="">Select a location</option>
                       {loadingLocations ? (
@@ -202,7 +202,7 @@ const EditLicense = () => {
                     className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.quantity}
                     onChange={handleChange}
-                    disabled={user_type !== "Admin"}
+                    disabled={!access?.includes(user_type)}
                     required
                   />
                 </div>
@@ -217,7 +217,7 @@ const EditLicense = () => {
                     className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.manufacturer}
                     onChange={handleChange}
-                    disabled={user_type !== "Admin"}
+                    disabled={!access?.includes(user_type)}
                     required
                   />
                 </div>
@@ -232,7 +232,7 @@ const EditLicense = () => {
                     className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.license_type}
                     onChange={handleChange}
-                    disabled={user_type !== "Admin"}
+                    disabled={!access?.includes(user_type)}
                     required
                   />
                 </div>
@@ -249,7 +249,7 @@ const EditLicense = () => {
                     onChange={handleChange}
                     // min={getTodayDate()}
                     required
-                    disabled={user_type !== "Admin"}
+                    disabled={!access?.includes(user_type)}
                   />
                 </div>
                 <div className="flex flex-col mb-4">
@@ -265,7 +265,7 @@ const EditLicense = () => {
                     onChange={handleChange}
                     // min={getTodayDate()}
                     required
-                    disabled={user_type !== "Admin"}
+                    disabled={!access?.includes(user_type)}
                   />
                 </div>
                 {access.includes(user_type) && (
@@ -280,6 +280,7 @@ const EditLicense = () => {
                       className="border border-gray-300 rounded px-3 py-1 w-full"
                       value={licenseData.idr_cost}
                       onChange={handleChange}
+                      disabled={!access?.includes(user_type)}
                       required
                     />
                   </div>
@@ -296,13 +297,13 @@ const EditLicense = () => {
                     className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={licenseData.sale_cost}
                     onChange={handleChange}
-                    disabled={user_type !== "Admin"}
+                    disabled={!access?.includes(user_type)}
                     required
                   />
                 </div>}
               </div>
               <div className="flex justify-end mb-4">
-                {user_type === "Admin" &&
+                {access?.includes(user_type) &&
                   <button
                   type="submit"
                   className="bg-indigo-700 text-white px-4 py-2 rounded m-2"

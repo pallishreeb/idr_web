@@ -169,7 +169,7 @@ const ServiceAgreements = () => {
             </div>
           )}
           <div className="mb-4 flex justify-end">
-            {user_type === "Admin" && (
+            {access.includes(user_type) && (
               <button
                 className="bg-indigo-700 text-white px-4 py-2 rounded"
                 disabled={!selectedClient}
@@ -229,7 +229,7 @@ const ServiceAgreements = () => {
                       <td className="border px-4 py-2">
                         {agreement.parts_covered ? "Yes" : "No"}
                       </td>
-                      {(access.includes(user_type) || client_type !== "User" ) &&  (
+                      {(user_type !== "IDR Employee"  && client_type !== "User" ) &&  (
                         <td className="border px-4 py-2">{formatCurrency(agreement.price)}</td>
                       )}
                       <td className="border px-4 py-2 flex">

@@ -241,7 +241,7 @@ const ClientLicenseList = () => {
           </div>
 
           <div className="mb-4 flex justify-end">
-            {user_type === "Admin" && (
+            {access?.includes(user_type) && (
               <button
                 className="bg-indigo-700 text-white px-4 py-2 rounded"
                 disabled={!selectedClient}

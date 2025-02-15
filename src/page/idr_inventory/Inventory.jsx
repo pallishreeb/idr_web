@@ -28,6 +28,7 @@ const Inventory = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user_type } = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
   const loading = useSelector((state) => state.locationInventory.loading);
   const loadingInventory = useSelector((state) => state.inventory.loading);
   const inventoryList = useSelector((state) => state.inventory.inventories);
@@ -149,12 +150,13 @@ const Inventory = () => {
           <div className="flex justify-between items-center">
             <h1 className="font-bold text-lg">Inventory</h1>
             <div className="flex gap-2">
+            {access.includes(user_type) && (
               <button
                 className="bg-indigo-600 text-white px-6 py-2 rounded"
                 onClick={handleOpenModel}
               >
                 Add Location
-              </button>
+              </button>)}
               <Link to={"/addinventory"}>
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded">
                   Add Inventory
