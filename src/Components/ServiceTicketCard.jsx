@@ -64,6 +64,39 @@ const ServiceTicketCard = ({
             </button>
           )}
         </div>}
+        {user_type === "IDR Employee" && (
+          <div>
+          
+          {isEditing ? (
+            <>
+              <button
+              className="bg-indigo-600 text-white px-6 py-2 rounded"
+              onClick={handleSaveTicket}
+            >
+              Save Ticket
+            </button>
+               <button
+               className="bg-gray-500 text-white px-6 py-2 rounded ml-2"
+               onClick={handleEditToggle}
+             >
+               Cancel
+             </button>
+            </>
+          ) : (
+            <button
+            className="bg-indigo-600 text-white px-6 py-2 rounded"
+            onClick={() => {
+              setIsEditing(true); // Allow editing when closing ticket
+              // handleServiceTicketChange({ target: { name: "status", value: "Closed" } });
+            }}
+          >
+            Edit Ticket
+          </button>
+          )}
+          </div>
+
+)}
+
       </div>
 
       <div className="grid grid-cols-3 gap-8">
