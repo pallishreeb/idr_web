@@ -284,7 +284,7 @@ const EditLicense = () => {
                     />
                   </div>
                 )}
-               {(access.includes(user_type) || client_type !== "User" ) &&
+               {(user_type!== "IDR Employee") &&
                 <div className="flex flex-col mb-4">
                   <label htmlFor="sale_cost" className="mr-2">
                     Sale Price:

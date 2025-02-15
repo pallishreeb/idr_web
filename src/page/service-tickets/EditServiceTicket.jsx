@@ -488,14 +488,9 @@ const EditServiceTicket = () => {
 
           {/* Segnature modal */}
           <div className="p-6">
-            <button
-              onClick={openModal}
-              className="bg-indigo-600 text-white px-4 py-2 rounded"
-            >
-               Sign Document
-            </button>
+          
 
-            {signatureImage && (
+            {signatureImage ? (
   <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
     <h2 className="text-lg font-semibold text-gray-700">Signature:</h2>
     
@@ -512,7 +507,12 @@ const EditServiceTicket = () => {
       <p className="text-sm font-medium">Date: <span className="font-semibold">{serviceTicket ? formatDateToMDY(serviceTicket.signature_date) : ''}</span></p>
     </div>
   </div>
-)}
+) :  <button
+onClick={openModal}
+className="bg-indigo-600 text-white px-4 py-2 rounded"
+>
+ Sign Document
+</button> }
 
 
 
