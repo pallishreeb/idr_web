@@ -14,7 +14,6 @@ const InventoryLocations = () => {
   const [location, setLocation] = useState("");
   const { loading, locations } = useSelector((state) => state.locationInventory);
   const { user_type } = useSelector((state) => state.user.user);
-  const { access } = useSelector((state) => state.user);
   useEffect(() => {
     dispatch(getLocationInventory());
   }, [dispatch]);
@@ -68,7 +67,7 @@ const InventoryLocations = () => {
         <div className="py-12 px-2 bg-gray-50 w-1/2 h-screen overflow-y-scroll">
         <div className="flex justify-between">
         <h1 className="font-bold text-lg text-center">Inventory Locations</h1>
-        {access.includes(user_type) && (
+        {user_type === "Admin" && (
              <button
                 className="bg-indigo-600 text-white px-6 py-2 rounded"
                 onClick={handleOpenModel}
