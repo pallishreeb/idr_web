@@ -98,7 +98,9 @@ const ClientLicenseList = () => {
     if (user_type === "Client Employee") {
       dispatch(getLicenseLists({}));
     } else {
-      dispatch(clearLicense(selectedClient));
+      dispatch(getLicenseLists({}));
+      dispatch(getClients());
+      // dispatch(clearLicense(selectedClient));
     }
   };
   const handleDeleteLicense = (licenseId) => {
@@ -241,7 +243,7 @@ const ClientLicenseList = () => {
           </div>
 
           <div className="mb-4 flex justify-end">
-            {user_type === "Admin" && (
+            {access?.includes(user_type) && (
               <button
                 className="bg-indigo-700 text-white px-4 py-2 rounded"
                 disabled={!selectedClient}
@@ -322,7 +324,7 @@ const ClientLicenseList = () => {
                       <span className="ml-1">{getSortSymbol("idr_cost")}</span>
                     </th>
                   )}
-                  {(access.includes(user_type) || client_type !== "User") && (
+                  {(user_type!== "IDR Employee") && (
                     <th
                       className="px-2 py-2 text-sm font-semibold tracking-wider border"
                       onClick={() => handleSort("sale_cost")}
@@ -388,8 +390,7 @@ const ClientLicenseList = () => {
                           {formatCurrency(license.idr_cost)}
                         </td>
                       )}
-                      {(access.includes(user_type) ||
-                        client_type !== "User") && (
+                      {(user_type !== "IDR Employee") && (
                         <td className="border text-sm px-1 py-3">
                           {formatCurrency(license.sale_cost)}
                         </td>

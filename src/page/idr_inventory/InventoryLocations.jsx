@@ -67,12 +67,13 @@ const InventoryLocations = () => {
         <div className="py-12 px-2 bg-gray-50 w-1/2 h-screen overflow-y-scroll">
         <div className="flex justify-between">
         <h1 className="font-bold text-lg text-center">Inventory Locations</h1>
+        {user_type === "Admin" && (
              <button
                 className="bg-indigo-600 text-white px-6 py-2 rounded"
                 onClick={handleOpenModel}
               >
                 Add Location
-              </button>
+              </button>)}
         </div>
 
           <div className="mt-4 border py-7 px-5 bg-white">

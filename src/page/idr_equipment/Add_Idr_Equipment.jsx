@@ -95,7 +95,7 @@ const AddIdrEquipment = () => {
                     placeholder={`Type ${label.toLowerCase()}`}
                     className="px-3 border border-gray-200 h-10 text-sm rounded"
                     onChange={handleInputChange}
-                    required
+                    required = {name !== "mac_address"}
                   />
                 </div>
               ))}

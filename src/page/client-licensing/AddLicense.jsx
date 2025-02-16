@@ -118,6 +118,17 @@ const CreateLicense = () => {
     }
 
     dispatch(createLicense(formattedLicenseData, navigate));
+        // Reset the form fields after submission
+        setLicenseData((prev) => ({
+          ...prev,
+          quantity: "",
+          manufacturer: "",
+          license_type: "",
+          start_date: "",
+          expiration_date: "",
+          idr_cost: "",
+          sale_cost: "",
+        }));
   };
 
   const getTodayDate = () => {
