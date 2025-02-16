@@ -34,6 +34,15 @@ const ServiceTicketCard = ({
     }
   }, [serviceTicket?.location_id, locations]);
 
+    // Helper to disable fields for IDR Employees (except status)
+    const isFieldDisabled = (fieldName) => {
+      if (user_type === "IDR Employee") {
+        return fieldName !== "status"; // Disable all fields except status
+      } else {
+        return !isEditing || !access.includes(user_type); // Admins/subadmins follow edit mode
+      }
+    };
+
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -108,7 +117,7 @@ const ServiceTicketCard = ({
             required
             value={serviceTicket.client_id || ""}
             onChange={(e) => handleServiceTicketChange(e)}
-            disabled={!isEditing}
+            disabled={isFieldDisabled("client_id")}
           >
             <option value="">Choose Option</option>
             {clients?.data?.map((client) => (
@@ -127,7 +136,7 @@ const ServiceTicketCard = ({
             required
             value={serviceTicket.location_id || ""}
             onChange={(e) => handleServiceTicketChange(e)}
-            disabled={!isEditing}
+            disabled={isFieldDisabled("location_id")}
           >
             <option value="">Choose Option</option>
             {locations.map((location) => (
@@ -214,7 +223,7 @@ const ServiceTicketCard = ({
             required
             value={serviceTicket.contact_person || ""}
             onChange={(e) => handleServiceTicketChange(e)}
-            disabled={!isEditing}
+            disabled={isFieldDisabled("contact_person")}
           >
             <option value="">Choose Contact Person</option>
             {clientEmployees.map((employee) => (
@@ -264,7 +273,7 @@ const ServiceTicketCard = ({
             className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
             value={serviceTicket.customer_po || ""}
             onChange={(e) => handleServiceTicketChange(e)}
-            disabled={!isEditing}
+            disabled={isFieldDisabled("customer_po")}
           />
         </div>
 
@@ -278,7 +287,7 @@ const ServiceTicketCard = ({
             value={serviceTicket.service_date || ""}
             onChange={(e) => handleServiceTicketChange(e)}
             required
-            disabled={!isEditing}
+            disabled={isFieldDisabled("service_date")}
           />
         </div>
 
@@ -291,7 +300,7 @@ const ServiceTicketCard = ({
             className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
             value={serviceTicket.service_location || ""}
             onChange={(e) => handleServiceTicketChange(e)}
-            disabled={!isEditing}
+            disabled={isFieldDisabled("service_location")}
           />
         </div>
 
@@ -305,7 +314,7 @@ const ServiceTicketCard = ({
             value={serviceTicket.service_request || ""}
             onChange={(e) => handleServiceTicketChange(e)}
             required
-            disabled={!isEditing}
+            disabled={isFieldDisabled("service_request")}
           />
         </div>
 
@@ -335,7 +344,7 @@ const ServiceTicketCard = ({
             className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
             value={serviceTicket.local_onsite_contact || ""}
             onChange={(e) => handleServiceTicketChange(e)}
-            disabled={!isEditing}
+            disabled={isFieldDisabled("local_onsite_contact")}
           />
         </div>
 
@@ -350,7 +359,7 @@ const ServiceTicketCard = ({
             className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
             value={serviceTicket.local_onsite_contact_number || ""}
             onChange={(e) => handleServiceTicketChange(e)}
-            disabled={!isEditing}
+            disabled={isFieldDisabled("local_onsite_contact_number")}
           />
         </div>
 
@@ -364,7 +373,7 @@ const ServiceTicketCard = ({
             className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
             value={serviceTicket.service_ticket_details || ""}
             onChange={(e) => handleServiceTicketChange(e)}
-            disabled={!isEditing}
+            disabled={isFieldDisabled("service_ticket_details")}
           ></textarea>
         </div>
         {/* <div className="flex flex-col gap-2">

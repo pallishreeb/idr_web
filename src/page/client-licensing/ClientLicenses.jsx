@@ -98,7 +98,9 @@ const ClientLicenseList = () => {
     if (user_type === "Client Employee") {
       dispatch(getLicenseLists({}));
     } else {
-      dispatch(clearLicense(selectedClient));
+      dispatch(getLicenseLists({}));
+      dispatch(getClients());
+      // dispatch(clearLicense(selectedClient));
     }
   };
   const handleDeleteLicense = (licenseId) => {
