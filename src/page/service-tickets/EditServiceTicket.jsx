@@ -74,6 +74,7 @@ const EditServiceTicket = () => {
   }, [dispatch, serviceTicketId]);
 
   useEffect(() => {
+    if (!serviceTicketDetails) return;
     // console.log("workOrderDetails:", workOrderDetails); // Debugging line
     if (serviceTicketDetails) {
       setServiceTicket(serviceTicketDetails);
@@ -86,14 +87,17 @@ const EditServiceTicket = () => {
       );
       setServiceTicketEquipments(serviceTicketDetails?.linkedDevices || []);
       setServiceTicketAgreement(serviceTicketDetails?.agreement || {});
-      dispatch(
-        getClientEquipments({
-          client_id: serviceTicketDetails.client_id,
-          location_id: serviceTicketDetails.location_id,
-        })
-      );
+       // API call should be done only if technicianAccess includes user_type
+      if (technicianAccess.includes(user_type)) {
+        dispatch(
+          getClientEquipments({
+            client_id: serviceTicketDetails.client_id,
+            location_id: serviceTicketDetails.location_id,
+          })
+        );
+      }
     }
-  }, [serviceTicketDetails, dispatch]);
+  }, [serviceTicketDetails,user_type,technicianAccess,dispatch]);
   useEffect(() => {
     if (serviceTicket?.client_id) {
       dispatch(getLocationByClient(serviceTicket?.client_id));
