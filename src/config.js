@@ -73,6 +73,7 @@ const apiConfig = {
   getEquipmentReportList:'/reports/equipment/all',
   getEquipmentReportById:'/reports/equipment',
   returnInventory:'/work_order/return_inventory',
+  returnEquipment:'/work_order/return_equipment',
   generateServiceTicket: "/service_ticket/add",
   getServiceTicketLists: "/service_ticket/all",
   deleteServiceTicket: "/service_ticket",

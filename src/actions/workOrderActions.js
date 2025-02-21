@@ -293,3 +293,26 @@ export const returnInventory = (inventoryData) => {
     }
   };
 };
+//return equipment
+export const returnEquipment = (inventoryData) => {
+  return async (dispatch) => {
+    dispatch(returnInventoryStart());
+
+    try {
+      const data = await fetchJson(apiConfig.returnEquipment, {
+        method: 'POST',
+        body: inventoryData
+      });
+
+      dispatch(returnInventorySuccess(data));
+      toast.success("Equipment has been returned");
+      // Reload the current page
+      window.location.reload();
+    } catch (error) {
+      console.error('Error occurred:', error);
+
+      dispatch(returnInventoryFailure(error.message));
+      toast.error(error.message || "Failed to return Equipment");
+    }
+  };
+};

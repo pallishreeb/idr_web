@@ -1,9 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { returnEquipment} from '../actions/workOrderActions'; // Import the API action
 
 
 
-const EquipmentTable = ({ equipments }) => {
+const EquipmentTable = ({ equipments,work_order_id }) => {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(null); 
 
+  const handleReturnEquipment = (assigned_inventory_id) => {
+    setLoading(assigned_inventory_id); // Set loading state for clicked equipment
+
+    dispatch(returnEquipment({
+      work_order_id,
+      assigned_inventory_id,
+      is_web: true,
+    }))
+      .then(() => {
+        setLoading(null); // Reset loading state
+      })
+      .catch((error) => {
+        console.error('Error returning Equipment:', error);
+        setLoading(null); // Reset loading state even on error
+      });
+  };
   return (
     <>
     {equipments.length > 0 && (
@@ -22,6 +42,7 @@ const EquipmentTable = ({ equipments }) => {
               <th className="border px-4 py-2">Make</th>
               <th className="border px-4 py-2">Device Type</th>
               <th className="border px-4 py-2">Location</th>
+              <th className="border px-4 py-2">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -40,6 +61,14 @@ const EquipmentTable = ({ equipments }) => {
                 <td className="border px-4 py-2">
                 {equipment.location_name}
                 </td>
+                <td className="border px-4 py-2">
+                      <button
+                        onClick={() => handleReturnEquipment(equipment.assign_equip_id)}
+                        className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-600"
+                      >
+                 {loading === equipment.assign_equip_id ? 'Returning...' : 'Return Equipment'}
+                      </button>
+                    </td>
 
               </tr>
             ))}

@@ -24,6 +24,7 @@ const TransferIdrEquipment = () => {
   const [assignDesc, setAssignDesc] = useState("");
   const [technicians, setTechnicians] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [equipment, setEquipment] = useState(null)
   const { clients, loading: clientsLoading } = useSelector((state) => state.client);
   const { workOrders, loading: workOrdersLoading ,workOrderDetails,loadingDetails} = useSelector((state) => state.workOrder);
   const loadingAssign = useSelector((state) => state.idrequipment.loadingAssign);
@@ -36,7 +37,11 @@ const TransferIdrEquipment = () => {
     if (idr_equipment_id) {
       setLoading(true);
       dispatch(getIdrEquipmentById(idr_equipment_id))
-        .then(() => setLoading(false))
+        .then((data) => {
+          setEquipment(data)
+          setLoading(false)
+        }
+        )
         .catch((error) => {
           setLoading(false);
           console.error("Error fetching IDR equipment item:", error);
@@ -123,17 +128,43 @@ const TransferIdrEquipment = () => {
       <div className="flex">
         <AdminSideNavbar />
         <div className="py-12 px-8 bg-gray-50 w-[100%]">
-          <div className="flex justify-between items-end">
-            <h1 className="font-bold text-lg">Transfer IDR Equipment</h1>
-            <div className="flex gap-3">
-              <button
-                className="border border-gray-400 text-gray-400 px-6 py-2 rounded"
-                onClick={() => navigate("/idr-equipment")}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+        <div className="flex flex-col gap-4 bg-white p-5 rounded-lg shadow-md border">
+  {/* Section Title & Buttons */}
+  <div className="flex justify-between items-end">
+    <h1 className="font-bold text-lg">Transfer IDR Equipment</h1>
+    <div className="flex gap-3">
+      <button
+        className="border border-gray-400 text-gray-400 px-6 py-2 rounded hover:bg-gray-100"
+        onClick={() => navigate("/idr-equipment")}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  {/* Equipment Details Card */}
+  <div className="bg-gray-100 p-4 rounded-lg shadow-md">
+    <h2 className="font-semibold text-gray-700 mb-2">Equipment Details</h2>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+      <div>
+        <span className="font-semibold text-gray-600">Make:</span> {equipment?.make}
+      </div>
+      <div>
+        <span className="font-semibold text-gray-600">Model:</span> {equipment?.model}
+      </div>
+      <div>
+        <span className="font-semibold text-gray-600">Device Type:</span> {equipment?.device_type}
+      </div>
+      <div>
+        <span className="font-semibold text-gray-600">Serial Number:</span> {equipment?.serial_number || "N/A"}
+      </div>
+      <div>
+        <span className="font-semibold text-gray-600">Location:</span> {equipment?.location_name}
+      </div>
+    </div>
+  </div>
+</div>
+
 
           <form onSubmit={handleAssignWorkorder}>
             <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
