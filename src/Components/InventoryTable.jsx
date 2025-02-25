@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
 import { returnInventory } from '../actions/workOrderActions'; // Import the API action
 
 const InventoryTable = ({ inventories, work_order_id }) => {
@@ -7,7 +7,8 @@ const InventoryTable = ({ inventories, work_order_id }) => {
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
   const [quantity, setQuantity] = useState(''); // State to store input value
   const [selectedInventoryId, setSelectedInventoryId] = useState(null); // Track the selected inventory
-
+  const { user_type, client_type } = useSelector((state) => state.user.user);
+  const { technicianAccess,access } = useSelector((state) => state.user);
   const handleReturnInventory = () => {
     if (!quantity) {
       alert('Please enter a quantity');
@@ -48,7 +49,7 @@ const InventoryTable = ({ inventories, work_order_id }) => {
                   <th className="border px-4 py-2">Make</th>
                   <th className="border px-4 py-2">Device Type</th>
                   <th className="border px-4 py-2">Quantity</th>
-                  <th className="border px-4 py-2">Action</th>
+                  {access.includes(user_type) &&   <th className="border px-4 py-2">Action</th>}
                 </tr>
               </thead>
               <tbody>
@@ -58,7 +59,7 @@ const InventoryTable = ({ inventories, work_order_id }) => {
                     <td className="border px-4 py-2">{inventory.make}</td>
                     <td className="border px-4 py-2">{inventory.device_type}</td>
                     <td className="border px-4 py-2">{inventory.quantity}</td>
-                    <td className="border px-4 py-2">
+                    {access.includes(user_type) &&   <td className="border px-4 py-2">
                       <button
                         onClick={() => {
                           setShowModal(true);
@@ -68,7 +69,7 @@ const InventoryTable = ({ inventories, work_order_id }) => {
                       >
                         Return Inventory
                       </button>
-                    </td>
+                    </td>}
                   </tr>
                 ))}
               </tbody>

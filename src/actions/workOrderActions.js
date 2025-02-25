@@ -294,14 +294,13 @@ export const returnInventory = (inventoryData) => {
   };
 };
 //return equipment
-export const returnEquipment = (inventoryData) => {
+export const returnEquipment = (inventoryId) => {
   return async (dispatch) => {
     dispatch(returnInventoryStart());
 
     try {
-      const data = await fetchJson(apiConfig.returnEquipment, {
-        method: 'POST',
-        body: inventoryData
+      const data = await fetchJson(`${apiConfig.returnEquipment}/${inventoryId}`, {
+        method: 'PATCH',
       });
 
       dispatch(returnInventorySuccess(data));
