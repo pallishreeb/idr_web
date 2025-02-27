@@ -58,46 +58,84 @@ useEffect(() => {
     // additionalNotes: "",
   });
 
-  // Handle input changes
+  useEffect(() => {
+    const syncContacts = () => {
+      const updates = {};
+      
+      if (formData.serviceContactSameAsProject) {
+        updates.serviceContact = formData.projectContact;
+      }
+      
+      if (formData.accountsReceivableContactSameAsProject) {
+        updates.accountsReceivableContact = formData.projectContact;
+      }
+      
+      if (Object.keys(updates).length > 0) {
+        setFormData(prev => ({ ...prev, ...updates }));
+      }
+    };
+  
+    syncContacts();
+  }, [formData.projectContact]); // Sync when project contact changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-
+  
+    // Handle nested contact fields first
     if (name.startsWith("projectContact.")) {
       const field = name.split(".")[1];
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         projectContact: {
           ...prev.projectContact,
-          [field]: value,
-        },
+          [field]: value
+        }
       }));
-    } else if (name.startsWith("serviceContact.")) {
+    } 
+    else if (name.startsWith("serviceContact.")) {
       const field = name.split(".")[1];
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         serviceContact: {
           ...prev.serviceContact,
-          [field]: value,
-        },
+          [field]: value
+        }
       }));
-    } else if (name.startsWith("accountsReceivableContact.")) {
+    }
+    else if (name.startsWith("accountsReceivableContact.")) {
       const field = name.split(".")[1];
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         accountsReceivableContact: {
           ...prev.accountsReceivableContact,
-          [field]: value,
-        },
+          [field]: value
+        }
       }));
-    } else if (type === "checkbox") {
-      setFormData((prev) => ({
+    }
+    // Then handle checkboxes
+    else if (type === "checkbox") {
+      if (name === "serviceContactSameAsProject") {
+        setFormData(prev => ({
+          ...prev,
+          serviceContactSameAsProject: checked,
+          serviceContact: checked ? prev.projectContact : prev.serviceContact
+        }));
+      } 
+      else if (name === "accountsReceivableContactSameAsProject") {
+        setFormData(prev => ({
+          ...prev,
+          accountsReceivableContactSameAsProject: checked,
+          accountsReceivableContact: checked ? prev.projectContact : prev.accountsReceivableContact
+        }));
+      }
+      else {
+        setFormData(prev => ({ ...prev, [name]: checked }));
+      }
+    }
+    // Handle all other fields
+    else {
+      setFormData(prev => ({
         ...prev,
-        [name]: checked,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
+        [name]: value
       }));
     }
   };
@@ -359,7 +397,7 @@ useEffect(() => {
                   value={formData.serviceContact.firstName}
                   onChange={handleInputChange}
                   className="border p-2 rounded"
-                  required
+                  disabled={formData.serviceContactSameAsProject}
                 />
               </div>
               <div className="flex flex-col">
@@ -370,7 +408,7 @@ useEffect(() => {
                   value={formData.serviceContact.lastName}
                   onChange={handleInputChange}
                   className="border p-2 rounded"
-                  required
+                  disabled={formData.serviceContactSameAsProject}
                 />
               </div>
               <div className="flex flex-col">
@@ -381,7 +419,7 @@ useEffect(() => {
                   value={formData.serviceContact.phoneNumber}
                   onChange={handleInputChange}
                   className="border p-2 rounded"
-                  required
+                  disabled={formData.serviceContactSameAsProject}
                 />
               </div>
               <div className="flex flex-col">
@@ -392,7 +430,7 @@ useEffect(() => {
                   value={formData.serviceContact.mobileNumber}
                   onChange={handleInputChange}
                   className="border p-2 rounded"
-                  required
+                  disabled={formData.serviceContactSameAsProject}
                 />
               </div>
               <div className="flex flex-col">
@@ -403,7 +441,7 @@ useEffect(() => {
                   value={formData.serviceContact.email}
                   onChange={handleInputChange}
                   className="border p-2 rounded"
-                  required
+                  disabled={formData.serviceContactSameAsProject}
                 />
               </div>
             </div>
@@ -433,7 +471,7 @@ useEffect(() => {
                   value={formData.accountsReceivableContact.firstName}
                   onChange={handleInputChange}
                   className="border p-2 rounded"
-                  required
+                  disabled={formData.accountsReceivableContactSameAsProject}
                 />
               </div>
               <div className="flex flex-col">
@@ -444,7 +482,7 @@ useEffect(() => {
                   value={formData.accountsReceivableContact.lastName}
                   onChange={handleInputChange}
                   className="border p-2 rounded"
-                  required
+                  disabled={formData.accountsReceivableContactSameAsProject}
                 />
               </div>
               <div className="flex flex-col">
@@ -455,7 +493,7 @@ useEffect(() => {
                   value={formData.accountsReceivableContact.phoneNumber}
                   onChange={handleInputChange}
                   className="border p-2 rounded"
-                  required
+                  disabled={formData.accountsReceivableContactSameAsProject}
                 />
               </div>
               <div className="flex flex-col">
@@ -466,7 +504,7 @@ useEffect(() => {
                   value={formData.accountsReceivableContact.mobileNumber}
                   onChange={handleInputChange}
                   className="border p-2 rounded"
-                  required
+                  disabled={formData.accountsReceivableContactSameAsProject}
                 />
               </div>
               <div className="flex flex-col">
@@ -477,7 +515,7 @@ useEffect(() => {
                   value={formData.accountsReceivableContact.email}
                   onChange={handleInputChange}
                   className="border p-2 rounded"
-                  required
+                  disabled={formData.accountsReceivableContactSameAsProject}
                 />
               </div>
             </div>
