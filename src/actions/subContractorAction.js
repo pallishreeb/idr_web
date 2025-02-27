@@ -22,6 +22,12 @@ import {
   deleteSubcontractorNoteStart,
   deleteSubcontractorNoteSuccess,
   deleteSubcontractorNoteFailure,
+  getSubcontractorTypesStart,
+  getSubcontractorTypesSuccess,
+  getSubcontractorTypesFailure,
+  getSubcontractorServicesStart,
+  getSubcontractorServicesSuccess,
+  getSubcontractorServicesFailure,
 } from "../reducers/subcontractorSlice";
 import { apiConfig } from "../config";
 import { fetchJson } from '../fetch-config';
@@ -37,7 +43,7 @@ export const addSubcontractor = (subcontractorData, navigate) => {
       });
       dispatch(subcontractorSuccess(data));
       toast.success("Subcontractor added successfully");
-      navigate('/subcontractors');
+      navigate('/sub-contractors');
       return data;
     } catch (error) {
       dispatch(subcontractorFailure(error.message));
@@ -77,6 +83,8 @@ export const deleteSubcontractor = (subcontractorId) => {
   };
 };
 
+
+
 // Update subcontractor details
 export const updateSubcontractor = (subcontractorData) => {
   return async (dispatch) => {
@@ -102,8 +110,8 @@ export const getSubcontractorDetails = (subcontractorId) => {
     dispatch(getSubcontractorDetailsStart());
     try {
       const response = await axios.get(`${apiConfig.getSubcontractorByID}/${subcontractorId}`);
-      dispatch(getSubcontractorDetailsSuccess(response.data?.subcontractor));
-      return response.data?.subcontractor;
+      dispatch(getSubcontractorDetailsSuccess(response.data?.contractor));
+      return response.data?.contractor;
     } catch (error) {
       dispatch(getSubcontractorDetailsFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to fetch subcontractor details");
@@ -141,6 +149,36 @@ export const addNotesToSubcontractor = (notesData) => {
       } catch (error) {
         dispatch(deleteSubcontractorNoteFailure(error.message));
         toast.error(error.response?.data?.message || "Failed to delete note");
+      }
+    };
+  };
+
+
+  // Get all subcontractors Types
+export const getSubcontractorTyes= () => {
+  return async (dispatch) => {
+    dispatch(getSubcontractorTypesStart());
+    try {
+      const response = await axios.get(`${apiConfig.subcontractorTypes}`);
+      dispatch(getSubcontractorTypesSuccess(response?.data?.types));
+    } catch (error) {
+      dispatch(getSubcontractorTypesFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to fetch subcontractor types");
+    }
+  };
+};
+
+
+  // Get all subcontractors Types
+  export const getSubcontractorServices= () => {
+    return async (dispatch) => {
+      dispatch(getSubcontractorServicesStart());
+      try {
+        const response = await axios.get(`${apiConfig.subcontractorServices}`);
+        dispatch(getSubcontractorServicesSuccess(response?.data?.services));
+      } catch (error) {
+        dispatch(getSubcontractorServicesFailure(error.message));
+        toast.error(error.response?.data?.message || "Failed to fetch subcontractor services");
       }
     };
   };
