@@ -99,7 +99,8 @@ const RmaViewList = () => {
     if (user_type === "Client Employee") {
       dispatch(getRmaLists({}));
     } else {
-      dispatch(clearRma());
+      dispatch(getRmaLists({}));
+      // dispatch(clearRma());
     }
   };
 
