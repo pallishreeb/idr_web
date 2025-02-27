@@ -2,9 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   subcontractors: [],
-  subcontractorDetails: null,
+  subcontractor: null,
   loading: false,
   loadingDetails: false,
+  subcontractorTypes:[],
+  subcontractorServices:[],
   error: null,
 };
 
@@ -41,8 +43,9 @@ const subcontractorSlice = createSlice({
     deleteSubcontractorSuccess: (state, action) => {
       state.loading = false;
       state.subcontractors = state.subcontractors.filter(
-        (sub) => sub.id !== action.payload
+        (sub) => sub.subcontractor_id !== action.payload
       );
+     
     },
     deleteSubcontractorFailure: (state, action) => {
       state.loading = false;
@@ -54,7 +57,7 @@ const subcontractorSlice = createSlice({
     updateSubcontractorSuccess: (state, action) => {
       state.loading = false;
       state.subcontractors = state.subcontractors.map((sub) =>
-        sub.id === action.payload.id ? action.payload : sub
+        sub.subcontractor_id === action.payload.id ? action.payload : sub
       );
     },
     updateSubcontractorFailure: (state, action) => {
@@ -66,7 +69,7 @@ const subcontractorSlice = createSlice({
     },
     getSubcontractorDetailsSuccess: (state, action) => {
       state.loadingDetails = false;
-      state.subcontractorDetails = action.payload;
+      state.subcontractor = action.payload;
     },
     getSubcontractorDetailsFailure: (state, action) => {
       state.loadingDetails = false;
@@ -77,10 +80,7 @@ const subcontractorSlice = createSlice({
     },
     addNotesToSubcontractorSuccess: (state, action) => {
       state.loading = false;
-      state.subcontractorDetails.notes = [
-        ...state.subcontractorDetails.notes,
-        action.payload,
-      ];
+      state.error = null;
     },
     addNotesToSubcontractorFailure: (state, action) => {
       state.loading = false;
@@ -88,14 +88,39 @@ const subcontractorSlice = createSlice({
     },
     deleteSubcontractorNoteStart: (state) => {
       state.loading = true;
+      state.error = null;
     },
     deleteSubcontractorNoteSuccess: (state, action) => {
       state.loading = false;
-      state.subcontractorDetails.notes = state.subcontractorDetails.notes.filter(
-        (note) => note.id !== action.payload
-      );
+      state.error = null;
     },
     deleteSubcontractorNoteFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    getSubcontractorTypesStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    getSubcontractorTypesSuccess: (state, action) => {
+      state.loading = false;
+      state.subcontractorTypes = action.payload;
+    },
+    getSubcontractorTypesFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    getSubcontractorServicesStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    getSubcontractorServicesSuccess: (state, action) => {
+      state.loading = false;
+      state.subcontractorServices = action.payload;
+    },
+    getSubcontractorServicesFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
@@ -124,6 +149,12 @@ export const {
   deleteSubcontractorNoteStart,
   deleteSubcontractorNoteSuccess,
   deleteSubcontractorNoteFailure,
+  getSubcontractorTypesStart,
+  getSubcontractorTypesSuccess,
+  getSubcontractorTypesFailure,
+  getSubcontractorServicesStart,
+  getSubcontractorServicesSuccess,
+  getSubcontractorServicesFailure,
 } = subcontractorSlice.actions;
 
 export default subcontractorSlice.reducer;

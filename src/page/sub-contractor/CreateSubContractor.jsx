@@ -1,15 +1,23 @@
-import React, { useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import { Link, useNavigate } from "react-router-dom";
-// import { getSubcontractorLists, deleteSubcontractor } from "../../actions/subContractorAction";
+import React, { useState,useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getSubcontractorTyes, getSubcontractorServices, addSubcontractor } from "../../actions/subContractorAction";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import Header from "../../Components/Header";
 
 const CreateSubContractor = () => {
-  // const dispatch = useDispatch();
-  // const navigate = useNavigate();
-  // const { subcontractors, loading } = useSelector((state) => state.subcontractor);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading } = useSelector((state) => state.subcontractor);
   // const { user_type } = useSelector((state) => state.user.user);
+  // Add to component
+const { subcontractorTypes, subcontractorServices } = useSelector((state) => state.subcontractor);
+
+useEffect(() => {
+  dispatch(getSubcontractorTyes());
+  dispatch(getSubcontractorServices());
+}, [dispatch]);
+
   // State for form data
   const [formData, setFormData] = useState({
     subcontractorName: "",
@@ -47,7 +55,7 @@ const CreateSubContractor = () => {
     contractorTypes: [],
     servicesProvided: [],
     ownsCertifier: "",
-    additionalNotes: "",
+    // additionalNotes: "",
   });
 
   // Handle input changes
@@ -94,39 +102,62 @@ const CreateSubContractor = () => {
     }
   };
 
-  // Handle contractor type selection
-  const handleContractorTypeChange = (e) => {
-    const { value, checked } = e.target;
-    setFormData((prev) => {
-      const updatedTypes = checked
-        ? [...prev.contractorTypes, value]
-        : prev.contractorTypes.filter((type) => type !== value);
-      return {
-        ...prev,
-        contractorTypes: updatedTypes,
-      };
-    });
+  const handleContractorTypeChange = (type, checked) => {
+    setFormData(prev => ({
+      ...prev,
+      contractorTypes: checked
+        ? [...prev.contractorTypes, { type_id: type.contractor_type_id, type_name: type.type_name }]
+        : prev.contractorTypes.filter(t => t.type_id !== type.contractor_type_id)
+    }));
   };
-
-  // Handle services provided selection
-  const handleServicesProvidedChange = (e) => {
-    const { value, checked } = e.target;
-    setFormData((prev) => {
-      const updatedServices = checked
-        ? [...prev.servicesProvided, value]
-        : prev.servicesProvided.filter((service) => service !== value);
-      return {
-        ...prev,
-        servicesProvided: updatedServices,
-      };
-    });
+  
+  const handleServicesProvidedChange = (service, checked) => {
+    setFormData(prev => ({
+      ...prev,
+      servicesProvided: checked
+        ? [...prev.servicesProvided, { service_id: service.contractor_service_id, service_name: service.type_name }]
+        : prev.servicesProvided.filter(s => s.service_id !== service.contractor_service_id)
+    }));
   };
+  
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
-    // Add API call or further processing here
+    
+    const payload = {
+      subcontractor_name: formData.subcontractorName,
+      street_address: formData.streetAddress,
+      city: formData.city,
+      state: formData.state,
+      zipcode: formData.zipCode,
+      coverage_area: formData.coverageArea,
+      hourly_rate: formData.hourlyRate,
+      trip_charge: formData.tripCharge,
+      no_of_technicians: formData.numberOfTechnicians,
+      is_certifier: formData.ownsCertifier === "Yes",
+      types: formData.contractorTypes,
+      services: formData.servicesProvided,
+      // Contacts
+      p_firstname: formData.projectContact.firstName,
+      p_lastname: formData.projectContact.lastName,
+      p_phonenumber: formData.projectContact.phoneNumber,
+      p_mobilenumber: formData.projectContact.mobileNumber,
+      p_email: formData.projectContact.email,
+      s_firstname: formData.serviceContact.firstName,
+      s_lastname: formData.serviceContact.lastName,
+      s_phonenumber: formData.serviceContact.phoneNumber,
+      s_mobilenumber: formData.serviceContact.mobileNumber,
+      s_email: formData.serviceContact.email,
+      a_firstname: formData.accountsReceivableContact.firstName,
+      a_lastname: formData.accountsReceivableContact.lastName,
+      a_phonenumber: formData.accountsReceivableContact.phoneNumber,
+      a_mobilenumber: formData.accountsReceivableContact.mobileNumber,
+      a_email: formData.accountsReceivableContact.email,
+      additional_notes: formData.additionalNotes
+    };
+  
+    dispatch(addSubcontractor(payload,navigate));
   };
 
   return (
@@ -230,7 +261,7 @@ const CreateSubContractor = () => {
               />
             </div>
             <div className="flex flex-col">
-              <label># of Technicians</label>
+              <label>No of Technicians</label>
               <input
                 type="number"
                 name="numberOfTechnicians"
@@ -457,19 +488,17 @@ const CreateSubContractor = () => {
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Contractor Type</h2>
           <div className="grid grid-cols-2 gap-4">
-            {["Data / Voice / Fiber", "Security", "A/V", "Electrical"].map((type) => (
-              <div key={type} className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="contractorTypes"
-                  value={type}
-                  checked={formData.contractorTypes.includes(type)}
-                  onChange={handleContractorTypeChange}
-                  className="mr-2"
-                />
-                <label>{type}</label>
-              </div>
-            ))}
+          {subcontractorTypes?.map((type) => (
+            <div key={type.contractor_type_id} className="flex items-center">
+              <input
+                type="checkbox"
+                id={type.contractor_type_id}
+                checked={formData.contractorTypes.some(t => t.type_id === type.contractor_type_id)}
+                onChange={(e) => handleContractorTypeChange(type, e.target.checked)}
+              />
+              <label htmlFor={type.contractor_type_id} className="ml-2">{type.type_name}</label>
+            </div>
+          ))}
           </div>
         </div>
 
@@ -477,35 +506,17 @@ const CreateSubContractor = () => {
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Detailed List of Services Provided</h2>
           <div className="grid grid-cols-2 gap-4">
-            {[
-              "Data",
-              "Fiber",
-              "Analog Voice",
-              "Data Center",
-              "Security Alarm",
-              "Access Control",
-              "IP Cameras",
-              "Analog Cameras",
-              "Intercoms",
-              "Conduit",
-              "Electrical",
-              "A/V – Speakers",
-              "A/V – Sound Masking",
-              "A/V – Video",
-              "A/V – Automation / DSP",
-            ].map((service) => (
-              <div key={service} className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="servicesProvided"
-                  value={service}
-                  checked={formData.servicesProvided.includes(service)}
-                  onChange={handleServicesProvidedChange}
-                  className="mr-2"
-                />
-                <label>{service}</label>
-              </div>
-            ))}
+          {subcontractorServices?.map((service) => (
+            <div key={service.contractor_service_id} className="flex items-center">
+              <input
+                type="checkbox"
+                id={service.contractor_service_id}
+                checked={formData.servicesProvided.some(s => s.service_id === service.contractor_service_id)}
+                onChange={(e) => handleServicesProvidedChange(service, e.target.checked)}
+              />
+              <label htmlFor={service.contractor_service_id} className="ml-2">{service.type_name}</label>
+            </div>
+          ))}
           </div>
         </div>
 
@@ -534,24 +545,12 @@ const CreateSubContractor = () => {
           </div>
         </div>
 
-        {/* Additional Notes */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-4">Additional Notes</h2>
-          <textarea
-            name="additionalNotes"
-            value={formData.additionalNotes}
-            onChange={handleInputChange}
-            className="border p-2 rounded w-full"
-            rows="4"
-          />
-        </div>
-
         {/* Submit Button */}
         <button
           type="submit"
           className="bg-indigo-600 text-white px-4 py-2 rounded"
         >
-          Create SubContractor
+         {loading ? "Saving Data" : "Create Subcontractor" }
         </button>
       </form>
     </div>

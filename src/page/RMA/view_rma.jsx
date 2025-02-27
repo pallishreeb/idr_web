@@ -11,6 +11,7 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import Header from "../../Components/Header";
 import Loader from "../../Images/ZZ5H.gif";
 import { clearRma } from "../../reducers/rmaSlice"; // Updated import
+import { toast } from "react-toastify";
 
 const RmaViewList = () => {
   const dispatch = useDispatch();
@@ -112,7 +113,13 @@ const RmaViewList = () => {
       cancelButtonText: "No, keep it",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(deleteRma(rmaId));
+        dispatch(deleteRma(rmaId)).then(() => {
+                  dispatch(getRmaLists(filters)); // Refresh the list after deletion
+                })
+                .catch((error) => {
+                  console.log(error);
+                  toast.error("Failed to delete this item");
+                });
       }
     });
   };

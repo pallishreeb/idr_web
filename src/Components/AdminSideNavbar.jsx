@@ -40,7 +40,7 @@ const AdminSideNavbar = () => {
     { title: "Inventory Locations", path: "/inventory-locations", roles: ["Admin", "Subadmin", "IDR Employee"] },
     { title: "IDR Equipment and Tools", path: "/idr-equipment", roles: ["Admin", "Subadmin", "IDR Employee"] },
     { title: "Reports", path: "/equipment-report", roles: ["Admin", "Subadmin"] },
-    // { title: "Sub Contractors", path: "/sub-contractors", roles: ["Admin", "Subadmin"] },
+    { title: "Sub Contractors", path: "/sub-contractors", roles: ["Admin", "Subadmin"] },
   ];
 
   const toggleSubMenu = () => setIsSubMenuOpen(!isSubMenuOpen);

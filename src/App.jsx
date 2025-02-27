@@ -67,6 +67,7 @@ import RmaViewList from "./page/RMA/view_rma";
 import EditRma from "./page/RMA/edit_rma";
 import CreateSubContractor from "./page/sub-contractor/CreateSubContractor"
 import SubContractorList from "./page/sub-contractor/SubContractorList"
+import EditSubContractor from "./page/sub-contractor/EditSubContractor";
 
 
 
@@ -221,8 +222,7 @@ function App() {
           {/* Sub contractor  */}
          <Route path="/create-sub-contractor" element={<CreateSubContractor />} />
          <Route path="/sub-contractors" element={<SubContractorList />} />
-          {/*
-          <Route path="/edit-client-licensing/:licenseId" element={<EditLicense />} /> */}
+          <Route path="/edit-subcontractor/:id" element={<EditSubContractor />} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Route>

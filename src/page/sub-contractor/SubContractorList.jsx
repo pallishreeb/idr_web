@@ -8,6 +8,7 @@ import { getSubcontractorLists, deleteSubcontractor } from "../../actions/subCon
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import Header from "../../Components/Header";
 import Loader from "../../Images/ZZ5H.gif";
+import { toast } from "react-toastify";
 
 const SubContractorList = () => {
   const dispatch = useDispatch();
@@ -34,7 +35,13 @@ const SubContractorList = () => {
       cancelButtonText: 'No, keep it',
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(deleteSubcontractor(subcontractorId));
+        dispatch(deleteSubcontractor(subcontractorId)).then(() => {
+          dispatch(getSubcontractorLists()); // Refresh the list after deletion
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error("Failed to delete this item");
+        });
       }
     });
   };
@@ -108,47 +115,66 @@ const SubContractorList = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full table-auto text-left">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Name</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Company</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Contact</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Email</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan="5" className="py-4 text-center">
-                      <img src={Loader} alt="Loading..." className="h-16 w-16 mx-auto" />
-                    </td>
-                  </tr>
-                ) : subcontractors?.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="text-center py-4">No subcontractors found</td>
-                  </tr>
-                ) : (
-                  subcontractors?.map((subcontractor) => (
-                    <tr key={subcontractor.id}>
-                      <td className="border text-sm px-4 py-3">{subcontractor.name}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.company}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.contact}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.email}</td>
-                      <td className="border text-sm px-4 py-3 flex gap-2">
-                        <button className="text-blue-600" onClick={() => handleEdit(subcontractor.id)}>
-                          <BiSolidEditAlt size={18} />
-                        </button>
-                        <button className="text-red-600" onClick={() => handleDelete(subcontractor.id)}>
-                          <AiFillDelete size={18} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+          <table className="min-w-full table-auto text-left">
+  <thead>
+    <tr className="bg-gray-100">
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Subcontractor Name</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Street Address</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">City</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">State</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Zipcode</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Coverage Area</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Hourly Rate</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Trip Charge</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Technicians</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Primary Contact</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Phone</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Mobile</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Email</th>
+      <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {loading ? (
+      <tr>
+        <td colSpan="14" className="py-4 text-center">
+          <img src={Loader} alt="Loading..." className="h-16 w-16 mx-auto" />
+        </td>
+      </tr>
+    ) : subcontractors?.length === 0 ? (
+      <tr>
+        <td colSpan="14" className="text-center py-4">No subcontractors found</td>
+      </tr>
+    ) : (
+      subcontractors?.map((subcontractor) => (
+        <tr key={subcontractor.subcontractor_id}>
+          <td className="border text-sm px-4 py-3">{subcontractor.subcontractor_name}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.street_address}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.city}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.state}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.zipcode}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.coverage_area}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.hourly_rate}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.trip_charge}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.no_of_technicians}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.p_firstname} {subcontractor.p_lastname}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.p_phonenumber}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.p_mobilenumber}</td>
+          <td className="border text-sm px-4 py-3">{subcontractor.p_email}</td>
+          <td className="border text-sm px-4 py-3 flex gap-2">
+            <button className="text-blue-600" onClick={() => handleEdit(subcontractor.subcontractor_id)}>
+              <BiSolidEditAlt size={18} />
+            </button>
+            <button className="text-red-600" onClick={() => handleDelete(subcontractor.subcontractor_id)}>
+              <AiFillDelete size={18} />
+            </button>
+          </td>
+        </tr>
+      ))
+    )}
+  </tbody>
+</table>
+
           </div>
         </div>
       </div>
