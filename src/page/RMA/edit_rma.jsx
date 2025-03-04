@@ -15,6 +15,8 @@ export default function EditRma() {
   const { rmaId } = useParams(); // Get RMA ID from URL
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { user_type } = useSelector((state) => state.user.user);
+  const { technicianAccess } = useSelector((state) => state.user);
   const [isEditing, setIsEditing] = useState(false); // State to toggle edit mode
   const [notes, setNotes] = useState([]);
   const [rmaImages, setRmaImages] = useState([]);
@@ -170,8 +172,9 @@ export default function EditRma() {
         <div className="container mx-auto p-4 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Edit RMA :  {rmaDetails?.rma_number}</h2>
+            {technicianAccess?.includes(user_type) &&
             <div>
-              {!isEditing ? (
+              {(!isEditing) ? (
                 <button
                   onClick={() => setIsEditing(true)}
                   className="bg-indigo-700 text-white px-4 py-2 rounded m-2"
@@ -183,7 +186,7 @@ export default function EditRma() {
                   <button
                    type="button"
                     form="rma-form"
-                    className="bg-green-600 text-white px-4 py-2 rounded m-2"
+                    className="bg-indigo-600 text-white px-4 py-2 rounded m-2"
                     onClick={handleSubmit}
                   >
                     {loading ? "Saving" : "Save"}
@@ -197,7 +200,7 @@ export default function EditRma() {
                   </button>
                 </>
               )}
-            </div>
+            </div>}
           </div>
           <form id="rma-form">
             <div className="grid grid-cols-2 gap-4">

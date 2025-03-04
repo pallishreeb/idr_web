@@ -165,9 +165,9 @@ const SubContractorList = () => {
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Trip Charge</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Technicians</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Primary Contact</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Phone</th>
+                  {/* <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Phone</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Mobile</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Email</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Email</th> */}
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Action</th>
                 </tr>
               </thead>
@@ -195,9 +195,9 @@ const SubContractorList = () => {
                       <td className="border text-sm px-4 py-3">{subcontractor.trip_charge}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.no_of_technicians}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.p_firstname} {subcontractor.p_lastname}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.p_phonenumber}</td>
+                      {/* <td className="border text-sm px-4 py-3">{subcontractor.p_phonenumber}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.p_mobilenumber}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.p_email}</td>
+                      <td className="border text-sm px-4 py-3">{subcontractor.p_email}</td> */}
                       <td className="border text-sm px-4 py-3 flex gap-2">
                         <button className="text-blue-600 hover:text-blue-800" onClick={() => handleEdit(subcontractor.subcontractor_id)}>
                           <BiSolidEditAlt size={18} />
