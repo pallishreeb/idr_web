@@ -13,6 +13,7 @@ const RmaImages = ({ images, rmaId }) => {
   const { user_type } = useSelector((state) => state.user.user);
   const {  technicianAccess} = useSelector((state) => state.user);
   const { loadingAssignImage } = useSelector((state) => state.rma);
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);

@@ -37,6 +37,8 @@ const EditClientEquipment = () => {
     lan_ip_address: "", // Optional
     wan_ip_address: "", // Optional
     general_info: "", // Optional
+    decomission_reason:"",
+    is_deleted:false
   });
 
   // Fetch clients when the component mounts
@@ -63,6 +65,8 @@ const EditClientEquipment = () => {
             lan_ip_address: data.lan_ip_address || "",
             wan_ip_address: data.wan_ip_address || "",
             general_info: data.general_info || "",
+            decomission_reason:data?.decomission_reason || "",
+            is_deleted:data?.is_deleted
           });
             setClientEquipmentNotes(data?.client_equip_histories || [])
           if (data.client_id) {
@@ -134,7 +138,10 @@ const EditClientEquipment = () => {
                         </option>
                       ) : (
                         clients?.data?.map((client) => (
-                          <option key={client.client_id} value={client.client_id}>
+                          <option
+                            key={client.client_id}
+                            value={client.client_id}
+                          >
                             {client.company_name}
                           </option>
                         ))
@@ -161,8 +168,12 @@ const EditClientEquipment = () => {
                         </option>
                       ) : (
                         clientLocations?.map((location) => (
-                          <option key={location.location_id} value={location.location_id}>
-                            {location.address_line_one} {location.address_line_two}
+                          <option
+                            key={location.location_id}
+                            value={location.location_id}
+                          >
+                            {location.address_line_one}{" "}
+                            {location.address_line_two}
                           </option>
                         ))
                       )}
@@ -335,10 +346,14 @@ const EditClientEquipment = () => {
                 </div>
 
                 <div className="flex justify-end mt-4">
-                {technicianAccess.includes(user_type)  &&
-                  <button type="submit" className="bg-indigo-700 text-white px-4 py-2 rounded">
-                    {loading ? "Updating..." : "Update Client Device"}
-                  </button>}
+                  {technicianAccess.includes(user_type) && (
+                    <button
+                      type="submit"
+                      className="bg-indigo-700 text-white px-4 py-2 rounded"
+                    >
+                      {loading ? "Updating..." : "Update Client Device"}
+                    </button>
+                  )}
                   <Link
                     to="/client-equipments"
                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"
@@ -349,48 +364,71 @@ const EditClientEquipment = () => {
               </form>
             )}
           </div>
-                {/* Table for notes */}
-                {clientEquipmentNotes?.length > 0 && 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-gray-200 border rounded">
-          <thead>
-            <tr className="bg-gray-300 text-left">
-              <th className="border px-4 py-2" style={{ width: '65%' }}>Notes</th>
-              <th className="border px-4 py-2" style={{ width: '15%' }}>User Name</th>
-              <th className="border px-4 py-2" style={{ width: '15%' }}>Date and Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {clientEquipmentNotes?.map((note, index) => (
-              <tr key={note.note_id} className="bg-white text-sm">
-                <td className="border px-4 py-2" style={{ width: '60%' }}>
-                  <textarea
-                    className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
-                    name="comments"
-                    value={note.comments || ""}
-                    rows={3}
-                  ></textarea>
-                </td>
-                <td className="border px-4 py-2" style={{ width: '15%' }}>
-                  {note?.user_name || "NA"}
-                </td>
-                <td className="border px-4 py-2" style={{ width: '15%' }}>
-                {new Date(note.created_at).toLocaleString('en-US', {
-                    timeZone: 'America/New_York',
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: true,
-                  })}
-                </td>                
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>}
+
+          {/* {decomission_reason} */}
+
+          {clientEquipment?.decomission_reason !== "" && (
+            <>
+              <h2 className="text-xl font-semibold mb-2">
+                {clientEquipment?.is_deleted === true
+                  ? "Decommission Reason"
+                  : "Re-activation Reason"}
+              </h2>
+              <p className="text-gray-600 mb-4">
+                {clientEquipment?.decomission_reason}
+              </p>
+            </>
+          )}
+
+          {/* Table for notes */}
+          {clientEquipmentNotes?.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-gray-200 border rounded">
+                <thead>
+                  <tr className="bg-gray-300 text-left">
+                    <th className="border px-4 py-2" style={{ width: "65%" }}>
+                      Notes
+                    </th>
+                    <th className="border px-4 py-2" style={{ width: "15%" }}>
+                      User Name
+                    </th>
+                    <th className="border px-4 py-2" style={{ width: "15%" }}>
+                      Date and Time
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {clientEquipmentNotes?.map((note, index) => (
+                    <tr key={note.note_id} className="bg-white text-sm">
+                      <td className="border px-4 py-2" style={{ width: "60%" }}>
+                        <textarea
+                          className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
+                          name="comments"
+                          value={note.comments || ""}
+                          rows={3}
+                        ></textarea>
+                      </td>
+                      <td className="border px-4 py-2" style={{ width: "15%" }}>
+                        {note?.user_name || "NA"}
+                      </td>
+                      <td className="border px-4 py-2" style={{ width: "15%" }}>
+                        {new Date(note.created_at).toLocaleString("en-US", {
+                          timeZone: "America/New_York",
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: true,
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </>
