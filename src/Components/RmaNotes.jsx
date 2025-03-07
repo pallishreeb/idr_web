@@ -30,8 +30,11 @@ const RmaNotes = ({ notes, rmaId }) => {
     dispatch(addNotesToRma(newNote))
       .then(response => {
         if (response.code === "RMA201") {
-          handleCloseModal();
           dispatch(getRMADetails(rmaId));
+          window.location.reload();
+          handleCloseModal();
+
+
         } else {
           console.error("Error adding notes:", response.error);
         }
