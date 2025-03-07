@@ -77,6 +77,18 @@ const SubContractorList = () => {
     navigate(`/edit-subcontractor/${subcontractorId}`);
   };
 
+  const formatCurrency = (value) => {
+    if (typeof value === "string") {
+      // value = value.replace(/,/g, ""); // Remove all commas
+      value = value.replace(/[^0-9.]/g, ""); 
+    }
+
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD", // Change to appropriate currency if needed
+      minimumFractionDigits: 2,
+    }).format(value);
+  };
   return (
     <>
       <Header />
@@ -191,8 +203,8 @@ const SubContractorList = () => {
                       <td className="border text-sm px-4 py-3">{subcontractor.state}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.zipcode}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.coverage_area}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.hourly_rate}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.trip_charge}</td>
+                      <td className="border text-sm px-4 py-3">{formatCurrency(subcontractor.hourly_rate)}</td>
+                      <td className="border text-sm px-4 py-3">{formatCurrency(subcontractor.trip_charge)}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.no_of_technicians}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.p_firstname} {subcontractor.p_lastname}</td>
                       {/* <td className="border text-sm px-4 py-3">{subcontractor.p_phonenumber}</td>
