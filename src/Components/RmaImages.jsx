@@ -38,6 +38,7 @@ const RmaImages = ({ images, rmaId }) => {
         if(data.code === "RMA201"){
           toast.success("Images uploaded successfully.");
           dispatch(getRMADetails(rmaId));
+          window.location.reload();
           handleCloseModal();
         }
 
