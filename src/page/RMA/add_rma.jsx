@@ -148,6 +148,7 @@ export default function AddRma() {
                     value={formData.client_name}
                     onChange={handleChange}
                     required
+                    readOnly
                   />
                 </div>
                 <div className="flex flex-col mb-4">
@@ -162,6 +163,7 @@ export default function AddRma() {
                     value={formData.location_name}
                     onChange={handleChange}
                     required
+                    readOnly
                   />
                 </div>
               </div>
@@ -178,6 +180,7 @@ export default function AddRma() {
                     value={formData.manufacturer}
                     onChange={handleChange}
                     required
+                    readOnly
                   />
                 </div>
                 <div className="flex flex-col mb-4">
@@ -192,6 +195,7 @@ export default function AddRma() {
                     value={formData.model}
                     onChange={handleChange}
                     required
+                    readOnly
                   />
                 </div>
                 <div className="flex flex-col mb-4">
@@ -206,6 +210,7 @@ export default function AddRma() {
                     value={formData.serial}
                     onChange={handleChange}
                     required
+                    readOnly
                   />
                 </div>
               </div>

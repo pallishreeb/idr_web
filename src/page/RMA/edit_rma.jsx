@@ -249,6 +249,7 @@ export default function EditRma() {
                   onChange={handleChange}
                   disabled={!isEditing}
                   required
+                  readOnly
                 />
               </div>
               <div className="flex flex-col mb-4">
@@ -264,6 +265,7 @@ export default function EditRma() {
                   onChange={handleChange}
                   disabled={!isEditing}
                   required
+                  readOnly
                 />
               </div>
             </div>
@@ -281,6 +283,7 @@ export default function EditRma() {
                   onChange={handleChange}
                   disabled={!isEditing}
                   required
+                  readOnly
                 />
               </div>
               <div className="flex flex-col mb-4">
@@ -296,6 +299,7 @@ export default function EditRma() {
                   onChange={handleChange}
                   disabled={!isEditing}
                   required
+                  readOnly
                 />
               </div>
               <div className="flex flex-col mb-4">
@@ -311,6 +315,7 @@ export default function EditRma() {
                   onChange={handleChange}
                   disabled={!isEditing}
                   required
+                  readOnly
                 />
               </div>
             </div>
