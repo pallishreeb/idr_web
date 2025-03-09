@@ -58,6 +58,7 @@ const EditSubContractor = () => {
     servicesProvided: [],
     ownsCertifier: "",
     additionalNotes: "",
+    rating:"",
   });
 
   // Fetch data on mount
@@ -112,7 +113,9 @@ const EditSubContractor = () => {
           email: subcontractor.a_email
         },
         serviceContactSameAsProject: !subcontractor.s_firstname,
-        accountsReceivableContactSameAsProject: !subcontractor.a_firstname
+        accountsReceivableContactSameAsProject: !subcontractor.a_firstname,
+        rating:subcontractor?.rating
+
       });
       setNotes(subcontractor.subcontractorNotes || []);
 
@@ -253,7 +256,9 @@ const EditSubContractor = () => {
         a_phonenumber: formData.accountsReceivableContact.phoneNumber,
         a_mobilenumber: formData.accountsReceivableContact.mobileNumber,
         a_email: formData.accountsReceivableContact.email,
-        additional_notes: formData.additionalNotes
+        additional_notes: formData.additionalNotes,
+        rating:formData.rating,
+
       };
     
 
@@ -630,6 +635,7 @@ const EditSubContractor = () => {
           </div>
         </div>
 
+        <div className="grid grid-cols-3 gap-4">
         {/* Owns a Certifier */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Owns a Certifier</h2>
@@ -654,6 +660,28 @@ const EditSubContractor = () => {
             <label>No</label>
           </div>
         </div>
+
+        <div className="flex flex-col mb-4">
+          <label htmlFor="rating" className="mr-2">
+          <h2 className="text-xl font-semibold mb-4">Rating</h2>
+          </label>
+          <select
+            id="rating"
+            name="rating"
+            className="border border-gray-300 rounded px-3 py-1 w-full"
+            value={formData.rating}
+            onChange={handleInputChange}
+          >
+            <option value="">Select Rating</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="F">F</option>
+          </select>
+        </div>
+
+       </div> 
               <button
                 type="submit"
                 className="bg-indigo-600 text-white px-4 py-2 rounded"

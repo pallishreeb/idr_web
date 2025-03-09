@@ -30,6 +30,7 @@ export default function AddRma() {
     serial: "",
     aprooved_date: "",
     aprooved_by: "",
+    rma_number:"",
   });
 
   useEffect(() => {
@@ -104,7 +105,7 @@ export default function AddRma() {
               Create RMA For Device
             </h2>
             <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="flex flex-col mb-4">
                   <label htmlFor="aprooved_date" className="mr-2">
                     Date RMA Approved:
@@ -130,6 +131,20 @@ export default function AddRma() {
                     name="aprooved_by"
                     className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={formData.aprooved_by}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col mb-4">
+                  <label htmlFor="rma_number" className="mr-2">
+                    RMA Number:
+                  </label>
+                  <input
+                    type="text"
+                    id="rma_number"
+                    name="rma_number"
+                    className="border border-gray-300 rounded px-3 py-1 w-full"
+                    value={formData.rma_number}
                     onChange={handleChange}
                     required
                   />

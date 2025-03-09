@@ -41,6 +41,8 @@ export default function EditRma() {
     inbound_tracking: "",
     date_received: "",
     received_by: "",
+    rma_number:"",
+    status:"",
   });
 
   // Redux state
@@ -71,6 +73,8 @@ export default function EditRma() {
             inbound_shipping_method: data.inbound_shipping_method || "",
             inbound_tracking: data.inbound_tracking || "",
             received_by: data.received_by || "",
+            rma_number:data?.rma_number || "",
+            status:data?.status || "",
             aprooved_date: formatDateToYYYYMMDD(data.aprooved_date),
             outbound_date_shipped: formatDateToYYYYMMDD(data.outbound_date_shipped),
             inbound_date_shipped: formatDateToYYYYMMDD(data.inbound_date_shipped),
@@ -203,7 +207,7 @@ export default function EditRma() {
             </div>}
           </div>
           <form id="rma-form">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="flex flex-col mb-4">
                 <label htmlFor="aprooved_date" className="mr-2">
                   Date RMA Approved:
@@ -229,6 +233,21 @@ export default function EditRma() {
                   name="aprooved_by"
                   className="border border-gray-300 rounded px-3 py-1 w-full"
                   value={formData.aprooved_by}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  required
+                />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label htmlFor="rma_number" className="mr-2">
+                  RMA Number:
+                </label>
+                <input
+                  type="text"
+                  id="rma_number"
+                  name="rma_number"
+                  className="border border-gray-300 rounded px-3 py-1 w-full"
+                  value={formData.rma_number}
                   onChange={handleChange}
                   disabled={!isEditing}
                   required
@@ -456,6 +475,30 @@ export default function EditRma() {
                   disabled={!isEditing}
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col mb-4">
+              <label htmlFor="status" className="mr-2">
+                Status:
+              </label>
+              <select
+                id="status"
+                name="status"
+                className="border border-gray-300 rounded px-3 py-1 w-full"
+                value={formData.status}
+                onChange={handleChange}
+                disabled={!isEditing}
+              >
+                <option value="Open">Open</option>
+                <option value="Approved">Approved</option>
+                <option value="Shipped back">Shipped back</option>
+                <option value="Received by manufacturer">Received by manufacturer</option>
+                <option value="Received replacement">Received replacement</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
+
             </div>
           </form>
 
