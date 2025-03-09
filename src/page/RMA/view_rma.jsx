@@ -248,6 +248,7 @@ const RmaViewList = () => {
               <thead>
                 <tr className="bg-gray-100">
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Client</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">RMA</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Location</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Manufacturer</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Model</th>
@@ -276,6 +277,7 @@ const RmaViewList = () => {
                   rmaList?.map((rma) => (
                     <tr key={rma.rma_id}>
                       <td className="border text-sm px-1 py-3">{rma.client_name}</td>
+                      <td className="border text-sm px-1 py-3">{rma.rma_number}</td>
                       <td className="border text-sm px-1 py-3">{`${rma?.location_name}` || "NA"}</td>
                       <td className="border text-sm px-1 py-3">{rma.manufacturer}</td>
                       <td className="border text-sm px-1 py-3">{rma.model}</td>
