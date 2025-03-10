@@ -81,11 +81,12 @@ const RmaViewList = () => {
     }));
   };
   const handleSearch = () => {
-    const { client_id, location_id, manufacturer } = filters;
+    const { client_id, location_id, manufacturer,status } = filters;
     const query = {
       ...(client_id && { client_id }),
       ...(location_id && { location_id }),
       ...(manufacturer && { manufacturer }),
+      ...(status && { status }),
     };
     dispatch(getRmaLists(query));
   };
@@ -195,8 +196,12 @@ const RmaViewList = () => {
                   className="px-3 border border-gray-200 h-10 rounded"
                 >
                   <option value="">All</option>
-                  <option value="false">Active</option>
-                  <option value="true">Retired</option>
+                  <option value="Open">Open</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Shipped back">Shipped back</option>
+                  <option value="Received by manufacturer">Received by manufacturer</option>
+                  <option value="Received replacement">Received replacement</option>
+                  <option value="Closed">Closed</option>
                 </select>
                 </div>
               </form>
