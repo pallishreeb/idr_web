@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillCheckCircle, AiFillDelete } from "react-icons/ai";
+import * as XLSX from 'xlsx';
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { Link, useNavigate } from "react-router-dom";
@@ -274,6 +275,39 @@ const getSortSymbol = (key) => {
       </div>
     </div>
   );
+
+  const handleExportToExcel = () => {
+    if (!equipments || equipments.length === 0) {
+      Swal.fire("No Data", "There is no data to export", "info");
+      return;
+    }
+
+    // Prepare the data for export with all requested fields
+    const exportData = equipments.map(equipment => ({
+      'Device Type': equipment.device_type || '',
+      'Device ID': equipment.device_id || '',
+      'Manufacturer': equipment.manufacturer || '',
+      'Model': equipment.model || '',
+      'Serial Number': equipment.serial_number || '',
+      'MAC Address': equipment.mac_address || '',
+      'LAN IP Address': equipment.lan_ip_address || '',
+      'WAN IP Address': equipment.wan_ip_address || '',
+      'General Info': equipment.general_info || '',
+      'Status': equipment.is_deleted ? 'Retired' : 'Active'
+    }));
+
+    // Create worksheet
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Client Equipments');
+
+    // Generate file name with current date
+    const fileName = `client_equipments_${new Date().toISOString().split('T')[0]}.csv`;
+
+    // Save the file as CSV
+    XLSX.writeFile(wb, fileName, { bookType: 'csv' });
+  };
+
   return (
     <>
       <Header />
@@ -282,8 +316,14 @@ const getSortSymbol = (key) => {
         <div className="container mx-auto p-4 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between items-center">
             <h1 className="font-bold text-lg">Client Equipments</h1>
-            {technicianAccess.includes(user_type) && (
-              <div className="flex gap-2">
+            <div className="flex gap-2">
+              <button
+                onClick={handleExportToExcel}
+                className="bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Export to CSV
+              </button>
+              {technicianAccess.includes(user_type) && (
                 <Link
                   to={`/add-client-equipment/${selectedClient}/${selectedLocation}`}
                   className="bg-indigo-600 text-white px-4 py-2 rounded flex-end"
@@ -291,8 +331,8 @@ const getSortSymbol = (key) => {
                 >
                   Add New Equipment
                 </Link>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Client and Location Filters */}
