@@ -177,6 +177,7 @@ const SubContractorList = () => {
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Trip Charge</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Technicians</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Primary Contact</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Rating</th>
                   {/* <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Phone</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Mobile</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Email</th> */}
@@ -207,6 +208,7 @@ const SubContractorList = () => {
                       <td className="border text-sm px-4 py-3">{formatCurrency(subcontractor.trip_charge)}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.no_of_technicians}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.p_firstname} {subcontractor.p_lastname}</td>
+                      <td className="border text-sm px-4 py-3">{subcontractor?.rating || "N/A"}</td>
                       {/* <td className="border text-sm px-4 py-3">{subcontractor.p_phonenumber}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.p_mobilenumber}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.p_email}</td> */}
