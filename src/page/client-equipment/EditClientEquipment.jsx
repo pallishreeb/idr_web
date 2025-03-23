@@ -5,12 +5,13 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { getClientEquipmentById, updateClientEquipment } from "../../actions/clientEquipment"; // Actions to fetch and update client equipment
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 const EditClientEquipment = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { clientEquipmentId } = useParams(); // Get client equipment ID from route params
+  const [searchParams] = useSearchParams();
 
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
@@ -102,7 +103,13 @@ const EditClientEquipment = () => {
 
   const handleSave = (e) => {
     e.preventDefault();
-    dispatch(updateClientEquipment(clientEquipment, navigate));
+    // Create a copy of clientEquipment without decomission_reason
+    const { decomission_reason, is_deleted, ...updatePayload } = clientEquipment;
+    dispatch(updateClientEquipment(updatePayload, navigate));
+  };
+
+  const handleBack = () => {
+    navigate(`/client-equipments?${searchParams.toString()}`);
   };
 
   return (
@@ -354,12 +361,12 @@ const EditClientEquipment = () => {
                       {loading ? "Updating..." : "Update Client Device"}
                     </button>
                   )}
-                  <Link
-                    to="/client-equipments"
+                  <button
+                    onClick={handleBack}
                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"
                   >
-                    Cancel
-                  </Link>
+                    Back
+                  </button>
                 </div>
               </form>
             )}

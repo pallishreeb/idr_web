@@ -8,11 +8,13 @@ import {
   getServiceAgreementDetails,
   updateServiceAgreement,
 } from "../../actions/serviceAgreement";
-import {  useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Loader from "../../Images/ZZ5H.gif";
+
 const EditServiceAgreement = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { agreementId } = useParams();
 
   const clients = useSelector((state) => state.client.clients);
@@ -22,7 +24,7 @@ const EditServiceAgreement = () => {
   const { loadingDetails, loading } = useSelector(
     (state) => state.serviceAgreement
   );
-  const { user_type ,client_type} = useSelector((state) => state.user.user);
+  const { user_type, client_type } = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
   const [serviceAgreement, setServiceAgreement] = useState({
     client_id: "",
@@ -121,9 +123,8 @@ const EditServiceAgreement = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const handleCancel = () => {
-    navigate(-1); // Go to the previous page
-    console.log("inside handle cancel")
+  const handleBack = () => {
+    navigate(`/service-agreements?${searchParams.toString()}`);
   };
 
   return (
@@ -218,7 +219,6 @@ const EditServiceAgreement = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={serviceAgreement.start_date}
                       onChange={handleChange}
-                      // min={getTodayDate()}
                       required
                       disabled={!access?.includes(user_type)}
                     />
@@ -236,7 +236,6 @@ const EditServiceAgreement = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={serviceAgreement.expiration_date}
                       onChange={handleChange}
-                      // min={getTodayDate()}
                       required
                       disabled={!access?.includes(user_type)}
                     />
@@ -263,7 +262,7 @@ const EditServiceAgreement = () => {
                       <option value="false">No</option>
                     </select>
                   </div>
-                  {(user_type !== "IDR Employee"  && client_type !== "User" ) &&  (
+                  {(user_type !== "IDR Employee" && client_type !== "User") && (
                     <div>
                       <label
                         htmlFor="price"
@@ -302,8 +301,7 @@ const EditServiceAgreement = () => {
                   </div>
                 </div>
                 {access?.includes(user_type) && (
-                <div className="flex justify-end mb-4">
-                  
+                  <div className="flex justify-end mb-4">
                     <button
                       type="submit"
                       className="bg-indigo-700 text-white px-4 py-2 rounded m-2"
@@ -311,15 +309,15 @@ const EditServiceAgreement = () => {
                     >
                       {loading ? "Saving" : "Update Service Agreement"}
                     </button>
-                  
-                  <button
-                    onClick={handleCancel}
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
+                    <button
+                      type="button"
+                      onClick={handleBack}
+                      className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
+                    >
+                      Back
+                    </button>
+                  </div>
+                )}
               </form>
             </div>
           )}

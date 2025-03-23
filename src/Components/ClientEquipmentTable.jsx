@@ -46,7 +46,6 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
 
     onAddNote(payload);
     closeModal();
-    
   };
 
   return (
@@ -76,7 +75,6 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                   <React.Fragment key={equipment.client_equipment_id}>
                     <tr className="bg-white text-sm">
                       <td className="border px-4 py-2">
-                        {/* {equipment?.client_equipments?.mac_address} */}
                         {equipment?.client_equipments?.device_id}
                       </td>
                       <td className="border px-4 py-2">
@@ -118,7 +116,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                               equipment.device_linked_id
                             )
                               ? "Hide Notes"
-                              : "Show Notes"}
+                              : "Show Notes"} ({equipment?.client_equipments?.client_equip_histories?.length || 0})
                           </button>
                         </td>
                       ) : (
@@ -133,7 +131,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                               equipment.device_linked_id
                             )
                               ? "Hide Notes"
-                              : "Show Notes"}
+                              : "Show Notes"} ({equipment?.client_equipments?.client_equip_histories?.length || 0})
                           </button>
                         </td>
                       )}
@@ -173,7 +171,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                                 </thead>
                                 <tbody>
                                   {equipment?.client_equipments?.client_equip_histories.map(
-                                    (note, index) => (
+                                    (note) => (
                                       <tr
                                         key={note.note_id}
                                         className="bg-white text-sm"

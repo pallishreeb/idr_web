@@ -185,6 +185,9 @@ const WorkOrder = () => {
                     <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
                       Client Name
                     </th>
+                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
+                      Client Location
+                    </th>
                     <th className="px-1 py-1 text-left text-sm font-semibold  tracking-wider border">
                       Service Date
                     </th>
@@ -215,7 +218,9 @@ const WorkOrder = () => {
                         <td className="border text-sm px-1 py-3">
                           {order.client_name}
                         </td>
-                        
+                        <td className="border text-sm px-1 py-3">
+                          {order?.location_details?.address_line_one}
+                        </td>
                         <td className="border text-sm px-1 py-3">
                           <input
                             type="date"

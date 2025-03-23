@@ -5,12 +5,13 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { addClientEquipment, addEquipmentThroughCsv } from "../../actions/clientEquipment";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 const AddClientEquipment = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { clientId, locationId } = useParams();
+  const [searchParams] = useSearchParams();
 
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
@@ -116,30 +117,52 @@ const AddClientEquipment = () => {
       formData.append("location_id", clientEquipment.location_id);
       formData.append("csv", file); // Append the CSV file
 
-      dispatch(addEquipmentThroughCsv(formData));
-
-      // Clear the file input using the ref
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""; // Reset the file input
-      }
+      dispatch(addEquipmentThroughCsv(formData)).then((success) => {
+        if (success) {
+          // Only clear form fields on successful submission
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ""; // Reset the file input
+          }
+          setFile(null); // Clear the file state
+          // Reset the form fields after successful submission
+          setClientEquipment((prev) => ({
+            ...prev,
+            device_type: "",
+            device_id: "",
+            manufacturer: "",
+            model: "",
+            serial_number: "",
+            mac_address: "",
+            lan_ip_address: "",
+            wan_ip_address: "",
+            general_info: "",
+          }));
+        }
+      });
     } else {
       // If no file is present, use the regular equipment action
-      dispatch(addClientEquipment(clientEquipment));
+      dispatch(addClientEquipment(clientEquipment)).then((success) => {
+        if (success) {
+          // Only clear form fields on successful submission
+          setClientEquipment((prev) => ({
+            ...prev,
+            device_type: "",
+            device_id: "",
+            manufacturer: "",
+            model: "",
+            serial_number: "",
+            mac_address: "",
+            lan_ip_address: "",
+            wan_ip_address: "",
+            general_info: "",
+          }));
+        }
+      });
     }
-    setFile(null); // Clear the file state
-    // Reset the form fields after submission
-    setClientEquipment((prev) => ({
-      ...prev,
-      device_type: "",
-      device_id: "",
-      manufacturer: "",
-      model: "",
-      serial_number: "",
-      mac_address: "",
-      lan_ip_address: "",
-      wan_ip_address: "",
-      general_info: "",
-    }));
+  };
+
+  const handleBack = () => {
+    navigate(`/client-equipments?${searchParams.toString()}`);
   };
 
   return (
@@ -372,9 +395,13 @@ const AddClientEquipment = () => {
                 <button type="submit" className="bg-indigo-700 text-white px-4 py-2 rounded">
                   {loading ? "Saving..." : "Add Client Device"}
                 </button>
-                <Link to="/client-equipments" className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2">
-                  Cancel
-                </Link>
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"
+                >
+                  Back
+                </button>
               </div>
             </form>
           </div>

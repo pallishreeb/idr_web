@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
 import Swal from "sweetalert2";
 import { AiFillDelete } from "react-icons/ai";
@@ -11,36 +11,89 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import Header from "../../Components/Header";
 import Loader from "../../Images/ZZ5H.gif";
 import { clearLicense } from "../../reducers/licenseSlice";
+
 const ClientLicenseList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { clients } = useSelector((state) => state.client);
   const { locations } = useSelector((state) => state.location);
   const { licenses, loading } = useSelector((state) => state.license);
   const { user_type, client_type } = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
+
+  // Initialize filtersApplied based on URL parameters
+  const [filtersApplied, setFiltersApplied] = useState(
+    searchParams.has("client_id") && searchParams.has("location_id")
+  );
+
+  // Initialize state from URL parameters
   const [filters, setFilters] = useState({
-    client_id: "",
-    location_id: "",
-    manufacturer: "",
+    client_id: searchParams.get("client_id") || "",
+    location_id: searchParams.get("location_id") || "",
+    manufacturer: searchParams.get("manufacturer") || "",
   });
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
+  const [selectedClient, setSelectedClient] = useState(searchParams.get("client_id") || null);
+  const [selectedLocation, setSelectedLocation] = useState(searchParams.get("location_id") || null);
+  const [sortConfig, setSortConfig] = useState({
+    key: searchParams.get("sort_by") || "",
+    direction: searchParams.get("order") || "ASC"
+  });
+
+  // Update URL when filters change
+  useEffect(() => {
+    if (filtersApplied) {
+      const params = new URLSearchParams();
+      if (filters.client_id) params.set("client_id", filters.client_id);
+      if (filters.location_id) params.set("location_id", filters.location_id);
+      if (filters.manufacturer) params.set("manufacturer", filters.manufacturer);
+      if (sortConfig.key) params.set("sort_by", sortConfig.key);
+      if (sortConfig.direction) params.set("order", sortConfig.direction);
+      setSearchParams(params);
+    }
+  }, [filters, sortConfig, setSearchParams, filtersApplied]);
+
   // Reset client and location when unmounting or navigating back
   useEffect(() => {
     if (selectedClient == null) {
       dispatch(clearLicense(selectedClient));
     }
   }, [selectedClient, dispatch]);
+
+  // Initial data fetch
   useEffect(() => {
     if (user_type === "Client Employee") {
       dispatch(getLicenseLists({}));
     } else {
-      dispatch(getLicenseLists({}));
       dispatch(getClients());
+      // Apply URL filters if they exist
+      const urlClientId = searchParams.get("client_id");
+      const urlLocationId = searchParams.get("location_id");
+      if (urlClientId && urlLocationId) {
+        setFilters({
+          client_id: urlClientId,
+          location_id: urlLocationId,
+          manufacturer: searchParams.get("manufacturer") || "",
+        });
+        dispatch(getLocationByClient(urlClientId));
+        const query = {
+          client_id: urlClientId,
+          location_id: urlLocationId,
+          manufacturer: searchParams.get("manufacturer") || "",
+        };
+        dispatch(getLicenseLists(query, sortConfig.key, sortConfig.direction));
+      } else {
+        dispatch(getLicenseLists({}));
+      }
     }
-  }, [dispatch, user_type]);
+  }, [dispatch, user_type, searchParams]);
+
+  // Fetch locations when client changes
+  useEffect(() => {
+    if (filters.client_id) {
+      dispatch(getLocationByClient(filters.client_id));
+    }
+  }, [dispatch, filters.client_id]);
 
   const handleClientChange = (e) => {
     const { value } = e.target;
@@ -51,10 +104,7 @@ const ClientLicenseList = () => {
       manufacturer: "",
     }));
     setSelectedClient(value);
-    dispatch(getLocationByClient(value)); // Fetch locations for the selected client
-    if (value) {
-      dispatch(getLicenseLists({ client_id: value })); // Fetch licenses for the client
-    }
+    dispatch(getLocationByClient(value));
   };
 
   const handleLocationChange = (e) => {
@@ -63,11 +113,6 @@ const ClientLicenseList = () => {
       ...prevFilters,
       location_id: value,
     }));
-    if (filters.client_id && value) {
-      dispatch(
-        getLicenseLists({ client_id: filters.client_id, location_id: value })
-      ); // Fetch licenses for the client and location
-    }
     setSelectedLocation(value);
   };
 
@@ -80,29 +125,35 @@ const ClientLicenseList = () => {
   };
 
   const handleSearch = () => {
+    setFiltersApplied(true); // Mark filters as explicitly applied
     const { client_id, location_id, manufacturer } = filters;
     const query = {
       ...(client_id && { client_id }),
       ...(location_id && { location_id }),
       ...(manufacturer && { manufacturer }),
     };
-    dispatch(getLicenseLists(query)); // Fetch licenses based on all applied filters
+    dispatch(getLicenseLists(query, sortConfig.key, sortConfig.direction));
   };
 
   const handleReset = () => {
+    setFiltersApplied(false); // Reset filters applied state
     setFilters({
       client_id: "",
       location_id: "",
       manufacturer: "",
     });
+    setSelectedClient(null);
+    setSelectedLocation(null);
+    setSortConfig({ key: "", direction: "ASC" });
+    setSearchParams(new URLSearchParams()); // Clear URL params
     if (user_type === "Client Employee") {
       dispatch(getLicenseLists({}));
     } else {
       dispatch(getLicenseLists({}));
       dispatch(getClients());
-      // dispatch(clearLicense(selectedClient));
     }
   };
+
   const handleDeleteLicense = (licenseId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -117,8 +168,13 @@ const ClientLicenseList = () => {
       }
     });
   };
+
   const handleEdit = (licenseId) => {
-    navigate(`/edit-client-licensing/${licenseId}`);
+    // Only include search params if filters were explicitly applied
+    const url = filtersApplied ? 
+      `/edit-client-licensing/${licenseId}?${searchParams.toString()}` :
+      `/edit-client-licensing/${licenseId}`;
+    navigate(url);
   };
 
   const formatDateToMDY = (dateString) => {
@@ -147,9 +203,14 @@ const ClientLicenseList = () => {
       direction = "DESC";
     }
     setSortConfig({ key, direction });
-    
-    dispatch(getLicenseLists(filters, key,direction)); // Pass correctly
-};
+    const { client_id, location_id, manufacturer } = filters;
+    const query = {
+      ...(client_id && { client_id }),
+      ...(location_id && { location_id }),
+      ...(manufacturer && { manufacturer }),
+    };
+    dispatch(getLicenseLists(query, key, direction));
+  };
 
   const getSortSymbol = (key) => {
     if (sortConfig.key === key) {
@@ -157,6 +218,7 @@ const ClientLicenseList = () => {
     }
     return "↕";
   };
+
   return (
     <>
       <Header />
@@ -249,7 +311,9 @@ const ClientLicenseList = () => {
                 disabled={!selectedClient}
               >
                 <Link
-                  to={`/add-client-licensing/${selectedClient}/${selectedLocation}`}
+                  to={`/add-client-licensing/${selectedClient}/${selectedLocation}${
+                    filtersApplied ? `?${searchParams.toString()}` : ''
+                  }`}
                 >
                   Add New Client License
                 </Link>
@@ -324,7 +388,7 @@ const ClientLicenseList = () => {
                       <span className="ml-1">{getSortSymbol("idr_cost")}</span>
                     </th>
                   )}
-                  {(user_type!== "IDR Employee") && (
+                  {(user_type !== "IDR Employee") && (
                     <th
                       className="px-2 py-2 text-sm font-semibold tracking-wider border"
                       onClick={() => handleSort("sale_cost")}

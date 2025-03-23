@@ -34,18 +34,19 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
       return;
     }
 
-    // Check if any file exceeds 10 MB
-    const maxFileSize = 10 * 1024 * 1024; // 10 MB in bytes
+    // Check if any file exceeds 150 MB
+    const maxFileSize = 150 * 1024 * 1024; // 150 MB in bytes
     const oversizedFiles = selectedFiles.filter(
       (file) => file.size > maxFileSize
     );
 
     if (oversizedFiles.length > 0) {
       toast.warning(
-        "File exceeds the 10 MB limit. Please upload smaller files."
+        `One or more files exceed the 150 MB limit. Please upload files smaller than 150 MB.`
       );
       return; // Stop the upload if any file is too large
     }
+
     // Determine if the uploaded files are videos or images
     const isVideoFile = selectedFiles.some((file) =>
       file.type.startsWith("video/")
