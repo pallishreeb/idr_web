@@ -6,7 +6,7 @@ import { AiFillCheckCircle, AiFillDelete } from "react-icons/ai";
 import * as XLSX from 'xlsx';
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import {
@@ -18,6 +18,7 @@ import { clearClientEquipments } from "../../reducers/clientEquipmentSlice";
 const ClientEquipments = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
@@ -31,20 +32,37 @@ const ClientEquipments = () => {
   const { user_type } = useSelector((state) => state.user.user);
   const { technicianAccess, access } = useSelector((state) => state.user);
   // Component state
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedClient, setSelectedClient] = useState(searchParams.get('client') || null);
+  const [selectedLocation, setSelectedLocation] = useState(searchParams.get('location') || null);
   const [filters, setFilters] = useState({
-    model: "",
-    device_type: "",
-    status: "",
+    model: searchParams.get('model') || "",
+    device_type: searchParams.get('device_type') || "",
+    status: searchParams.get('status') || "",
   });
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
+  const [sortConfig, setSortConfig] = useState({ 
+    key: searchParams.get('sort_key') || "", 
+    direction: searchParams.get('sort_direction') || "ASC" 
+  });
 
   const [decommissionModal, setDecommissionModal] = useState({
     show: false,
     equipmentId: null,
     reason: "",
   });
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedClient) params.set('client', selectedClient);
+    if (selectedLocation) params.set('location', selectedLocation);
+    if (filters.model) params.set('model', filters.model);
+    if (filters.device_type) params.set('device_type', filters.device_type);
+    if (filters.status) params.set('status', filters.status);
+    if (sortConfig.key) params.set('sort_key', sortConfig.key);
+    if (sortConfig.direction) params.set('sort_direction', sortConfig.direction);
+    
+    setSearchParams(params);
+  }, [selectedClient, selectedLocation, filters, sortConfig, setSearchParams]);
 
   // Reset client and location when unmounting or navigating back
   useEffect(() => {
@@ -107,7 +125,7 @@ const ClientEquipments = () => {
 
   const handleClientChange = (clientId) => {
     setSelectedClient(clientId);
-    setSelectedLocation(null); // Reset location when client changes
+    setSelectedLocation(null);
   };
 
   const handleLocationChange = (locationId) => {
@@ -129,20 +147,14 @@ const ClientEquipments = () => {
       device_type: "",
       status: "",
     });
-    // fetchEquipments(); // Fetch default list
-    const params = {
-      client_id: selectedClient,
-      location_id: selectedLocation,
-      model: "",
-      device_type: "",
-      status: "",
-      user_type,
-    };
-    dispatch(getClientEquipments(params));
+    setSelectedClient(null);
+    setSelectedLocation(null);
+    setSortConfig({ key: "", direction: "ASC" });
+    setSearchParams({});
   };
 
   const handleEdit = (equipmentId) => {
-    navigate(`/edit-client-equipment/${equipmentId}`);
+    navigate(`/edit-client-equipment/${equipmentId}?${searchParams.toString()}`);
   };
 
   const openDecommissionModal = (equipmentId) => {
@@ -327,7 +339,7 @@ const getSortSymbol = (key) => {
               )}
               {technicianAccess.includes(user_type) && (
                 <Link
-                  to={`/add-client-equipment/${selectedClient}/${selectedLocation}`}
+                  to={`/add-client-equipment/${selectedClient}/${selectedLocation}?${searchParams.toString()}`}
                   className="bg-indigo-600 text-white px-4 py-2 rounded flex-end"
                   disabled={!selectedClient}
                 >
@@ -426,7 +438,7 @@ const getSortSymbol = (key) => {
               <tbody>
                 {equipments?.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="text-center">
+                    <td colSpan="7" className="text-center">
                       No Equipments Found
                     </td>
                   </tr>
@@ -456,7 +468,7 @@ const getSortSymbol = (key) => {
                           <BiSolidEditAlt />
                         </button>
 
-                        {access.includes(user_type) && (
+                        {technicianAccess.includes(user_type) && (
                      <>
                      {equipment?.is_deleted === true ? (
                        <div className="relative group">

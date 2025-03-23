@@ -5,108 +5,173 @@ import { BiSolidEditAlt } from "react-icons/bi";
 // import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { getServiceAgreementLists } from "../../actions/serviceAgreement";
 import { clearServiceAgreements } from "../../reducers/serviceAgreementSlice";
+import Loader from "../../Images/ZZ5H.gif";
 
 const ServiceAgreements = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const clients = useSelector((state) => state.client.clients);
   const locations = useSelector((state) => state.location.locations);
   const serviceAgreements = useSelector(
     (state) => state.serviceAgreement.serviceAgreements
   );
   const loading = useSelector((state) => state.serviceAgreement.loading);
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const { user_type ,client_type} = useSelector((state) => state.user.user);
+  const { user_type, client_type } = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
-  // Reset client and location when unmounting or navigating back
-  useEffect(() => {
-    if (selectedClient == null) {
-      dispatch(clearServiceAgreements(selectedClient));
-    }
-  }, [selectedClient, dispatch]);
 
+  // Initialize filtersApplied based on URL parameters
+  const [filtersApplied, setFiltersApplied] = useState(
+    searchParams.has("client_id") && searchParams.has("location_id")
+  );
+
+  // Initialize state from URL parameters
+  const [filters, setFilters] = useState({
+    client_id: searchParams.get("client_id") || "",
+    location_id: searchParams.get("location_id") || "",
+  });
+  const [selectedClient, setSelectedClient] = useState(searchParams.get("client_id") || null);
+  const [selectedLocation, setSelectedLocation] = useState(searchParams.get("location_id") || null);
+  const [sortConfig, setSortConfig] = useState({
+    key: searchParams.get("sort_by") || "",
+    direction: searchParams.get("order") || "ASC"
+  });
+
+  // Update URL when filters change
+  useEffect(() => {
+    if (filtersApplied) {
+      const params = new URLSearchParams();
+      if (filters.client_id) params.set("client_id", filters.client_id);
+      if (filters.location_id) params.set("location_id", filters.location_id);
+      if (sortConfig.key) params.set("sort_by", sortConfig.key);
+      if (sortConfig.direction) params.set("order", sortConfig.direction);
+      setSearchParams(params);
+    }
+  }, [filters, sortConfig, setSearchParams, filtersApplied]);
+
+  // Initial data fetch and handle URL filters when returning from add/edit
   useEffect(() => {
     if (user_type === "Client Employee") {
-      dispatch(getServiceAgreementLists()); // Fetch without client_id and location_id
+      dispatch(getServiceAgreementLists({}));
     } else {
-      dispatch(getServiceAgreementLists());
-      dispatch(getClients()); // Load clients for other user types
+      dispatch(getClients());
+      // If returning from add/edit (URL has both filters), apply them
+      const urlClientId = searchParams.get("client_id");
+      const urlLocationId = searchParams.get("location_id");
+      if (urlClientId && urlLocationId) {
+        // Set the filters in state
+        setFilters({
+          client_id: urlClientId,
+          location_id: urlLocationId
+        });
+        // Fetch locations for the client
+        dispatch(getLocationByClient(urlClientId));
+        // Apply the filters
+        const query = {
+          client_id: urlClientId,
+          location_id: urlLocationId
+        };
+        dispatch(getServiceAgreementLists(query, sortConfig.key, sortConfig.direction));
+      } else {
+        dispatch(getServiceAgreementLists({}));
+      }
     }
   }, [dispatch, user_type]);
 
-  const handleClientChange = (clientId) => {
-    setSelectedClient(clientId);
-    setSelectedLocation(null);
-    dispatch(clearServiceAgreements());
-    if (clientId) {
-      dispatch(getLocationByClient(clientId));
-      dispatch(getServiceAgreementLists({ client_id: clientId }));
+  // Fetch locations when client changes
+  useEffect(() => {
+    if (filters.client_id) {
+      dispatch(getLocationByClient(filters.client_id));
     }
+  }, [dispatch, filters.client_id]);
+
+  const handleClientChange = (e) => {
+    const { value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      client_id: value,
+      location_id: "",
+    }));
+    setSelectedClient(value);
+    dispatch(getLocationByClient(value));
   };
 
-  const handleLocationChange = (locationId) => {
-    setSelectedLocation(locationId);
-    if (selectedClient && locationId) {
-      dispatch(
-        getServiceAgreementLists({
-          client_id: selectedClient,
-          location_id: locationId,
-        })
-      );
+  const handleLocationChange = (e) => {
+    const { value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      location_id: value,
+    }));
+    setSelectedLocation(value);
+  };
+
+  const handleSearch = () => {
+    setFiltersApplied(true); // Mark filters as explicitly applied
+    const { client_id, location_id } = filters;
+    const query = {
+      ...(client_id && { client_id }),
+      ...(location_id && { location_id }),
+    };
+    dispatch(getServiceAgreementLists(query, sortConfig.key, sortConfig.direction));
+  };
+
+  const handleReset = () => {
+    setFiltersApplied(false); // Reset filters applied state
+    setFilters({
+      client_id: "",
+      location_id: "",
+    });
+    setSelectedClient(null);
+    setSelectedLocation(null);
+    setSortConfig({ key: "", direction: "ASC" });
+    setSearchParams(new URLSearchParams()); // Clear URL params
+    if (user_type === "Client Employee") {
+      dispatch(getServiceAgreementLists({}));
     } else {
-      dispatch(getServiceAgreementLists({ client_id: selectedClient }));
+      dispatch(getServiceAgreementLists({}));
+      dispatch(getClients());
     }
   };
 
   const handleEdit = (agreementId) => {
-    navigate(`/edit-service-agreement/${agreementId}`);
+    navigate(`/edit-service-agreement/${agreementId}?${searchParams.toString()}`);
   };
+
   const formatDateToMDY = (dateString) => {
-    if (!dateString) return ""; // Handle empty values
-  
-    const [day, month, year] = dateString.split("/"); // Extract parts
-    return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
+    if (!dateString) return "";
+    const [day, month, year] = dateString.split("/");
+    return `${month}/${day}/${year}`;
   };
 
-
-    
   const formatCurrency = (value) => {
     if (typeof value === "string") {
-      // value = value.replace(/,/g, ""); // Remove all commas
-      value = value.replace(/[^0-9.]/g, ""); 
+      value = value.replace(/[^0-9.]/g, "");
     }
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD", // Change to appropriate currency if needed
+      currency: "USD",
       minimumFractionDigits: 2,
     }).format(value);
   };
+
   const handleSort = (key) => {
     let direction = "ASC";
     if (sortConfig.key === key && sortConfig.direction === "ASC") {
       direction = "DESC";
     }
     setSortConfig({ key, direction });
-  
-    dispatch(
-      getServiceAgreementLists(
-        {
-          client_id: selectedClient,
-          location_id: selectedLocation,
-        },
-        key, // Pass key as sortBy
-        direction // Pass direction as orderBy
-      )
-    );
+    const { client_id, location_id } = filters;
+    const query = {
+      ...(client_id && { client_id }),
+      ...(location_id && { location_id }),
+    };
+    dispatch(getServiceAgreementLists(query, key, direction));
   };
-  
 
   const getSortSymbol = (key) => {
     if (sortConfig.key === key) {
@@ -114,101 +179,134 @@ const ServiceAgreements = () => {
     }
     return "↕";
   };
+
   return (
     <>
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4 bg-gray-50 w-full h-screen overflow-y-scroll">
-          <h2 className="text-xl font-semibold mb-4">
-            Client Service Agreements
-          </h2>
+        <div className="container mx-auto p-4 w-full h-screen overflow-y-scroll">
+          <h2 className="text-xl font-semibold mb-4">Service Agreements</h2>
+          <div className="mb-4">
+            {user_type !== "Client Employee" && (
+              <form className="grid grid-cols-3 gap-4">
+                <div className="flex flex-col">
+                  <label htmlFor="client_id" className="text-sm mb-2">
+                    Filter by Client:
+                  </label>
+                  <select
+                    id="client_id"
+                    name="client_id"
+                    className="border border-gray-300 rounded px-3 py-1"
+                    value={filters.client_id}
+                    onChange={handleClientChange}
+                  >
+                    <option value="">Select Client</option>
+                    {clients?.data?.map((client) => (
+                      <option key={client.client_id} value={client.client_id}>
+                        {client.company_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="location_id" className="text-sm mb-2">
+                    Filter by Location:
+                  </label>
+                  <select
+                    id="location_id"
+                    name="location_id"
+                    className={`border border-gray-300 rounded px-3 py-1 ${
+                      !filters.client_id ? "bg-gray-100 text-gray-500" : ""
+                    }`}
+                    value={filters.location_id}
+                    onChange={handleLocationChange}
+                    disabled={!filters.client_id}
+                  >
+                    <option value="">Select Location</option>
+                    {locations?.map((location) => (
+                      <option
+                        key={location.location_id}
+                        value={location.location_id}
+                      >
+                        {location.address_line_one} {location.address_line_two}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-end gap-2">
+                  <button
+                    type="button"
+                    className="bg-indigo-600 text-white px-4 py-2 rounded"
+                    onClick={handleSearch}
+                  >
+                    Search
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                    onClick={handleReset}
+                  >
+                    Reset
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
 
-          {user_type !== "Client Employee" && (
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="flex flex-col">
-                <label htmlFor="client" className="text-sm font-medium mb-1">
-                  Select Client:
-                </label>
-                <select
-                  id="client"
-                  className="border border-gray-300 rounded px-3 py-1 w-full"
-                  onChange={(e) => handleClientChange(e.target.value)}
-                  value={selectedClient}
-                >
-                  <option value="">Select a client</option>
-                  {clients?.data?.map((client) => (
-                    <option key={client.client_id} value={client.client_id}>
-                      {client.company_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="location" className="text-sm font-medium mb-1">
-                  Select Location:
-                </label>
-                <select
-                  id="location"
-                  className="border border-gray-300 rounded px-3 py-1 w-full"
-                  onChange={(e) => handleLocationChange(e.target.value)}
-                  value={selectedLocation}
-                  disabled={!selectedClient}
-                >
-                  <option value="">Select a location</option>
-                  {locations?.map((location) => (
-                    <option
-                      key={location.location_id}
-                      value={location.location_id}
-                    >
-                      {location.address_line_one} {location.address_line_two}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          )}
           <div className="mb-4 flex justify-end">
-            {access.includes(user_type) && (
+            {access?.includes(user_type) && (
               <button
                 className="bg-indigo-700 text-white px-4 py-2 rounded"
                 disabled={!selectedClient}
               >
-                <Link to={`/add-service-agreement/${selectedClient}/${selectedLocation}`}>
+                <Link
+                  to={`/add-service-agreement/${selectedClient || 'null'}/${selectedLocation || 'null'}${
+                    filtersApplied ? `?${searchParams.toString()}` : ''
+                  }`}
+                >
                   Add New Service Agreement
                 </Link>
               </button>
             )}
           </div>
-          {loading ? (
-            <p>Loading Service Agreements...</p>
-          ) : (
+
+          <div className="overflow-x-auto">
             <table className="table-auto w-full border-collapse border border-gray-200">
               <thead>
                 <tr className="bg-gray-100 text-left">
-                  <th className="border px-4 py-2">Client Name
-                  <span className="ml-1" onClick={() => handleSort("client_name")}>{getSortSymbol("client_name")}</span>
+                  <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort("client_name")}>
+                    Client Name
+                    <span className="ml-1">{getSortSymbol("client_name")}</span>
                   </th>
-                  <th className="border px-4 py-2" onClick={() => handleSort("start_date")}>Start Date
-
-                  <span className="ml-1">
-                      {getSortSymbol("start_date")}
-                    </span>
+                  <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort("start_date")}>
+                    Start Date
+                    <span className="ml-1">{getSortSymbol("start_date")}</span>
                   </th>
-                  <th className="border px-4 py-2"  onClick={() => handleSort("expiration_date")}>Expiration Date  
-                    <span className="ml-1">
-                      {getSortSymbol("expiration_date")}
-                    </span></th>
+                  <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort("expiration_date")}>
+                    Expiration Date
+                    <span className="ml-1">{getSortSymbol("expiration_date")}</span>
+                  </th>
                   <th className="border px-4 py-2">Parts Covered</th>
-                  {(access.includes(user_type) || client_type !== "User" ) &&  (
-                    <th className="border px-4 py-2" onClick={() => handleSort("price")}>Annual Sale Price
-                       <span className="ml-1">{getSortSymbol("price")}</span></th>
+                  {(access.includes(user_type) || client_type !== "User") && (
+                    <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort("price")}>
+                      Annual Sale Price
+                      <span className="ml-1">{getSortSymbol("price")}</span>
+                    </th>
                   )}
                   <th className="border px-4 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {serviceAgreements?.length === 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan="7" className="py-4">
+                      <div className="flex justify-center items-center">
+                        <img src={Loader} alt="Loading..." className="h-16 w-16" />
+                      </div>
+                    </td>
+                  </tr>
+                ) : serviceAgreements?.length === 0 ? (
                   <tr>
                     <td colSpan="7" className="text-center py-4">
                       No service agreements found.
@@ -221,15 +319,15 @@ const ServiceAgreements = () => {
                         {agreement.client_name}
                       </td>
                       <td className="border px-4 py-2">
-                      {formatDateToMDY(agreement.start_date) || ""}
+                        {formatDateToMDY(agreement.start_date) || ""}
                       </td>
                       <td className="border px-4 py-2">
-                      {formatDateToMDY(agreement.expiration_date) || ""}
+                        {formatDateToMDY(agreement.expiration_date) || ""}
                       </td>
                       <td className="border px-4 py-2">
                         {agreement.parts_covered ? "Yes" : "No"}
                       </td>
-                      {(user_type !== "IDR Employee"  && client_type !== "User" ) &&  (
+                      {(user_type !== "IDR Employee" && client_type !== "User") && (
                         <td className="border px-4 py-2">{formatCurrency(agreement.price)}</td>
                       )}
                       <td className="border px-4 py-2 flex">
@@ -245,7 +343,7 @@ const ServiceAgreements = () => {
                 )}
               </tbody>
             </table>
-          )}
+          </div>
         </div>
       </div>
     </>

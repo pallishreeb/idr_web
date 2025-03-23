@@ -236,17 +236,20 @@ const EditServiceTicket = () => {
       client_equipment_id: equipmentId,
     };
 
-    // Replace this with the action to link the device
-    // dispatch(linkDeviceToServiceTicket(payload));
     dispatch(linkDeviceToServiceTicket(payload))
-      .then(() => {
-        toast.success("Adding device successfully.");
-        window.location.reload();
-        closeDeviceModal();
+      .then((response) => {
+        if (response) {
+          // Refresh the service ticket details to get updated data
+          dispatch(getServiceTicketDetails(serviceTicketId))
+            .then(() => {
+              closeDeviceModal();
+              setProcessingId(null);
+            });
+        }
       })
       .catch((error) => {
-        console.error("Error adding device :", error);
-        // toast.error("Failed to add device.");
+        console.error("Error adding device:", error);
+        setProcessingId(null);
       });
   };
 
@@ -515,7 +518,7 @@ const EditServiceTicket = () => {
 onClick={openModal}
 className="bg-indigo-600 text-white px-4 py-2 rounded"
 >
- Sign Document
+Add Signature
 </button> }
 
 

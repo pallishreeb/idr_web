@@ -5,11 +5,13 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { updateLicense, getLicenseDetails } from "../../actions/licenseActions";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Loader from "../../Images/ZZ5H.gif";
+
 const EditLicense = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { licenseId } = useParams();
 
   const clients = useSelector((state) => state.client.clients);
@@ -112,6 +114,20 @@ const EditLicense = () => {
     };
 
     dispatch(updateLicense(formattedLicenseData, navigate));
+  };
+
+  const handleBack = () => {
+    // Only preserve filters if they were explicitly set in the URL
+    const params = new URLSearchParams(searchParams);
+    const hasExplicitFilters = params.has("client_id") && params.has("location_id");
+    
+    if (hasExplicitFilters) {
+      // Keep the existing URL parameters
+      navigate(`/client-licensing?${params.toString()}`);
+    } else {
+      // Navigate back without any filters
+      navigate('/client-licensing');
+    }
   };
 
   return (
@@ -302,20 +318,20 @@ const EditLicense = () => {
                   />
                 </div>}
               </div>
-              <div className="flex justify-end mb-4">
+              <div className="flex justify-end mt-4 gap-3">
                 {access?.includes(user_type) &&
                   <button
                   type="submit"
-                  className="bg-indigo-700 text-white px-4 py-2 rounded m-2"
-                  disabled={loading}
+                  className="bg-blue-600 text-white px-4 py-2 rounded"
                 >
-                  {loading ? "Saving" : "Update License"}
+                  Save
                 </button>}
                 <button
-                  onClick={() => navigate('/client-licensing')}
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
+                  type="button"
+                  onClick={handleBack}
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
                 >
-                  Cancel
+                  Back
                 </button>
               </div>
             </form> )}

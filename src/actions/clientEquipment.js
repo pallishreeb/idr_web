@@ -102,9 +102,16 @@ export const addClientEquipment = (equipmentData) => {
       const response = await axios.post(apiConfig.addClientEquipment, equipmentData);
       dispatch(addClientEquipmentSuccess(response.data.location));
       toast.success("Client Equipment added successfully!");
+      return true;
     } catch (error) {
       dispatch(addClientEquipmentFailure(error.message));
-      toast.error(error.response?.data?.message || "Error adding Client Equipment");
+      // Log the error to see its structure
+      console.log('Error response:', error.response);
+      // Get the error message from the response data
+      const errorMessage = error.response?.data?.message || error.message || "Error adding Client Equipment";
+      console.log('Error message:', errorMessage);
+      toast.error(errorMessage);
+      return false;
     }
   };
 };

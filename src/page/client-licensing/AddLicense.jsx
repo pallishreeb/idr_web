@@ -5,12 +5,13 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { createLicense } from "../../actions/licenseActions";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 const CreateLicense = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { clientId ,locationId } = useParams();
+  const { clientId, locationId } = useParams();
+  const [searchParams] = useSearchParams();
   const clients = useSelector((state) => state.client.clients);
   const clientLocations = useSelector((state) => state.location.locations);
   const loadingClients = useSelector((state) => state.client.loading);
@@ -137,6 +138,23 @@ const CreateLicense = () => {
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
+  };
+
+  const handleBack = () => {
+    // Preserve all filters from the URL when navigating back
+    const params = new URLSearchParams(searchParams);
+    
+    // If we have client_id and location_id from either URL params or state, add them to the filters
+    if (licenseData.client_id && !params.has("client_id")) {
+      params.set("client_id", licenseData.client_id);
+    }
+    if (licenseData.location_id && !params.has("location_id")) {
+      params.set("location_id", licenseData.location_id);
+    }
+    
+    // Navigate back with filters preserved
+    const queryString = params.toString();
+    navigate(`/client-licensing${queryString ? `?${queryString}` : ''}`);
   };
 
   return (
@@ -322,10 +340,11 @@ const CreateLicense = () => {
                   {loading ? "Saving" : "Create License"}
                 </button>
                 <button
-                  onClick={() => navigate(-1)}
+                  type="button"
+                  onClick={handleBack}
                   className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
                 >
-                  Cancel
+                  Back
                 </button>
               </div>
             </form>

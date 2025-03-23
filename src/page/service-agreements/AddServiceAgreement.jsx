@@ -5,12 +5,13 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { generateServiceAgreement } from "../../actions/serviceAgreement";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 const AddServiceAgreement = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { clientId,locationId } = useParams();
+  const { clientId, locationId } = useParams();
+  const [searchParams] = useSearchParams();
 
   // Fetch clients and client locations from Redux store
   const clients = useSelector((state) => state.client.clients);
@@ -122,6 +123,22 @@ const AddServiceAgreement = () => {
 
   // Dispatch the action with the formatted data
   dispatch(generateServiceAgreement(formattedServiceAgreement, navigate));
+  };
+
+  const handleBack = () => {
+    // Create a new URLSearchParams object to preserve all current filters
+    const params = new URLSearchParams(searchParams);
+    
+    // If we have client_id and location_id from the URL params, add them to the filters
+    if (clientId && clientId !== "null") {
+      params.set("client_id", clientId);
+    }
+    if (locationId && locationId !== "null") {
+      params.set("location_id", locationId);
+    }
+    
+    // Navigate back with all filters preserved
+    navigate(`/service-agreements?${params.toString()}`);
   };
 
   return (
@@ -273,12 +290,13 @@ const AddServiceAgreement = () => {
                 >
                   {loadingLocations ? "Saving" : "Add Service Agreement"}
                 </button>
-                <Link
-                  to="/service-agreements"
+                <button
+                  type="button"
+                  onClick={handleBack}
                   className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
                 >
-                  Cancel
-                </Link>
+                  Back
+                </button>
               </div>
             </form>
           </div>
