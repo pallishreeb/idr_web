@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import axios from '../../axios-config';
+import axios from "../../axios-config";
 import { Link, useParams } from "react-router-dom";
 import { S3_BASE_URL } from "../../config";
 import { FaDownload } from "react-icons/fa";
@@ -87,7 +87,7 @@ const EditServiceTicket = () => {
       );
       setServiceTicketEquipments(serviceTicketDetails?.linkedDevices || []);
       setServiceTicketAgreement(serviceTicketDetails?.agreement || {});
-       // API call should be done only if technicianAccess includes user_type
+      // API call should be done only if technicianAccess includes user_type
       if (technicianAccess.includes(user_type)) {
         dispatch(
           getClientEquipments({
@@ -97,7 +97,7 @@ const EditServiceTicket = () => {
         );
       }
     }
-  }, [serviceTicketDetails,user_type,technicianAccess,dispatch]);
+  }, [serviceTicketDetails, user_type, technicianAccess, dispatch]);
   useEffect(() => {
     if (serviceTicket?.client_id) {
       dispatch(getLocationByClient(serviceTicket?.client_id));
@@ -240,11 +240,10 @@ const EditServiceTicket = () => {
       .then((response) => {
         if (response) {
           // Refresh the service ticket details to get updated data
-          dispatch(getServiceTicketDetails(serviceTicketId))
-            .then(() => {
-              closeDeviceModal();
-              setProcessingId(null);
-            });
+          dispatch(getServiceTicketDetails(serviceTicketId)).then(() => {
+            closeDeviceModal();
+            setProcessingId(null);
+          });
         }
       })
       .catch((error) => {
@@ -261,30 +260,30 @@ const EditServiceTicket = () => {
   const handleDownloadPdf = async () => {
     try {
       setIsDownloading(true); // Start loading
-  
+
       // Make sure the request is sending the correct headers
       const response = await axios.get(
         `/service_ticket/pdf/${serviceTicketId}`,
         {
           headers: {
-            'Content-Type': 'application/json', // If backend expects this
+            "Content-Type": "application/json", // If backend expects this
           },
-          responseType: 'blob', // For PDF download
+          responseType: "blob", // For PDF download
         }
       );
-  
+
       // Debugging response
       // console.log(response, "pdf response");
-  
+
       const pdfBlob = new Blob([response.data], { type: "application/pdf" });
       const downloadUrl = window.URL.createObjectURL(pdfBlob);
-      
+
       const link = document.createElement("a");
       link.href = downloadUrl;
       link.download = `${serviceTicket?.service_ticket_number}.pdf`;
       document.body.appendChild(link);
       link.click();
-      
+
       document.body.removeChild(link);
       setIsDownloading(false); // Stop loading
     } catch (error) {
@@ -342,43 +341,42 @@ const EditServiceTicket = () => {
                 </button>
               )}
 
-          {/* Download PDF Button */}
-          {technicianAccess.includes(user_type) && (
-             <button
-              onClick={handleDownloadPdf}
-              className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                // Display loading spinner while downloading
-                <svg
-                  className="animate-spin h-5 w-5 mr-2 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
+              {/* Download PDF Button */}
+              {technicianAccess.includes(user_type) && (
+                <button
+                  onClick={handleDownloadPdf}
+                  className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
+                  disabled={isDownloading}
                 >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  ></path>
-                </svg>
-              ) : (
-                <>
-                Download Ticket PDF <FaDownload className="ml-1" />
-                </>
-                
+                  {isDownloading ? (
+                    // Display loading spinner while downloading
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    <>
+                      Download Ticket PDF <FaDownload className="ml-1" />
+                    </>
+                  )}
+                </button>
               )}
-            </button>
-          )}
             </div>
           </div>
           {/* update Work order ticket details */}
@@ -493,41 +491,59 @@ const EditServiceTicket = () => {
             </div>
           )}
 
+
           {/* Segnature modal */}
+
+              
           <div className="p-6">
-          
-
+            
             {signatureImage ? (
-  <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
-    <h2 className="text-lg font-semibold text-gray-700">Signature:</h2>
-    
-    {/* Signature Image */}
-    <img
-      src={`${S3_BASE_URL}/${signatureImage}`}
-      alt="Signature"
-      className="w-full max-w-xs h-auto border border-gray-400 rounded-md p-2 bg-white"
-    />
+              <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
+                <h2 className="text-lg font-semibold text-gray-700">
+                  Signature:
+                </h2>
 
-    {/* Signature Name & Date */}
-    <div className="flex flex-col w-full text-gray-700">
-      <p className="text-sm font-medium">Signed by: <span className="font-semibold">{serviceTicket ? serviceTicket.signature_name : ''}</span></p>
-      <p className="text-sm font-medium">Date: <span className="font-semibold">{serviceTicket ? formatDateToMDY(serviceTicket.signature_date) : ''}</span></p>
-    </div>
-  </div>
-) :  <button
-onClick={openModal}
-className="bg-indigo-600 text-white px-4 py-2 rounded"
->
-Add Signature
-</button> }
+                {/* Signature Image */}
+                <img
+                  src={`${S3_BASE_URL}/${signatureImage}`}
+                  alt="Signature"
+                  className="w-full max-w-xs h-auto border border-gray-400 rounded-md p-2 bg-white"
+                />
 
-
-
+                {/* Signature Name & Date */}
+                <div className="flex flex-col w-full text-gray-700">
+                  <p className="text-sm font-medium">
+                    Signed by:{" "}
+                    <span className="font-semibold">
+                      {serviceTicket ? serviceTicket.signature_name : ""}
+                    </span>
+                  </p>
+                  <p className="text-sm font-medium">
+                    Date:{" "}
+                    <span className="font-semibold">
+                      {serviceTicket
+                        ? formatDateToMDY(serviceTicket.signature_date)
+                        : ""}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <>
+              {client_type !== "User" && (
+              <button
+                onClick={openModal}
+                className="bg-indigo-600 text-white px-4 py-2 rounded"
+              >
+                Add Signature
+              </button>
+            )}
+            </>
+          )}
             <SignatureModal
               isOpen={isModalOpen}
               onClose={closeModal}
               serviceTicketId={serviceTicketId}
-              
             />
           </div>
         </div>
