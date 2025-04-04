@@ -15,6 +15,7 @@ import {
 } from "../../actions/clientEquipment";
 import { clearClientEquipments } from "../../reducers/clientEquipmentSlice";
 
+
 const ClientEquipments = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -320,6 +321,14 @@ const getSortSymbol = (key) => {
     XLSX.writeFile(wb, fileName, { bookType: 'csv' });
   };
 
+  const handleDownloadCSVTemplate = () => {
+    const link = document.createElement("a");
+    link.href = "/sample.csv";
+    link.setAttribute("download", "sample.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   return (
     <>
       <Header />
@@ -329,6 +338,14 @@ const getSortSymbol = (key) => {
           <div className="flex justify-between items-center">
             <h1 className="font-bold text-lg">Client Equipments</h1>
             <div className="flex gap-2">
+            {access.includes(user_type) && (
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={handleDownloadCSVTemplate}
+              >
+              CSV Template
+              </button>
+              )}
             {access.includes(user_type) && (
               <button
                 onClick={handleExportToExcel}

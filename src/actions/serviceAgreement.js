@@ -33,7 +33,7 @@ export const generateServiceAgreement = (ticketData,navigate) => {
         });
   
         dispatch(serviceAgreementSuccess(data));
-        toast.success("Service ticket generated successfully");
+        toast.success("Service agreement created successfully");
         navigate('/service-agreements');
         return data;
         
@@ -41,7 +41,7 @@ export const generateServiceAgreement = (ticketData,navigate) => {
         console.error('Error occurred:', error);
   
         dispatch(serviceAgreementFailure(error.message));
-        toast.error(error.message || "Failed to generate service ticket");
+        toast.error(error.message || "Failed to create service agreement");
       }
     };
 };
@@ -113,10 +113,10 @@ export const deleteServiceAgreement = (serviceAgreementId) => {
     try {
       await axios.delete(`${apiConfig.serviceAgreementUpdate}/${serviceAgreementId}`);
       dispatch(deleteServiceAgreementSuccess(serviceAgreementId));
-      toast.success("Service ticket deleted successfully");
+      toast.success("Service agreement deleted successfully");
     } catch (error) {
       dispatch(deleteServiceAgreementFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to delete service ticket");
+      toast.error(error.response?.data?.message || "Failed to delete service agreement");
     }
   };
 };
@@ -132,7 +132,7 @@ export const getServiceAgreementDetails = (serviceAgreementId) => {
       return response?.data?.Agreement;
     } catch (error) {
       dispatch(getServiceAgreementDetailsFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to fetch service ticket details");
+      toast.error(error.response?.data?.message || "Failed to fetch service agreement details");
     }
   };
 };
