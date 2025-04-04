@@ -131,7 +131,7 @@ export const addEquipmentThroughCsv = (csvData) => {
       toast.success("Equipment added successfully via CSV!");
     } catch (error) {
       dispatch(addClientEquipmentFailure(error.message)); // Reuse the same failure action
-      toast.error(error.response?.data?.message || "Error adding equipment via CSV");
+      toast.error(error.response?.data?.message || error.message || "Error adding equipment via CSV");
     }
   };
 };

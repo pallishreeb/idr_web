@@ -368,9 +368,9 @@ const ServiceTicketCard = ({
       <div className="flex flex-col gap-2">
           <label className="font-normal text-base">Service Ticket Details</label>
           <textarea
-            rows={3}
+            rows={8}
             name="service_ticket_details"
-            className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
+            className="px-3 py-3 border border-gray-200 min-h-[150px] text-sm rounded"
             value={serviceTicket.service_ticket_details || ""}
             onChange={(e) => handleServiceTicketChange(e)}
             disabled={isFieldDisabled("service_ticket_details")}
