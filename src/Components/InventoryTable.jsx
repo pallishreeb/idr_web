@@ -1,34 +1,51 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { returnInventory } from '../actions/workOrderActions'; // Import the API action
+import { returnInventory } from '../actions/workOrderActions';
+import { returnInventoryFromServiceTicket } from '../actions/serviceTicket'; 
 
-const InventoryTable = ({ inventories, work_order_id }) => {
+const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
   const dispatch = useDispatch();
-  const [showModal, setShowModal] = useState(false); // State to control modal visibility
-  const [quantity, setQuantity] = useState(''); // State to store input value
-  const [selectedInventoryId, setSelectedInventoryId] = useState(null); // Track the selected inventory
-  const { user_type, client_type } = useSelector((state) => state.user.user);
-  const { technicianAccess,access } = useSelector((state) => state.user);
+  const [showModal, setShowModal] = useState(false);
+  const [quantity, setQuantity] = useState('');
+  const [selectedInventoryId, setSelectedInventoryId] = useState(null);
+
+  const { user_type } = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
+
   const handleReturnInventory = () => {
     if (!quantity) {
       alert('Please enter a quantity');
       return;
     }
-
-     // Dispatch the API action
-     dispatch(returnInventory({
-      work_order_id,
+  
+    const payload = {
       assigned_inventory_id: selectedInventoryId,
       quantity,
-    }))
+    };
+  
+    let action;
+  
+    if (work_order_id) {
+      payload.work_order_id = work_order_id;
+      action = returnInventory;
+    } else if (service_ticket_id) {
+      payload.service_ticket_id = service_ticket_id;
+      action = returnInventoryFromServiceTicket;
+    } else {
+      alert('No valid ID provided.');
+      return;
+    }
+  
+    dispatch(action(payload))
       .then(() => {
-        setShowModal(false); // Close modal on success
-        setQuantity(''); // Reset quantity
+        setShowModal(false);
+        setQuantity('');
       })
       .catch((error) => {
         console.error('Error returning inventory:', error);
       });
   };
+  
 
   return (
     <>
@@ -40,7 +57,6 @@ const InventoryTable = ({ inventories, work_order_id }) => {
             </h1>
           </div>
 
-          {/* Table for inventories */}
           <div className="overflow-x-auto">
             <table className="min-w-full bg-gray-200 border rounded">
               <thead>
@@ -49,7 +65,9 @@ const InventoryTable = ({ inventories, work_order_id }) => {
                   <th className="border px-4 py-2">Make</th>
                   <th className="border px-4 py-2">Device Type</th>
                   <th className="border px-4 py-2">Quantity</th>
-                  {access.includes(user_type) &&   <th className="border px-4 py-2">Action</th>}
+                  {access.includes(user_type) && (
+                    <th className="border px-4 py-2">Action</th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -59,17 +77,19 @@ const InventoryTable = ({ inventories, work_order_id }) => {
                     <td className="border px-4 py-2">{inventory.make}</td>
                     <td className="border px-4 py-2">{inventory.device_type}</td>
                     <td className="border px-4 py-2">{inventory.quantity}</td>
-                    {access.includes(user_type) &&   <td className="border px-4 py-2">
-                      <button
-                        onClick={() => {
-                          setShowModal(true);
-                          setSelectedInventoryId(inventory.assigned_inventory_id);
-                        }}
-                        className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-600"
-                      >
-                        Return Inventory
-                      </button>
-                    </td>}
+                    {access.includes(user_type) && (
+                      <td className="border px-4 py-2">
+                        <button
+                          onClick={() => {
+                            setShowModal(true);
+                            setSelectedInventoryId(inventory.assigned_inventory_id);
+                          }}
+                          className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700"
+                        >
+                          Return Inventory
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

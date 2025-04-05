@@ -34,6 +34,9 @@ const AddClientEquipment = () => {
     lan_ip_address: "", // Optional
     wan_ip_address: "", // Optional
     general_info: "", // Optional
+    device_location:"",// Optional
+    username:"",// Optional
+    password:"",// Optional
   });
 
   const [file, setFile] = useState(null);
@@ -136,6 +139,9 @@ const AddClientEquipment = () => {
             lan_ip_address: "",
             wan_ip_address: "",
             general_info: "",
+            device_location:"",
+            username:"",
+            password:"",
           }));
         }
       });
@@ -155,6 +161,9 @@ const AddClientEquipment = () => {
             lan_ip_address: "",
             wan_ip_address: "",
             general_info: "",
+            device_location:"",
+            username:"",
+            password:"",
           }));
         }
       });
@@ -367,6 +376,45 @@ const AddClientEquipment = () => {
                         name="wan_ip_address"
                         className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                         value={clientEquipment.wan_ip_address}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                  {/*more Optional Details */}
+                 <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label htmlFor="device_location" className="block text-sm font-medium text-gray-700">
+                      Device Location
+                      </label>
+                      <input
+                        type="text"
+                        name="device_location"
+                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                        value={clientEquipment.device_location}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                       Username
+                      </label>
+                      <input
+                        type="text"
+                        name="username"
+                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                        value={clientEquipment.username}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                       Password
+                      </label>
+                      <input
+                        type="text"
+                        name="password"
+                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                        value={clientEquipment.password}
                         onChange={handleChange}
                       />
                     </div>

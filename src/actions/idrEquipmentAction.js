@@ -133,17 +133,17 @@ export const updateEquipment = (idrEquipmentData, navigate) => {
   return async (dispatch) => {
     dispatch(updateIdrEquipmentStart());
     try {
-      const response = await axios.post(
-        `${apiConfig.editEquipment}`,
-        idrEquipmentData
-      );
-      dispatch(updateIdrEquipmentSuccess(response.data));
+      const data = await fetchJson(apiConfig.editEquipment, {
+        method: "POST",
+        body: idrEquipmentData,
+      });
+      dispatch(updateIdrEquipmentSuccess(data));
       toast.success("Idr Equipment updated successfully");
       navigate(`/idr-equipment`);
     } catch (error) {
       dispatch(updateIdrEquipmentFailure(error.message));
       toast.error(
-        error.response?.data?.message || "Failed to update Idr Equipment"
+        error.message || error.response?.data?.message || "Failed to update Idr Equipment"
       );
     }
   };
