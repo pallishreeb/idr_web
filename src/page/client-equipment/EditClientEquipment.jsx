@@ -38,6 +38,9 @@ const EditClientEquipment = () => {
     lan_ip_address: "", // Optional
     wan_ip_address: "", // Optional
     general_info: "", // Optional
+    device_location:"",// Optional
+    username:"",// Optional
+    password:"",// Optional
     decomission_reason:"",
     is_deleted:false
   });
@@ -65,6 +68,9 @@ const EditClientEquipment = () => {
             mac_address: data.mac_address || "",
             lan_ip_address: data.lan_ip_address || "",
             wan_ip_address: data.wan_ip_address || "",
+            device_location:data.device_location || "",
+            username:data.username || "",
+            password:data.password || "",
             general_info: data.general_info || "",
             decomission_reason:data?.decomission_reason || "",
             is_deleted:data?.is_deleted
@@ -331,7 +337,57 @@ const EditClientEquipment = () => {
                     />
                   </div>
                 </div>
-
+                {/*More Optional Details */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label
+                      htmlFor="device_location"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Device Location
+                    </label>
+                    <input
+                      type="text"
+                      name="device_location"
+                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      value={clientEquipment.device_location}
+                      onChange={handleChange}
+                      readOnly={user_type === "Client Employee"}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="username"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      LAN IP Address
+                    </label>
+                    <input
+                      type="text"
+                      name="username"
+                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      value={clientEquipment.username}
+                      onChange={handleChange}
+                      readOnly={user_type === "Client Employee"}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Password
+                    </label>
+                    <input
+                      type="text"
+                      name="password"
+                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
+                      value={clientEquipment.password}
+                      onChange={handleChange}
+                      readOnly={user_type === "Client Employee"}
+                    />
+                  </div>
+                </div>
                 {/* General Notes */}
                 <div className="grid grid-cols-1 gap-4">
                   <div>

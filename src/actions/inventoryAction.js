@@ -7,7 +7,8 @@ import {
   deleteInventoryStart, deleteInventorySuccess, deleteInventoryFailure,
   updateInventoryStart, updateInventorySuccess, updateInventoryFailure,
   inventoryWorkOrderAssignStart,inventoryWorkOrderAssignSuccess,inventoryWorkOrderAssignFailure,
-  inventoryTransferStart,inventoryTransferSuccess,inventoryTransferFailure
+  inventoryTransferStart,inventoryTransferSuccess,inventoryTransferFailure,
+  inventoryServiceTicketAssignStart,inventoryServiceTicketAssignSuccess,inventoryServiceTicketAssignFailure
 } from "../reducers/inventorySlice";
 import { apiConfig } from "../config";
 import { fetchJson } from '../fetch-config';
@@ -149,6 +150,25 @@ export const inventoryTransfer = (inventoryData, navigate) => {
     } catch (error) {
       dispatch(inventoryTransferFailure(error.message));
       toast.error(error.message || "Failed to Transfer Inventory");
+    }
+  };
+};
+
+//  inventory  assign to service ticket
+export const inventoryAssignToServiceTicket = (inventoryData, navigate) => {
+  return async (dispatch) => {
+    dispatch(inventoryServiceTicketAssignStart());
+    try {
+      const data = await fetchJson(apiConfig.assignInventoryToServiceTicket, {
+        method: "POST",
+        body: inventoryData,
+      });
+      dispatch(inventoryServiceTicketAssignSuccess(data));
+      toast.success(data?.message || "Inventory transferred to ServiceTicket");
+      navigate("/inventory");
+    } catch (error) {
+      dispatch(inventoryServiceTicketAssignFailure(error.message));
+      toast.error(error.message || "Failed to Assign Work Order");
     }
   };
 };

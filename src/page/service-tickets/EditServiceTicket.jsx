@@ -10,6 +10,7 @@ import ServiceTicketCard from "../../Components/ServiceTicketCard";
 import ShowTechnicians from "../../Components/ServiceTicketAssigneePeopleCard";
 import ClientEquipmentTable from "../../Components/ClientEquipmentTable";
 import ServiceTicketNotes from "../../Components/ServiceTicketNotes";
+import InventoryTable from "../../Components/InventoryTable"
 import {
   getServiceTicketDetails,
   updateServiceTicket,
@@ -53,6 +54,7 @@ const EditServiceTicket = () => {
   const idrEmployees = useSelector((state) => state.employee.idrEmployees);
   const [serviceTicket, setServiceTicket] = useState(null);
   const [technicians, setTechnicians] = useState([]);
+  const [inventories, setInventories] = useState([]);
   const [assignees, setAssignees] = useState([]);
   const [notes, setNotes] = useState([]);
   const [serviceTicketImages, setServiceTicketImages] = useState([]);
@@ -86,6 +88,7 @@ const EditServiceTicket = () => {
         serviceTicketDetails?.service_ticket_attachments || []
       );
       setServiceTicketEquipments(serviceTicketDetails?.linkedDevices || []);
+      setInventories(serviceTicketDetails?.inventories || []);
       setServiceTicketAgreement(serviceTicketDetails?.agreement || {});
       // API call should be done only if technicianAccess includes user_type
       if (technicianAccess.includes(user_type)) {
@@ -412,7 +415,11 @@ const EditServiceTicket = () => {
             images={serviceTicketImages}
             serviceTicketId={serviceTicketId}
           />
-
+           {/* InventoryTable */}
+            <InventoryTable
+             inventories={inventories}
+             service_ticket_id={serviceTicketId}
+          />
           {/* Ticket Notes */}
           <ServiceTicketNotes
             notes={notes}

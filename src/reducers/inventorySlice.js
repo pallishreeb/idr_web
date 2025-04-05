@@ -6,6 +6,7 @@ const initialState = {
   loading: false,
   loadingAssign: false,
   loadingTransfer: false,
+  loadingServiceTicketAssign: false,
   error: null,
 };
 
@@ -105,6 +106,18 @@ const inventorySlice = createSlice({
       state.loadingTransfer = true;
       state.error = null;
     },
+    inventoryServiceTicketAssignSuccess: (state, action) => {
+      state.loadingServiceTicketAssign = false;
+      state.error = null;
+    },
+    inventoryServiceTicketAssignFailure: (state, action) => {
+      state.loadingServiceTicketAssign = false;
+      state.error = action.payload;
+    },
+    inventoryServiceTicketAssignStart: (state) => {
+      state.loadingServiceTicketAssign = true;
+      state.error = null;
+    },
   },
 });
 
@@ -130,6 +143,9 @@ export const {
   inventoryTransferStart,
   inventoryTransferSuccess,
   inventoryTransferFailure,
+  inventoryServiceTicketAssignStart,
+  inventoryServiceTicketAssignSuccess,
+  inventoryServiceTicketAssignFailure
   
 } = inventorySlice.actions;
 

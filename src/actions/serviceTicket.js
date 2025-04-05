@@ -38,6 +38,9 @@ import {
   deleteServiceNoteSuccess,
   deleteServiceNoteFailure,
 } from "../reducers/serviceTicketSlice";
+import {returnInventoryStart,
+  returnInventorySuccess,returnInventoryFailure
+} from "../reducers/workOrderSlice";
 import { apiConfig } from "../config";
 import { fetchJson } from '../fetch-config';
 // Generate a new service ticket
@@ -180,9 +183,14 @@ export const getServiceTicketListsByClientId = (client_id) => {
   return async (dispatch) => {
     dispatch(getServiceTicketListsStart());
     try {
-      const url = `${apiConfig.serviceTicketByClient}/${client_id}`;
+      const params = new URLSearchParams();
+      params.append('client_name', client_id);
+
+      const queryString = params.toString();
+      const url = `${apiConfig.getServiceTicketLists}?${queryString}`;
+
       const response = await axios.get(url);
-      dispatch(getServiceTicketListsSuccess(response.data));
+      dispatch(getServiceTicketListsSuccess(response?.data?.tickets));
     } catch (error) {
       dispatch(getServiceTicketListsFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to fetch service ticket lists");
@@ -339,6 +347,30 @@ export const uploadServiceTicketSign = (serviceTicketId, formData) => {
       console.error("Error uploading Sign:", error);
       dispatch(serviceTicketImageFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to upload sign.");
+    }
+  };
+};
+
+//return inventory
+export const returnInventoryFromServiceTicket = (inventoryData) => {
+  return async (dispatch) => {
+    dispatch(returnInventoryStart());
+
+    try {
+      const data = await fetchJson(apiConfig.returnInventoryFromServiceTicket, {
+        method: 'POST',
+        body: inventoryData
+      });
+
+      dispatch(returnInventorySuccess(data));
+      toast.success("Inventory has been returned");
+      // Reload the current page
+      window.location.reload();
+    } catch (error) {
+      console.error('Error occurred:', error);
+
+      dispatch(returnInventoryFailure(error.message));
+      toast.error(error.message || "Failed to return inventory");
     }
   };
 };
