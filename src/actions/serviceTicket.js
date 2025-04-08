@@ -374,3 +374,90 @@ export const returnInventoryFromServiceTicket = (inventoryData) => {
     }
   };
 };
+
+// Generate a new service ticket
+export const createServiceRequest = (ticketData) => {
+  return async (dispatch) => {
+    dispatch(serviceTicketStart());
+    try {
+      const data = await fetchJson(apiConfig.serviceReqAdd, {
+        method: 'POST',
+        body: ticketData
+      });
+
+      dispatch(serviceTicketSuccess(data));
+      toast.success("Service request generated successfully");
+      return data;
+      // navigate('/inventory');
+    } catch (error) {
+      console.error('Error occurred:', error);
+
+      dispatch(serviceTicketFailure(error.message));
+      toast.error(error.message || "Failed to generate service request");
+    }
+  };
+};
+
+//service request details
+export const getServiceRequestDetails = (serviceRequestId) => {
+  return async (dispatch) => {
+    dispatch(getServiceTicketDetailsStart());
+    try {
+      const url = `${apiConfig.serviceReqById}/${serviceRequestId}`;
+      const response = await axios.get(url);
+      
+      dispatch(getServiceTicketDetailsSuccess(response.data?.ticket));
+    } catch (error) {
+      dispatch(getServiceTicketDetailsFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to fetch service ticket details");
+    }
+  };
+};
+
+//get all service request list
+export const getServiceRequestLists = (filters) => {
+  return async (dispatch) => {
+    dispatch(getServiceTicketListsStart());
+    try {
+      const params = new URLSearchParams();
+
+      for (const key in filters) {
+        if (filters[key]) {
+          params.append(key, filters[key]);
+        }
+      }
+
+      const queryString = params.toString();
+      const url = queryString ? `${apiConfig.serviceReqList}?${queryString}` : apiConfig.getServiceTicketLists;
+      const response = await axios.get(url);
+ 
+      // console.log("service ticket response", response)
+      dispatch(getServiceTicketListsSuccess(response?.data?.tickets));
+    } catch (error) {
+      dispatch(getServiceTicketListsFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to fetch service ticket lists");
+    }
+  };
+};
+
+//accept or reject service request
+export const acceptRejectServiceRequest = (serviceRequestId, status) => {
+  return async (dispatch) => {
+    dispatch(updateServiceTicketStart());
+    try {
+      const data = await fetchJson(`${apiConfig.serviceReqAcceptOrReject}?id=${serviceRequestId}&accepted=${status}}`, {
+        method: 'PATCH',
+      });
+
+      dispatch(updateServiceTicketSuccess(data));
+      toast.success("Service request generated successfully");
+      return data;
+      // navigate('/inventory');
+    } catch (error) {
+      console.error('Error occurred:', error);
+
+      dispatch(updateServiceTicketFailure(error.message));
+      toast.error(error.message || "Failed to generate service request");
+    }
+  };
+};

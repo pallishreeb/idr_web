@@ -9,6 +9,7 @@ const initialState = {
   loadingAssignImage:false,
   serviceTickets: [],
   technicians: [],
+  serviceRequests:[],
   service_ticket_id: null,
   serviceTicketDetails: null,
   error: null,
