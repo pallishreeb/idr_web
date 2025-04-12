@@ -68,6 +68,9 @@ import EditRma from "./page/RMA/edit_rma";
 import CreateSubContractor from "./page/sub-contractor/CreateSubContractor"
 import SubContractorList from "./page/sub-contractor/SubContractorList"
 import EditSubContractor from "./page/sub-contractor/EditSubContractor";
+import ListServiceRequests from "./page/service-requests/ListServiceRequests";
+import AddServiceRequest from "./page/service-requests/AddServiceRequest";
+import AcceptServiceRequest from "./page/service-requests/AcceptServiceRequest";
 
 
 
@@ -224,6 +227,10 @@ function App() {
          <Route path="/sub-contractors" element={<SubContractorList />} />
           <Route path="/edit-subcontractor/:id" element={<EditSubContractor />} />
 
+          {/* Service request */}
+          <Route path="/service-requests" element={<ListServiceRequests />} />
+          <Route path="/add-service-request" element={<AddServiceRequest />} />
+          <Route path="/edit-service-request/:requestId" element={<AcceptServiceRequest />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
         <Route path="/test" element={<IdrEuipement />} />

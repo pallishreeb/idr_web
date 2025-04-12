@@ -5,7 +5,7 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { getClientEquipmentById, updateClientEquipment } from "../../actions/clientEquipment"; // Actions to fetch and update client equipment
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 const EditClientEquipment = () => {
   const dispatch = useDispatch();
@@ -468,7 +468,7 @@ const EditClientEquipment = () => {
                           className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
                           name="comments"
                           value={note.comments || ""}
-                          rows={3}
+                          rows={6}
                         ></textarea>
                       </td>
                       <td className="border px-4 py-2" style={{ width: "15%" }}>

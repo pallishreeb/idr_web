@@ -97,7 +97,7 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
                     name="comments"
                     value={note.comments || ""}
                     onChange={(e) => handleNoteChange(index, e)}
-                    rows={3}
+                    rows={8}
                     disabled={editingIndex !== index}
                   ></textarea>
                 </td>

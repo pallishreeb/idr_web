@@ -30,8 +30,8 @@ const ClientEquipments = () => {
   );
   const loadingClients = useSelector((state) => state.client.loading);
   const loadingLocations = useSelector((state) => state.location.loading);
-  const { user_type } = useSelector((state) => state.user.user);
-  const { technicianAccess, access } = useSelector((state) => state.user);
+  const { user_type , client_type, locations: userLocations} = useSelector((state) => state.user.user);
+  const { access ,technicianAccess, clientAccess} = useSelector((state) => state.user);
   // Component state
   const [selectedClient, setSelectedClient] = useState(searchParams.get('client') || null);
   const [selectedLocation, setSelectedLocation] = useState(searchParams.get('location') || null);
@@ -76,28 +76,19 @@ const ClientEquipments = () => {
     dispatch(getClients());
   }, [dispatch]);
 
-  // Fetch locations and equipments when client or location changes
-  // useEffect(() => {
-  //   if (selectedClient) {
-  //     dispatch(getLocationByClient(selectedClient));
-  //     if (selectedLocation) {
-  //       fetchEquipments();
-  //     }
-  //   }
-  // }, [dispatch, selectedClient, selectedLocation]);
-  // Fetch locations and equipments when client or location changes
-  useEffect(() => {
-    if (user_type === "Client Employee") {
-      // console.log("user_type",user_type === "Client Employee")
-      // Call fetchEquipments without any parameters if user_type is Client Employee
-      fetchEquipments();
-    } else if (selectedClient) {
-      dispatch(getLocationByClient(selectedClient));
-      if (selectedLocation) {
-        fetchEquipments(selectedLocation); // Call fetchEquipments with parameters
-      }
-    }
-  }, [dispatch, selectedClient, selectedLocation, user_type]);
+useEffect(() => {
+  if (user_type !== "Client Employee" && selectedClient) {
+    dispatch(getLocationByClient(selectedClient));
+  }
+}, [dispatch, selectedClient, user_type]);
+
+// Fetch equipments only for Client Employee on mount
+useEffect(() => {
+  if (user_type === "Client Employee") {
+    fetchEquipments();
+  }
+}, [user_type]);
+
 
   
   const fetchEquipments = (sorting = {}) => {
@@ -143,6 +134,7 @@ const ClientEquipments = () => {
   };
 
   const handleReset = () => {
+    
     setFilters({
       model: "",
       device_type: "",
@@ -230,7 +222,40 @@ const getSortSymbol = (key) => {
   const newLocal = (
     <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
       <div className="flex justify-between items-center">
-        <div className="flex gap-4 w-[70%]">
+        <div className="flex gap-2 w-[80%]">
+        {clientAccess?.includes(client_type) && userLocations?.length > 0 && (
+        <div className="flex flex-col gap-2">
+                <label htmlFor="location" className="text-sm font-medium">
+                  Select Location
+                </label>
+                <select
+                  id="location"
+                  className="border border-gray-300 rounded px-3 py-1 w-full"
+                  value={selectedLocation || ""}
+                  // onChange={(e) => handleLocationChange(e.target.value)}
+                  onChange={(e) => {
+                    // Only update state, don't fetch here
+                    handleLocationChange(e.target.value);
+                  }}
+                >
+                  <option value="">Select a location</option>
+                  {loadingLocations ? (
+                    <option value="" disabled>
+                      Loading...
+                    </option>
+                  ) : (
+                    userLocations?.map((location) => (
+                      <option
+                        key={location.location_id}
+                        value={location.location_id}
+                      >
+                        {location.address_line_one} {location.address_line_two}
+                      </option>
+                    ))
+                  )}
+                </select>
+        </div>
+      )}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Device Type</label>
             <input
@@ -266,6 +291,7 @@ const getSortSymbol = (key) => {
               <option value="true">Retired</option>
             </select>
           </div>
+          
           <div className="flex flex-col gap-2">
             <label className="font-normal text-sm">&nbsp;</label>
             <button
@@ -305,6 +331,9 @@ const getSortSymbol = (key) => {
       'MAC Address': equipment.mac_address || '',
       'LAN IP Address': equipment.lan_ip_address || '',
       'WAN IP Address': equipment.wan_ip_address || '',
+      'Device Location': equipment.device_location || '',
+      'Username': equipment.username || '',
+      'Password': equipment.password || '',
       'General Info': equipment.general_info || '',
       'Status': equipment.is_deleted ? 'Retired' : 'Active'
     }));
@@ -323,7 +352,7 @@ const getSortSymbol = (key) => {
 
   const handleDownloadCSVTemplate = () => {
     const link = document.createElement("a");
-    link.href = "/sample.csv";
+    link.href = "/sample_devices.csv";
     link.setAttribute("download", "sample.csv");
     document.body.appendChild(link);
     link.click();
@@ -376,7 +405,7 @@ const getSortSymbol = (key) => {
                 <select
                   id="client"
                   className="border border-gray-300 rounded px-3 py-1 w-full"
-                  value={selectedClient}
+                  value={selectedClient || ""}
                   onChange={(e) => handleClientChange(e.target.value)}
                 >
                   <option value="">Select a client</option>
@@ -400,7 +429,7 @@ const getSortSymbol = (key) => {
                 <select
                   id="location"
                   className="border border-gray-300 rounded px-3 py-1 w-full"
-                  value={selectedLocation}
+                  value={selectedLocation || ""}
                   onChange={(e) => handleLocationChange(e.target.value)}
                   disabled={!selectedClient}
                 >

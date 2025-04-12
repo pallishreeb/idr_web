@@ -7,10 +7,14 @@ const initialState = {
   loadingDetails: false,
   loadingAssign: false,
   loadingAssignImage:false,
+  serviceRequestLoading:false,
   serviceTickets: [],
   technicians: [],
+  serviceRequests:[],
+  serviceReqInfo:null,
   service_ticket_id: null,
   serviceTicketDetails: null,
+  serviceRequestDetails: null,
   error: null,
 };
 
@@ -56,6 +60,11 @@ const serviceTicketSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    getServiceRequestsListsSuccess: (state, action) => {
+      state.loading = false;
+      state.serviceRequests = action.payload;
+      state.error = null;
+    },
     deleteServiceTicketStart: (state) => {
       state.loading = true;
       state.error = null;
@@ -95,6 +104,16 @@ const serviceTicketSlice = createSlice({
     getServiceTicketDetailsFailure: (state, action) => {
       state.loadingDetails = false;
       state.error = action.payload;
+    },
+    getServiceRequestInfoSuccess: (state, action) => {
+      state.loadingDetails = false;
+      state.serviceReqInfo = action.payload;
+      state.error = null;
+    },
+    getServiceRequestDetailsSuccess: (state, action) => {
+      state.loadingDetails = false;
+      state.serviceRequestDetails = action.payload;
+      state.error = null;
     },
     assignPeopleToServiceTicketStart: (state) => {
       state.loading = true;
@@ -172,6 +191,19 @@ const serviceTicketSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    serviceRequestStart: (state) => {
+      state.serviceRequestLoading = true;
+      state.error = null;
+    },
+    serviceRequestSuccess: (state, action) => {
+      state.serviceRequestLoading = false;
+      state.serviceRequests = action.payload;
+      state.error = null;
+    },
+    serviceRequestFailure: (state, action) => {
+      state.serviceRequestLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -213,6 +245,12 @@ export const {
   deleteServiceNoteStart,
   deleteServiceNoteSuccess,
   deleteServiceNoteFailure,
+  getServiceRequestInfoSuccess,
+  getServiceRequestsListsSuccess,
+  getServiceRequestDetailsSuccess,
+  serviceRequestStart,
+  serviceRequestSuccess,
+  serviceRequestFailure,
 } = serviceTicketSlice.actions;
 
 export default serviceTicketSlice.reducer;

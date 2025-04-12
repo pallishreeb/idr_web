@@ -184,7 +184,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                                             className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
                                             name="comments"
                                             value={note.comments || ""}
-                                            rows={3}
+                                            rows={6}
                                             readOnly
                                           ></textarea>
                                         </td>
@@ -238,7 +238,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
             <h3 className="text-lg font-semibold mb-4">Add Note</h3>
             <textarea
               className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-500"
-              rows={5}
+              rows={8}
               placeholder="Enter your note here..."
               value={note}
               onChange={(e) => setNote(e.target.value)}

@@ -19,8 +19,8 @@ const ClientLicenseList = () => {
   const { clients } = useSelector((state) => state.client);
   const { locations } = useSelector((state) => state.location);
   const { licenses, loading } = useSelector((state) => state.license);
-  const { user_type, client_type } = useSelector((state) => state.user.user);
-  const { access } = useSelector((state) => state.user);
+  const { user_type , client_type, locations: userLocations} = useSelector((state) => state.user.user);
+  const { access , clientAccess} = useSelector((state) => state.user);
 
   // Initialize filtersApplied based on URL parameters
   const [filtersApplied, setFiltersApplied] = useState(
@@ -86,7 +86,7 @@ const ClientLicenseList = () => {
         dispatch(getLicenseLists({}));
       }
     }
-  }, [dispatch, user_type, searchParams]);
+  }, [dispatch, user_type, searchParams,sortConfig]);
 
   // Fetch locations when client changes
   useEffect(() => {
@@ -276,6 +276,30 @@ const ClientLicenseList = () => {
               </form>
             )}
             <div className="flex flex-row items-end gap-2 mt-2">
+            {clientAccess?.includes(client_type) && userLocations?.length > 0 && (
+              <div className="flex flex-col">
+                  <label htmlFor="location_id" className="text-sm mb-2">
+                    Filter by Location:
+                  </label>
+                  <select
+                    id="location_id"
+                    name="location_id"
+                    className={`border border-gray-300 rounded px-3 py-1`}
+                    value={filters.location_id}
+                    onChange={handleLocationChange}
+                  >
+                    <option value="">Select Location</option>
+                    {userLocations?.map((location) => (
+                      <option
+                        key={location.location_id}
+                        value={location.location_id}
+                      >
+                        {location.address_line_one} {location.address_line_two}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+            )}
               <div className="flex flex-col">
                 <label htmlFor="manufacturer" className="text-sm mb-2">
                   Filter by Manufacturer:
