@@ -27,7 +27,8 @@ const AcceptServiceRequest = () => {
     local_onsite_contact_number: "",
     service_ticket_details: "",
     status: "",
-    service_date: ""
+    service_date: "",
+    service_request:""
   });
 
   // Fetch request details when component mounts
@@ -54,7 +55,8 @@ const AcceptServiceRequest = () => {
         local_onsite_contact_number: serviceRequestDetails.local_onsite_contact_number || "",
         service_ticket_details: serviceRequestDetails.service_ticket_details || "",
         status: serviceRequestDetails.status || "",
-        service_date: serviceRequestDetails.service_date || ""
+        service_date: serviceRequestDetails.service_date || "",
+        service_request: serviceRequestDetails.service_request || "",
       });
       
       // Set initial service date if it exists
@@ -79,7 +81,7 @@ const AcceptServiceRequest = () => {
     const payload = {
       id: requestId,
       accepted: true,
-      service_request: serviceRequest.service_ticket_details,
+      service_request: serviceRequest.service_request,
       service_date: serviceDate // Format date as MM/DD/YYYY
     };
     
@@ -205,7 +207,25 @@ const AcceptServiceRequest = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Confirm Service Request Acceptance</h3>
-            
+            <div className="mb-4">
+            <label htmlFor="serviceRequest" className="block text-sm font-medium text-gray-700 mb-2">
+              Service Request:
+            </label>
+            <textarea
+              id="serviceRequest"
+              value={serviceRequest.service_request}
+              onChange={(e) =>
+                setServiceRequest((prev) => ({
+                  ...prev,
+                  service_request: e.target.value,
+                }))
+              }
+              rows="3"
+              className="border border-gray-300 rounded px-3 py-2 w-full"
+              placeholder="Enter service request..."
+            />
+          </div>
+
             <div className="mb-4">
               <label htmlFor="serviceDate" className="block text-sm font-medium text-gray-700 mb-2">
                 Select Service Date:

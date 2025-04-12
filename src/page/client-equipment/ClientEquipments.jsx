@@ -76,28 +76,19 @@ const ClientEquipments = () => {
     dispatch(getClients());
   }, [dispatch]);
 
-  // Fetch locations and equipments when client or location changes
-  // useEffect(() => {
-  //   if (selectedClient) {
-  //     dispatch(getLocationByClient(selectedClient));
-  //     if (selectedLocation) {
-  //       fetchEquipments();
-  //     }
-  //   }
-  // }, [dispatch, selectedClient, selectedLocation]);
-  // Fetch locations and equipments when client or location changes
-  useEffect(() => {
-    if (user_type === "Client Employee") {
-      // console.log("user_type",user_type === "Client Employee")
-      // Call fetchEquipments without any parameters if user_type is Client Employee
-      fetchEquipments();
-    } else if (selectedClient) {
-      dispatch(getLocationByClient(selectedClient));
-      if (selectedLocation) {
-        fetchEquipments(selectedLocation); // Call fetchEquipments with parameters
-      }
-    }
-  }, [dispatch, selectedClient, selectedLocation, user_type]);
+useEffect(() => {
+  if (user_type !== "Client Employee" && selectedClient) {
+    dispatch(getLocationByClient(selectedClient));
+  }
+}, [dispatch, selectedClient, user_type]);
+
+// Fetch equipments only for Client Employee on mount
+useEffect(() => {
+  if (user_type === "Client Employee") {
+    fetchEquipments();
+  }
+}, [user_type]);
+
 
   
   const fetchEquipments = (sorting = {}) => {
@@ -143,6 +134,7 @@ const ClientEquipments = () => {
   };
 
   const handleReset = () => {
+    
     setFilters({
       model: "",
       device_type: "",
@@ -239,8 +231,12 @@ const getSortSymbol = (key) => {
                 <select
                   id="location"
                   className="border border-gray-300 rounded px-3 py-1 w-full"
-                  value={selectedLocation}
-                  onChange={(e) => handleLocationChange(e.target.value)}
+                  value={selectedLocation || ""}
+                  // onChange={(e) => handleLocationChange(e.target.value)}
+                  onChange={(e) => {
+                    // Only update state, don't fetch here
+                    handleLocationChange(e.target.value);
+                  }}
                 >
                   <option value="">Select a location</option>
                   {loadingLocations ? (
@@ -335,6 +331,9 @@ const getSortSymbol = (key) => {
       'MAC Address': equipment.mac_address || '',
       'LAN IP Address': equipment.lan_ip_address || '',
       'WAN IP Address': equipment.wan_ip_address || '',
+      'Device Location': equipment.device_location || '',
+      'Username': equipment.username || '',
+      'Password': equipment.password || '',
       'General Info': equipment.general_info || '',
       'Status': equipment.is_deleted ? 'Retired' : 'Active'
     }));
@@ -353,7 +352,7 @@ const getSortSymbol = (key) => {
 
   const handleDownloadCSVTemplate = () => {
     const link = document.createElement("a");
-    link.href = "/sample.csv";
+    link.href = "/sample_devices.csv";
     link.setAttribute("download", "sample.csv");
     document.body.appendChild(link);
     link.click();
@@ -406,7 +405,7 @@ const getSortSymbol = (key) => {
                 <select
                   id="client"
                   className="border border-gray-300 rounded px-3 py-1 w-full"
-                  value={selectedClient}
+                  value={selectedClient || ""}
                   onChange={(e) => handleClientChange(e.target.value)}
                 >
                   <option value="">Select a client</option>
@@ -430,7 +429,7 @@ const getSortSymbol = (key) => {
                 <select
                   id="location"
                   className="border border-gray-300 rounded px-3 py-1 w-full"
-                  value={selectedLocation}
+                  value={selectedLocation || ""}
                   onChange={(e) => handleLocationChange(e.target.value)}
                   disabled={!selectedClient}
                 >
