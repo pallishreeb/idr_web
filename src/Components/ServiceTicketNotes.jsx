@@ -95,7 +95,7 @@ const NotesTable = ({ notes, serviceTicketId }) => {
                     className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
                     name="comments"
                     value={note.comments || ""}
-                    rows={3}
+                    rows={8}
                     disabled={editingIndex !== index}
                   ></textarea>
                 </td>

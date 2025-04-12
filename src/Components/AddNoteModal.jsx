@@ -39,7 +39,7 @@ const AddNoteModal = ({ isOpen, onClose, onSave, workOrderId }) => {
         isOpen ? "" : "hidden"
       }`}
     >
-      <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-md">
+      <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-2xl">
         <h2 className="text-xl font-bold mb-4">Add Note</h2>
         <div className="mb-4">
           <label className="font-normal text-base">Comments</label>
@@ -48,6 +48,7 @@ const AddNoteModal = ({ isOpen, onClose, onSave, workOrderId }) => {
             name="comments"
             value={note.comments}
             onChange={handleInputChange}
+            rows={8}
           />
         </div>
 
