@@ -7,6 +7,7 @@ const initialState = {
   loadingDetails: false,
   loadingAssign: false,
   loadingAssignImage:false,
+  serviceRequestLoading:false,
   serviceTickets: [],
   technicians: [],
   serviceRequests:[],
@@ -190,6 +191,19 @@ const serviceTicketSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    serviceRequestStart: (state) => {
+      state.serviceRequestLoading = true;
+      state.error = null;
+    },
+    serviceRequestSuccess: (state, action) => {
+      state.serviceRequestLoading = false;
+      state.serviceRequests = action.payload;
+      state.error = null;
+    },
+    serviceRequestFailure: (state, action) => {
+      state.serviceRequestLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -233,7 +247,10 @@ export const {
   deleteServiceNoteFailure,
   getServiceRequestInfoSuccess,
   getServiceRequestsListsSuccess,
-  getServiceRequestDetailsSuccess
+  getServiceRequestDetailsSuccess,
+  serviceRequestStart,
+  serviceRequestSuccess,
+  serviceRequestFailure,
 } = serviceTicketSlice.actions;
 
 export default serviceTicketSlice.reducer;

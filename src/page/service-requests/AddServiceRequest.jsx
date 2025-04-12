@@ -20,7 +20,7 @@ const AddServiceRequest = () => {
   // const clients = useSelector((state) => state.client.clients);
   const clientLocations = useSelector((state) => state.location.locations);
   const user = useSelector((state) => state.user.user);
-  const { serviceReqInfo, loading } = useSelector(
+  const { serviceReqInfo, loading, serviceRequestLoading } = useSelector(
     (state) => state.serviceTicket
   );
 
@@ -312,7 +312,7 @@ const AddServiceRequest = () => {
                   type="submit"
                   className="bg-indigo-700 text-white px-4 py-2 rounded m-2"
                 >
-                  Create Service Request
+                  {serviceRequestLoading ? "Saving..." : "Create Service Request"} 
                 </button>
                 {/* <button
                   type="button"

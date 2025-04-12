@@ -39,7 +39,10 @@ import {
   deleteServiceNoteFailure,
   getServiceRequestInfoSuccess,
   getServiceRequestsListsSuccess,
-  getServiceRequestDetailsSuccess
+  getServiceRequestDetailsSuccess,
+  serviceRequestStart,
+  serviceRequestSuccess,
+  serviceRequestFailure,
 } from "../reducers/serviceTicketSlice";
 import {returnInventoryStart,
   returnInventorySuccess,returnInventoryFailure
@@ -385,21 +388,21 @@ export const returnInventoryFromServiceTicket = (inventoryData) => {
 // Generate a new service ticket
 export const createServiceRequest = (ticketData) => {
   return async (dispatch) => {
-    dispatch(serviceTicketStart());
+    dispatch(serviceRequestStart());
     try {
       const data = await fetchJson(apiConfig.serviceReqAdd, {
         method: 'POST',
         body: ticketData
       });
 
-      dispatch(serviceTicketSuccess(data));
+      dispatch(serviceRequestSuccess(data));
       toast.success("Service request generated successfully");
       return data;
       // navigate('/inventory');
     } catch (error) {
       console.error('Error occurred:', error);
 
-      dispatch(serviceTicketFailure(error.message));
+      dispatch(serviceRequestFailure(error.message));
       toast.error(error.message || "Failed to generate service request");
     }
   };
