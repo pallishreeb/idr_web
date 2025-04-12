@@ -37,6 +37,9 @@ import {
   deleteServiceNoteStart,
   deleteServiceNoteSuccess,
   deleteServiceNoteFailure,
+  getServiceRequestInfoSuccess,
+  getServiceRequestsListsSuccess,
+  getServiceRequestDetailsSuccess
 } from "../reducers/serviceTicketSlice";
 import {returnInventoryStart,
   returnInventorySuccess,returnInventoryFailure
@@ -131,12 +134,16 @@ export const updateServiceTicket = (ticketData,serviceTicketId) => {
   return async (dispatch) => {
     dispatch(updateServiceTicketStart());
     try {
-      const response = await axios.post(`${apiConfig.updateServiceTicket}/${serviceTicketId}`, ticketData);
-      dispatch(updateServiceTicketSuccess(response.data));
+      const data = await fetchJson(`${apiConfig.updateServiceTicket}/${serviceTicketId}`, {
+        method: 'POST',
+        body: ticketData
+      });
+      dispatch(updateServiceTicketSuccess(data));
       toast.success("Service ticket updated successfully");
+      return data;
     } catch (error) {
       dispatch(updateServiceTicketFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to update service ticket");
+      toast.error(error.message || error.response?.data?.message || "Failed to update service ticket");
     }
   };
 };
@@ -406,7 +413,7 @@ export const getServiceRequestDetails = (serviceRequestId) => {
       const url = `${apiConfig.serviceReqById}/${serviceRequestId}`;
       const response = await axios.get(url);
       
-      dispatch(getServiceTicketDetailsSuccess(response.data?.ticket));
+      dispatch(getServiceRequestDetailsSuccess(response.data?.request));
     } catch (error) {
       dispatch(getServiceTicketDetailsFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to fetch service ticket details");
@@ -428,11 +435,11 @@ export const getServiceRequestLists = (filters) => {
       }
 
       const queryString = params.toString();
-      const url = queryString ? `${apiConfig.serviceReqList}?${queryString}` : apiConfig.getServiceTicketLists;
+      const url =`${apiConfig.serviceReqList}?${queryString}`;
       const response = await axios.get(url);
  
-      // console.log("service ticket response", response)
-      dispatch(getServiceTicketListsSuccess(response?.data?.tickets));
+      // console.log("service serviceRequests", response)
+      dispatch(getServiceRequestsListsSuccess(response?.data?.Requests));
     } catch (error) {
       dispatch(getServiceTicketListsFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to fetch service ticket lists");
@@ -441,16 +448,18 @@ export const getServiceRequestLists = (filters) => {
 };
 
 //accept or reject service request
-export const acceptRejectServiceRequest = (serviceRequestId, status) => {
+export const acceptRejectServiceRequest = (ticketData) => {
   return async (dispatch) => {
     dispatch(updateServiceTicketStart());
     try {
-      const data = await fetchJson(`${apiConfig.serviceReqAcceptOrReject}?id=${serviceRequestId}&accepted=${status}}`, {
-        method: 'PATCH',
+
+      const data = await fetchJson(apiConfig.serviceReqAcceptOrReject, {
+        method: 'POST',
+        body: ticketData
       });
 
       dispatch(updateServiceTicketSuccess(data));
-      toast.success("Service request generated successfully");
+      toast.success("Service request accepted successfully");
       return data;
       // navigate('/inventory');
     } catch (error) {
@@ -458,6 +467,20 @@ export const acceptRejectServiceRequest = (serviceRequestId, status) => {
 
       dispatch(updateServiceTicketFailure(error.message));
       toast.error(error.message || "Failed to generate service request");
+    }
+  };
+};
+//service request info
+export const getServiceRequestInfo = () => {
+  return async (dispatch) => {
+    dispatch(getServiceTicketDetailsStart());
+    try {
+      const url = `${apiConfig.serviceReqInfo}`;
+      const response = await axios.get(url);
+      dispatch(getServiceRequestInfoSuccess(response.data?.emp));
+    } catch (error) {
+      dispatch(getServiceTicketDetailsFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to fetch service request info");
     }
   };
 };

@@ -128,6 +128,7 @@ const apiConfig = {
   serviceReqList:"/service_req/all",
   serviceReqById:"/service_req",
   serviceReqAcceptOrReject:"/service_req/accept",
+  serviceReqInfo:"/service_req/info"
 };
 
 export { API_BASE_URL, apiConfig,S3_BASE_URL };

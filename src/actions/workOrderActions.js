@@ -86,6 +86,7 @@ export const getWorkOrderLists = (filters) => {
       for (const key in filters) {
         if (filters[key]) {
           params.append(key, filters[key]);
+          // params.append(key, encodeURIComponent(filters[key]));
         }
       }
 

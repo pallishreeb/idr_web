@@ -16,12 +16,12 @@ const ListServiceRequests = () => {
 //   const clients = useSelector((state) => state.client.clients);
 //   const locations = useSelector((state) => state.location.locations);
   const { serviceRequests, loading } = useSelector((state) => state.serviceTicket);
-  const { user_type, client_type } = useSelector((state) => state.user.user);
-  const { access } = useSelector((state) => state.user);
+
 
   useEffect(() => {
       dispatch(getServiceRequestLists({}));
     },[dispatch])
+
   // Initialize filtersApplied based on URL parameters
 //   const [filtersApplied, setFiltersApplied] = useState(
 //     searchParams.has("client_id") && searchParams.has("location_id")
@@ -241,20 +241,6 @@ const ListServiceRequests = () => {
             )}
           </div> */}
 
-          <div className="mb-4 flex justify-end">
-            {/* {access?.includes(user_type) && ( */}
-              <button
-                className="bg-indigo-700 text-white px-4 py-2 rounded"
-              >
-                <Link
-                  to={`/add-service-request`}
-                >
-                  Create Customer Service Request
-                </Link>
-              </button>
-            {/* )} */}
-          </div>
-
           <div className="overflow-x-auto">
             <table className="table-auto w-full border-collapse border border-gray-200">
               <thead>
@@ -309,7 +295,7 @@ const ListServiceRequests = () => {
                       <td className="border px-4 py-2 flex">
                         <button
                           className="p-[4px] bg-gray-100 cursor-pointer mr-2"
-                          onClick={() => handleEdit(request.request_id)}
+                          onClick={() => handleEdit(request?.service_request_id)}
                         >
                           <BiSolidEditAlt />
                         </button>
