@@ -170,7 +170,7 @@ const AcceptServiceRequest = () => {
               </div>
               
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-500 mb-1">Service Ticket Details:</label>
+                <label className="block text-sm font-medium text-gray-500 mb-1">Service Needed:</label>
                 <div className="p-3 bg-gray-50 rounded whitespace-pre-line">
                   {serviceRequest.service_ticket_details}
                 </div>

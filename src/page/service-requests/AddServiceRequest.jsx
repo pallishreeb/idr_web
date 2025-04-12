@@ -197,7 +197,7 @@ const AddServiceRequest = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col mb-4">
                   <label htmlFor="contact_person" className="mr-2">
-                    Contact Person:
+                    Contact Person*:
                   </label>
                   <input
                     type="text"
@@ -212,7 +212,7 @@ const AddServiceRequest = () => {
                 </div>
                 <div className="flex flex-col mb-4">
                   <label htmlFor="contact_phone_number" className="mr-2">
-                    Contact Phone:
+                    Contact Phone*:
                   </label>
                   <input
                     type="tel"
@@ -294,7 +294,7 @@ const AddServiceRequest = () => {
                     htmlFor="service_ticket_details"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Service Ticket Details*
+                    Service Needed*
                   </label>
                   <textarea
                     name="service_ticket_details"
