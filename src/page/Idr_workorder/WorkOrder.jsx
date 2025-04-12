@@ -20,13 +20,14 @@ const WorkOrder = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
-    client_name: "",
+    client_id: "",
     status: "",
     technician: "",
     project_manager: "",
+    location_id: "",
   });
-  const { user_type } = useSelector((state) => state.user.user);
-  const { access } = useSelector((state) => state.user);
+  const { user_type, client_type, locations } = useSelector((state) => state.user.user);
+  const { access,clientAccess } = useSelector((state) => state.user);
   const { workOrders, loading } = useSelector((state) => state.workOrder);
   const { clients } = useSelector((state) => state.client);
   const { idrEmployees } = useSelector((state) => state.employee);
@@ -104,6 +105,24 @@ const WorkOrder = () => {
                     <option value="Closed">Closed</option>
                   </select>
                 </div>
+                {clientAccess.includes(client_type) && locations?.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <label className="font-normal text-sm">Filter By Location</label>
+                  <select
+                    name="location_id"
+                    className="px-3 border border-gray-200 h-10 rounded"
+                    onChange={handleFilterChange}
+                  >
+                    <option value="">All</option>
+                    {locations.map((location) => (
+                      <option key={location.location_id} value={location.location_id}>
+                        {location.address_line_one}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
                 {access.includes(user_type) && (
                   <>
                     <div className="flex flex-col gap-2">
@@ -111,13 +130,13 @@ const WorkOrder = () => {
                         Filter By Client Name
                       </label>
                       <select
-                        name="client_name"
+                        name="client_id"
                         className="px-3 border border-gray-200 h-10 rounded"
                         onChange={handleFilterChange}
                       >
                         <option value="">All</option>
                         {clients?.data?.map((client) => (
-                          <option key={client.id} value={client.company_name}>
+                          <option key={client.client_id} value={client.client_id}>
                             {client.company_name}
                           </option>
                         ))}

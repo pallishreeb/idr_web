@@ -30,8 +30,8 @@ const ClientEquipments = () => {
   );
   const loadingClients = useSelector((state) => state.client.loading);
   const loadingLocations = useSelector((state) => state.location.loading);
-  const { user_type } = useSelector((state) => state.user.user);
-  const { technicianAccess, access } = useSelector((state) => state.user);
+  const { user_type , client_type, locations: userLocations} = useSelector((state) => state.user.user);
+  const { access ,technicianAccess, clientAccess} = useSelector((state) => state.user);
   // Component state
   const [selectedClient, setSelectedClient] = useState(searchParams.get('client') || null);
   const [selectedLocation, setSelectedLocation] = useState(searchParams.get('location') || null);
@@ -230,7 +230,36 @@ const getSortSymbol = (key) => {
   const newLocal = (
     <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
       <div className="flex justify-between items-center">
-        <div className="flex gap-4 w-[70%]">
+        <div className="flex gap-2 w-[80%]">
+        {clientAccess?.includes(client_type) && userLocations?.length > 0 && (
+        <div className="flex flex-col gap-2">
+                <label htmlFor="location" className="text-sm font-medium">
+                  Select Location
+                </label>
+                <select
+                  id="location"
+                  className="border border-gray-300 rounded px-3 py-1 w-full"
+                  value={selectedLocation}
+                  onChange={(e) => handleLocationChange(e.target.value)}
+                >
+                  <option value="">Select a location</option>
+                  {loadingLocations ? (
+                    <option value="" disabled>
+                      Loading...
+                    </option>
+                  ) : (
+                    userLocations?.map((location) => (
+                      <option
+                        key={location.location_id}
+                        value={location.location_id}
+                      >
+                        {location.address_line_one} {location.address_line_two}
+                      </option>
+                    ))
+                  )}
+                </select>
+        </div>
+      )}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Device Type</label>
             <input
@@ -266,6 +295,7 @@ const getSortSymbol = (key) => {
               <option value="true">Retired</option>
             </select>
           </div>
+          
           <div className="flex flex-col gap-2">
             <label className="font-normal text-sm">&nbsp;</label>
             <button

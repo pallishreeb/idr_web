@@ -20,7 +20,8 @@ const initialState = {
   isAuthenticated:false,
   successMessage: "",
   access : ['Admin', 'Subadmin'],
-  technicianAccess : ['Admin', 'Subadmin','IDR Employee']
+  technicianAccess : ['Admin', 'Subadmin','IDR Employee'],
+  clientAccess : ['Admin', 'Location Admin']
 };
 
 const userSlice = createSlice({
