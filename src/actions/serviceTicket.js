@@ -194,7 +194,7 @@ export const getServiceTicketListsByClientId = (client_id) => {
     dispatch(getServiceTicketListsStart());
     try {
       const params = new URLSearchParams();
-      params.append('client_name', client_id);
+      params.append('client_id', client_id);
 
       const queryString = params.toString();
       const url = `${apiConfig.getServiceTicketLists}?${queryString}`;

@@ -209,7 +209,7 @@ const AcceptServiceRequest = () => {
             <h3 className="text-lg font-semibold mb-4">Confirm Service Request Acceptance</h3>
             <div className="mb-4">
             <label htmlFor="serviceRequest" className="block text-sm font-medium text-gray-700 mb-2">
-              Service Request:
+            Service Request Title:
             </label>
             <textarea
               id="serviceRequest"

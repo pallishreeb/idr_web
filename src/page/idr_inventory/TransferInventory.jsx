@@ -22,9 +22,11 @@ const TransferInventory = () => {
   const [selectedServiceTicket, setSelectedServiceTicket] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [quantityAssigned, setQuantityAssigned] = useState("");
+  const [quantityAssignedToTicket, setQuantityAssignedToTicket] = useState("");
   const [quantityTransferred, setQuantityTransferred] = useState("");
   const [assignedLocation, setAssignedLocation] = useState("");
   const [loading, setLoading] = useState(false);
+  const [inventory, setInventory] = useState(null);
   const { clients, loading: clientsLoading } = useSelector((state) => state.client);
   const { workOrders, loading: workOrdersLoading } = useSelector((state) => state.workOrder);
   const { serviceTickets, loading:ticketsLoading } = useSelector((state) => state.serviceTicket);
@@ -34,8 +36,8 @@ const TransferInventory = () => {
   const loadingServiceTicketAssign = useSelector(
     (state) => state.inventory.loadingServiceTicketAssign
   );
-  const { user_type } = useSelector((state) => state.user.user);
-  const { access } = useSelector((state) => state.user);
+  // const { user_type } = useSelector((state) => state.user.user);
+  // const { access } = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(getClients());
@@ -45,6 +47,7 @@ const TransferInventory = () => {
       dispatch(getInventoryById(inventory_id))
         .then((data) => {
           setLoading(false);
+          setInventory(data);
           setAssignedLocation(data.location);
         })
         .catch((error) => {
@@ -69,6 +72,7 @@ const TransferInventory = () => {
     e.preventDefault();
     // API call to assign inventory to work order
     dispatch(inventoryWorkOrderAssign({ inventory_id: inventory_id, work_order_id: selectedWorkorder, quantity: quantityAssigned },navigate));
+    setQuantityAssigned("");
   };
   const handleAssignServiceTicket = (e) => {
     e.preventDefault();
@@ -78,17 +82,19 @@ const TransferInventory = () => {
         {
           inventory_id: inventory_id,
           service_ticket_id: selectedServiceTicket,
-          quantity: quantityAssigned,
+          quantity: quantityAssignedToTicket,
         },
         navigate
       )
     );
+    setQuantityAssignedToTicket("");
   };
   const handleTransferInventory = (e) => {
     e.preventDefault();
     // console.log(selectedLocation)
     // API call to transfer inventory to another location
     dispatch(inventoryTransfer({ inventory_id: inventory_id, location_id: selectedLocation, quantity: quantityTransferred },navigate));
+    setQuantityTransferred("");
   };
   const availableLocations = locationsInventory?.filter(
     (location) => location.location !== assignedLocation
@@ -100,7 +106,7 @@ const TransferInventory = () => {
         <AdminSideNavbar />
         <div className=" py-12 px-8 bg-gray-50 w-[100%]">
           <div className="flex justify-between items-end">
-            <h1 className="font-bold text-lg">Inventory Item</h1>
+            <h1 className="font-bold text-lg"> Transfer Inventory Item</h1>
 
             <div className="flex gap-3">
               <button
@@ -111,6 +117,36 @@ const TransferInventory = () => {
               </button>
             </div>
           </div>
+           {/* Inventory Details Card */}
+             <div className="bg-gray-100 p-4 rounded-lg shadow-md">
+              <h2 className="font-semibold text-gray-700 mb-2">
+              Inventory Details
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="font-semibold text-gray-600">Make:</span>{" "}
+                  {inventory?.make}
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-600">Model:</span>{" "}
+                  {inventory?.model}
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-600">
+                    Device Type:
+                  </span>{" "}
+                  {inventory?.device_type}
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-600">Location:</span>{" "}
+                  {inventory?.location}
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-600">Quantity:</span>{" "}
+                  {inventory?.quantity}
+                </div>
+              </div>
+            </div>
           {/* assign inventory to work order */}
           <form onSubmit={handleAssignWorkorder}>
             <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
@@ -231,7 +267,7 @@ const TransferInventory = () => {
                     >
                       <option value="">Select client</option>
                       {clients?.data?.map((client) => (
-                        <option key={client.client_id} value={client.company_name}>
+                        <option key={client.client_id} value={client.client_id}>
                           {client.company_name}
                         </option>
                       ))}
@@ -272,8 +308,8 @@ const TransferInventory = () => {
                   <input
                     type="text"
                     className="px-3 py-3 border  border-gray-200 h-10 text-sm rounded"
-                    value={quantityAssigned}
-                    onChange={(e) => setQuantityAssigned(e.target.value)}
+                    value={quantityAssignedToTicket}
+                    onChange={(e) => setQuantityAssignedToTicket(e.target.value)}
                     required
                   />
                 </div>

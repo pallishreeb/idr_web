@@ -22,8 +22,12 @@ const ServiceAgreements = () => {
     (state) => state.serviceAgreement.serviceAgreements
   );
   const loading = useSelector((state) => state.serviceAgreement.loading);
-  const { user_type , client_type, locations: userLocations} = useSelector((state) => state.user.user);
-  const { access , clientAccess} = useSelector((state) => state.user);
+  const {
+    user_type,
+    client_type,
+    locations: userLocations,
+  } = useSelector((state) => state.user.user);
+  const { access, clientAccess } = useSelector((state) => state.user);
 
   // Initialize filtersApplied based on URL parameters
   const [filtersApplied, setFiltersApplied] = useState(
@@ -35,11 +39,15 @@ const ServiceAgreements = () => {
     client_id: searchParams.get("client_id") || "",
     location_id: searchParams.get("location_id") || "",
   });
-  const [selectedClient, setSelectedClient] = useState(searchParams.get("client_id") || null);
-  const [selectedLocation, setSelectedLocation] = useState(searchParams.get("location_id") || null);
+  const [selectedClient, setSelectedClient] = useState(
+    searchParams.get("client_id") || null
+  );
+  const [selectedLocation, setSelectedLocation] = useState(
+    searchParams.get("location_id") || null
+  );
   const [sortConfig, setSortConfig] = useState({
     key: searchParams.get("sort_by") || "",
-    direction: searchParams.get("order") || "ASC"
+    direction: searchParams.get("order") || "ASC",
   });
 
   // Update URL when filters change
@@ -67,16 +75,18 @@ const ServiceAgreements = () => {
         // Set the filters in state
         setFilters({
           client_id: urlClientId,
-          location_id: urlLocationId
+          location_id: urlLocationId,
         });
         // Fetch locations for the client
         dispatch(getLocationByClient(urlClientId));
         // Apply the filters
         const query = {
           client_id: urlClientId,
-          location_id: urlLocationId
+          location_id: urlLocationId,
         };
-        dispatch(getServiceAgreementLists(query, sortConfig.key, sortConfig.direction));
+        dispatch(
+          getServiceAgreementLists(query, sortConfig.key, sortConfig.direction)
+        );
       } else {
         dispatch(getServiceAgreementLists({}));
       }
@@ -117,7 +127,9 @@ const ServiceAgreements = () => {
       ...(client_id && { client_id }),
       ...(location_id && { location_id }),
     };
-    dispatch(getServiceAgreementLists(query, sortConfig.key, sortConfig.direction));
+    dispatch(
+      getServiceAgreementLists(query, sortConfig.key, sortConfig.direction)
+    );
   };
 
   const handleReset = () => {
@@ -139,7 +151,9 @@ const ServiceAgreements = () => {
   };
 
   const handleEdit = (agreementId) => {
-    navigate(`/edit-service-agreement/${agreementId}?${searchParams.toString()}`);
+    navigate(
+      `/edit-service-agreement/${agreementId}?${searchParams.toString()}`
+    );
   };
 
   const formatDateToMDY = (dateString) => {
@@ -226,10 +240,10 @@ const ServiceAgreements = () => {
                     <option value="">Select Location</option>
                     {locations?.map((location) => (
                       <option
-                        key={location.location_id}
-                        value={location.location_id}
+                        key={location?.location_id}
+                        value={location?.location_id}
                       >
-                        {location.address_line_one} {location.address_line_two}
+                        {location?.address_line_one} {location?.address_line_two}
                       </option>
                     ))}
                   </select>
@@ -252,48 +266,58 @@ const ServiceAgreements = () => {
                 </div>
               </form>
             )}
-             {clientAccess?.includes(client_type) && userLocations?.length > 0 && (
-              <form className="grid grid-cols-3 gap-4">
-                <div className="flex flex-col">
-                  <label htmlFor="location_id" className="text-sm mb-2">
-                    Filter by Location:
-                  </label>
-                  <select
-                    id="location_id"
-                    name="location_id"
-                    className={`border border-gray-300 rounded px-3 py-1`}
-                    value={filters.location_id}
-                    onChange={handleLocationChange}
-                  >
-                    <option value="">Select Location</option>
-                    {userLocations?.map((location) => (
-                      <option
-                        key={location.location_id}
-                        value={location.location_id}
-                      >
-                        {location.address_line_one} {location.address_line_two}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex items-end gap-2">
-                  <button
-                    type="button"
-                    className="bg-indigo-600 text-white px-4 py-2 rounded"
-                    onClick={handleSearch}
-                  >
-                    Search
-                  </button>
-                  <button
-                    type="button"
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-                    onClick={handleReset}
-                  >
-                    Reset
-                  </button>
-                </div>
-              </form>
-            )}
+            {clientAccess?.includes(client_type) &&
+              userLocations?.length > 0 && (
+                <form className="grid grid-cols-3 gap-4">
+                  <div className="flex flex-col">
+                    <label htmlFor="location_id" className="text-sm mb-2">
+                      Filter by Location:
+                    </label>
+                    <select
+                      id="location_id"
+                      name="location_id"
+                      className={`border border-gray-300 rounded px-3 py-1`}
+                      value={filters.location_id}
+                      onChange={handleLocationChange}
+                    >
+                      <option value="">Select Location</option>
+                      {[...userLocations]
+                        .sort((a, b) => {
+                          const addressA =
+                            `${a.address_line_one} ${a.address_line_two}`.toLowerCase();
+                          const addressB =
+                            `${b.address_line_one} ${b.address_line_two}`.toLowerCase();
+                          return addressA.localeCompare(addressB);
+                        })
+                        .map((location) => (
+                          <option
+                            key={location.location_id}
+                            value={location.location_id}
+                          >
+                            {location.address_line_one}{" "}
+                            {location.address_line_two}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div className="flex items-end gap-2">
+                    <button
+                      type="button"
+                      className="bg-indigo-600 text-white px-4 py-2 rounded"
+                      onClick={handleSearch}
+                    >
+                      Search
+                    </button>
+                    <button
+                      type="button"
+                      className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                      onClick={handleReset}
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </form>
+              )}
           </div>
 
           <div className="mb-4 flex justify-end">
@@ -303,9 +327,9 @@ const ServiceAgreements = () => {
                 disabled={!selectedClient}
               >
                 <Link
-                  to={`/add-service-agreement/${selectedClient || 'null'}/${selectedLocation || 'null'}${
-                    filtersApplied ? `?${searchParams.toString()}` : ''
-                  }`}
+                  to={`/add-service-agreement/${selectedClient || "null"}/${
+                    selectedLocation || "null"
+                  }${filtersApplied ? `?${searchParams.toString()}` : ""}`}
                 >
                   Add New Service Agreement
                 </Link>
@@ -317,21 +341,35 @@ const ServiceAgreements = () => {
             <table className="table-auto w-full border-collapse border border-gray-200">
               <thead>
                 <tr className="bg-gray-100 text-left">
-                  <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort("client_name")}>
+                  <th
+                    className="border px-4 py-2 cursor-pointer"
+                    onClick={() => handleSort("client_name")}
+                  >
                     Client Name
                     <span className="ml-1">{getSortSymbol("client_name")}</span>
                   </th>
-                  <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort("start_date")}>
+                  <th
+                    className="border px-4 py-2 cursor-pointer"
+                    onClick={() => handleSort("start_date")}
+                  >
                     Start Date
                     <span className="ml-1">{getSortSymbol("start_date")}</span>
                   </th>
-                  <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort("expiration_date")}>
+                  <th
+                    className="border px-4 py-2 cursor-pointer"
+                    onClick={() => handleSort("expiration_date")}
+                  >
                     Expiration Date
-                    <span className="ml-1">{getSortSymbol("expiration_date")}</span>
+                    <span className="ml-1">
+                      {getSortSymbol("expiration_date")}
+                    </span>
                   </th>
                   <th className="border px-4 py-2">Parts Covered</th>
                   {(access.includes(user_type) || client_type !== "User") && (
-                    <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort("price")}>
+                    <th
+                      className="border px-4 py-2 cursor-pointer"
+                      onClick={() => handleSort("price")}
+                    >
                       Annual Sale Price
                       <span className="ml-1">{getSortSymbol("price")}</span>
                     </th>
@@ -344,7 +382,11 @@ const ServiceAgreements = () => {
                   <tr>
                     <td colSpan="7" className="py-4">
                       <div className="flex justify-center items-center">
-                        <img src={Loader} alt="Loading..." className="h-16 w-16" />
+                        <img
+                          src={Loader}
+                          alt="Loading..."
+                          className="h-16 w-16"
+                        />
                       </div>
                     </td>
                   </tr>
@@ -369,9 +411,12 @@ const ServiceAgreements = () => {
                       <td className="border px-4 py-2">
                         {agreement.parts_covered ? "Yes" : "No"}
                       </td>
-                      {(user_type !== "IDR Employee" && client_type !== "User") && (
-                        <td className="border px-4 py-2">{formatCurrency(agreement.price)}</td>
-                      )}
+                      {user_type !== "IDR Employee" &&
+                        client_type !== "User" && (
+                          <td className="border px-4 py-2">
+                            {formatCurrency(agreement.price)}
+                          </td>
+                        )}
                       <td className="border px-4 py-2 flex">
                         <button
                           className="p-[4px] bg-gray-100 cursor-pointer mr-2"

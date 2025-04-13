@@ -60,7 +60,7 @@ export const getServiceAgreementLists = (filters = {},key,direction) => {
           // Exclude client_id and location_id for Client Employee
           if (
             user_type === "Client Employee" &&
-            (key === "client_id" || key === "location_id")
+            (key === "client_id" ) //|| key === "location_id"
           ) {
             continue;
           }
