@@ -26,8 +26,10 @@ const WorkOrder = () => {
     project_manager: "",
     location_id: "",
   });
-  const { user_type, client_type, locations } = useSelector((state) => state.user.user);
-  const { access,clientAccess } = useSelector((state) => state.user);
+  const { user_type, client_type, locations } = useSelector(
+    (state) => state.user.user
+  );
+  const { access, clientAccess } = useSelector((state) => state.user);
   const { workOrders, loading } = useSelector((state) => state.workOrder);
   const { clients } = useSelector((state) => state.client);
   const { idrEmployees } = useSelector((state) => state.employee);
@@ -105,23 +107,38 @@ const WorkOrder = () => {
                     <option value="Closed">Closed</option>
                   </select>
                 </div>
-                {clientAccess.includes(client_type) && locations?.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">Filter By Location</label>
-                  <select
-                    name="location_id"
-                    className="px-3 border border-gray-200 h-10 rounded"
-                    onChange={handleFilterChange}
-                  >
-                    <option value="">All</option>
-                    {locations.map((location) => (
-                      <option key={location.location_id} value={location.location_id}>
-                        {location.address_line_one}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+                {clientAccess.includes(client_type) &&
+                  locations?.length > 0 && (
+                    <div className="flex flex-col gap-2">
+                      <label className="font-normal text-sm">
+                        Filter By Location
+                      </label>
+                      <select
+                        name="location_id"
+                        className="px-3 border border-gray-200 h-10 rounded"
+                        onChange={handleFilterChange}
+                      >
+                        <option value="">All</option>
+                        {[...locations]
+                          .sort((a, b) => {
+                            const addressA =
+                              `${a.address_line_one} ${a.address_line_two}`.toLowerCase();
+                            const addressB =
+                              `${b.address_line_one} ${b.address_line_two}`.toLowerCase();
+                            return addressA.localeCompare(addressB);
+                          })
+                          .map((location) => (
+                            <option
+                              key={location.location_id}
+                              value={location.location_id}
+                            >
+                              {location.address_line_one}{" "}
+                              {location.address_line_two}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  )}
 
                 {access.includes(user_type) && (
                   <>
@@ -136,7 +153,10 @@ const WorkOrder = () => {
                       >
                         <option value="">All</option>
                         {clients?.data?.map((client) => (
-                          <option key={client.client_id} value={client.client_id}>
+                          <option
+                            key={client.client_id}
+                            value={client.client_id}
+                          >
                             {client.company_name}
                           </option>
                         ))}

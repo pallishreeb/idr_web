@@ -48,7 +48,7 @@ export const createLicense = (licenseData,navigate) => {
     
 export const getLicenseLists = (filters = {},sortBy, orderBy) => {
   return async (dispatch, getState) => {
-    console.log(sortBy,orderBy)
+    // console.log(sortBy,orderBy)
     const { user_type } = getState().user.user; // Get user_type from state
 
     dispatch(getLicenseListsStart());
@@ -61,7 +61,7 @@ export const getLicenseLists = (filters = {},sortBy, orderBy) => {
           // Exclude client_id and location_id for Client Employee
           if (
             user_type === "Client Employee" &&
-            (key === "client_id" || key === "location_id")
+            (key === "client_id" ) //|| key === "location_id"
           ) {
             continue;
           }
@@ -70,6 +70,7 @@ export const getLicenseLists = (filters = {},sortBy, orderBy) => {
         }
       }
 
+      // if(filters['location_id']) params.append('location_id', filters['location_id'])
       if (sortBy) params.append('sort_by', sortBy);
       if (orderBy) params.append('order', orderBy);
 

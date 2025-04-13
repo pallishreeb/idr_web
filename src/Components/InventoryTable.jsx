@@ -13,8 +13,8 @@ const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
   const { access } = useSelector((state) => state.user);
 
   const handleReturnInventory = () => {
-    if (!quantity) {
-      alert('Please enter a quantity');
+    if (!quantity || quantity === 0) {
+      alert("Please enter a quantity");
       return;
     }
   

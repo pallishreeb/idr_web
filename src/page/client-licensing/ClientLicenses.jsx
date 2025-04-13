@@ -66,27 +66,34 @@ const ClientLicenseList = () => {
       dispatch(getLicenseLists({}));
     } else {
       dispatch(getClients());
-      // Apply URL filters if they exist
-      const urlClientId = searchParams.get("client_id");
-      const urlLocationId = searchParams.get("location_id");
-      if (urlClientId && urlLocationId) {
-        setFilters({
-          client_id: urlClientId,
-          location_id: urlLocationId,
-          manufacturer: searchParams.get("manufacturer") || "",
-        });
-        dispatch(getLocationByClient(urlClientId));
-        const query = {
-          client_id: urlClientId,
-          location_id: urlLocationId,
-          manufacturer: searchParams.get("manufacturer") || "",
-        };
-        dispatch(getLicenseLists(query, sortConfig.key, sortConfig.direction));
-      } else {
-        dispatch(getLicenseLists({}));
-      }
     }
-  }, [dispatch, user_type, searchParams,sortConfig]);
+  }, [dispatch, user_type]);
+  // useEffect(() => {
+  //   if (user_type === "Client Employee") {
+  //     dispatch(getLicenseLists({}));
+  //   } else {
+  //     dispatch(getClients());
+  //     // Apply URL filters if they exist
+  //     const urlClientId = searchParams.get("client_id");
+  //     const urlLocationId = searchParams.get("location_id");
+  //     if (urlClientId && urlLocationId) {
+  //       setFilters({
+  //         client_id: urlClientId,
+  //         location_id: urlLocationId,
+  //         manufacturer: searchParams.get("manufacturer") || "",
+  //       });
+  //       dispatch(getLocationByClient(urlClientId));
+  //       const query = {
+  //         client_id: urlClientId,
+  //         location_id: urlLocationId,
+  //         manufacturer: searchParams.get("manufacturer") || "",
+  //       };
+  //       dispatch(getLicenseLists(query, sortConfig.key, sortConfig.direction));
+  //     } else {
+  //       dispatch(getLicenseLists({}));
+  //     }
+  //   }
+  // }, [dispatch, user_type, searchParams,sortConfig]);
 
   // Fetch locations when client changes
   useEffect(() => {
@@ -125,8 +132,19 @@ const ClientLicenseList = () => {
   };
 
   const handleSearch = () => {
-    setFiltersApplied(true); // Mark filters as explicitly applied
+    setFiltersApplied(true);
     const { client_id, location_id, manufacturer } = filters;
+  
+    // Update URL params
+    const params = new URLSearchParams();
+    if (client_id) params.set("client_id", client_id);
+    if (location_id) params.set("location_id", location_id);
+    if (manufacturer) params.set("manufacturer", manufacturer);
+    if (sortConfig.key) params.set("sort_by", sortConfig.key);
+    if (sortConfig.direction) params.set("order", sortConfig.direction);
+    setSearchParams(params);
+  
+    // Dispatch fetch
     const query = {
       ...(client_id && { client_id }),
       ...(location_id && { location_id }),
@@ -134,6 +152,7 @@ const ClientLicenseList = () => {
     };
     dispatch(getLicenseLists(query, sortConfig.key, sortConfig.direction));
   };
+  
 
   const handleReset = () => {
     setFiltersApplied(false); // Reset filters applied state
@@ -289,14 +308,17 @@ const ClientLicenseList = () => {
                     onChange={handleLocationChange}
                   >
                     <option value="">Select Location</option>
-                    {userLocations?.map((location) => (
-                      <option
-                        key={location.location_id}
-                        value={location.location_id}
-                      >
-                        {location.address_line_one} {location.address_line_two}
-                      </option>
-                    ))}
+                    {[...userLocations]
+          .sort((a, b) => {
+            const addressA = `${a.address_line_one} ${a.address_line_two}`.toLowerCase();
+            const addressB = `${b.address_line_one} ${b.address_line_two}`.toLowerCase();
+            return addressA.localeCompare(addressB);
+          })
+          .map((location) => (
+            <option key={location.location_id} value={location.location_id}>
+              {location.address_line_one} {location.address_line_two}
+            </option>
+          ))}
                   </select>
                 </div>
             )}

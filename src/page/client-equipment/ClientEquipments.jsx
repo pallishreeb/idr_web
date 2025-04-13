@@ -93,12 +93,12 @@ useEffect(() => {
   
   const fetchEquipments = (sorting = {}) => {
     const { model, device_type, status } = filters;
-  
+
     if (user_type !== "Client Employee" && (!selectedClient || !selectedLocation)) {
       Swal.fire("Client and Location are required to fetch equipments");
       return;
     }
-  
+
     const params = {
       client_id: selectedClient,
       location_id: selectedLocation,
@@ -109,8 +109,7 @@ useEffect(() => {
       sort_by: sorting.sort_by || sortConfig.key, // Ensure sort_by is passed
       order_by: sorting.order_by || sortConfig.direction, // Ensure order_by is passed
     };
-  
-    // console.log("Fetching equipments with params:", params);
+
     dispatch(getClientEquipments(params));
   };
   
@@ -224,38 +223,41 @@ const getSortSymbol = (key) => {
       <div className="flex justify-between items-center">
         <div className="flex gap-2 w-[80%]">
         {clientAccess?.includes(client_type) && userLocations?.length > 0 && (
-        <div className="flex flex-col gap-2">
-                <label htmlFor="location" className="text-sm font-medium">
-                  Select Location
-                </label>
-                <select
-                  id="location"
-                  className="border border-gray-300 rounded px-3 py-1 w-full"
-                  value={selectedLocation || ""}
-                  // onChange={(e) => handleLocationChange(e.target.value)}
-                  onChange={(e) => {
-                    // Only update state, don't fetch here
-                    handleLocationChange(e.target.value);
-                  }}
-                >
-                  <option value="">Select a location</option>
-                  {loadingLocations ? (
-                    <option value="" disabled>
-                      Loading...
-                    </option>
-                  ) : (
-                    userLocations?.map((location) => (
-                      <option
-                        key={location.location_id}
-                        value={location.location_id}
-                      >
-                        {location.address_line_one} {location.address_line_two}
-                      </option>
-                    ))
-                  )}
-                </select>
-        </div>
+  <div className="flex flex-col gap-2">
+    <label htmlFor="location" className="text-sm font-medium">
+      Select Location
+    </label>
+    <select
+      id="location"
+      className="border border-gray-300 rounded px-3 py-1 w-full"
+      value={selectedLocation || ""}
+      onChange={(e) => {
+        handleLocationChange(e.target.value);
+      }}
+    >
+      <option value="">Select a location</option>
+      {loadingLocations ? (
+        <option value="" disabled>
+          Loading...
+        </option>
+      ) : (
+        // Sort locations alphabetically by address
+        [...userLocations]
+          .sort((a, b) => {
+            const addressA = `${a.address_line_one} ${a.address_line_two}`.toLowerCase();
+            const addressB = `${b.address_line_one} ${b.address_line_two}`.toLowerCase();
+            return addressA.localeCompare(addressB);
+          })
+          .map((location) => (
+            <option key={location.location_id} value={location.location_id}>
+              {location.address_line_one} {location.address_line_two}
+            </option>
+          ))
       )}
+    </select>
+  </div>
+)}
+
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Device Type</label>
             <input

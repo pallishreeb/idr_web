@@ -128,7 +128,17 @@ const AddServiceRequest = () => {
   const handleSave = (e) => {
     e.preventDefault();
     delete serviceRequest?.selected_client_location;
-    dispatch(createServiceRequest(serviceRequest, navigate));
+    dispatch(createServiceRequest(serviceRequest, navigate)).then((data) => {
+      if (data?.code == "SR201") {
+        setServiceRequest({
+          ...serviceRequest,
+          service_location: "",
+          local_onsite_contact: "",
+          local_onsite_contact_number: "",
+          service_ticket_details: "",
+        });
+      }
+    });
   };
 
   // const handleBack = () => {
@@ -312,7 +322,9 @@ const AddServiceRequest = () => {
                   type="submit"
                   className="bg-indigo-700 text-white px-4 py-2 rounded m-2"
                 >
-                  {serviceRequestLoading ? "Saving..." : "Create Service Request"} 
+                  {serviceRequestLoading
+                    ? "Saving..."
+                    : "Create Service Request"}
                 </button>
                 {/* <button
                   type="button"
