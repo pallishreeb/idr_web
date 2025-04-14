@@ -462,9 +462,8 @@ export const acceptRejectServiceRequest = (ticketData) => {
       });
 
       dispatch(updateServiceTicketSuccess(data));
-      toast.success("Service request accepted successfully");
       return data;
-      // navigate('/inventory');
+
     } catch (error) {
       console.error('Error occurred:', error);
 

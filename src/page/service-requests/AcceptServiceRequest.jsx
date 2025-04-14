@@ -5,6 +5,7 @@ import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getServiceRequestDetails, acceptRejectServiceRequest } from "../../actions/serviceTicket";
 import Loader from "../../Images/ZZ5H.gif";
+import { toast } from "react-toastify";
 const AcceptServiceRequest = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -85,8 +86,13 @@ const AcceptServiceRequest = () => {
       service_date: serviceDate // Format date as MM/DD/YYYY
     };
     
-    dispatch(acceptRejectServiceRequest(payload));
-    setShowAcceptModal(false);
+    dispatch(acceptRejectServiceRequest(payload)).then((data) =>{
+      if (data.code === 'SR204') {
+        setShowAcceptModal(false);
+        toast.success(data?.message || "Service request accepted successfully");
+        navigate("/service-requests");
+      }
+    });
   };
 
 
