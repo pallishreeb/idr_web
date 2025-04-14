@@ -166,6 +166,13 @@ const ListServiceRequests = () => {
     if (!text) return "";
     return text.length > 200 ? `${text.substring(0, 200)}...` : text;
   };
+  function formatDate(date) {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const year = d.getFullYear();
+    return `${month}/${day}/${year}`;
+  }
 
   return (
     <>
@@ -173,7 +180,9 @@ const ListServiceRequests = () => {
       <div className="flex">
         <AdminSideNavbar />
         <div className="container mx-auto p-4 w-full h-screen overflow-y-scroll">
-          <h2 className="text-xl font-semibold mb-4">Customer Service Requests</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Customer Service Requests
+          </h2>
           {/* <div className="mb-4">
             {user_type !== "Client Employee" && (
               <form className="grid grid-cols-3 gap-4">
@@ -245,20 +254,11 @@ const ListServiceRequests = () => {
             <table className="table-auto w-full border-collapse border border-gray-200">
               <thead>
                 <tr className="bg-gray-100 text-left">
-                  <th className="border px-4 py-2 cursor-pointer">
-                    Client
-                  </th>
-                  <th className="border px-4 py-2 cursor-pointer" >
-                    Location
-
-                  </th>
-                  <th className="border px-4 py-2 cursor-pointer" >
-                    Requester
-
-                  </th>
-                  <th className="border px-4 py-2">
-                   Service Request
-                  </th>
+                  <th className="border px-4 py-2 cursor-pointer">Client</th>
+                  <th className="border px-4 py-2 cursor-pointer">Location</th>
+                  <th className="border px-4 py-2 cursor-pointer">Requester</th>
+                  <th className="border px-4 py-2">Service Request</th>
+                  <th className="border px-4 py-2">Requested Date</th>
                   <th className="border px-4 py-2">Actions</th>
                 </tr>
               </thead>
@@ -267,7 +267,11 @@ const ListServiceRequests = () => {
                   <tr>
                     <td colSpan="5" className="py-4">
                       <div className="flex justify-center items-center">
-                        <img src={Loader} alt="Loading..." className="h-16 w-16" />
+                        <img
+                          src={Loader}
+                          alt="Loading..."
+                          className="h-16 w-16"
+                        />
                       </div>
                     </td>
                   </tr>
@@ -292,10 +296,15 @@ const ListServiceRequests = () => {
                       <td className="border px-4 py-2">
                         {truncateDetails(request.service_ticket_details)}
                       </td>
+                      <td className="border px-4 py-2">
+                        {truncateDetails(formatDate(request.created_at))}
+                      </td>
                       <td className="border px-4 py-2 flex">
                         <button
                           className="p-[4px] bg-gray-100 cursor-pointer mr-2"
-                          onClick={() => handleEdit(request?.service_request_id)}
+                          onClick={() =>
+                            handleEdit(request?.service_request_id)
+                          }
                         >
                           <BiSolidEditAlt />
                         </button>
