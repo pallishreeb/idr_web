@@ -10,7 +10,7 @@ const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
   const [selectedInventoryId, setSelectedInventoryId] = useState(null);
 
   const { user_type } = useSelector((state) => state.user.user);
-  const { access } = useSelector((state) => state.user);
+  const { access ,technicianAccess} = useSelector((state) => state.user);
 
   const handleReturnInventory = () => {
     if (!quantity || quantity === 0) {
@@ -65,7 +65,7 @@ const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
                   <th className="border px-4 py-2">Make</th>
                   <th className="border px-4 py-2">Device Type</th>
                   <th className="border px-4 py-2">Quantity</th>
-                  {access.includes(user_type) && (
+                  {technicianAccess.includes(user_type) && (
                     <th className="border px-4 py-2">Action</th>
                   )}
                 </tr>
@@ -77,7 +77,7 @@ const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
                     <td className="border px-4 py-2">{inventory.make}</td>
                     <td className="border px-4 py-2">{inventory.device_type}</td>
                     <td className="border px-4 py-2">{inventory.quantity}</td>
-                    {access.includes(user_type) && (
+                    {technicianAccess.includes(user_type) && (
                       <td className="border px-4 py-2">
                         <button
                           onClick={() => {
