@@ -283,7 +283,7 @@ const ListServiceRequests = () => {
                   </tr>
                 ) : (
                   serviceRequests?.map((request) => (
-                    <tr key={request?.request_id}>
+                    <tr key={request?.service_request_id}>
                       <td className="border px-4 py-2">
                         {request.client_name}
                       </td>
