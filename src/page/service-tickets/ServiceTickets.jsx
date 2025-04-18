@@ -13,6 +13,7 @@ import {
   deleteServiceTicket,
 } from "../../actions/serviceTicket";
 import { getClients } from "../../actions/clientActions";
+import { getLocationByClient } from "../../actions/locationActions";
 import { fetchIDREmployees } from "../../actions/employeeActions";
 import { toast } from "react-toastify";
 
@@ -36,13 +37,18 @@ const ServiceTickets = () => {
   );
   const { clients } = useSelector((state) => state.client);
   const { idrEmployees } = useSelector((state) => state.employee);
-
+  const loadingLocations = useSelector((state) => state.location.loading);
+  const clientLocations = useSelector((state) => state.location.locations);
   useEffect(() => {
-    dispatch(getServiceTicketLists(filters));
+    dispatch(getServiceTicketLists({}));
     dispatch(getClients());
     dispatch(fetchIDREmployees());
-  }, [dispatch, filters]);
-
+  }, [dispatch]);
+  useEffect(() => {
+    if (filters?.client_id) {
+      dispatch(getLocationByClient(filters.client_id));
+    }
+  }, [dispatch, filters?.client_id]);
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters({
@@ -74,7 +80,20 @@ const ServiceTickets = () => {
       }
     });
   };
-
+  const handleSearch = () => {
+    dispatch(getServiceTicketLists(filters));
+  };
+  const handleReset = () => {
+    const clearedFilters = {
+      status: "",
+      client_id: "",
+      location_id: "",
+      technician: "",
+      project_manager: "",
+    };
+    setFilters(clearedFilters);
+    dispatch(getServiceTicketLists(clearedFilters));
+  };
   function formatDate(date) {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, "0");
@@ -91,16 +110,26 @@ const ServiceTickets = () => {
         <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between">
             <h1 className="font-bold text-lg">Service Tickets</h1>
+            {access.includes(user_type) && (
+              <Link to={"/add-service-ticket"}>
+                <button className="bg-indigo-600 text-white px-6 py-2 rounded">
+                  New Service Ticket
+                </button>
+              </Link>
+            )}
           </div>
           <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
-            <div className="flex justify-between items-center">
-              <div className="flex gap-4 w-[80%]">
-                <div className="flex flex-col gap-2">
+            {/* Filter section */}
+            <div className="flex flex-col gap-4 mt-4 border py-7 px-5 bg-white w-full">
+              {/* Row 1: Ticket Status, (Location if applicable), Client Name */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                <div className="flex flex-col gap-2 w-full">
                   <label className="font-normal text-sm">
                     Filter By Ticket Status
                   </label>
                   <select
                     name="status"
+                    value={filters.status}
                     className="px-3 border border-gray-200 h-10 rounded"
                     onChange={handleFilterChange}
                   >
@@ -109,26 +138,26 @@ const ServiceTickets = () => {
                     <option value="Closed">Closed</option>
                   </select>
                 </div>
+
                 {clientAccess.includes(client_type) &&
                   locations?.length > 0 && (
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 w-full">
                       <label className="font-normal text-sm">
                         Filter By Location
                       </label>
                       <select
                         name="location_id"
+                        value={filters.location_id}
                         className="px-3 border border-gray-200 h-10 rounded"
                         onChange={handleFilterChange}
                       >
                         <option value="">All</option>
                         {[...locations]
-                          .sort((a, b) => {
-                            const addressA =
-                              `${a.address_line_one} ${a.address_line_two}`.toLowerCase();
-                            const addressB =
-                              `${b.address_line_one} ${b.address_line_two}`.toLowerCase();
-                            return addressA.localeCompare(addressB);
-                          })
+                          .sort((a, b) =>
+                            `${a.address_line_one} ${a.address_line_two}`.localeCompare(
+                              `${b.address_line_one} ${b.address_line_two}`
+                            )
+                          )
                           .map((location) => (
                             <option
                               key={location.location_id}
@@ -141,81 +170,111 @@ const ServiceTickets = () => {
                       </select>
                     </div>
                   )}
-
-                {access.includes(user_type) && (
-                  <>
-                    <div className="flex flex-col gap-2">
-                      <label className="font-normal text-sm">
-                        Filter By Client Name
-                      </label>
-                      <select
-                        name="client_id"
-                        className="px-3 border border-gray-200 h-10 rounded"
-                        onChange={handleFilterChange}
+               {access.includes(user_type) && (
+                <>
+                <div className="flex flex-col gap-2 w-full">
+                  <label className="font-normal text-sm">
+                    Filter By Client Name
+                  </label>
+                  <select
+                    name="client_id"
+                    value={filters.client_id}
+                    className="px-3 border border-gray-200 h-10 rounded"
+                    onChange={handleFilterChange}
+                  >
+                    <option value="">All</option>
+                    {clients?.data?.map((client) => (
+                      <option key={client.client_id} value={client.client_id}>
+                        {client.company_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="font-normal text-sm">
+                    Filter By Location
+                  </label>
+                  <select
+                    name="location_id"
+                    value={filters.location_id}
+                    className="px-3 border border-gray-200 h-10 rounded"
+                    onChange={handleFilterChange}
+                  >
+                    <option value="">All</option>
+                    {clientLocations.map((location) => (
+                      <option
+                        key={location.location_id}
+                        value={location.location_id}
                       >
-                        <option value="">All</option>
-                        {clients?.data?.map((client) => (
-                          <option
-                            key={client.client_id}
-                            value={client.client_id}
-                          >
-                            {client.company_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <label className="font-normal text-sm">
-                        Filter By Technician Name
-                      </label>
-                      <select
-                        name="technician"
-                        className="px-3 border border-gray-200 h-10 rounded"
-                        onChange={handleFilterChange}
-                      >
-                        <option value="">All</option>
-                        {idrEmployees?.map((employee) => (
-                          <option
-                            key={employee.idr_emp_id}
-                            value={employee.first_name}
-                          >
-                            {employee.first_name} {employee.last_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="font-normal text-sm">
-                        Filter By Project Manager
-                      </label>
-                      <select
-                        name="project_manager"
-                        className="px-3 border border-gray-200 h-10 rounded"
-                        onChange={handleFilterChange}
-                      >
-                        <option value="">All</option>
-                        {idrEmployees?.map((employee) => (
-                          <option
-                            key={employee.idr_emp_id}
-                            value={employee.first_name}
-                          >
-                            {employee.first_name} {employee.last_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </>
+                        {location.address_line_one} {location.address_line_two}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                </>
                 )}
               </div>
+
+              {/* Row 2: Technician, Project Manager, Search & Reset buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full items-end">
               {access.includes(user_type) && (
-                <Link to={"/add-service-ticket"}>
-                  <button className="bg-indigo-600 text-white px-6 py-2 rounded mt-7">
-                    New Service Ticket
+                  <>
+                <div className="flex flex-col gap-2 w-full">
+                  <label className="font-normal text-sm">
+                    Filter By Technician
+                  </label>
+                  <select
+                    name="technician"
+                    value={filters.technician}
+                    className="px-3 border border-gray-200 h-10 rounded"
+                    onChange={handleFilterChange}
+                  >
+                    <option value="">All</option>
+                    {idrEmployees.map((emp) => (
+                      <option key={emp.idr_emp_id} value={emp.first_name}>
+                        {emp.first_name} {emp.last_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-2 w-full">
+                  <label className="font-normal text-sm">
+                    Filter By Project Manager
+                  </label>
+                  <select
+                    name="project_manager"
+                    value={filters.project_manager}
+                    className="px-3 border border-gray-200 h-10 rounded"
+                    onChange={handleFilterChange}
+                  >
+                    <option value="">All</option>
+                    {idrEmployees.map((emp) => (
+                      <option key={emp.idr_emp_id} value={emp.first_name}>
+                        {emp.first_name} {emp.last_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                </>
+                )}
+                <div className="flex gap-2 w-full">
+                  <button
+                    className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+                    onClick={handleSearch}
+                  >
+                    Search
                   </button>
-                </Link>
-              )}
+                  <button
+                    className="bg-gray-300 text-gray-800 px-4 py-2 rounded w-full"
+                    onClick={handleReset}
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
             </div>
+
             {!loading ? (
               <table className="mt-2 w-full overflow-x-scroll">
                 <thead>

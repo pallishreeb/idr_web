@@ -48,7 +48,7 @@ const AddServiceRequest = () => {
   //   }, [users]);
   // Fetch clients when component mounts
   useEffect(() => {
-    if (user?.client_type !== "User" && !access.includes(user?.user_type)) {
+    if ( !access.includes(user?.user_type)) { //user?.client_type !== "User" &&
       dispatch(getServiceRequestInfo());
     } else {
       dispatch(getClients());
