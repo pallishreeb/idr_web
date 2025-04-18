@@ -12,6 +12,7 @@ import {
   getWorkOrderLists,
   deleteWorkOrder,
 } from "../../actions/workOrderActions";
+import { getLocationByClient } from "../../actions/locationActions";
 import { getClients } from "../../actions/clientActions";
 import { fetchIDREmployees } from "../../actions/employeeActions";
 import { toast } from "react-toastify";
@@ -33,12 +34,19 @@ const WorkOrder = () => {
   const { workOrders, loading } = useSelector((state) => state.workOrder);
   const { clients } = useSelector((state) => state.client);
   const { idrEmployees } = useSelector((state) => state.employee);
-
+  const loadingLocations = useSelector((state) => state.location.loading);
+  const clientLocations = useSelector((state) => state.location.locations);
   useEffect(() => {
-    dispatch(getWorkOrderLists(filters));
+    dispatch(getWorkOrderLists({}));
     dispatch(getClients());
     dispatch(fetchIDREmployees());
-  }, [dispatch, filters]);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (filters?.client_id) {
+      dispatch(getLocationByClient(filters.client_id));
+    }
+  }, [dispatch, filters?.client_id]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -70,6 +78,22 @@ const WorkOrder = () => {
     });
   };
 
+  const handleSearch = () => {
+    dispatch(getWorkOrderLists(filters));
+  };
+  const handleReset = () => {
+    const clearedFilters = {
+      status: '',
+      client_id: '',
+      location_id: '',
+      technician: '',
+      project_manager: ''
+    };
+    setFilters(clearedFilters);
+    dispatch(getWorkOrderLists(clearedFilters));
+  };
+  
+  
   function formatDate(date) {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, "0");
@@ -86,16 +110,25 @@ const WorkOrder = () => {
         <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between">
             <h1 className="font-bold text-lg">Work Orders</h1>
+            {access.includes(user_type) && (
+              <Link to={"/add-work-order"}>
+                <button className="bg-indigo-600 text-white px-6 py-2 rounded mt-7">
+                  New Work Order
+                </button>
+              </Link>
+            )}
           </div>
           <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
-            <div className="flex justify-between items-center">
-              <div className="flex gap-4 w-[80%]">
+            <div className="flex flex-col gap-4 w-full">
+              {/* Row 1: Status, Client Name, Client Location */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
                 <div className="flex flex-col gap-2">
                   <label className="font-normal text-sm">
                     Filter By Ticket Status
                   </label>
                   <select
                     name="status"
+                    value={filters.status}
                     className="px-3 border border-gray-200 h-10 rounded"
                     onChange={handleFilterChange}
                   >
@@ -107,6 +140,7 @@ const WorkOrder = () => {
                     <option value="Closed">Closed</option>
                   </select>
                 </div>
+
                 {clientAccess.includes(client_type) &&
                   locations?.length > 0 && (
                     <div className="flex flex-col gap-2">
@@ -115,6 +149,7 @@ const WorkOrder = () => {
                       </label>
                       <select
                         name="location_id"
+                        value={filters.location_id}
                         className="px-3 border border-gray-200 h-10 rounded"
                         onChange={handleFilterChange}
                       >
@@ -148,6 +183,7 @@ const WorkOrder = () => {
                       </label>
                       <select
                         name="client_id"
+                        value={filters.client_id}
                         className="px-3 border border-gray-200 h-10 rounded"
                         onChange={handleFilterChange}
                       >
@@ -162,22 +198,51 @@ const WorkOrder = () => {
                         ))}
                       </select>
                     </div>
+
                     <div className="flex flex-col gap-2">
                       <label className="font-normal text-sm">
-                        Filter By Technician Name
+                        Filter By Location
                       </label>
                       <select
-                        name="technician"
+                        name="location_id"
+                        value={filters.location_id}
                         className="px-3 border border-gray-200 h-10 rounded"
                         onChange={handleFilterChange}
                       >
                         <option value="">All</option>
-                        {idrEmployees.map((employee) => (
+                        {clientLocations.map((location) => (
                           <option
-                            key={employee.idr_emp_id}
-                            value={employee.first_name}
+                            key={location.location_id}
+                            value={location.location_id}
                           >
-                            {employee.first_name} {employee.last_name}
+                            {location.address_line_one}{" "}
+                            {location.address_line_two}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Row 2: Technician, Project Manager, Buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full items-end">
+                {access.includes(user_type) && (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <label className="font-normal text-sm">
+                        Filter By Technician
+                      </label>
+                      <select
+                        name="technician"
+                        value={filters.technician}
+                        className="px-3 border border-gray-200 h-10 rounded"
+                        onChange={handleFilterChange}
+                      >
+                        <option value="">All</option>
+                        {idrEmployees.map((emp) => (
+                          <option key={emp.idr_emp_id} value={emp.first_name}>
+                            {emp.first_name} {emp.last_name}
                           </option>
                         ))}
                       </select>
@@ -189,31 +254,37 @@ const WorkOrder = () => {
                       </label>
                       <select
                         name="project_manager"
+                        value={filters.project_manager}
                         className="px-3 border border-gray-200 h-10 rounded"
                         onChange={handleFilterChange}
                       >
                         <option value="">All</option>
-                        {idrEmployees.map((employee) => (
-                          <option
-                            key={employee.idr_emp_id}
-                            value={employee.first_name}
-                          >
-                            {employee.first_name} {employee.last_name}
+                        {idrEmployees.map((emp) => (
+                          <option key={emp.idr_emp_id} value={emp.first_name}>
+                            {emp.first_name} {emp.last_name}
                           </option>
                         ))}
                       </select>
                     </div>
                   </>
                 )}
-              </div>
-              {access.includes(user_type) && (
-                <Link to={"/add-work-order"}>
-                  <button className="bg-indigo-600 text-white px-6 py-2 rounded mt-7">
-                    New Work Order
+                <div className="flex gap-2">
+                  <button
+                    className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+                    onClick={handleSearch}
+                  >
+                    Search
                   </button>
-                </Link>
-              )}
+                  <button
+                    className="bg-gray-300 text-gray-800 px-4 py-2 rounded w-full"
+                    onClick={handleReset}
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
             </div>
+
             {!loading ? (
               <table className="mt-2 w-full overflow-x-scroll">
                 <thead>

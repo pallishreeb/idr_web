@@ -20,7 +20,8 @@ const SubContractorList = () => {
     coverage: "",
     type: ""
   });
-  
+  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ASC' });
+
   const { subcontractors, loading } = useSelector((state) => state.subcontractor);
   const { user_type } = useSelector((state) => state.user.user);
   
@@ -50,11 +51,16 @@ const SubContractorList = () => {
   };
 
   const handleSearch = () => {
-    const query = Object.keys(filters).reduce((acc, key) => {
-      if (filters[key]) acc[key] = filters[key];
-      return acc;
-    }, {});
+    // const query = Object.keys(filters).reduce((acc, key) => {
+    //   if (filters[key]) acc[key] = filters[key];
+    //   return acc;
+    // }, {});
+    const query = Object.fromEntries(
+      Object.entries(filters).filter(([_, value]) => value.trim() !== "")
+    );
     dispatch(getSubcontractorLists(query));
+    
+    // dispatch(getSubcontractorLists(query));
   };
   
   const handleReset = () => {
@@ -88,6 +94,23 @@ const SubContractorList = () => {
       currency: "USD", // Change to appropriate currency if needed
       minimumFractionDigits: 2,
     }).format(value);
+  };
+  const requestSort = (key) => {
+    let direction = 'ASC';
+    if (sortConfig.key === key && sortConfig.direction === 'ASC') {
+      direction = 'DESC';
+    }
+    setSortConfig({ key, direction });
+    const nonEmptyFilters = Object.fromEntries(
+      Object.entries(filters).filter(([_, value]) => value.trim() !== "")
+    );
+    dispatch(getSubcontractorLists({ ...nonEmptyFilters, sort_by: key, order: direction }));
+    };
+  const getSortSymbol = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "ASC" ? "▲" : "▼";
+    }
+    return "↕";
   };
   return (
     <>
@@ -167,13 +190,21 @@ const SubContractorList = () => {
             <table className="min-w-full table-auto text-left">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Subcontractor Name</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border" onClick={() => requestSort('subcontractor_name')}>
+                    Subcontractor Name <span className="ml-1">{getSortSymbol("subcontractor_name")}</span>
+                    </th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Street Address</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">City</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">State</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border" onClick={() => requestSort('city')}>
+                    City  <span className="ml-1">{getSortSymbol("city")}</span>
+                    </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border" onClick={() => requestSort('state')}>
+                    State  <span className="ml-1">{getSortSymbol("state")}</span>
+                    </th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Zipcode</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Coverage Area</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Hourly Rate</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border" onClick={() => requestSort('hourly_rate')}>
+                    Hourly Rate  <span className="ml-1">{getSortSymbol("hourly_rate")}</span>
+                    </th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Trip Charge</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Technicians</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Primary Contact</th>

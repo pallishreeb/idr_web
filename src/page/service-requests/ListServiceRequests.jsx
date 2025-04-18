@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BiSolidEditAlt } from "react-icons/bi";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 // import { getClients } from "../../actions/clientActions";
 // import { getLocationByClient } from "../../actions/locationActions";
 import { getServiceRequestLists } from "../../actions/serviceTicket";
