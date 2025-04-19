@@ -315,7 +315,7 @@ const AddClientEquipment = () => {
                     </div>
                     <div>
                       <label htmlFor="model" className="block text-sm font-medium text-gray-700">
-                        Model
+                        Model*
                       </label>
                       <input
                         type="text"
