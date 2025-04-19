@@ -1,6 +1,7 @@
 // src/actions/locationActions.js
 
 import axios from '../axios-config';
+import { fetchJson } from "../fetch-config";
 import {
     getClientEquipmentsStart,
     getClientEquipmentsSuccess,
@@ -98,17 +99,17 @@ export const addClientEquipment = (equipmentData) => {
   return async (dispatch) => {
     dispatch(addClientEquipmentStart());
     try {
-      const response = await axios.post(apiConfig.addClientEquipment, equipmentData);
-      dispatch(addClientEquipmentSuccess(response.data.location));
+      const data = await fetchJson(apiConfig.addClientEquipment, {
+        method: 'POST',
+        body: equipmentData,
+      });
+      dispatch(addClientEquipmentSuccess(data));
       toast.success("Client Equipment added successfully!");
       return true;
     } catch (error) {
       dispatch(addClientEquipmentFailure(error.message));
-      // Log the error to see its structure
-      console.log('Error response:', error.response);
       // Get the error message from the response data
-      const errorMessage = error.response?.data?.message || error.message || "Error adding Client Equipment";
-      console.log('Error message:', errorMessage);
+      const errorMessage = error.message || "Error adding Client Equipment";
       toast.error(errorMessage);
       return false;
     }
@@ -120,17 +121,17 @@ export const addEquipmentThroughCsv = (csvData) => {
   return async (dispatch) => {
     dispatch(addClientEquipmentStart()); // Reuse the same start action
     try {
-      const response = await axios.post(apiConfig.addCsvClientEquipment, csvData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const data = await fetchJson(apiConfig.addCsvClientEquipment, {
+        method: 'POST',
+        body: csvData,
       });
-
-      dispatch(addClientEquipmentSuccess(response.data.location)); // Reuse the same success action
-      toast.success("Equipment added successfully via CSV!");
+      dispatch(addClientEquipmentSuccess(data));
+      toast.success(data?.message || "Equipment added successfully via CSV!");
+      return data;
     } catch (error) {
+      // console.log("Error:", error);
       dispatch(addClientEquipmentFailure(error.message)); // Reuse the same failure action
-      toast.error(error.response?.data?.message || error.message || "Error adding equipment via CSV");
+      toast.error(error.message || error.response?.data?.message  || "Error adding equipment via CSV");
     }
   };
 };
