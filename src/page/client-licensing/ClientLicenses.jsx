@@ -66,6 +66,7 @@ const ClientLicenseList = () => {
       dispatch(getLicenseLists({}));
     } else {
       dispatch(getClients());
+      dispatch(getLicenseLists({}));
     }
   }, [dispatch, user_type]);
   // useEffect(() => {
