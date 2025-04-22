@@ -90,7 +90,19 @@ useEffect(() => {
 }, [user_type]);
 
 
-  
+useEffect(() => {
+  if (user_type === "Client Employee" &&
+      !filters.model &&
+      !filters.device_type &&
+      !filters.status &&
+      !selectedClient &&
+      !selectedLocation &&
+      !sortConfig.key
+  ) {
+    fetchEquipments();
+  }
+}, [filters, selectedClient, selectedLocation, sortConfig, user_type]);
+
   const fetchEquipments = (sorting = {}) => {
     const { model, device_type, status } = filters;
 
