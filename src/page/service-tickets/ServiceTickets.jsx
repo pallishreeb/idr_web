@@ -230,11 +230,14 @@ const ServiceTickets = () => {
                     onChange={handleFilterChange}
                   >
                     <option value="">All</option>
-                    {idrEmployees.map((emp) => (
-                      <option key={emp.idr_emp_id} value={emp.first_name}>
-                        {emp.first_name} {emp.last_name}
-                      </option>
-                    ))}
+                    {idrEmployees.map((emp) => {
+                          const fullName = `${emp.first_name} ${emp.last_name}`;
+                          return (
+                            <option key={emp.idr_emp_id} value={fullName}>
+                              {fullName}
+                            </option>
+                          );
+                        })}
                   </select>
                 </div>
 
@@ -249,11 +252,14 @@ const ServiceTickets = () => {
                     onChange={handleFilterChange}
                   >
                     <option value="">All</option>
-                    {idrEmployees.map((emp) => (
-                      <option key={emp.idr_emp_id} value={emp.first_name}>
-                        {emp.first_name} {emp.last_name}
-                      </option>
-                    ))}
+                    {idrEmployees.map((emp) => {
+                          const fullName = `${emp.first_name} ${emp.last_name}`;
+                          return (
+                            <option key={emp.idr_emp_id} value={fullName}>
+                              {fullName}
+                            </option>
+                          );
+                        })}
                   </select>
                 </div>
                 </>

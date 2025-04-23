@@ -109,7 +109,7 @@ const EditEquipment = () => {
         <AdminSideNavbar />
         <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="font-bold text-lg">Edit IDR Equipment Item</h1>
+            <h1 className="font-bold text-lg">Edit IDR Equipment</h1>
             <div className="flex gap-2">
               {(access.includes(user_type) && !isEditing && type !== 'assign') && (
                 <button
