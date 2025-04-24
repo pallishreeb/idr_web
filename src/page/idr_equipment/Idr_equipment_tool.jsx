@@ -130,7 +130,7 @@ const IdrEquipment = () => {
         <AdminSideNavbar />
         <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between items-center">
-            <h1 className="font-bold text-lg">IDR Equipments</h1>
+            <h1 className="font-bold text-lg">IDR Equipment</h1>
             {access.includes(user_type) && 
             <div className="flex gap-2">
             <div className="flex flex-col gap-2">
@@ -140,8 +140,8 @@ const IdrEquipment = () => {
                     value={selectedOption}
                     onChange={handleSelectChange}
                   >
-                    <option value="" >Filter Equipments</option>
-                    <option value="assignedEquipments" >Assigned Equipments</option>
+                    <option value="" >Filter Equipment</option>
+                    <option value="assignedEquipments" >Assigned Equipment</option>
                     <option value="returnRequestEquipments">Return Requests</option>
                   
                   </select>

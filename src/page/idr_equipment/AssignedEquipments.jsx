@@ -141,11 +141,11 @@ const AssignedEquipments = () => {
                     {location.search.includes("returns") ? 
                   <>
                    <option value="returnRequestEquipments">Return Requests</option>
-                   <option value="assignedEquipments" >Assigned Equipments</option>      
+                   <option value="assignedEquipments" >Assigned Equipment</option>      
                   </>
                   : 
                   <>
-                   <option value="assignedEquipments" >Assigned Equipments</option>
+                   <option value="assignedEquipments" >Assigned Equipment</option>
                    <option value="returnRequestEquipments">Return Requests</option>
                   </>
                   }

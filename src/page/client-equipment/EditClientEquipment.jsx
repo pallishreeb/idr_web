@@ -360,7 +360,7 @@ const EditClientEquipment = () => {
                       htmlFor="username"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      LAN IP Address
+                      Username
                     </label>
                     <input
                       type="text"
