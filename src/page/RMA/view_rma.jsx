@@ -25,7 +25,7 @@ const RmaViewList = () => {
     client_id: "",
     location_id: "",
     manufacturer: "",
-    status:""
+    status: "",
   });
   // const [selectedClient, setSelectedClient] = useState(null);
   // const [selectedLocation, setSelectedLocation] = useState(null);
@@ -49,9 +49,9 @@ const RmaViewList = () => {
     }));
     // setSelectedClient(value);
     dispatch(getLocationByClient(value));
-    if (value) {
-      dispatch(getRmaLists({ client_id: value }));
-    }
+    // if (value) {
+    //   dispatch(getRmaLists({ client_id: value }));
+    // }
   };
 
   const handleLocationChange = (e) => {
@@ -60,9 +60,9 @@ const RmaViewList = () => {
       ...prevFilters,
       location_id: value,
     }));
-    if (filters.client_id && value) {
-      dispatch(getRmaLists({ client_id: filters.client_id, location_id: value }));
-    }
+    // if (filters.client_id && value) {
+    //   dispatch(getRmaLists({ client_id: filters.client_id, location_id: value }));
+    // }
     // setSelectedLocation(value);
   };
 
@@ -81,7 +81,7 @@ const RmaViewList = () => {
     }));
   };
   const handleSearch = () => {
-    const { client_id, location_id, manufacturer,status } = filters;
+    const { client_id, location_id, manufacturer, status } = filters;
     const query = {
       ...(client_id && { client_id }),
       ...(location_id && { location_id }),
@@ -115,13 +115,14 @@ const RmaViewList = () => {
       cancelButtonText: "No, keep it",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(deleteRma(rmaId)).then(() => {
-                  dispatch(getRmaLists(filters)); // Refresh the list after deletion
-                })
-                .catch((error) => {
-                  console.log(error);
-                  toast.error("Failed to delete this item");
-                });
+        dispatch(deleteRma(rmaId))
+          .then(() => {
+            dispatch(getRmaLists(filters)); // Refresh the list after deletion
+          })
+          .catch((error) => {
+            console.log(error);
+            toast.error("Failed to delete this item");
+          });
       }
     });
   };
@@ -145,15 +146,22 @@ const RmaViewList = () => {
           <h2 className="text-xl font-semibold mb-4">RMA List</h2>
           <div className="mb-4">
             {user_type !== "Client Employee" && (
-              <form className="grid grid-cols-3 gap-4">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSearch();
+                }}
+                className="grid grid-cols-2 gap-4"
+              >
+                {/* Row 1: Client and Location */}
                 <div className="flex flex-col">
-                  <label htmlFor="client_id" className="text-sm mb-2">
-                    Filter by Client:
+                  <label htmlFor="client_id" className="text-sm mb-1">
+                    Client
                   </label>
                   <select
                     id="client_id"
                     name="client_id"
-                    className="border border-gray-300 rounded px-3 py-1"
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
                     value={filters.client_id}
                     onChange={handleClientChange}
                   >
@@ -165,14 +173,15 @@ const RmaViewList = () => {
                     ))}
                   </select>
                 </div>
+
                 <div className="flex flex-col">
-                  <label htmlFor="location_id" className="text-sm mb-2">
-                    Filter by Location:
+                  <label htmlFor="location_id" className="text-sm mb-1">
+                    Location
                   </label>
                   <select
                     id="location_id"
                     name="location_id"
-                    className={`border border-gray-300 rounded px-3 py-1 ${
+                    className={`border border-gray-300 rounded px-3 py-2 w-full ${
                       !filters.client_id ? "bg-gray-100 text-gray-500" : ""
                     }`}
                     value={filters.location_id}
@@ -181,58 +190,140 @@ const RmaViewList = () => {
                   >
                     <option value="">Select Location</option>
                     {locations?.map((location) => (
-                      <option key={location.location_id} value={location.location_id}>
+                      <option
+                        key={location.location_id}
+                        value={location.location_id}
+                      >
                         {location.address_line_one} {location.address_line_two}
                       </option>
                     ))}
                   </select>
                 </div>
-                <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Status</label>
-                <select
-                  name="status"
-                  value={filters.status}
-                  onChange={handleStatusChange}
-                  className="px-3 border border-gray-200 h-10 rounded"
-                >
-                  <option value="">All</option>
-                  <option value="Open">Open</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Shipped back">Shipped back</option>
-                  <option value="Received by manufacturer">Received by manufacturer</option>
-                  <option value="Received replacement">Received replacement</option>
-                  <option value="Closed">Closed</option>
-                </select>
+
+                {/* Row 2: Status and Manufacturer */}
+                <div className="flex flex-col">
+                  <label htmlFor="status" className="text-sm mb-1">
+                    Status
+                  </label>
+                  <select
+                    id="status"
+                    name="status"
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                    value={filters.status}
+                    onChange={handleStatusChange}
+                  >
+                    <option value="">All</option>
+                    <option value="Open">Open</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Shipped back">Shipped back</option>
+                    <option value="Received by manufacturer">
+                      Received by manufacturer
+                    </option>
+                    <option value="Received replacement">
+                      Received replacement
+                    </option>
+                    <option value="Closed">Closed</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col">
+                  <label htmlFor="manufacturer" className="text-sm mb-1">
+                    Manufacturer
+                  </label>
+                  <input
+                    type="text"
+                    id="manufacturer"
+                    name="manufacturer"
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                    value={filters.manufacturer}
+                    onChange={handleManufacturerChange}
+                  />
+                </div>
+
+                {/* Buttons below both rows, full width */}
+                <div className="col-span-2 flex justify-end gap-2 mt-2">
+                  <button
+                    type="submit"
+                    className="bg-indigo-600 text-white px-6 py-2 rounded"
+                  >
+                    Search
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-gray-300 text-gray-700 px-6 py-2 rounded"
+                    onClick={handleReset}
+                  >
+                    Reset
+                  </button>
                 </div>
               </form>
             )}
-            <div className="flex flex-row items-end gap-2 mt-2">
-              <div className="flex flex-col">
-                <label htmlFor="manufacturer" className="text-sm mb-2">
-                  Filter by Manufacturer:
-                </label>
-                <input
-                  type="text"
-                  id="manufacturer"
-                  name="manufacturer"
-                  className="border border-gray-300 rounded px-3 py-1"
-                  value={filters.manufacturer}
-                  onChange={handleManufacturerChange}
-                />
-              </div>
-              <button
-                className="bg-indigo-600 text-white px-4 py-2 rounded"
-                onClick={handleSearch}
+            {(user_type === "Client Employee" && client_type !== "user") && (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSearch();
+                }}
+                className="grid grid-cols-2 gap-4"
               >
-                Search
-              </button>
-              <button
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-                onClick={handleReset}
-              >
-                Reset
-              </button>
-            </div>
+                {/* Row 2: Status and Manufacturer */}
+                <div className="flex flex-col">
+                  <label htmlFor="status" className="text-sm mb-1">
+                    Status
+                  </label>
+                  <select
+                    id="status"
+                    name="status"
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                    value={filters.status}
+                    onChange={handleStatusChange}
+                  >
+                    <option value="">All</option>
+                    <option value="Open">Open</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Shipped back">Shipped back</option>
+                    <option value="Received by manufacturer">
+                      Received by manufacturer
+                    </option>
+                    <option value="Received replacement">
+                      Received replacement
+                    </option>
+                    <option value="Closed">Closed</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col">
+                  <label htmlFor="manufacturer" className="text-sm mb-1">
+                    Manufacturer
+                  </label>
+                  <input
+                    type="text"
+                    id="manufacturer"
+                    name="manufacturer"
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                    value={filters.manufacturer}
+                    onChange={handleManufacturerChange}
+                  />
+                </div>
+
+                {/* Buttons below both rows, full width */}
+                <div className="col-span-2 flex justify-end gap-2 mt-2">
+                  <button
+                    type="submit"
+                    className="bg-indigo-600 text-white px-6 py-2 rounded"
+                  >
+                    Search
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-gray-300 text-gray-700 px-6 py-2 rounded"
+                    onClick={handleReset}
+                  >
+                    Reset
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
 
           {/* <div className="mb-4 flex justify-end">
@@ -252,15 +343,33 @@ const RmaViewList = () => {
             <table className="min-w-full table-auto text-left">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Client</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">RMA</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Location</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Manufacturer</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Model</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Serial</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Approved Date</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Approved By</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Action</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Client
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    RMA
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Location
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Manufacturer
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Model
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Serial
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Approved Date
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Approved By
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -268,7 +377,11 @@ const RmaViewList = () => {
                   <tr>
                     <td colSpan={"8"} className="py-4">
                       <div className="flex justify-center items-center">
-                        <img src={Loader} alt="Loading..." className="h-16 w-16" />
+                        <img
+                          src={Loader}
+                          alt="Loading..."
+                          className="h-16 w-16"
+                        />
                       </div>
                     </td>
                   </tr>
@@ -281,14 +394,26 @@ const RmaViewList = () => {
                 ) : (
                   rmaList?.map((rma) => (
                     <tr key={rma.rma_id}>
-                      <td className="border text-sm px-1 py-3">{rma.client_name}</td>
-                      <td className="border text-sm px-1 py-3">{rma.rma_number}</td>
-                      <td className="border text-sm px-1 py-3">{`${rma?.location_name}` || "NA"}</td>
-                      <td className="border text-sm px-1 py-3">{rma.manufacturer}</td>
+                      <td className="border text-sm px-1 py-3">
+                        {rma.client_name}
+                      </td>
+                      <td className="border text-sm px-1 py-3">
+                        {rma.rma_number}
+                      </td>
+                      <td className="border text-sm px-1 py-3">
+                        {`${rma?.location_name}` || "NA"}
+                      </td>
+                      <td className="border text-sm px-1 py-3">
+                        {rma.manufacturer}
+                      </td>
                       <td className="border text-sm px-1 py-3">{rma.model}</td>
                       <td className="border text-sm px-1 py-3">{rma.serial}</td>
-                      <td className="border text-sm px-1 py-3">{formatDateToMDY(rma.aprooved_date)}</td>
-                      <td className="border text-sm px-1 py-3">{rma.aprooved_by}</td>
+                      <td className="border text-sm px-1 py-3">
+                        {formatDateToMDY(rma.aprooved_date)}
+                      </td>
+                      <td className="border text-sm px-1 py-3">
+                        {rma.aprooved_by}
+                      </td>
                       <td className="border text-sm px-1 py-3">
                         <button
                           onClick={() => handleEdit(rma.rma_id)}

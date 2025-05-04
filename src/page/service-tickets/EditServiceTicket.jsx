@@ -16,6 +16,7 @@ import {
   updateServiceTicket,
   linkDeviceToServiceTicket,
   addNoteToDevice,
+  updateNotes,
 } from "../../actions/serviceTicket";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
@@ -259,7 +260,30 @@ const EditServiceTicket = () => {
     dispatch(addNoteToDevice(payload));
     dispatch(getServiceTicketDetails(serviceTicketId));
   };
+  const getFilteredNote = (note) => {
+    const allowedFields = [
+      "service_ticket_id", "comments" // "note_id",
+    ];
 
+    const filteredNote = {};
+    allowedFields.forEach(field => {
+      if (Object.prototype.hasOwnProperty.call(note, field)) {
+        filteredNote[field] = note[field];
+      }
+    });
+    return filteredNote;
+  };
+  const handleSaveNote = (index) => {
+    const note = notes[index];
+    const filteredNote = getFilteredNote(notes[index]);
+    dispatch(updateNotes(filteredNote, note?.['note_id']));
+  };
+  const handleNoteChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedNotes = [...notes];
+    updatedNotes[index] = { ...updatedNotes[index], [name]: value };
+    setNotes(updatedNotes);
+  };
   const handleDownloadPdf = async () => {
     try {
       setIsDownloading(true); // Start loading
@@ -425,6 +449,8 @@ const EditServiceTicket = () => {
             notes={notes}
             loading={loading}
             serviceTicketId={serviceTicketId}
+            handleSaveNote={handleSaveNote}
+            handleNoteChange={handleNoteChange}
           />
           {showDeviceModal && (
             <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
@@ -537,7 +563,7 @@ const EditServiceTicket = () => {
               </div>
             ) : (
               <>
-              {client_type !== "User" && (
+              {user_type === "Client Employee" && (
               <button
                 onClick={openModal}
                 className="bg-indigo-600 text-white px-4 py-2 rounded"

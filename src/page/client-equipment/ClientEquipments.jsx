@@ -379,9 +379,9 @@ const getSortSymbol = (key) => {
         <AdminSideNavbar />
         <div className="container mx-auto p-4 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between items-center">
-            <h1 className="font-bold text-lg">Client Equipments</h1>
+            <h1 className="font-bold text-lg">Client Equipment</h1>
             <div className="flex gap-2">
-            {access.includes(user_type) && (
+            {technicianAccess.includes(user_type) && (
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded"
                 onClick={handleDownloadCSVTemplate}
@@ -389,7 +389,7 @@ const getSortSymbol = (key) => {
               CSV Template
               </button>
               )}
-            {access.includes(user_type) && (
+            {technicianAccess.includes(user_type) && (
               <button
                 onClick={handleExportToExcel}
                 className="bg-green-600 text-white px-4 py-2 rounded"

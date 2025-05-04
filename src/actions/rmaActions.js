@@ -198,3 +198,17 @@ export const uploadRmaImages = (rmaId, images) => {
     }
   };
 };
+
+export const updateNotes = (notesData,note_id) => {
+  return async (dispatch) => {
+    dispatch(addNotesToRmaStart());
+    try {
+      const response = await axios.patch(`${apiConfig.updateRmaNotes}/${note_id}`, notesData);
+      dispatch(addNotesToRmaSuccess(response.data));
+      toast.success("Notes updated successfully");
+    } catch (error) {
+      dispatch(addNotesToRmaFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to update notes");
+    }
+  };
+};
