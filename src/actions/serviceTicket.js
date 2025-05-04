@@ -486,3 +486,17 @@ export const getServiceRequestInfo = () => {
     }
   };
 };
+
+export const updateNotes = (notesData,note_id) => {
+  return async (dispatch) => {
+    dispatch(addNotesToTicketStart());
+    try {
+      const response = await axios.patch(`${apiConfig.updateServiceNotes}/${note_id}`, notesData);
+      dispatch(addNotesToTicketSuccess(response.data));
+      toast.success("Notes updated successfully");
+    } catch (error) {
+      dispatch(addNotesToTicketFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to update notes");
+    }
+  };
+};

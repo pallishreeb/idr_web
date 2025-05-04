@@ -110,14 +110,14 @@ const SubcontractorNotes = ({ notes, subcontractorId }) => {
                 </td>
                 {(access.includes(user_type) || note.profile?.user_id  === user_id) && 
                 <td className="border px-4 py-2" style={{ width: '5%' }}>
-                {user_type === "Admin" && (
+                {/* {access.includes(user_type) && ( */}
                       <button
                       className="p-[4px] bg-gray-100 cursor-pointer"
                       onClick={() => handleDelete(note.note_id)}
                     >
                       <AiFillDelete/>
                     </button>
-                    )}
+                    {/* )} */}
                 </td>
                 }
                 

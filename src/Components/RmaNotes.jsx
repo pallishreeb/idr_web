@@ -6,17 +6,18 @@ import AddRmaNoteModal from './AddRmaNoteModal';
 import { addNotesToRma, getRMADetails, deleteRmaNote } from "../actions/rmaActions";
 import { getClients } from "../actions/clientActions";
 import { fetchIDREmployees } from "../actions/employeeActions";
+import { BiSolidEditAlt } from 'react-icons/bi';
 
-const RmaNotes = ({ notes, rmaId }) => {
+const RmaNotes = ({ notes, rmaId,handleSaveNote ,handleNoteChange }) => {
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const { user_type,user_id } = useSelector((state) => state.user.user);
   const { access , technicianAccess} = useSelector((state) => state.user);
 
-//   const handleEditToggle = (index) => {
-//     setEditingIndex(index === editingIndex ? null : index);
-//   };
+  const handleEditToggle = (index) => {
+    setEditingIndex(index === editingIndex ? null : index);
+  };
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -62,7 +63,7 @@ const RmaNotes = ({ notes, rmaId }) => {
   
     });
   };
-  const addAccess = ["Admin", "Subadmin", "IDR Employee"];
+
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -85,7 +86,7 @@ const RmaNotes = ({ notes, rmaId }) => {
               <th className="border px-4 py-2" style={{ width: '65%' }}>Comments</th>
               <th className="border px-4 py-2" style={{ width: '15%' }}>User Name</th>
               <th className="border px-4 py-2" style={{ width: '15%' }}>Date and Time</th>
-              {user_type === "Admin"  && 
+              {technicianAccess?.includes(user_type)  && 
               <th className="border px-4 py-2" style={{ width: '5%' }}>Actions</th>}
             </tr>
           </thead>
@@ -96,7 +97,8 @@ const RmaNotes = ({ notes, rmaId }) => {
                   <textarea
                     className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
                     name="comments"
-                    value={note.comments || ""}
+                    value={note?.comments || ""}
+                    onChange={(e) => handleNoteChange(index, e)}
                     rows={3}
                     disabled={editingIndex !== index}
                   ></textarea>
@@ -116,14 +118,44 @@ const RmaNotes = ({ notes, rmaId }) => {
                     hour12: true,
                   })}
                 </td>
-                {user_type === "Admin" && (
+                {technicianAccess?.includes(user_type) && (
                 <td className="border px-4 py-2" style={{ width: '5%' }}>
-                      <button
+                      <div>
+                    {editingIndex === index ? (
+                      <>
+                        <button
+                          className="bg-indigo-600 text-white px-8 py-2 rounded"
+                          onClick={() => {
+                            handleSaveNote(index);
+                            handleEditToggle(index);
+                          }}
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="bg-gray-500 text-white px-6 py-2 rounded mt-2"
+                          onClick={() => handleEditToggle(index)}
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                    <button
+                      className="p-[4px] bg-gray-100 cursor-pointer"
+                      onClick={() => handleEditToggle(index)}
+                    >
+                      <BiSolidEditAlt />
+                    </button>
+                    <button
                       className="p-[4px] bg-gray-100 cursor-pointer"
                       onClick={() => handleDelete(note.note_id)}
                     >
-                      <AiFillDelete/>
+                      <AiFillDelete />
                     </button>
+                    </>
+                    )}
+                  </div>
                 </td>
                 )}
                 

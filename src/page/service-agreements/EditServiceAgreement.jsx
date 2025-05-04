@@ -155,7 +155,8 @@ const EditServiceAgreement = () => {
                       value={serviceAgreement.client_id}
                       onChange={handleChange}
                       required
-                      disabled={loadingClients || !access?.includes(user_type)}
+                      // disabled={loadingClients || !access?.includes(user_type)}
+                      disabled
                     >
                       <option value="">Select a client</option>
                       {loadingClients ? (
@@ -184,7 +185,8 @@ const EditServiceAgreement = () => {
                       className="border border-gray-300 rounded px-3 py-1 w-full"
                       value={selectedClientLocation}
                       onChange={handleChange}
-                      disabled={loadingLocations || !access?.includes(user_type)}
+                      // disabled={loadingLocations || !access?.includes(user_type)}
+                      disabled
                     >
                       <option value="">Select a client location</option>
                       {loadingLocations ? (

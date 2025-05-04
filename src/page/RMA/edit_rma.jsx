@@ -4,7 +4,7 @@ import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClientEquipmentById } from "../../actions/clientEquipment";
 import { getLocationById } from "../../actions/locationActions";
-import { getRMADetails, updateRMA } from "../../actions/rmaActions";
+import { getRMADetails, updateNotes, updateRMA } from "../../actions/rmaActions";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../../Images/ZZ5H.gif";
 import RmaImages from "../../Components/RmaImages";
@@ -154,7 +154,30 @@ export default function EditRma() {
     }
   };
   
+  const getFilteredNote = (note) => {
+    const allowedFields = [
+       "rma_id", "comments","created_by", //"note_id",
+    ];
 
+    const filteredNote = {};
+    allowedFields.forEach(field => {
+      if (Object.prototype.hasOwnProperty.call(note, field)) {
+        filteredNote[field] = note[field];
+      }
+    });
+    return filteredNote;
+  };
+  const handleSaveNote = (index) => {
+    const note = notes[index];
+    const filteredNote = getFilteredNote(notes[index]);
+    dispatch(updateNotes(filteredNote, note?.['note_id']));
+  };
+  const handleNoteChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedNotes = [...notes];
+    updatedNotes[index] = { ...updatedNotes[index], [name]: value };
+    setNotes(updatedNotes);
+  };
   // Handle cancel edit
   const handleCancel = () => {
     setIsEditing(false);
@@ -513,6 +536,8 @@ export default function EditRma() {
             notes={notes}
             loading={loading}
             rmaId={rmaId}
+            handleSaveNote={handleSaveNote}
+            handleNoteChange={handleNoteChange}
           />
         </div>)}
       </div>
