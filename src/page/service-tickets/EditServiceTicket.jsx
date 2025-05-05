@@ -461,7 +461,7 @@ const EditServiceTicket = () => {
                     <tr className="bg-gray-100 text-left">
                       <th className="border px-4 py-2">Serial Number</th>
                       <th className="border px-4 py-2">Device ID</th>
-                      <th className="border px-4 py-2">Hostname</th>
+                      <th className="border px-4 py-2">MAC Address</th>
                       <th className="border px-4 py-2">Model</th>
                       <th className="border px-4 py-2">Action</th>
                     </tr>
