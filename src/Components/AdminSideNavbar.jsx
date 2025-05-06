@@ -39,7 +39,7 @@ const AdminSideNavbar = () => {
     { title: "RMA", path: "/device-rma", roles: client_type !== "User" ? ["Admin", "Subadmin", "IDR Employee", "Client Employee"]  : ["Admin", "Subadmin", "IDR Employee"] },
     { title: "Request Service", path: "/add-service-request", roles: ["Client Employee"]},
     { title: "Inventory", path: "/inventory", roles: ["Admin", "Subadmin", "IDR Employee"] },
-    // { title: "Inventory Locations", path: "/inventory-locations", roles: ["Admin", "Subadmin", "IDR Employee"] },
+    { title: "Inventory Locations", path: "/inventory-locations", roles: ["Admin"] },
     { title: "IDR Equipment and Tools", path: "/idr-equipment", roles: ["Admin", "Subadmin", "IDR Employee"] },
     { title: "Reports", path: "/equipment-report", roles: ["Admin", "Subadmin"] },
     { title: "Sub Contractors", path: "/sub-contractors", roles: ["Admin", "Subadmin"] },
