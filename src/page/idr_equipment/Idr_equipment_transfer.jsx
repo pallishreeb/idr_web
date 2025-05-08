@@ -48,7 +48,8 @@ const TransferIdrEquipment = () => {
     (state) => state.idrequipment.loadingTransfer
   );
   const { idrEmployees } = useSelector((state) => state.employee);
-
+  const { access,technicianAccess } = useSelector((state) => state.user);
+  const { user_type } = useSelector((state) => state.user.user);
   useEffect(() => {
     dispatch(getClients());
     dispatch(fetchIDREmployees());
@@ -200,7 +201,7 @@ const TransferIdrEquipment = () => {
               </div>
             </div>
           </div>
-
+          {technicianAccess.includes(user_type) && 
           <form onSubmit={handleAssignWorkorder}>
             <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
               <div className="mb-2">
@@ -307,7 +308,8 @@ const TransferIdrEquipment = () => {
                 </div>
               </div>
             </div>
-          </form>
+          </form>}
+          {access.includes(user_type) && 
           <form onSubmit={handleAssignIDREmployee}>
             <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
               <div className="mb-2">
@@ -368,7 +370,7 @@ const TransferIdrEquipment = () => {
                 </div>
               </div>
             </div>
-          </form>
+          </form> }
         </div>
       </div>
     </>
