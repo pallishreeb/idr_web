@@ -33,7 +33,7 @@ const IdrEquipment = () => {
   const locationsInventory = useSelector(
     (state) => state.locationInventory.locations
   );
-  const { access } = useSelector((state) => state.user);
+  const { access,technicianAccess } = useSelector((state) => state.user);
   const { user_type } = useSelector((state) => state.user.user);
   const loading = useSelector((state) => state.idrequipment.loading);
   const equipmentData = useSelector((state) => state.idrequipment.equipments);
@@ -342,7 +342,7 @@ const IdrEquipment = () => {
                                 }
                               />
                             </div>
-                            {access.includes(user_type) && 
+                            {technicianAccess.includes(user_type) && 
                             <div className="p-[4px] bg-gray-100 cursor-pointer">
                               <BiTransferAlt
                                 onClick={() =>
