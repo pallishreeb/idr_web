@@ -500,3 +500,18 @@ export const updateNotes = (notesData,note_id) => {
     }
   };
 };
+
+//deleteServiceRequest
+export const deleteServiceRequest = (requestId) => {
+  return async (dispatch) => {
+    dispatch(deleteServiceNoteStart());
+    try {
+      await axios.delete(`${apiConfig.deleteServiceRequest}/${requestId}`);
+      dispatch(deleteServiceNoteSuccess(requestId));
+      toast.success("Request deleted successfully");
+    } catch (error) {
+      dispatch(deleteServiceNoteFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to delete Request");
+    }
+  };
+};

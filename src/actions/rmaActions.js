@@ -53,7 +53,7 @@ export const generateRMA = (rmaData,navigate) => {
 };
 
 // Get all RMA lists with optional filters
-export const getRmaLists = (filters) => {
+export const getRmaLists = (filters,sortKey, sortDirection) => {
   return async (dispatch) => {
     dispatch(getRMAListsStart());
     try {
@@ -63,6 +63,12 @@ export const getRmaLists = (filters) => {
         if (filters[key]) {
           params.append(key, filters[key]);
         }
+      }
+
+      // Append sorting
+      if (sortKey && sortDirection) {
+        params.append("sort_by", sortKey);
+        params.append("order", sortDirection);
       }
 
       const queryString = params.toString();

@@ -27,6 +27,7 @@ const RmaViewList = () => {
     manufacturer: "",
     status: "",
   });
+  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ASC' });
   // const [selectedClient, setSelectedClient] = useState(null);
   // const [selectedLocation, setSelectedLocation] = useState(null);
 
@@ -137,6 +138,30 @@ const RmaViewList = () => {
     return `${month}/${day}/${year}`;
   };
 
+    const handleSort = (key) => {
+      let direction = "ASC";
+      if (sortConfig.key === key && sortConfig.direction === "ASC") {
+        direction = "DESC";
+      }
+      setSortConfig({ key, direction });
+      const { client_id, location_id, manufacturer, status } = filters;
+      const query = {
+        ...(client_id && { client_id }),
+        ...(location_id && { location_id }),
+        ...(manufacturer && { manufacturer }),
+        ...(status && { status }),
+      };
+      dispatch(getRmaLists(query, key, direction));
+      
+    };
+  
+    const getSortSymbol = (key) => {
+      if (sortConfig.key === key) {
+        return sortConfig.direction === "ASC" ? "▲" : "▼";
+      }
+      return "↕";
+    };
+  
   return (
     <>
       <Header />
@@ -361,6 +386,9 @@ const RmaViewList = () => {
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
                     Serial
                   </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border" onClick={() => handleSort('status')}>
+                    Status <span className="ml-1">{getSortSymbol("status")}</span>
+                  </th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
                     Approved Date
                   </th>
@@ -408,6 +436,7 @@ const RmaViewList = () => {
                       </td>
                       <td className="border text-sm px-1 py-3">{rma.model}</td>
                       <td className="border text-sm px-1 py-3">{rma.serial}</td>
+                      <td className="border text-sm px-1 py-3">{rma.status}</td>
                       <td className="border text-sm px-1 py-3">
                         {formatDateToMDY(rma.aprooved_date)}
                       </td>

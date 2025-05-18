@@ -3,163 +3,192 @@ import { useDispatch, useSelector } from "react-redux";
 import { BiSolidEditAlt } from "react-icons/bi";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import { getClients } from "../../actions/clientActions";
 // import { getLocationByClient } from "../../actions/locationActions";
-import { getServiceRequestLists } from "../../actions/serviceTicket";
+import {
+  getServiceRequestLists,
+  deleteServiceRequest,
+} from "../../actions/serviceTicket";
 import Loader from "../../Images/ZZ5H.gif";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
+import { AiFillDelete } from "react-icons/ai";
 
 const ListServiceRequests = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-//   const [searchParams, setSearchParams] = useSearchParams();
-//   const clients = useSelector((state) => state.client.clients);
-//   const locations = useSelector((state) => state.location.locations);
-  const { serviceRequests, loading } = useSelector((state) => state.serviceTicket);
-
+  //   const [searchParams, setSearchParams] = useSearchParams();
+  //   const clients = useSelector((state) => state.client.clients);
+  //   const locations = useSelector((state) => state.location.locations);
+  const { serviceRequests, loading } = useSelector(
+    (state) => state.serviceTicket
+  );
+  const { user_type } = useSelector((state) => state.user.user);
 
   useEffect(() => {
-      dispatch(getServiceRequestLists({}));
-    },[dispatch])
+    dispatch(getServiceRequestLists({}));
+  }, [dispatch]);
 
   // Initialize filtersApplied based on URL parameters
-//   const [filtersApplied, setFiltersApplied] = useState(
-//     searchParams.has("client_id") && searchParams.has("location_id")
-//   );
+  //   const [filtersApplied, setFiltersApplied] = useState(
+  //     searchParams.has("client_id") && searchParams.has("location_id")
+  //   );
 
   // Initialize state from URL parameters
-//   const [filters, setFilters] = useState({
-//     client_id: searchParams.get("client_id") || "",
-//     location_id: searchParams.get("location_id") || "",
-//   });
-//   const [selectedClient, setSelectedClient] = useState(searchParams.get("client_id") || null);
-//   const [selectedLocation, setSelectedLocation] = useState(searchParams.get("location_id") || null);
-//   const [sortConfig, setSortConfig] = useState({
-//     key: searchParams.get("sort_by") || "",
-//     direction: searchParams.get("order") || "ASC"
-//   });
+  //   const [filters, setFilters] = useState({
+  //     client_id: searchParams.get("client_id") || "",
+  //     location_id: searchParams.get("location_id") || "",
+  //   });
+  //   const [selectedClient, setSelectedClient] = useState(searchParams.get("client_id") || null);
+  //   const [selectedLocation, setSelectedLocation] = useState(searchParams.get("location_id") || null);
+  //   const [sortConfig, setSortConfig] = useState({
+  //     key: searchParams.get("sort_by") || "",
+  //     direction: searchParams.get("order") || "ASC"
+  //   });
 
   // Update URL when filters change
-//   useEffect(() => {
-//     if (filtersApplied) {
-//       const params = new URLSearchParams();
-//       if (filters.client_id) params.set("client_id", filters.client_id);
-//       if (filters.location_id) params.set("location_id", filters.location_id);
-//       if (sortConfig.key) params.set("sort_by", sortConfig.key);
-//       if (sortConfig.direction) params.set("order", sortConfig.direction);
-//       setSearchParams(params);
-//     }
-//   }, [filters, sortConfig, setSearchParams, filtersApplied]);
+  //   useEffect(() => {
+  //     if (filtersApplied) {
+  //       const params = new URLSearchParams();
+  //       if (filters.client_id) params.set("client_id", filters.client_id);
+  //       if (filters.location_id) params.set("location_id", filters.location_id);
+  //       if (sortConfig.key) params.set("sort_by", sortConfig.key);
+  //       if (sortConfig.direction) params.set("order", sortConfig.direction);
+  //       setSearchParams(params);
+  //     }
+  //   }, [filters, sortConfig, setSearchParams, filtersApplied]);
 
   // Initial data fetch and handle URL filters when returning from add/edit
-//   useEffect(() => {
-//     if (user_type === "Client Employee") {
-//       dispatch(getServiceRequestLists({}));
-//     } else {
-//       dispatch(getClients());
-//       // If returning from add/edit (URL has both filters), apply them
-//       const urlClientId = searchParams.get("client_id");
-//       const urlLocationId = searchParams.get("location_id");
-//       if (urlClientId && urlLocationId) {
-//         // Set the filters in state
-//         setFilters({
-//           client_id: urlClientId,
-//           location_id: urlLocationId
-//         });
-//         // Fetch locations for the client
-//         dispatch(getLocationByClient(urlClientId));
-//         // Apply the filters
-//         const query = {
-//           client_id: urlClientId,
-//           location_id: urlLocationId
-//         };
-//         dispatch(getServiceRequestLists(query, sortConfig.key, sortConfig.direction));
-//       } else {
-//         dispatch(getServiceRequestLists({}));
-//       }
-//     }
-//   }, [dispatch, user_type]);
+  //   useEffect(() => {
+  //     if (user_type === "Client Employee") {
+  //       dispatch(getServiceRequestLists({}));
+  //     } else {
+  //       dispatch(getClients());
+  //       // If returning from add/edit (URL has both filters), apply them
+  //       const urlClientId = searchParams.get("client_id");
+  //       const urlLocationId = searchParams.get("location_id");
+  //       if (urlClientId && urlLocationId) {
+  //         // Set the filters in state
+  //         setFilters({
+  //           client_id: urlClientId,
+  //           location_id: urlLocationId
+  //         });
+  //         // Fetch locations for the client
+  //         dispatch(getLocationByClient(urlClientId));
+  //         // Apply the filters
+  //         const query = {
+  //           client_id: urlClientId,
+  //           location_id: urlLocationId
+  //         };
+  //         dispatch(getServiceRequestLists(query, sortConfig.key, sortConfig.direction));
+  //       } else {
+  //         dispatch(getServiceRequestLists({}));
+  //       }
+  //     }
+  //   }, [dispatch, user_type]);
 
   // Fetch locations when client changes
-//   useEffect(() => {
-//     if (filters.client_id) {
-//       dispatch(getLocationByClient(filters.client_id));
-//     }
-//   }, [dispatch, filters.client_id]);
+  //   useEffect(() => {
+  //     if (filters.client_id) {
+  //       dispatch(getLocationByClient(filters.client_id));
+  //     }
+  //   }, [dispatch, filters.client_id]);
 
-//   const handleClientChange = (e) => {
-//     const { value } = e.target;
-//     setFilters((prevFilters) => ({
-//       ...prevFilters,
-//       client_id: value,
-//       location_id: "",
-//     }));
-//     setSelectedClient(value);
-//     dispatch(getLocationByClient(value));
-//   };
+  //   const handleClientChange = (e) => {
+  //     const { value } = e.target;
+  //     setFilters((prevFilters) => ({
+  //       ...prevFilters,
+  //       client_id: value,
+  //       location_id: "",
+  //     }));
+  //     setSelectedClient(value);
+  //     dispatch(getLocationByClient(value));
+  //   };
 
-//   const handleLocationChange = (e) => {
-//     const { value } = e.target;
-//     setFilters((prevFilters) => ({
-//       ...prevFilters,
-//       location_id: value,
-//     }));
-//     setSelectedLocation(value);
-//   };
+  //   const handleLocationChange = (e) => {
+  //     const { value } = e.target;
+  //     setFilters((prevFilters) => ({
+  //       ...prevFilters,
+  //       location_id: value,
+  //     }));
+  //     setSelectedLocation(value);
+  //   };
 
-//   const handleSearch = () => {
-//     setFiltersApplied(true); // Mark filters as explicitly applied
-//     const { client_id, location_id } = filters;
-//     const query = {
-//       ...(client_id && { client_id }),
-//       ...(location_id && { location_id }),
-//     };
-//     dispatch(getServiceRequestLists(query, sortConfig.key, sortConfig.direction));
-//   };
+  //   const handleSearch = () => {
+  //     setFiltersApplied(true); // Mark filters as explicitly applied
+  //     const { client_id, location_id } = filters;
+  //     const query = {
+  //       ...(client_id && { client_id }),
+  //       ...(location_id && { location_id }),
+  //     };
+  //     dispatch(getServiceRequestLists(query, sortConfig.key, sortConfig.direction));
+  //   };
 
-//   const handleReset = () => {
-//     setFiltersApplied(false); // Reset filters applied state
-//     setFilters({
-//       client_id: "",
-//       location_id: "",
-//     });
-//     setSelectedClient(null);
-//     setSelectedLocation(null);
-//     setSortConfig({ key: "", direction: "ASC" });
-//     setSearchParams(new URLSearchParams()); // Clear URL params
-//     if (user_type === "Client Employee") {
-//       dispatch(getServiceRequestLists({}));
-//     } else {
-//       dispatch(getServiceRequestLists({}));
-//       dispatch(getClients());
-//     }
-//   };
+  //   const handleReset = () => {
+  //     setFiltersApplied(false); // Reset filters applied state
+  //     setFilters({
+  //       client_id: "",
+  //       location_id: "",
+  //     });
+  //     setSelectedClient(null);
+  //     setSelectedLocation(null);
+  //     setSortConfig({ key: "", direction: "ASC" });
+  //     setSearchParams(new URLSearchParams()); // Clear URL params
+  //     if (user_type === "Client Employee") {
+  //       dispatch(getServiceRequestLists({}));
+  //     } else {
+  //       dispatch(getServiceRequestLists({}));
+  //       dispatch(getClients());
+  //     }
+  //   };
 
   const handleEdit = (requestId) => {
     // navigate(`/edit-service-request/${requestId}?${searchParams.toString()}`);
     navigate(`/edit-service-request/${requestId}`);
   };
+  const handleDeleteRequest = (requestId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this Service Request?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteServiceRequest(requestId))
+          .then(() => {
+            dispatch(getServiceRequestLists({}));
+          })
+          .catch((error) => {
+            console.log(error);
+            toast.error("Failed to delete this item");
+          });
+      }
+    });
+  };
 
-//   const handleSort = (key) => {
-//     let direction = "ASC";
-//     if (sortConfig.key === key && sortConfig.direction === "ASC") {
-//       direction = "DESC";
-//     }
-//     setSortConfig({ key, direction });
-//     const { client_id, location_id } = filters;
-//     const query = {
-//       ...(client_id && { client_id }),
-//       ...(location_id && { location_id }),
-//     };
-//     dispatch(getServiceRequestLists(query, key, direction));
-//   };
+  //   const handleSort = (key) => {
+  //     let direction = "ASC";
+  //     if (sortConfig.key === key && sortConfig.direction === "ASC") {
+  //       direction = "DESC";
+  //     }
+  //     setSortConfig({ key, direction });
+  //     const { client_id, location_id } = filters;
+  //     const query = {
+  //       ...(client_id && { client_id }),
+  //       ...(location_id && { location_id }),
+  //     };
+  //     dispatch(getServiceRequestLists(query, key, direction));
+  //   };
 
-//   const getSortSymbol = (key) => {
-//     if (sortConfig.key === key) {
-//       return sortConfig.direction === "ASC" ? "▲" : "▼";
-//     }
-//     return "↕";
-//   };
+  //   const getSortSymbol = (key) => {
+  //     if (sortConfig.key === key) {
+  //       return sortConfig.direction === "ASC" ? "▲" : "▼";
+  //     }
+  //     return "↕";
+  //   };
 
   // Truncate service ticket details to 200 characters
   const truncateDetails = (text) => {
@@ -308,6 +337,16 @@ const ListServiceRequests = () => {
                         >
                           <BiSolidEditAlt />
                         </button>
+                        {user_type === "Admin" && (
+                          <button
+                            onClick={() =>
+                              handleDeleteRequest(request.service_request_id)
+                            }
+                            className="p-2 bg-gray-100"
+                          >
+                            <AiFillDelete />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))
