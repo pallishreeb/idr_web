@@ -67,8 +67,8 @@ export const getRmaLists = (filters,sortKey, sortDirection) => {
 
       // Append sorting
       if (sortKey && sortDirection) {
-        params.append("sort_by", sortKey);
-        params.append("order", sortDirection);
+        params.append("sortBy", sortKey);
+        params.append("orderBy", sortDirection);
       }
 
       const queryString = params.toString();
