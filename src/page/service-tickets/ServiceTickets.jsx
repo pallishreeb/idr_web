@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 
 const ServiceTickets = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [filters, setFilters] = useState({
     client_id: "",
     status: "",
@@ -27,6 +27,8 @@ const ServiceTickets = () => {
     project_manager: "",
     location_id: "",
   });
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+
   const { user_type, client_type, locations } = useSelector(
     (state) => state.user.user
   );
@@ -101,7 +103,51 @@ const ServiceTickets = () => {
     const year = d.getFullYear();
     return `${month}/${day}/${year}`;
   }
-
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+  const sortedServiceTickets = React.useMemo(() => {
+    if (!sortConfig.key) return serviceTickets;
+  
+    return [...serviceTickets].sort((a, b) => {
+      let aValue = a[sortConfig.key];
+      let bValue = b[sortConfig.key];
+  
+      // Handle undefined or null values
+      if (aValue === undefined || aValue === null) aValue = "";
+      if (bValue === undefined || bValue === null) bValue = "";
+  
+      // For nested fields (like client_name inside client object), handle accordingly
+      // Example if sorting by 'client_name':
+      if (sortConfig.key === "client_name") {
+        aValue = a.client_name || "";
+        bValue = b.client_name || "";
+      }
+      if (sortConfig.key === 'client_location') {
+        aValue = `${a.location_details?.address_line_one ?? ''} ${a.location_details?.address_line_two ?? ''}`.toLowerCase();
+        bValue = `${b.location_details?.address_line_one ?? ''} ${b.location_details?.address_line_two ?? ''}`.toLowerCase();
+      }
+      
+      if (sortConfig.key === "service_date") {
+        aValue = new Date(a.service_date);
+        bValue = new Date(b.service_date);
+      }
+  
+      if (typeof aValue === "string") {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+  
+      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [serviceTickets, sortConfig]);
+    
   return (
     <>
       <Header />
@@ -285,17 +331,21 @@ const ServiceTickets = () => {
               <table className="mt-2 w-full overflow-x-scroll">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
-                      Service Ticket Number
+                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border" onClick={() => handleSort("service_ticket_number")}>
+                      Service Ticket Number {sortConfig.key === 'service_ticket_number'
+                        ? sortConfig.direction === 'asc' ? '▲' : '▼'
+                        : '↕'} {/* default icon */}
                     </th>
-                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
-                      Client Name
+                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border" onClick={() => handleSort("client_name")}>
+                      Client Name    {sortConfig.key === 'client_name' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}
                     </th>
-                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
-                      Client Location
+                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border" onClick={() => handleSort("client_location")}>
+                      Client Location  {sortConfig.key === 'client_location' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}
                     </th>
-                    <th className="px-1 py-1 text-left text-sm font-semibold  tracking-wider border">
-                      Service Date
+                    <th className="px-1 py-1 text-left text-sm font-semibold  tracking-wider border"  onClick={() => handleSort("service_date")}>
+                      Service Date   {sortConfig.key === 'service_date'
+                        ? sortConfig.direction === 'asc' ? '▲' : '▼'
+                        : '↕'}
                     </th>
                     <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                       Contact Person
@@ -316,7 +366,7 @@ const ServiceTickets = () => {
                 </thead>
                 <tbody>
                   {serviceTickets && serviceTickets?.length > 0 ? (
-                    serviceTickets?.map((order) => (
+                    sortedServiceTickets?.map((order) => (
                       <tr key={order.service_ticket_id} className="text-left ">
                         <td className="border text-sm px-1 py-3">
                           {order?.service_ticket_number
