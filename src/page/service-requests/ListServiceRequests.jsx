@@ -25,7 +25,7 @@ const ListServiceRequests = () => {
     (state) => state.serviceTicket
   );
   const { user_type } = useSelector((state) => state.user.user);
-
+  const { access } = useSelector((state) => state.user);
   useEffect(() => {
     dispatch(getServiceRequestLists({}));
   }, [dispatch]);
@@ -337,7 +337,7 @@ const ListServiceRequests = () => {
                         >
                           <BiSolidEditAlt />
                         </button>
-                        {user_type === "Admin" && (
+                        {access.includes(user_type) && (
                           <button
                             onClick={() =>
                               handleDeleteRequest(request.service_request_id)
