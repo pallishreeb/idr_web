@@ -269,8 +269,8 @@ const Inventory = () => {
                   <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border" onClick={() => handleSort('size')}>
                     Size <span className="ml-2">{getSortSymbol('size')}</span>
                   </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Quantity
+                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border" onClick={() => handleSort('quantity')}>
+                    Quantity <span className="ml-2">{getSortSymbol('quantity')}</span>
                   </th>
                   <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                     Description

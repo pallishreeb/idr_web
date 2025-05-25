@@ -359,15 +359,16 @@ const WorkOrder = () => {
                         </td>
                         <td className="border text-sm px-1 py-3">
                           <div className="flex gap-2">
-                            <div className="p-[4px] bg-gray-100 cursor-pointer">
-                              <BiSolidEditAlt
-                                onClick={() =>
-                                  navigate(
-                                    `/edit-work-order/${order.work_order_id}`
-                                  )
-                                }
-                              />
-                            </div>
+                          <div className="p-[4px] bg-gray-100 cursor-pointer">
+                            <a
+                              href={`/edit-work-order/${order?.work_order_id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <BiSolidEditAlt />
+                            </a>
+                          </div>
+
                             {user_type === "Admin" && (
                               <div className="p-[4px] bg-gray-100 cursor-pointer">
                                 <AiFillDelete

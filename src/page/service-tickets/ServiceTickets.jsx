@@ -351,15 +351,16 @@ const ServiceTickets = () => {
                         </td>
                         <td className="border text-sm px-1 py-3">
                           <div className="flex gap-2">
-                            <div className="p-[4px] bg-gray-100 cursor-pointer">
-                              <BiSolidEditAlt
-                                onClick={() =>
-                                  navigate(
-                                    `/edit-service-ticket/${order?.service_ticket_id}`
-                                  )
-                                }
-                              />
-                            </div>
+                          <div className="p-[4px] bg-gray-100 cursor-pointer">
+                            <a
+                              href={`/edit-service-ticket/${order?.service_ticket_id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <BiSolidEditAlt />
+                            </a>
+                          </div>
+
                             {user_type === "Admin" && (
                               <div className="p-[4px] bg-gray-100 cursor-pointer">
                                 <AiFillDelete
