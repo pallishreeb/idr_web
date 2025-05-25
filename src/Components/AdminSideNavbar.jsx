@@ -1,16 +1,25 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { MdDashboardCustomize } from "react-icons/md";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getServiceRequestLists,
+} from "../actions/serviceTicket";
 const AdminSideNavbar = () => {
+    const dispatch = useDispatch();
   const { user_type,client_type } = useSelector((state) => state.user.user);
   const location = useLocation(); // Get the current location
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(true);
   const [isSubMenuOpenClient, setIsSubMenuOpenClient] = useState(true);
   // console.log("User type:", user_type);
   // console.log("client_type:", client_type);
+  const { serviceRequests, loading } = useSelector(
+      (state) => state.serviceTicket
+  );
+ useEffect(() => {
+    dispatch(getServiceRequestLists({}));
+  }, [dispatch]);
 
   const menuItems = [
     { title: "Dashboard", path: "/admin/dashboard", roles: ["Admin", "Subadmin"] },
@@ -82,7 +91,15 @@ const AdminSideNavbar = () => {
                               } cursor-pointer`}
                             >
                               <MdDashboardCustomize size={20} />
-                              <li>{item.title}</li>
+                              <li className="flex items-center justify-between w-full">
+                              <span>{item.title}</span>
+                              {item.title === "Service Requests" && serviceRequests?.length > 0 && (
+                                <span className="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                                  {serviceRequests.length}
+                                </span>
+                              )}
+                            </li>
+
                             </div>
                           </Link>
                         )

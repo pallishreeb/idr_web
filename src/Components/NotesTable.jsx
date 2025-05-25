@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch,useSelector } from "react-redux";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
@@ -7,7 +7,7 @@ import AddNoteModal from './AddNoteModal';
 import { addNotesToTicket, getWorkOrderDetails,deleteNote } from '../actions/workOrderActions';
 import { getClients } from "../actions/clientActions";
 import { fetchIDREmployees } from "../actions/employeeActions";
-
+import NoteTextarea from "./NoteTextarea";
 const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) => {
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -92,14 +92,17 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
             {notes?.map((note, index) => (
               <tr key={note.note_id} className="bg-white text-sm">
                 <td className="border px-4 py-2" style={{ width: '60%' }}>
-                  <textarea
+                  {/* <textarea
                     className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
                     name="comments"
                     value={note.comments || ""}
                     onChange={(e) => handleNoteChange(index, e)}
                     rows={8}
                     disabled={editingIndex !== index}
-                  ></textarea>
+                  ></textarea> */}
+                  <NoteTextarea note={note} index={index} handleNoteChange={handleNoteChange} editingIndex={editingIndex}/>
+
+
                 </td>
                 <td className="border px-4 py-2" style={{ width: '15%' }}>
                   {note?.profile?.first_name}{" "}{note?.profile?.last_name}
