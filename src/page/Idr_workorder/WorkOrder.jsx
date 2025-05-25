@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 
 const WorkOrder = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [filters, setFilters] = useState({
     client_id: "",
     status: "",
@@ -27,6 +27,9 @@ const WorkOrder = () => {
     project_manager: "",
     location_id: "",
   });
+
+  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
+
   const { user_type, client_type, locations } = useSelector(
     (state) => state.user.user
   );
@@ -102,6 +105,46 @@ const WorkOrder = () => {
     return `${month}/${day}/${year}`;
   }
 
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+  const sortedWorkOrders = React.useMemo(() => {
+    if (!workOrders) return [];
+  
+    const sorted = [...workOrders?.workOrder || []];
+    if (sortConfig.key) {
+      sorted.sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+
+        if (sortConfig.key === "client_name") {
+          aValue = a.client_name || "";
+          bValue = b.client_name || "";
+        }
+        if (sortConfig.key === 'client_location') {
+          aValue = `${a.location_details?.address_line_one ?? ''} ${a.location_details?.address_line_two ?? ''}`.toLowerCase();
+          bValue = `${b.location_details?.address_line_one ?? ''} ${b.location_details?.address_line_two ?? ''}`.toLowerCase();
+        }
+        
+  
+        if (sortConfig.key === 'service_date') {
+          aValue = new Date(aValue);
+          bValue = new Date(bValue);
+        }
+  
+        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+  
+    return sorted;
+  }, [workOrders, sortConfig]);
+ 
   return (
     <>
       <Header />
@@ -295,17 +338,19 @@ const WorkOrder = () => {
               <table className="mt-2 w-full overflow-x-scroll">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
-                      Ticket Number
+                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border" onClick={() => handleSort('ticket_number')}>
+                      Ticket Number {sortConfig.key === 'ticket_number'
+                        ? sortConfig.direction === 'asc' ? '▲' : '▼'
+                        : '↕'} {/* default icon */}
                     </th>
-                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
-                      Client Name
+                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border" onClick={() => handleSort("client_name")}>
+                      Client Name  {sortConfig.key === 'client_name' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}
                     </th>
-                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border">
-                      Client Location
+                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border" onClick={() => handleSort('client_location')}>
+                      Client Location {sortConfig.key === 'client_location' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}
                     </th>
-                    <th className="px-1 py-1 text-left text-sm font-semibold  tracking-wider border">
-                      Service Date
+                    <th className="px-1 py-1 text-left text-sm font-semibold  tracking-wider border" onClick={() => handleSort('service_date')}>
+                      Service Date {sortConfig.key === 'service_date' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}
                     </th>
                     <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                       Contact Person
@@ -326,9 +371,9 @@ const WorkOrder = () => {
                 </thead>
                 <tbody>
                   {workOrders && workOrders.workOrder?.length > 0 ? (
-                    workOrders.workOrder?.map((order) => (
+                    sortedWorkOrders?.map((order) => (
                       <tr key={order.id} className="text-left ">
-                        <td className="border text-sm px-1 py-3">
+                        <td className="border text-sm px-1 py-3" >
                           {order?.ticket_number ? order?.ticket_number : "NA"}
                         </td>
                         <td className="border text-sm px-1 py-3">
@@ -359,15 +404,16 @@ const WorkOrder = () => {
                         </td>
                         <td className="border text-sm px-1 py-3">
                           <div className="flex gap-2">
-                            <div className="p-[4px] bg-gray-100 cursor-pointer">
-                              <BiSolidEditAlt
-                                onClick={() =>
-                                  navigate(
-                                    `/edit-work-order/${order.work_order_id}`
-                                  )
-                                }
-                              />
-                            </div>
+                          <div className="p-[4px] bg-gray-100 cursor-pointer">
+                            <a
+                              href={`/edit-work-order/${order?.work_order_id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <BiSolidEditAlt />
+                            </a>
+                          </div>
+
                             {user_type === "Admin" && (
                               <div className="p-[4px] bg-gray-100 cursor-pointer">
                                 <AiFillDelete
