@@ -29,7 +29,8 @@ const AcceptServiceRequest = () => {
     service_ticket_details: "",
     status: "",
     service_date: "",
-    service_request:""
+    service_request:"",
+    po_number: "" 
   });
 
   // Fetch request details when component mounts
@@ -83,7 +84,8 @@ const AcceptServiceRequest = () => {
       id: requestId,
       accepted: true,
       service_request: serviceRequest.service_request,
-      service_date: serviceDate // Format date as MM/DD/YYYY
+      service_date: serviceDate, // Format date as MM/DD/YYYY
+      po_number: serviceRequest.po_number.trim()
     };
     
     dispatch(acceptRejectServiceRequest(payload)).then((data) =>{
@@ -215,7 +217,7 @@ const AcceptServiceRequest = () => {
             <h3 className="text-lg font-semibold mb-4">Confirm Service Request Acceptance</h3>
             <div className="mb-4">
             <label htmlFor="serviceRequest" className="block text-sm font-medium text-gray-700 mb-2">
-            Service Request Title:
+            Service Request Title: <span className="text-red-500">*</span>
             </label>
             <textarea
               id="serviceRequest"
@@ -229,12 +231,13 @@ const AcceptServiceRequest = () => {
               rows="3"
               className="border border-gray-300 rounded px-3 py-2 w-full"
               placeholder="Enter service request..."
+              required
             />
           </div>
 
             <div className="mb-4">
               <label htmlFor="serviceDate" className="block text-sm font-medium text-gray-700 mb-2">
-                Select Service Date:
+                Select Service Date: <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
@@ -246,7 +249,26 @@ const AcceptServiceRequest = () => {
                 required
               />
             </div>
-            
+            <div className="mb-4">
+              <label htmlFor="poNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                PO Number: <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="poNumber"
+                value={serviceRequest.po_number}
+                onChange={(e) =>
+                  setServiceRequest((prev) => ({
+                    ...prev,
+                    po_number: e.target.value,
+                  }))
+                }
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+                placeholder="Enter PO number"
+                required
+              />
+            </div>
+
             <div className="flex justify-end space-x-4">
               <button
                 onClick={() => setShowAcceptModal(false)}
