@@ -21,7 +21,7 @@ const ResetPassword = () => {
 
             <title>ResetPassword</title>
           {/* Logo */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-4">
             <img
               src="idr-logo.png"
               alt="Logo"

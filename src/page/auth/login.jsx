@@ -47,6 +47,14 @@ const Login = () => {
       {/* Right side with login form */}
       <div className="w-full lg:w-1/2 p-8 flex items-center justify-center">
         <div className="w-full md:w-96 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div className="text-center mb-4">
+            <img
+              src="idr-logo.png"
+              alt="Logo"
+              className="mx-auto h-14 w-96 ml-4"
+            />
+          </div>
+
           <h1 className="text-2xl text-center mb-2">Login</h1>
           {/* {loginError && <div className="text-red-500 text-sm mb-4">{loginError}</div>} */}
           <form onSubmit={handleSubmit}>

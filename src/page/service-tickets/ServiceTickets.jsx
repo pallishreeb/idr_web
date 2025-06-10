@@ -404,8 +404,7 @@ const ServiceTickets = () => {
                           <div className="p-[4px] bg-gray-100 cursor-pointer">
                             <a
                               href={`/edit-service-ticket/${order?.service_ticket_id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                              className="inline-block"
                             >
                               <BiSolidEditAlt />
                             </a>

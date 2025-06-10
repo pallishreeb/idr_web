@@ -407,8 +407,7 @@ const WorkOrder = () => {
                           <div className="p-[4px] bg-gray-100 cursor-pointer">
                             <a
                               href={`/edit-work-order/${order?.work_order_id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                              className="inline-block"
                             >
                               <BiSolidEditAlt />
                             </a>
