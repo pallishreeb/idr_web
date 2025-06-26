@@ -13,7 +13,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
-
+import * as XLSX from 'xlsx';
 const IdrEquipment = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -122,6 +122,25 @@ const IdrEquipment = () => {
     if (text?.length <= maxLength) return text;
     return text?.slice(0, maxLength) + "...";
   };
+const handleExportToExcel = () => {
+  const exportData = equipmentData?.data?.map((item) => ({
+    "Location": item?.location_name || '',
+    "Serial Number": item?.serial_number || '',
+    "Device Type": item?.device_type || '',
+    "Make": item?.make || '',
+    "Model": item?.model || '',
+    "Description": item?.description || '',
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "IDR Equipment");
+  // Generate file name with current date
+    const fileName = `IDR_Equipment_${new Date().toISOString().split('T')[0]}.csv`;
+
+    // Save the file as CSV
+    XLSX.writeFile(workbook, fileName, { bookType: 'csv' });
+};
 
   return (
     <>
@@ -145,7 +164,13 @@ const IdrEquipment = () => {
                     <option value="returnRequestEquipments">Return Requests</option>
                   
                   </select>
-                </div>
+            </div>
+              <button
+                onClick={handleExportToExcel}
+                className="bg-green-600 text-white px-6 py-2 rounded"
+              >
+                Export Excel
+              </button>
               <Link to="/add-company-equipment">
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded">
                   Add Equipment

@@ -18,7 +18,7 @@ import {
 import { toast } from "react-toastify";
 import Loader from "../../Images/ZZ5H.gif";
 import Swal from "sweetalert2";
-
+import * as XLSX from 'xlsx';
 const Inventory = () => {
   const [showModal, setShowModal] = useState(false);
   const [location, setLocation] = useState("");
@@ -178,6 +178,30 @@ const Inventory = () => {
       dispatch(getInventories(filters)); // Optional refresh
     });
   };
+const handleInventoryExportToExcel = () => {
+  if (!inventoryList?.data || inventoryList.data.length === 0) {
+    Swal.fire("No Data", "There is no inventory data to export", "info");
+    return;
+  }
+
+  const exportData = inventoryList.data.map((item) => ({
+    "Location": item.location || "",
+    "Device Type": item.device_type || "",
+    "Make": item.make || "",
+    "Model": item.model || "",
+    "Color": item.color || "",
+    "Size": item.size || "",
+    "Quantity": item.quantity || 0,
+    "Description": item.description || "",
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Inventory");
+
+  const fileName = `inventory_export_${new Date().toISOString().split('T')[0]}.csv`;
+  XLSX.writeFile(wb, fileName, { bookType: "csv" });
+};
 
   return (
     <>
@@ -188,6 +212,14 @@ const Inventory = () => {
           <div className="flex justify-between items-center">
             <h1 className="font-bold text-lg">Inventory</h1>
             <div className="flex gap-2">
+              {user_type === "Admin" && (
+                <button
+                  className="bg-green-600 text-white px-6 py-2 rounded"
+                  onClick={handleInventoryExportToExcel}
+                  >
+                    Export Inventory
+                </button>
+              )}
               {user_type === "Admin" && (
                 <button
                   className="bg-indigo-600 text-white px-6 py-2 rounded"
