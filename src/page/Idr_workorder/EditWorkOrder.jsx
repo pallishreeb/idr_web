@@ -182,7 +182,7 @@ const EditWorkOrder = () => {
       "generated_date", "generated_time", "po_number", "client_site",
       "job_location", "service_date", "contact_person", "contact_phone_number",
       "contact_mail_id", "issue", "status","local_onsite_person","local_onsite_person_contact",
-      "client_emp_user_id"
+      "client_emp_user_id","is_billed"
     ];
     const filteredWorkOrder = {};
     allowedFields.forEach(field => {

@@ -10,7 +10,7 @@ const WorkOrderCard = ({
   handleWorkOrderChange,
   handleSaveTicket,
   isEditing,
-  setIsEditing
+  setIsEditing,
 }) => {
   // const [isEditing, setIsEditing] = useState(false);
   const { user_type } = useSelector((state) => state.user.user);
@@ -22,14 +22,37 @@ const WorkOrderCard = ({
 
   useEffect(() => {
     if (workOrder.location_id) {
-      const selectedLocation = locations.find(location => location.location_id === workOrder.location_id);
+      const selectedLocation = locations.find(
+        (location) => location.location_id === workOrder.location_id
+      );
       if (selectedLocation) {
-        handleWorkOrderChange({ target: { name: "address_line_one", value: selectedLocation.address_line_one } });
-        handleWorkOrderChange({ target: { name: "city", value: selectedLocation.city } });
-        handleWorkOrderChange({ target: { name: "state", value: selectedLocation.state } });
-        handleWorkOrderChange({ target: { name: "zipcode", value: selectedLocation.zipcode } });
-        handleWorkOrderChange({ target: { name: "address_line_two", value: selectedLocation.address_line_two } });
-        handleWorkOrderChange({ target: { name: "address_line_three", value: selectedLocation.address_line_three } });
+        handleWorkOrderChange({
+          target: {
+            name: "address_line_one",
+            value: selectedLocation.address_line_one,
+          },
+        });
+        handleWorkOrderChange({
+          target: { name: "city", value: selectedLocation.city },
+        });
+        handleWorkOrderChange({
+          target: { name: "state", value: selectedLocation.state },
+        });
+        handleWorkOrderChange({
+          target: { name: "zipcode", value: selectedLocation.zipcode },
+        });
+        handleWorkOrderChange({
+          target: {
+            name: "address_line_two",
+            value: selectedLocation.address_line_two,
+          },
+        });
+        handleWorkOrderChange({
+          target: {
+            name: "address_line_three",
+            value: selectedLocation.address_line_three,
+          },
+        });
       }
     }
   }, [workOrder.location_id, locations]);
@@ -37,33 +60,36 @@ const WorkOrderCard = ({
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
-        <h1 className="text-xl font-normal mb-2">Work Order Ticket - {workOrder?.ticket_number}</h1>
-        {access.includes(user_type) && 
-        <div>
-          {isEditing ? (
-            <>
+        <h1 className="text-xl font-normal mb-2">
+          Work Order Ticket - {workOrder?.ticket_number}
+        </h1>
+        {access.includes(user_type) && (
+          <div>
+            {isEditing ? (
+              <>
+                <button
+                  className="bg-indigo-600 text-white px-6 py-2 rounded"
+                  onClick={handleSaveTicket}
+                >
+                  Save Ticket
+                </button>
+                <button
+                  className="bg-gray-500 text-white px-6 py-2 rounded ml-2"
+                  onClick={handleEditToggle}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
               <button
-              className="bg-indigo-600 text-white px-6 py-2 rounded"
-              onClick={handleSaveTicket}
-            >
-              Save Ticket
-            </button>
-               <button
-               className="bg-gray-500 text-white px-6 py-2 rounded ml-2"
-               onClick={handleEditToggle}
-             >
-               Cancel
-             </button>
-            </>
-          ) : (
-            <button
-              className="bg-indigo-600 text-white px-6 py-2 rounded"
-              onClick={handleEditToggle}
-            >
-              Edit
-            </button>
-          )}
-        </div>}
+                className="bg-indigo-600 text-white px-6 py-2 rounded"
+                onClick={handleEditToggle}
+              >
+                Edit
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-8">
@@ -319,6 +345,41 @@ const WorkOrderCard = ({
             onChange={(e) => handleWorkOrderChange(e)}
             disabled={!isEditing}
           />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="font-normal text-base">Billed</label>
+          <select
+            name="is_billed"
+            className="px-3 border border-gray-200 h-10 text-sm rounded"
+            value={workOrder.is_billed || ""}
+            onChange={(e) => handleWorkOrderChange(e)}
+            disabled={!isEditing}
+          >
+            <option value="">Choose Option</option>
+            <option value="Unbilled">Unbilled</option>
+            <option value="Deposit Billed">Deposit Billed</option>
+            <option value="Progress Payment 1 Billed">
+              Progress Payment 1 Billed
+            </option>
+            <option value="Progress Payment 2 Billed">
+              Progress Payment 2 Billed
+            </option>
+            <option value="Progress Payment 3 Billed">
+              Progress Payment 3 Billed
+            </option>
+            <option value="Progress Payment 4 Billed">
+              Progress Payment 4 Billed
+            </option>
+            <option value="Progress Payment 5 Billed">
+              Progress Payment 5 Billed
+            </option>
+            <option value="Progress Payment 6 Billed">
+              Progress Payment 6 Billed
+            </option>
+            <option value="Final Billed">Final Billed</option>
+            <option value="Retainage Billed">Retainage Billed</option>
+          </select>
         </div>
       </div>
     </div>

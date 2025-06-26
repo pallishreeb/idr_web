@@ -200,6 +200,7 @@ const EditServiceTicket = () => {
       "service_ticket_details",
       "client_name",
       "client_emp_user_id",
+      "is_billed",
     ];
     const filteredWorkOrder = {};
     allowedFields.forEach((field) => {

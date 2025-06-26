@@ -108,7 +108,10 @@ export const updateInventory = (inventoryData, navigate) => {
       const response = await axios.post(`${apiConfig.updateInventory}`, inventoryData);
       dispatch(updateInventorySuccess(response.data));
       toast.success("Inventory updated successfully");
-      navigate(`/inventory`);
+      // Only navigate if a navigate function is passed
+      if (navigate) {
+        navigate(`/inventory`);
+      }
     } catch (error) {
       dispatch(updateInventoryFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to update inventory");
