@@ -35,7 +35,7 @@ const ForgotPassword = () => {
         <div className="w-full md:w-96 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
           <title>ForgotPassword</title>
           {/* Logo */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-4">
             <img
               src="idr-logo.png"
               alt="Logo"

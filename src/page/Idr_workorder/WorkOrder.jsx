@@ -26,9 +26,10 @@ const WorkOrder = () => {
     technician: "",
     project_manager: "",
     location_id: "",
+    is_billed:""
   });
 
-  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
   const { user_type, client_type, locations } = useSelector(
     (state) => state.user.user
@@ -86,17 +87,17 @@ const WorkOrder = () => {
   };
   const handleReset = () => {
     const clearedFilters = {
-      status: '',
-      client_id: '',
-      location_id: '',
-      technician: '',
-      project_manager: ''
+      status: "",
+      client_id: "",
+      location_id: "",
+      technician: "",
+      project_manager: "",
+      is_billed: '', 
     };
     setFilters(clearedFilters);
     dispatch(getWorkOrderLists(clearedFilters));
   };
-  
-  
+
   function formatDate(date) {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, "0");
@@ -106,16 +107,16 @@ const WorkOrder = () => {
   }
 
   const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
     }
     setSortConfig({ key, direction });
   };
   const sortedWorkOrders = React.useMemo(() => {
     if (!workOrders) return [];
-  
-    const sorted = [...workOrders?.workOrder || []];
+
+    const sorted = [...(workOrders?.workOrder || [])];
     if (sortConfig.key) {
       sorted.sort((a, b) => {
         let aValue = a[sortConfig.key];
@@ -125,26 +126,29 @@ const WorkOrder = () => {
           aValue = a.client_name || "";
           bValue = b.client_name || "";
         }
-        if (sortConfig.key === 'client_location') {
-          aValue = `${a.location_details?.address_line_one ?? ''} ${a.location_details?.address_line_two ?? ''}`.toLowerCase();
-          bValue = `${b.location_details?.address_line_one ?? ''} ${b.location_details?.address_line_two ?? ''}`.toLowerCase();
+        if (sortConfig.key === "client_location") {
+          aValue = `${a.location_details?.address_line_one ?? ""} ${
+            a.location_details?.address_line_two ?? ""
+          }`.toLowerCase();
+          bValue = `${b.location_details?.address_line_one ?? ""} ${
+            b.location_details?.address_line_two ?? ""
+          }`.toLowerCase();
         }
-        
-  
-        if (sortConfig.key === 'service_date') {
+
+        if (sortConfig.key === "service_date") {
           aValue = new Date(aValue);
           bValue = new Date(bValue);
         }
-  
-        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+
+        if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
         return 0;
       });
     }
-  
+
     return sorted;
   }, [workOrders, sortConfig]);
- 
+
   return (
     <>
       <Header />
@@ -315,6 +319,43 @@ const WorkOrder = () => {
                         })}
                       </select>
                     </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="font-normal text-sm">
+                        Filter By Billed Status
+                      </label>
+                      <select
+                        name="is_billed"
+                        value={filters.is_billed}
+                        className="px-3 border border-gray-200 h-10 rounded"
+                        onChange={handleFilterChange}
+                      >
+                        <option value="">All</option>
+                        <option value="Unbilled">Unbilled</option>
+                        <option value="Deposit Billed">Deposit Billed</option>
+                        <option value="Progress Payment 1 Billed">
+                          Progress Payment 1 Billed
+                        </option>
+                        <option value="Progress Payment 2 Billed">
+                          Progress Payment 2 Billed
+                        </option>
+                        <option value="Progress Payment 3 Billed">
+                          Progress Payment 3 Billed
+                        </option>
+                        <option value="Progress Payment 4 Billed">
+                          Progress Payment 4 Billed
+                        </option>
+                        <option value="Progress Payment 5 Billed">
+                          Progress Payment 5 Billed
+                        </option>
+                        <option value="Progress Payment 6 Billed">
+                          Progress Payment 6 Billed
+                        </option>
+                        <option value="Final Billed">Final Billed</option>
+                        <option value="Retainage Billed">
+                          Retainage Billed
+                        </option>
+                      </select>
+                    </div>
                   </>
                 )}
                 <div className="flex gap-2">
@@ -338,19 +379,50 @@ const WorkOrder = () => {
               <table className="mt-2 w-full overflow-x-scroll">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border" onClick={() => handleSort('ticket_number')}>
-                      Ticket Number {sortConfig.key === 'ticket_number'
-                        ? sortConfig.direction === 'asc' ? '▲' : '▼'
-                        : '↕'} {/* default icon */}
+                    <th
+                      className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border"
+                      onClick={() => handleSort("ticket_number")}
+                    >
+                      Ticket Number{" "}
+                      {sortConfig.key === "ticket_number"
+                        ? sortConfig.direction === "asc"
+                          ? "▲"
+                          : "▼"
+                        : "↕"}{" "}
+                      {/* default icon */}
                     </th>
-                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border" onClick={() => handleSort("client_name")}>
-                      Client Name  {sortConfig.key === 'client_name' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}
+                    <th
+                      className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border"
+                      onClick={() => handleSort("client_name")}
+                    >
+                      Client Name{" "}
+                      {sortConfig.key === "client_name"
+                        ? sortConfig.direction === "asc"
+                          ? "▲"
+                          : "▼"
+                        : "↕"}
                     </th>
-                    <th className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border" onClick={() => handleSort('client_location')}>
-                      Client Location {sortConfig.key === 'client_location' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}
+                    <th
+                      className="px-1 py-1 text-left  text-sm font-semibold  tracking-wider border"
+                      onClick={() => handleSort("client_location")}
+                    >
+                      Client Location{" "}
+                      {sortConfig.key === "client_location"
+                        ? sortConfig.direction === "asc"
+                          ? "▲"
+                          : "▼"
+                        : "↕"}
                     </th>
-                    <th className="px-1 py-1 text-left text-sm font-semibold  tracking-wider border" onClick={() => handleSort('service_date')}>
-                      Service Date {sortConfig.key === 'service_date' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}
+                    <th
+                      className="px-1 py-1 text-left text-sm font-semibold  tracking-wider border"
+                      onClick={() => handleSort("service_date")}
+                    >
+                      Service Date{" "}
+                      {sortConfig.key === "service_date"
+                        ? sortConfig.direction === "asc"
+                          ? "▲"
+                          : "▼"
+                        : "↕"}
                     </th>
                     <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
                       Contact Person
@@ -360,6 +432,9 @@ const WorkOrder = () => {
                     </th>
                     <th className="px-1 py-1 text-left text-sm  font-semibold  tracking-wider border">
                       Status
+                    </th>
+                    <th className="px-1 py-1 text-left text-sm  font-semibold  tracking-wider border">
+                      Billed
                     </th>
                     <th className="px-1 py-1 text-left text-sm  font-semibold  tracking-wider border">
                       Service Request
@@ -373,7 +448,7 @@ const WorkOrder = () => {
                   {workOrders && workOrders.workOrder?.length > 0 ? (
                     sortedWorkOrders?.map((order) => (
                       <tr key={order.id} className="text-left ">
-                        <td className="border text-sm px-1 py-3" >
+                        <td className="border text-sm px-1 py-3">
                           {order?.ticket_number ? order?.ticket_number : "NA"}
                         </td>
                         <td className="border text-sm px-1 py-3">
@@ -399,20 +474,22 @@ const WorkOrder = () => {
                         <td className="border text-sm px-1 py-3">
                           {order.status}
                         </td>
+                        <td className="border text-sm px-1 py-3">
+                          {order.is_billed  ? order.is_billed : "NA"}
+                        </td>
                         <td className="border text-sm  px-1 py-3">
                           {order.issue}
                         </td>
                         <td className="border text-sm px-1 py-3">
                           <div className="flex gap-2">
-                          <div className="p-[4px] bg-gray-100 cursor-pointer">
-                            <a
-                              href={`/edit-work-order/${order?.work_order_id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <BiSolidEditAlt />
-                            </a>
-                          </div>
+                            <div className="p-[4px] bg-gray-100 cursor-pointer">
+                              <a
+                                href={`/edit-work-order/${order?.work_order_id}`}
+                                className="inline-block"
+                              >
+                                <BiSolidEditAlt />
+                              </a>
+                            </div>
 
                             {user_type === "Admin" && (
                               <div className="p-[4px] bg-gray-100 cursor-pointer">

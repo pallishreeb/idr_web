@@ -10,11 +10,11 @@ const ServiceTicketCard = ({
   handleServiceTicketChange,
   handleSaveTicket,
   isEditing,
-  setIsEditing
+  setIsEditing,
 }) => {
   // const [isEditing, setIsEditing] = useState(false);
   const { user_type } = useSelector((state) => state.user.user);
-  const { access ,technicianAccess} = useSelector((state) => state.user);
+  const { access, technicianAccess } = useSelector((state) => state.user);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -22,90 +22,113 @@ const ServiceTicketCard = ({
 
   useEffect(() => {
     if (serviceTicket.location_id) {
-      const selectedLocation = locations.find(location => location.location_id === serviceTicket.location_id);
+      const selectedLocation = locations.find(
+        (location) => location.location_id === serviceTicket.location_id
+      );
       if (selectedLocation) {
-        handleServiceTicketChange({ target: { name: "address_line_one", value: selectedLocation.address_line_one } });
-        handleServiceTicketChange({ target: { name: "city", value: selectedLocation.city } });
-        handleServiceTicketChange({ target: { name: "state", value: selectedLocation.state } });
-        handleServiceTicketChange({ target: { name: "zipcode", value: selectedLocation.zipcode } });
-        handleServiceTicketChange({ target: { name: "address_line_two", value: selectedLocation.address_line_two } });
-        handleServiceTicketChange({ target: { name: "address_line_three", value: selectedLocation.address_line_three } });
+        handleServiceTicketChange({
+          target: {
+            name: "address_line_one",
+            value: selectedLocation.address_line_one,
+          },
+        });
+        handleServiceTicketChange({
+          target: { name: "city", value: selectedLocation.city },
+        });
+        handleServiceTicketChange({
+          target: { name: "state", value: selectedLocation.state },
+        });
+        handleServiceTicketChange({
+          target: { name: "zipcode", value: selectedLocation.zipcode },
+        });
+        handleServiceTicketChange({
+          target: {
+            name: "address_line_two",
+            value: selectedLocation.address_line_two,
+          },
+        });
+        handleServiceTicketChange({
+          target: {
+            name: "address_line_three",
+            value: selectedLocation.address_line_three,
+          },
+        });
       }
     }
   }, [serviceTicket?.location_id, locations]);
 
-    // Helper to disable fields for IDR Employees (except status)
-    const isFieldDisabled = (fieldName) => {
-      if (user_type === "IDR Employee") {
-        return fieldName !== "status"; // Disable all fields except status
-      } else {
-        return !isEditing || !access.includes(user_type); // Admins/subadmins follow edit mode
-      }
-    };
+  // Helper to disable fields for IDR Employees (except status)
+  const isFieldDisabled = (fieldName) => {
+    if (user_type === "IDR Employee") {
+      return fieldName !== "status"; // Disable all fields except status
+    } else {
+      return !isEditing || !access.includes(user_type); // Admins/subadmins follow edit mode
+    }
+  };
 
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
-        <h1 className="text-xl font-normal mb-2">Service Ticket - {serviceTicket?.service_ticket_number }</h1>
-        {access.includes(user_type) && 
-        <div>
-          {isEditing ? (
-            <>
+        <h1 className="text-xl font-normal mb-2">
+          Service Ticket - {serviceTicket?.service_ticket_number}
+        </h1>
+        {access.includes(user_type) && (
+          <div>
+            {isEditing ? (
+              <>
+                <button
+                  className="bg-indigo-600 text-white px-6 py-2 rounded"
+                  onClick={handleSaveTicket}
+                >
+                  Save Ticket
+                </button>
+                <button
+                  className="bg-gray-500 text-white px-6 py-2 rounded ml-2"
+                  onClick={handleEditToggle}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
               <button
-              className="bg-indigo-600 text-white px-6 py-2 rounded"
-              onClick={handleSaveTicket}
-            >
-              Save Ticket
-            </button>
-               <button
-               className="bg-gray-500 text-white px-6 py-2 rounded ml-2"
-               onClick={handleEditToggle}
-             >
-               Cancel
-             </button>
-            </>
-          ) : (
-            <button
-              className="bg-indigo-600 text-white px-6 py-2 rounded"
-              onClick={handleEditToggle}
-            >
-              Edit
-            </button>
-          )}
-        </div>}
+                className="bg-indigo-600 text-white px-6 py-2 rounded"
+                onClick={handleEditToggle}
+              >
+                Edit
+              </button>
+            )}
+          </div>
+        )}
         {user_type === "IDR Employee" && (
           <div>
-          
-          {isEditing ? (
-            <>
+            {isEditing ? (
+              <>
+                <button
+                  className="bg-indigo-600 text-white px-6 py-2 rounded"
+                  onClick={handleSaveTicket}
+                >
+                  Save Ticket
+                </button>
+                <button
+                  className="bg-gray-500 text-white px-6 py-2 rounded ml-2"
+                  onClick={handleEditToggle}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
               <button
-              className="bg-indigo-600 text-white px-6 py-2 rounded"
-              onClick={handleSaveTicket}
-            >
-              Save Ticket
-            </button>
-               <button
-               className="bg-gray-500 text-white px-6 py-2 rounded ml-2"
-               onClick={handleEditToggle}
-             >
-               Cancel
-             </button>
-            </>
-          ) : (
-            <button
-            className="bg-indigo-600 text-white px-6 py-2 rounded"
-            onClick={() => {
-              setIsEditing(true); // Allow editing when closing ticket
-              // handleServiceTicketChange({ target: { name: "status", value: "Closed" } });
-            }}
-          >
-            Edit Ticket
-          </button>
-          )}
+                className="bg-indigo-600 text-white px-6 py-2 rounded"
+                onClick={() => {
+                  setIsEditing(true); // Allow editing when closing ticket
+                  // handleServiceTicketChange({ target: { name: "status", value: "Closed" } });
+                }}
+              >
+                Edit Ticket
+              </button>
+            )}
           </div>
-
-)}
-
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-8">
@@ -362,11 +385,26 @@ const ServiceTicketCard = ({
             disabled={isFieldDisabled("local_onsite_contact_number")}
           />
         </div>
-
+        <div className="flex flex-col gap-2">
+        <label className="font-normal text-base">Billed</label>
+        <select
+          name="is_billed"
+          className="px-3 border border-gray-200 h-10 text-sm rounded"
+          value={serviceTicket.is_billed || ""}
+          onChange={handleServiceTicketChange}
+          disabled={!isEditing}
+        >
+          <option value="">Choose Option</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
       </div>
       <div className="grid grid-cols-1 gap-8">
-      <div className="flex flex-col gap-2">
-          <label className="font-normal text-base">Service Ticket Details</label>
+        <div className="flex flex-col gap-2">
+          <label className="font-normal text-base">
+            Service Ticket Details
+          </label>
           <textarea
             rows={8}
             name="service_ticket_details"
@@ -388,6 +426,7 @@ const ServiceTicketCard = ({
           ></textarea>
         </div> */}
       </div>
+
     </div>
   );
 };
