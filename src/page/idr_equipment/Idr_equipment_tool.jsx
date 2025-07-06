@@ -169,7 +169,7 @@ const handleExportToExcel = () => {
                 onClick={handleExportToExcel}
                 className="bg-green-600 text-white px-6 py-2 rounded"
               >
-                Export Excel
+                Export IDR Equipment
               </button>
               <Link to="/add-company-equipment">
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded">
