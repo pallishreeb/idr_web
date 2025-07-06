@@ -212,7 +212,7 @@ const handleInventoryExportToExcel = () => {
           <div className="flex justify-between items-center">
             <h1 className="font-bold text-lg">Inventory</h1>
             <div className="flex gap-2">
-              {user_type === "Admin" && (
+              {access.includes(user_type) &&  (
                 <button
                   className="bg-green-600 text-white px-6 py-2 rounded"
                   onClick={handleInventoryExportToExcel}
