@@ -332,6 +332,7 @@ const ServiceTickets = () => {
                         <option value="Yes">Yes</option>
                         <option value="No">No</option>
                         <option value="Service Agreement">Service Agreement</option>
+                        <option value="Warranty">Warranty</option>
                       </select>
                     </div>
                   </>
