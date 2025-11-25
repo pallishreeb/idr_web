@@ -20,6 +20,7 @@ import {
   deleteAssigneeSuccess, deleteNoteSuccess,getWorkOrderListsForClientSuccess,returnInventoryStart,
   returnInventorySuccess,returnInventoryFailure
 } from "../reducers/workOrderSlice";
+import { serviceTicketImageStart, serviceTicketImageSuccess, serviceTicketImageFailure }  from "../reducers/serviceTicketSlice";
 import { apiConfig } from "../config";
 
 export const generateTicket = (ticketData) => {
@@ -316,3 +317,66 @@ export const returnEquipment = (inventoryId) => {
     }
   };
 };
+
+//esign in work order
+export const uploadWorkOrderSign = (workOrderId, formData) => {
+  return async (dispatch) => {
+    dispatch(serviceTicketImageStart());
+
+    try {
+      // ✅ Ensure work_order_id is included
+      if (!formData.has("work_order_id")) {
+        formData.append("work_order_id", workOrderId);
+      }
+
+      const response = await axios.post(
+        `${apiConfig.esignWorkOrder}`, 
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      dispatch(serviceTicketImageSuccess(response?.data));
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading Sign:", error);
+      dispatch(serviceTicketImageFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to upload sign.");
+    }
+  };
+};
+
+
+//upload image in work order
+export const uploadWorkOrderImages = (serviceTicketId, images) => {
+  return async (dispatch) => {
+    dispatch(serviceTicketImageStart());
+
+    const formData = new FormData();
+    formData.append("service_ticket_id", serviceTicketId);
+
+    images.forEach((image, index) => {
+      formData.append(`image`, image);
+    });
+
+    try {
+      const response = await axios.post(`${apiConfig.addAttachmentToWorkOrder}/${serviceTicketId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // console.log("response from image upload",response)
+      dispatch(serviceTicketImageSuccess(response?.data));
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      dispatch(serviceTicketImageFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to upload images.");
+    }
+  };
+};
+

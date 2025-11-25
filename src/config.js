@@ -131,7 +131,8 @@ const apiConfig = {
   serviceReqInfo: "/service_req/info",
   updateServiceNotes: "/service_ticket/edit_st_notes",
   updateRmaNotes:"/rma/note",
-  deleteServiceRequest:"service_req"
+  deleteServiceRequest:"service_req",
+  esignWorkOrder: "/work_order/sign",
 };
 
 export { API_BASE_URL, apiConfig,S3_BASE_URL };

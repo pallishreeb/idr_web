@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { FaDownload } from "react-icons/fa";
 import axios from '../../axios-config';
+import { S3_BASE_URL } from "../../config";
 import Header from "../../Components/Header";
 import SideNavbar from "../../Components/AdminSideNavbar";
 import NotesTable from "../../Components/NotesTable";
@@ -23,10 +24,18 @@ import { getLocationByClient } from "../../actions/locationActions";
 import { getClientEmployeeByClientId } from "../../actions/clientEmployeeActions";
 import { fetchIDREmployees } from "../../actions/employeeActions";
 import Loader from "../../Images/ZZ5H.gif"
+import WorkOrderImages from "../../Components/WorkOrderImages";
+import WOSignatureModal from "../../Components/WOSignatureModal";
+
 
 const EditWorkOrder = () => {
   const { workOrderId } = useParams();
   const dispatch = useDispatch();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [signatureImage, setSignatureImage] = useState(null);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
   const { workOrderDetails, loading, error,loadingDetails } = useSelector(
     (state) => state.workOrder
   );
@@ -36,10 +45,12 @@ const EditWorkOrder = () => {
   const clientEmployees = useSelector(
     (state) => state.clientEmployee.clientEmployees
   );
+ const { user_type } = useSelector((state) => state.user.user);
   const idrEmployees = useSelector((state) => state.employee.idrEmployees);
   const [workOrder, setWorkOrder] = useState(null);
   const [technicians, setTechnicians] = useState([]);
   const [notes, setNotes] = useState([]);
+    const [serviceTicketImages, setServiceTicketImages] = useState([]);
   const [assignees, setAssignees] = useState([]);
   const [inventories, setInventories] = useState([]);
   const [equipments, setEquipments] = useState([]);
@@ -61,6 +72,10 @@ const EditWorkOrder = () => {
       setAssignees(workOrderDetails.assignees || []);
       setInventories(workOrderDetails.inventories || []);
       setEquipments(workOrderDetails.equipment || []);
+      setServiceTicketImages(
+        workOrderDetails?.workorder_attachments || []
+      );
+    setSignatureImage(workOrderDetails?.signature_url);
     }
   }, [workOrderDetails]);
   useEffect(() => {
@@ -275,7 +290,12 @@ const EditWorkOrder = () => {
       setIsDownloading(false); // Stop loading in case of error
     }
   };
-  
+  const formatDateToMDY = (dateString) => {
+    if (!dateString) return ""; // Handle empty values
+
+    const [day, month, year] = dateString.split("/"); // Extract parts
+    return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
+  };
   
   if (loadingDetails) {
     return (
@@ -370,6 +390,11 @@ const EditWorkOrder = () => {
             loading={loading}
             workOrderId={workOrderId}
           />
+            {/* Show Images  */}
+          <WorkOrderImages
+            images={serviceTicketImages}
+            serviceTicketId={workOrderId}
+          />
           {/* update Notes */}
           <NotesTable
             notes={notes}
@@ -388,6 +413,61 @@ const EditWorkOrder = () => {
              equipments={equipments}
              work_order_id={workOrderId}
           />
+
+          {/* Segnature modal */}
+
+              
+          <div className="p-6">
+            
+            {signatureImage ? (
+              <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
+                <h2 className="text-lg font-semibold text-gray-700">
+                  Signature:
+                </h2>
+
+
+                <img
+                  src={`${S3_BASE_URL}/${signatureImage}`}
+                  alt="Signature"
+                  className="w-full max-w-xs h-auto border border-gray-400 rounded-md p-2 bg-white"
+                />
+
+
+                <div className="flex flex-col w-full text-gray-700">
+                  <p className="text-sm font-medium">
+                    Signed by:{" "}
+                    <span className="font-semibold">
+                      {workOrder ? workOrder.signature_name : ""}
+                    </span>
+                  </p>
+                  <p className="text-sm font-medium">
+                    Date:{" "}
+                    <span className="font-semibold">
+                      {workOrder && workOrder.signature_date
+                        ? formatDateToMDY(workOrder.signature_date)
+                        : ""}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <>
+              {user_type !== "Client Employee" && (
+              <button
+                onClick={openModal}
+                className="bg-indigo-600 text-white px-4 py-2 rounded"
+              >
+                Add Signature
+              </button>
+            )}
+            </>
+          )}
+            <WOSignatureModal
+              isOpen={isModalOpen}
+              onClose={closeModal}
+              serviceTicketId={workOrderId}
+            />
+          </div> 
         </div>
       </div>
     </>

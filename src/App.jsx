@@ -1,6 +1,5 @@
-import { Route, Routes,useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useDispatch } from "react-redux";
+import { Route, Routes } from "react-router-dom";
+import "./axios-config"; // Import axios config to initialize interceptors
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./page/auth/forgot-password";
@@ -32,7 +31,6 @@ import IDREmployeePage from "./page/idr-employee/IDREmployeesPage";
 import EditIDREmployeePage from "./page/idr-employee/EditIDREmployeePage";
 import AddIDREmployeePage from "./page/idr-employee/AddIDREmployeePage";
 import EditWorkOrder from "./page/Idr_workorder/EditWorkOrder";
-import { logout } from "./reducers/userSlice";
 import Inventory from "./page/idr_inventory/Inventory";
 import AddInventory from "./page/idr_inventory/AddInventory";
 import EditInventory from "./page/idr_inventory/EditInventory";
@@ -71,31 +69,30 @@ import EditSubContractor from "./page/sub-contractor/EditSubContractor";
 import ListServiceRequests from "./page/service-requests/ListServiceRequests";
 import AddServiceRequest from "./page/service-requests/AddServiceRequest";
 import AcceptServiceRequest from "./page/service-requests/AcceptServiceRequest";
+import useSessionTimeout from "./hooks/useSessionTimeout";
+import sessionConfig from "./config/sessionConfig";
+import SessionWarningModal from "./Components/SessionWarningModal";
 
 
 
 
 function App() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const token = localStorage.getItem("user_idr_token");
-  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-  axios.interceptors.response.use(
-    function (response) {
-      return response;
-    },
-    function (error) {
-      let res = error?.response;
-      if (res?.status === 401 && res?.config && !res?.config.__isRetryRequest) {
-        localStorage.removeItem("user_idr_token");
-        dispatch(logout());
-        navigate("/");
-      }
-    }
+  // Initialize session timeout with configured values
+  const { showWarning, extendSession, forceLogout, warningTimeSeconds } = useSessionTimeout(
+    sessionConfig.TIMEOUT_MINUTES,
+    sessionConfig.WARNING_MINUTES
   );
+
   return (
     <>
+      {/* Session Warning Modal */}
+      <SessionWarningModal
+        show={showWarning}
+        onExtend={extendSession}
+        onTimeout={forceLogout}
+        timeRemaining={warningTimeSeconds}
+      />
+
       <ToastContainer
         position="top-right"
         autoClose={5000}
