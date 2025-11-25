@@ -452,7 +452,7 @@ const EditWorkOrder = () => {
               </div>
             ) : (
               <>
-              {user_type === "Client Employee" && (
+              {user_type !== "Client Employee" && (
               <button
                 onClick={openModal}
                 className="bg-indigo-600 text-white px-4 py-2 rounded"

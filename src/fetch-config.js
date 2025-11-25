@@ -1,4 +1,7 @@
 import { API_BASE_URL } from "./config";
+import store from './store';
+import { logout } from './reducers/userSlice';
+
 const fetchJson = async (url, options = {}) => {
   const token = localStorage.getItem('user_idr_token');
   const headers = {
@@ -35,6 +38,21 @@ const fetchJson = async (url, options = {}) => {
   const responseData = await response.json();
 
   if (!response.ok) {
+    // Handle 401 Unauthorized - Session expired or invalid token
+    if (response.status === 401) {
+      // Clear local storage
+      localStorage.removeItem('user_idr_token');
+      localStorage.removeItem('user');
+
+      // Dispatch logout action
+      store.dispatch(logout());
+
+      // Redirect to login page
+      window.location.href = '/';
+
+      throw new Error('Session expired. Please login again.');
+    }
+
     const errorMessage = responseData.message || 'Network response was not ok';
     throw new Error(errorMessage);
   }
