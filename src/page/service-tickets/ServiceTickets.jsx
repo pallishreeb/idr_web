@@ -33,7 +33,7 @@ const ServiceTickets = () => {
   const { user_type, client_type, locations } = useSelector(
     (state) => state.user.user
   );
-  const { access, clientAccess } = useSelector((state) => state.user);
+  const { access, clientAccess,technicianAccess } = useSelector((state) => state.user);
   // const { serviceTickets, loading } = useSelector((state) => state.workOrder);
   const { serviceTickets, loading } = useSelector(
     (state) => state.serviceTicket
@@ -222,7 +222,7 @@ const ServiceTickets = () => {
                       </select>
                     </div>
                   )}
-                {access.includes(user_type) && (
+                {technicianAccess.includes(user_type) && (
                   <>
                     <div className="flex flex-col gap-2 w-full">
                       <label className="font-normal text-sm">
@@ -235,14 +235,21 @@ const ServiceTickets = () => {
                         onChange={handleFilterChange}
                       >
                         <option value="">All</option>
-                        {clients?.data?.map((client) => (
-                          <option
-                            key={client.client_id}
-                            value={client.client_id}
-                          >
-                            {client.company_name}
-                          </option>
-                        ))}
+                        {/* Sort clients alphabetically by company name */}
+                        {[...(clients?.data || [])]
+                          .sort((a, b) => {
+                            const nameA = (a.company_name || '').toLowerCase();
+                            const nameB = (b.company_name || '').toLowerCase();
+                            return nameA.localeCompare(nameB);
+                          })
+                          .map((client) => (
+                            <option
+                              key={client.client_id}
+                              value={client.client_id}
+                            >
+                              {client.company_name}
+                            </option>
+                          ))}
                       </select>
                     </div>
                     <div className="flex flex-col gap-2">
@@ -256,15 +263,22 @@ const ServiceTickets = () => {
                         onChange={handleFilterChange}
                       >
                         <option value="">All</option>
-                        {clientLocations.map((location) => (
-                          <option
-                            key={location.location_id}
-                            value={location.location_id}
-                          >
-                            {location.address_line_one}{" "}
-                            {location.address_line_two}
-                          </option>
-                        ))}
+                        {/* Sort locations alphabetically by address */}
+                        {[...(clientLocations || [])]
+                          .sort((a, b) => {
+                            const addressA = `${a.address_line_one || ''} ${a.address_line_two || ''}`.toLowerCase();
+                            const addressB = `${b.address_line_one || ''} ${b.address_line_two || ''}`.toLowerCase();
+                            return addressA.localeCompare(addressB);
+                          })
+                          .map((location) => (
+                            <option
+                              key={location.location_id}
+                              value={location.location_id}
+                            >
+                              {location.address_line_one}{" "}
+                              {location.address_line_two}
+                            </option>
+                          ))}
                       </select>
                     </div>
                   </>

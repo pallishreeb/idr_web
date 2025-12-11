@@ -40,9 +40,9 @@ const ClientEquipments = () => {
     device_type: searchParams.get('device_type') || "",
     status: searchParams.get('status') || "",
   });
-  const [sortConfig, setSortConfig] = useState({ 
-    key: searchParams.get('sort_key') || "", 
-    direction: searchParams.get('sort_direction') || "ASC" 
+  const [sortConfig, setSortConfig] = useState({
+    key: searchParams.get('sort_key') || "device_type",
+    direction: searchParams.get('sort_direction') || "ASC"
   });
 
   const [decommissionModal, setDecommissionModal] = useState({
@@ -428,11 +428,18 @@ const getSortSymbol = (key) => {
                       Loading...
                     </option>
                   ) : (
-                    clients?.data?.map((client) => (
-                      <option key={client.client_id} value={client.client_id}>
-                        {client.company_name}
-                      </option>
-                    ))
+                    // Sort clients alphabetically by company name
+                    [...(clients?.data || [])]
+                      .sort((a, b) => {
+                        const nameA = (a.company_name || '').toLowerCase();
+                        const nameB = (b.company_name || '').toLowerCase();
+                        return nameA.localeCompare(nameB);
+                      })
+                      .map((client) => (
+                        <option key={client.client_id} value={client.client_id}>
+                          {client.company_name}
+                        </option>
+                      ))
                   )}
                 </select>
               </div>
@@ -453,14 +460,21 @@ const getSortSymbol = (key) => {
                       Loading...
                     </option>
                   ) : (
-                    locations?.map((location) => (
-                      <option
-                        key={location.location_id}
-                        value={location.location_id}
-                      >
-                        {location.address_line_one} {location.address_line_two}
-                      </option>
-                    ))
+                    // Sort locations alphabetically by address
+                    [...(locations || [])]
+                      .sort((a, b) => {
+                        const addressA = `${a.address_line_one || ''} ${a.address_line_two || ''}`.toLowerCase();
+                        const addressB = `${b.address_line_one || ''} ${b.address_line_two || ''}`.toLowerCase();
+                        return addressA.localeCompare(addressB);
+                      })
+                      .map((location) => (
+                        <option
+                          key={location.location_id}
+                          value={location.location_id}
+                        >
+                          {location.address_line_one} {location.address_line_two}
+                        </option>
+                      ))
                   )}
                 </select>
               </div>
