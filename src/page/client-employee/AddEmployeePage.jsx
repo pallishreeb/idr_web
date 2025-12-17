@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { addClientEmployee } from '../../actions/clientEmployeeActions'; // Import your client employee actions
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { addClientEmployee } from "../../actions/clientEmployeeActions"; // Import your client employee actions
 import { getClients } from "../../actions/clientActions"; // Import client actions
 import { getLocationByClient } from "../../actions/locationActions"; // Import location actions
-import MultiSelectDropdown from './MultiSelectDropdown';
+import MultiSelectDropdown from "./MultiSelectDropdown";
 
 const AddEmployeePage = () => {
   const dispatch = useDispatch();
@@ -17,14 +17,15 @@ const AddEmployeePage = () => {
   const locations = useSelector((state) => state.location.locations); // Fetch locations based on client
   const loadingClients = useSelector((state) => state.client.loading);
   const loadingEmployees = useSelector((state) => state.clientEmployee.loading);
+  const user = useSelector((state) => state.user.user);
 
   const [formData, setFormData] = useState({
-    client_id: clientId || '',
-    first_name: '',
-    last_name: '',
-    email_id: '',
-    contact_number: '',
-    employee_type: '',
+    client_id: clientId || "",
+    first_name: "",
+    last_name: "",
+    email_id: "",
+    contact_number: "",
+    employee_type: "",
     client_location_id: [], // Initialize as an empty array for multiple locations
     access_to_website: true,
   });
@@ -35,18 +36,25 @@ const AddEmployeePage = () => {
       dispatch(getLocationByClient(clientId)); // Fetch locations if clientId is pre-selected
     }
   }, [dispatch, clientId]);
+  useEffect(() => {
+    if (user?.client_type === "Admin" && user.client_id) {
+      setFormData((prev) => ({
+        ...prev,
+        client_id: String(user.client_id),
+      }));
+      dispatch(getLocationByClient(user.client_id));
+    }
+  }, [user, dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    if (name === 'client_id') {
+    if (name === "client_id") {
       setFormData({ ...formData, client_id: value, client_location_id: [] }); // Reset locations if client changes
       dispatch(getLocationByClient(value));
     }
   };
-
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -75,7 +83,12 @@ const AddEmployeePage = () => {
               <div className="grid grid-cols-2 gap-4">
                 {/* Client Dropdown */}
                 <div className="mb-4">
-                  <label htmlFor="client_id" className="block text-sm font-medium text-gray-700">Client</label>
+                  <label
+                    htmlFor="client_id"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Client
+                  </label>
                   <select
                     id="client_id"
                     name="client_id"
@@ -83,12 +96,22 @@ const AddEmployeePage = () => {
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                     required
+                    disabled={user?.client_type === "Admin"}
                   >
                     <option value="">Select a client</option>
                     {loadingClients ? (
-                      <option value="" disabled>Loading...</option>
+                      <option value="" disabled>
+                        Loading...
+                      </option>
                     ) : (
-                      clients?.data?.map((client) => (
+                      (user?.client_type === "Admin"
+                        ? clients?.data?.filter(
+                            (client) =>
+                              String(client.client_id) ===
+                              String(user.client_id)
+                          )
+                        : clients?.data
+                      )?.map((client) => (
                         <option key={client.client_id} value={client.client_id}>
                           {client.company_name}
                         </option>
@@ -99,7 +122,12 @@ const AddEmployeePage = () => {
 
                 {/* Employee Type Dropdown */}
                 <div className="mb-4">
-                  <label htmlFor="employee_type" className="block text-sm font-medium text-gray-700">Employee Type</label>
+                  <label
+                    htmlFor="employee_type"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Employee Type
+                  </label>
                   <select
                     id="employee_type"
                     name="employee_type"
@@ -118,7 +146,10 @@ const AddEmployeePage = () => {
                 {/* Conditional Scrollable Checkbox List for Locations */}
                 {formData.employee_type === "Location Admin" && (
                   <div className="mb-4">
-                    <label htmlFor="client_location_id" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="client_location_id"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Client Locations
                     </label>
                     <MultiSelectDropdown
@@ -128,7 +159,10 @@ const AddEmployeePage = () => {
                       }))}
                       selectedValues={formData.client_location_id}
                       onChange={(selectedValues) =>
-                        setFormData({ ...formData, client_location_id: selectedValues })
+                        setFormData({
+                          ...formData,
+                          client_location_id: selectedValues,
+                        })
                       }
                     />
                     {formData.client_location_id.length > 0 && (
@@ -137,8 +171,9 @@ const AddEmployeePage = () => {
                         {formData.client_location_id
                           .map(
                             (id) =>
-                              locations.find((location) => location.location_id === id)
-                                ?.address_line_one
+                              locations.find(
+                                (location) => location.location_id === id
+                              )?.address_line_one
                           )
                           .join(", ")}
                       </div>
@@ -146,10 +181,14 @@ const AddEmployeePage = () => {
                   </div>
                 )}
 
-
                 {/* Other Fields */}
                 <div className="mb-4">
-                  <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">First Name</label>
+                  <label
+                    htmlFor="first_name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    First Name
+                  </label>
                   <input
                     type="text"
                     name="first_name"
@@ -161,7 +200,12 @@ const AddEmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">Last Name</label>
+                  <label
+                    htmlFor="last_name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Last Name
+                  </label>
                   <input
                     type="text"
                     name="last_name"
@@ -173,7 +217,12 @@ const AddEmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="email_id" className="block text-sm font-medium text-gray-700">Email</label>
+                  <label
+                    htmlFor="email_id"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Email
+                  </label>
                   <input
                     type="email"
                     name="email_id"
@@ -185,7 +234,12 @@ const AddEmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="contact_number" className="block text-sm font-medium text-gray-700">Contact Number</label>
+                  <label
+                    htmlFor="contact_number"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Contact Number
+                  </label>
                   <input
                     type="text"
                     name="contact_number"
@@ -197,7 +251,9 @@ const AddEmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Allow Access to Website</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Allow Access to Website
+                  </label>
                   <div className="mt-1">
                     <label className="inline-flex items-center">
                       <input
@@ -205,7 +261,12 @@ const AddEmployeePage = () => {
                         name="access_to_website"
                         value="true"
                         checked={formData.access_to_website === true}
-                        onChange={(e) => setFormData({ ...formData, access_to_website: e.target.value === 'true' })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            access_to_website: e.target.value === "true",
+                          })
+                        }
                         className="form-radio h-4 w-4 text-indigo-600"
                       />
                       <span className="ml-2">Yes</span>
@@ -216,7 +277,12 @@ const AddEmployeePage = () => {
                         name="access_to_website"
                         value="false"
                         checked={formData.access_to_website === false}
-                        onChange={(e) => setFormData({ ...formData, access_to_website: e.target.value === 'true' })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            access_to_website: e.target.value === "true",
+                          })
+                        }
                         className="form-radio h-4 w-4 text-indigo-600"
                       />
                       <span className="ml-2">No</span>
@@ -229,13 +295,13 @@ const AddEmployeePage = () => {
                   type="submit"
                   className="bg-indigo-700 text-white px-4 py-2 rounded mr-2"
                 >
-                  {loadingEmployees ? 'Saving' : 'Save'}
+                  {loadingEmployees ? "Saving" : "Save"}
                 </button>
                 <button
                   type="button"
                   className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
                 >
-                  <Link to={'/client-employees'}>Cancel</Link>
+                  <Link to={"/client-employees"}>Cancel</Link>
                 </button>
               </div>
             </form>
