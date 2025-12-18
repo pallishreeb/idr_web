@@ -33,7 +33,7 @@ const AdminSideNavbar = () => {
   ];
 
   const idrMenuItems = [
-    { title: "Client Employees", path: "/client-employees", roles: client_type === "Admin" ? ["Client Employee"] : [""], },
+    { title: "Users", path: "/client-employees", roles: client_type === "Admin" ? ["Client Employee"] : [""], },
     { title: "IDR Employees", path: "/idr-employees", roles: ["Admin", "Subadmin"] },
     { title: "Service Agreements", path: "/service-agreements", roles: client_type !== "User" 
       ? ["Client Employee"] 

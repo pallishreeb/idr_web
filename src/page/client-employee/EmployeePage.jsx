@@ -72,6 +72,7 @@ const handleDeleteEmployee = (employeeId) => {
       <div className="flex">
         <AdminSideNavbar />
         <div className="container mx-auto p-4 bg-gray-50">
+                    {["Admin", "Subadmin"].includes(user?.user_type) && (
           <div className="flex flex-col mb-4">
             <label htmlFor="client" className="mr-2 text-xl font-semibold">Select Client To View Employees:</label>
           <select
@@ -94,8 +95,8 @@ const handleDeleteEmployee = (employeeId) => {
               ))
             )}
           </select>
-
           </div>
+                    )}
 
           {selectedClient !== null && (
             <div className="mb-4">

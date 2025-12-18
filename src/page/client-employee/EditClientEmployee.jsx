@@ -129,6 +129,7 @@ const EditEmployeePage = () => {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 {/* Client Dropdown */}
+                {["Admin", "Subadmin"].includes(user?.user_type) && (
                 <div className="mb-4">
                   <label
                     htmlFor="client_id"
@@ -165,7 +166,7 @@ const EditEmployeePage = () => {
                     )}
                   </select>
                 </div>
-
+                  )}
                 {/* Employee Type Dropdown */}
                 <div className="mb-4">
                   <label
