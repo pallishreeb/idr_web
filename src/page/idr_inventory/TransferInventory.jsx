@@ -1,4 +1,4 @@
-import { useNavigate,useParams } from "react-router-dom";
+import { useNavigate,useParams,useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -12,9 +12,15 @@ import { inventoryTransfer, inventoryWorkOrderAssign ,inventoryAssignToServiceTi
 import {
   getInventoryById
 } from "../../actions/inventoryAction";
+
+
+
+
 const TransferInventory = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+  const previousFilters = location.state;
   const { inventory_id } = useParams();
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedClientName, setSelectedClientName] = useState("");
@@ -71,7 +77,7 @@ const TransferInventory = () => {
   const handleAssignWorkorder = (e) => {
     e.preventDefault();
     // API call to assign inventory to work order
-    dispatch(inventoryWorkOrderAssign({ inventory_id: inventory_id, work_order_id: selectedWorkorder, quantity: quantityAssigned },navigate));
+    dispatch(inventoryWorkOrderAssign({ inventory_id: inventory_id, work_order_id: selectedWorkorder, quantity: quantityAssigned },navigate,previousFilters));
     setQuantityAssigned("");
   };
   const handleAssignServiceTicket = (e) => {
@@ -84,7 +90,8 @@ const TransferInventory = () => {
           service_ticket_id: selectedServiceTicket,
           quantity: quantityAssignedToTicket,
         },
-        navigate
+        navigate,
+        previousFilters
       )
     );
     setQuantityAssignedToTicket("");
@@ -93,7 +100,7 @@ const TransferInventory = () => {
     e.preventDefault();
     // console.log(selectedLocation)
     // API call to transfer inventory to another location
-    dispatch(inventoryTransfer({ inventory_id: inventory_id, location_id: selectedLocation, quantity: quantityTransferred },navigate));
+    dispatch(inventoryTransfer({ inventory_id: inventory_id, location_id: selectedLocation, quantity: quantityTransferred },navigate,previousFilters));
     setQuantityTransferred("");
   };
   const availableLocations = locationsInventory?.filter(
@@ -111,7 +118,10 @@ const TransferInventory = () => {
             <div className="flex gap-3">
               <button
                 className="border border-gray-400 text-gray-400 px-6 py-2 rounded"
-                onClick={() => navigate("/inventory")}
+                onClick={() => navigate("/inventory", {
+                      state: previousFilters,
+                    })
+                    }
               >
                 Cancel
               </button>

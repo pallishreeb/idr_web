@@ -4,12 +4,17 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { useDispatch, useSelector } from "react-redux";
 import { getLocationInventory } from "../../actions/locationsInventoryAction";
 import { getInventoryById, updateInventory } from "../../actions/inventoryAction";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,useLocation } from "react-router-dom";
 import Loader from "../../Images/ZZ5H.gif";
+
+
+
 
 const EditInventory = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const previousFilters = location.state;
   const { inventory_id } = useParams();
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false); // State to track loading status
@@ -94,7 +99,7 @@ const EditInventory = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     editableFields.inventory_id = inventory_id;
-    dispatch(updateInventory(editableFields, navigate));
+    dispatch(updateInventory(editableFields, navigate,location?.state));
   };
 
   if (loading) {
@@ -125,8 +130,10 @@ const EditInventory = () => {
               <button
                 type="button"
                 className="border py-2 px-4 rounded"
-                onClick={() => navigate("/inventory")}
-              >
+                onClick={() => navigate("/inventory", {
+                      state: previousFilters,
+                    })}
+                                  >
                 Back
               </button>
             </div>
