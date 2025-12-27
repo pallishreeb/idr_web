@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation} from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
@@ -19,7 +19,12 @@ import { toast } from "react-toastify";
 import Loader from "../../Images/ZZ5H.gif";
 import Swal from "sweetalert2";
 import * as XLSX from 'xlsx';
+
+
+
+
 const Inventory = () => {
+  const locationState = useLocation();
   const [showModal, setShowModal] = useState(false);
   const [location, setLocation] = useState("");
   const [filters, setFilters] = useState({
@@ -48,11 +53,33 @@ const Inventory = () => {
   const locationsLoading = useSelector(
     (state) => state.locationInventory.loading
   );
+  const [filtersReady, setFiltersReady] = useState(false);
 
-  useEffect(() => {
-    dispatch(getLocationInventory());
-    dispatch(getInventories(filters));
-  }, [dispatch, filters]); // Fetch inventory initially and whenever filters (except search) change
+useEffect(() => {
+  if (locationState.state) {
+    const restoredFilters = {
+      location: locationState.state.filters?.location || "",
+      search: locationState.state.searchTerm || "",
+      device_type: locationState.state.deviceType || "",
+      model: locationState.state.model || "",
+    };
+
+    setFilters(restoredFilters);
+    setSearchTerm(restoredFilters.search);
+    setDeviceType(restoredFilters.device_type);
+    setModel(restoredFilters.model);
+  }
+
+  setFiltersReady(true); // ✅ mark ready
+}, []);
+
+useEffect(() => {
+  if (!filtersReady) return;
+
+  dispatch(getLocationInventory());
+  dispatch(getInventories(filters));
+}, [dispatch, filters, filtersReady]);
+// Fetch inventory initially and whenever filters (except search) change
 
   // const [allDeviceTypes, setAllDeviceTypes] = useState([]);
   // const [allModels, setAllModels] = useState([]);
@@ -82,7 +109,9 @@ const Inventory = () => {
       device_type: deviceType,
       model: model,
     };
-    dispatch(getInventories(newFilters));
+
+    setFilters(newFilters); 
+    // dispatch(getInventories(newFilters));
   };
 
   const handleReset = () => {
@@ -175,7 +204,6 @@ const Inventory = () => {
     dispatch(updateInventory(inventoryData, navigate)).then(() => {
       setEditRowId(null);
       setEditQuantity("");
-      dispatch(getInventories(filters)); // Optional refresh
     });
   };
 const handleInventoryExportToExcel = () => {
@@ -475,9 +503,15 @@ const handleInventoryExportToExcel = () => {
                               <div className="p-[4px] bg-gray-100 cursor-pointer">
                                 <BiSolidEditAlt
                                   onClick={() =>
-                                    navigate(
-                                      `/edit_inventory/${item.inventory_id}`
-                                    )
+                                    navigate(`/edit_inventory/${item.inventory_id}`, {
+                                      state: {
+                                        filters,
+                                        searchTerm,
+                                        deviceType,
+                                        model,
+                                      },
+                                    })
+
                                   }
                                 />
                               </div>
@@ -485,7 +519,14 @@ const handleInventoryExportToExcel = () => {
                                 <BiTransferAlt
                                   onClick={() =>
                                     navigate(
-                                      `/transfer-inventory/${item.inventory_id}`
+                                      `/transfer-inventory/${item.inventory_id}`, {
+                                      state: {
+                                        filters,
+                                        searchTerm,
+                                        deviceType,
+                                        model,
+                                      },
+                                    }
                                     )
                                   }
                                 />

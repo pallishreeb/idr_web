@@ -9,7 +9,7 @@ import {
 } from "../../actions/clientEmployeeActions"; // Import your client employee actions
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions"; // Import location actions
-import MultiSelectDropdown from './MultiSelectDropdown'; // Import MultiSelectDropdown component
+import MultiSelectDropdown from "./MultiSelectDropdown"; // Import MultiSelectDropdown component
 
 const EditEmployeePage = () => {
   const dispatch = useDispatch();
@@ -21,6 +21,7 @@ const EditEmployeePage = () => {
   const loadingClients = useSelector((state) => state.client.loading);
   const employee = useSelector((state) => state.clientEmployee.employee);
   const loadingEmployees = useSelector((state) => state.clientEmployee.loading);
+  const user = useSelector((state) => state.user.user);
 
   const [formData, setFormData] = useState({
     client_id: "",
@@ -37,6 +38,21 @@ const EditEmployeePage = () => {
     dispatch(getEmployeeById(employeeId));
     dispatch(getClients());
   }, [dispatch, employeeId]);
+  useEffect(() => {
+    if (
+      user?.client_type === "Admin" &&
+      user?.client_id &&
+      formData.client_id &&
+      String(formData.client_id) !== String(user.client_id)
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        client_id: String(user.client_id),
+        client_location_id: [],
+      }));
+      dispatch(getLocationByClient(user.client_id));
+    }
+  }, [user, formData.client_id, dispatch]);
 
   useEffect(() => {
     if (employee) {
@@ -52,7 +68,8 @@ const EditEmployeePage = () => {
       } = employee;
 
       // Extract assigned location IDs from the locations array
-      const assignedLocationIds = locations?.map((location) => location.client_location_id) || [];
+      const assignedLocationIds =
+        locations?.map((location) => location.client_location_id) || [];
 
       setFormData({
         client_id,
@@ -88,7 +105,8 @@ const EditEmployeePage = () => {
 
     // Ensure client_location_id is an array
     if (typeof updatedFormData.client_location_id === "string") {
-      updatedFormData.client_location_id = updatedFormData.client_location_id.split(",");
+      updatedFormData.client_location_id =
+        updatedFormData.client_location_id.split(",");
     }
 
     // Remove client_location_id if employee_type is not "Location Admin"
@@ -111,8 +129,12 @@ const EditEmployeePage = () => {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 {/* Client Dropdown */}
+                {["Admin", "Subadmin"].includes(user?.user_type) && (
                 <div className="mb-4">
-                  <label htmlFor="client_id" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="client_id"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Client
                   </label>
                   <select
@@ -121,6 +143,7 @@ const EditEmployeePage = () => {
                     value={formData.client_id}
                     onChange={handleChange}
                     className="mt-1 p-2 block w-full border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    disabled={user?.client_type === "Admin"}
                   >
                     <option value="">Select a client</option>
                     {loadingClients ? (
@@ -128,7 +151,14 @@ const EditEmployeePage = () => {
                         Loading...
                       </option>
                     ) : (
-                      clients?.data?.map((client) => (
+                      (user?.client_type === "Admin"
+                        ? clients?.data?.filter(
+                            (client) =>
+                              String(client.client_id) ===
+                              String(user.client_id)
+                          )
+                        : clients?.data
+                      )?.map((client) => (
                         <option key={client.client_id} value={client.client_id}>
                           {client.company_name}
                         </option>
@@ -136,10 +166,13 @@ const EditEmployeePage = () => {
                     )}
                   </select>
                 </div>
-
+                  )}
                 {/* Employee Type Dropdown */}
                 <div className="mb-4">
-                  <label htmlFor="employee_type" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="employee_type"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Employee Type
                   </label>
                   <select
@@ -160,7 +193,10 @@ const EditEmployeePage = () => {
                 {/* Conditional Location Dropdown (Multiple Locations Selection) */}
                 {formData.employee_type === "Location Admin" && (
                   <div className="mb-4">
-                    <label htmlFor="client_location_ids" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="client_location_ids"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Client Locations
                     </label>
                     <MultiSelectDropdown
@@ -170,26 +206,36 @@ const EditEmployeePage = () => {
                       }))}
                       selectedValues={formData.client_location_id || []} // Pass assigned locations
                       onChange={(selectedValues) =>
-                        setFormData({ ...formData, client_location_id: selectedValues })
+                        setFormData({
+                          ...formData,
+                          client_location_id: selectedValues,
+                        })
                       }
                     />
 
-                    {Array.isArray(formData.client_location_id) && formData.client_location_id.length > 0 && (
-                      <div className="mt-2 text-sm text-gray-600">
-                        Selected Locations:{" "}
-                        {formData.client_location_id
-                          .map((id) =>
-                            locations.find((location) => location.location_id === id)?.address_line_one
-                          )
-                          .join(", ")}
-                      </div>
-                    )}
+                    {Array.isArray(formData.client_location_id) &&
+                      formData.client_location_id.length > 0 && (
+                        <div className="mt-2 text-sm text-gray-600">
+                          Selected Locations:{" "}
+                          {formData.client_location_id
+                            .map(
+                              (id) =>
+                                locations.find(
+                                  (location) => location.location_id === id
+                                )?.address_line_one
+                            )
+                            .join(", ")}
+                        </div>
+                      )}
                   </div>
                 )}
 
                 {/* Other Fields */}
                 <div className="mb-4">
-                  <label htmlFor="first_name" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="first_name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     First Name
                   </label>
                   <input
@@ -203,7 +249,10 @@ const EditEmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="last_name" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="last_name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Last Name
                   </label>
                   <input
@@ -217,7 +266,10 @@ const EditEmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="email_id" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="email_id"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Email
                   </label>
                   <input
@@ -231,7 +283,10 @@ const EditEmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="contact_number" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="contact_number"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Contact Number
                   </label>
                   <input
@@ -245,7 +300,9 @@ const EditEmployeePage = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Allow Access to Website</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Allow Access to Website
+                  </label>
                   <div className="mt-1">
                     <label className="inline-flex items-center">
                       <input
@@ -253,7 +310,12 @@ const EditEmployeePage = () => {
                         name="access_to_website"
                         value="true"
                         checked={formData.access_to_website === true}
-                        onChange={(e) => setFormData({ ...formData, access_to_website: e.target.value === "true" })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            access_to_website: e.target.value === "true",
+                          })
+                        }
                         className="form-radio h-4 w-4 text-indigo-600"
                       />
                       <span className="ml-2">Yes</span>
@@ -264,7 +326,12 @@ const EditEmployeePage = () => {
                         name="access_to_website"
                         value="false"
                         checked={formData.access_to_website === false}
-                        onChange={(e) => setFormData({ ...formData, access_to_website: e.target.value === "true" })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            access_to_website: e.target.value === "true",
+                          })
+                        }
                         className="form-radio h-4 w-4 text-indigo-600"
                       />
                       <span className="ml-2">No</span>

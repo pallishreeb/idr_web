@@ -70,14 +70,19 @@ const inventorySlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    updateInventorySuccess: (state, action) => {
-      state.loading = false;
-      state.error = null;
-      // const index = state.inventories.findIndex(inventory => inventory.id === action.payload.id);
-      // if (index !== -1) {
-      //   state.inventories[index] = action.payload;
-      // }
-    },
+updateInventorySuccess: (state, action) => {
+  state.loading = false;
+  state.error = null;
+
+  if (state.inventories?.data) {
+    state.inventories.data = state.inventories.data.map((item) =>
+      item.inventory_id === action.payload.inventory_id
+        ? { ...item, quantity: action.payload.quantity }
+        : item
+    );
+  }
+},
+
     updateInventoryFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;

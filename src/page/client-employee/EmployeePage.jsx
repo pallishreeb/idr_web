@@ -16,7 +16,8 @@ const EmployeePage = () => {
   const loadingClients = useSelector((state) => state.client.loading);
   const employees = useSelector((state) => state.clientEmployee.clientEmployees); // Get client employees from the client employees slice
   const loadingEmployees = useSelector((state) => state.clientEmployee.loading);
-  const { user_type } = useSelector((state) => state.user.user);
+  const user = useSelector((state) => state.user.user); // use user.client_type and user.client_id
+
   const [selectedClient, setSelectedClient] = useState(null);
 
   useEffect(() => {
@@ -28,6 +29,12 @@ const EmployeePage = () => {
       dispatch(getClientEmployeeByClientId(selectedClient)); // Fetch client employees when a client is selected
     }
   }, [dispatch, selectedClient,]);
+useEffect(() => {
+  // If logged-in user is Admin, auto-select their client_id
+  if (user?.client_type === "Admin" && user.client_id) {
+    setSelectedClient(String(user.client_id)); // keep as string if your select values are strings
+  }
+}, [user]);
 
   const handleClientChange = (clientId) => {
     // console.log(clientId)
@@ -65,23 +72,31 @@ const handleDeleteEmployee = (employeeId) => {
       <div className="flex">
         <AdminSideNavbar />
         <div className="container mx-auto p-4 bg-gray-50">
+                    {["Admin", "Subadmin"].includes(user?.user_type) && (
           <div className="flex flex-col mb-4">
             <label htmlFor="client" className="mr-2 text-xl font-semibold">Select Client To View Employees:</label>
-            <select
-              id="client"
-              className="border border-gray-300 rounded px-3 py-1 w-full"
-              onChange={(e) => handleClientChange(e.target.value)}
-            >
-              <option value="">Select a client</option>
-              {loadingClients ? (
-                <option value="" disabled>Loading...</option>
-              ) : (
-                clients?.data?.map((client) => (
-                  <option key={client.client_id} value={client.client_id}>{client.company_name}</option>
-                ))
-              )}
-            </select>
+          <select
+            id="client"
+            className="border border-gray-300 rounded px-3 py-1 w-full"
+            value={selectedClient ?? ""}
+            onChange={(e) => handleClientChange(e.target.value)}
+            disabled={user?.client_type === "Admin"} // admin can't change
+          >
+            <option value="">Select a client</option>
+            {loadingClients ? (
+              <option value="" disabled>Loading...</option>
+            ) : (
+              // if user is Admin, only show their client; otherwise show all
+              (user?.client_type === "Admin"
+                ? clients?.data?.filter(c => String(c.client_id) === String(user.client_id))
+                : clients?.data
+              )?.map((client) => (
+                <option key={client.client_id} value={client.client_id}>{client.company_name}</option>
+              ))
+            )}
+          </select>
           </div>
+                    )}
 
           {selectedClient !== null && (
             <div className="mb-4">
@@ -129,7 +144,7 @@ const handleDeleteEmployee = (employeeId) => {
                           <button onClick={() => handleEdit(employee?.client_emp_id)} className="p-[4px] bg-gray-100 cursor-pointer">
                             <BiSolidEditAlt/>
                           </button>
-                          {user_type === "Admin" && 
+                          {user?.user_type === "Admin" && 
                           <>
                           <button
                             className="p-[4px] bg-gray-100 cursor-pointer"
@@ -137,6 +152,10 @@ const handleDeleteEmployee = (employeeId) => {
                           >
                             <BiLockAlt/>
                           </button>
+                          </>
+                          }
+                          {(user?.user_type === "Admin" || (user?.client_type === "Admin" && user.user_id !== employee.user_id)) && 
+                          <>
                           <button className="p-[4px] bg-gray-100 cursor-pointer" onClick={() => handleDeleteEmployee(employee.client_emp_id)}>
                             <AiFillDelete/>
                             </button>

@@ -101,16 +101,19 @@ export const deleteInventory = (inventoryId) => {
 };
 
 // Update inventory
-export const updateInventory = (inventoryData, navigate) => {
+export const updateInventory = (inventoryData, navigate,navState = null) => {
   return async (dispatch) => {
     dispatch(updateInventoryStart());
     try {
-      const response = await axios.post(`${apiConfig.updateInventory}`, inventoryData);
-      dispatch(updateInventorySuccess(response.data));
+      await axios.post(`${apiConfig.updateInventory}`, inventoryData);
+      dispatch(updateInventorySuccess(inventoryData));
       toast.success("Inventory updated successfully");
       // Only navigate if a navigate function is passed
       if (navigate) {
-        navigate(`/inventory`);
+       navigate("/inventory", {
+  state: navState,
+});
+
       }
     } catch (error) {
       dispatch(updateInventoryFailure(error.message));
@@ -120,7 +123,7 @@ export const updateInventory = (inventoryData, navigate) => {
 };
 
 //  inventory work order assign
-export const inventoryWorkOrderAssign = (inventoryData, navigate) => {
+export const inventoryWorkOrderAssign = (inventoryData, navigate,navState = null) => {
   return async (dispatch) => {
     dispatch(inventoryWorkOrderAssignStart());
     try {
@@ -130,7 +133,9 @@ export const inventoryWorkOrderAssign = (inventoryData, navigate) => {
       });
       dispatch(inventoryWorkOrderAssignSuccess(data));
       toast.success(data?.message ||"Inventory transferred to WorkOrder");
-      navigate('/inventory');
+      navigate('/inventory', {
+  state: navState,
+});
     } catch (error) {
       dispatch(inventoryWorkOrderAssignFailure(error.message));
       toast.error(error.message || "Failed to Assign Work Order");
@@ -139,7 +144,7 @@ export const inventoryWorkOrderAssign = (inventoryData, navigate) => {
 };
 
 //  inventory transfer
-export const inventoryTransfer = (inventoryData, navigate) => {
+export const inventoryTransfer = (inventoryData, navigate,navState = null) => {
   return async (dispatch) => {
     dispatch(inventoryTransferStart());
     try {
@@ -149,7 +154,9 @@ export const inventoryTransfer = (inventoryData, navigate) => {
       });
       dispatch(inventoryTransferSuccess(data));
       toast.success(data?.message || "Inventory transferred successfully");
-      navigate('/inventory');
+      navigate('/inventory', {
+  state: navState,
+});
     } catch (error) {
       dispatch(inventoryTransferFailure(error.message));
       toast.error(error.message || "Failed to Transfer Inventory");
@@ -158,7 +165,7 @@ export const inventoryTransfer = (inventoryData, navigate) => {
 };
 
 //  inventory  assign to service ticket
-export const inventoryAssignToServiceTicket = (inventoryData, navigate) => {
+export const inventoryAssignToServiceTicket = (inventoryData, navigate,navState = null) => {
   return async (dispatch) => {
     dispatch(inventoryServiceTicketAssignStart());
     try {
@@ -168,7 +175,9 @@ export const inventoryAssignToServiceTicket = (inventoryData, navigate) => {
       });
       dispatch(inventoryServiceTicketAssignSuccess(data));
       toast.success(data?.message || "Inventory transferred to ServiceTicket");
-      navigate("/inventory");
+      navigate("/inventory",{
+  state: navState,
+});
     } catch (error) {
       dispatch(inventoryServiceTicketAssignFailure(error.message));
       toast.error(error.message || "Failed to Assign Work Order");
