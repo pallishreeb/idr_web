@@ -109,7 +109,9 @@ useEffect(() => {
       device_type: deviceType,
       model: model,
     };
-    dispatch(getInventories(newFilters));
+
+    setFilters(newFilters); 
+    // dispatch(getInventories(newFilters));
   };
 
   const handleReset = () => {
