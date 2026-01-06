@@ -27,7 +27,16 @@ const AddIDREmployeePage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(createIDREmployee(formData,navigate));
+      dispatch(createIDREmployee(formData)); // 🚫 no navigate
+      setFormData({
+        first_name: "",
+        last_name: "",
+        email_id: "",
+        job_desc: "",
+        contact_number: "",
+        user_type: "",
+        is_active: true,
+      });
   };
 
   return (

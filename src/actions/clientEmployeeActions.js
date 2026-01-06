@@ -26,7 +26,7 @@ import { toast } from "react-toastify";
 // axios.defaults.headers.common["Content-Type"] = "application/json";
 // axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem('user_idr_token')}`;
 
-export const addClientEmployee = (employeeData,navigate) => {
+export const addClientEmployee = (employeeData,navigate,navState = null) => {
   return async (dispatch) => {
     dispatch(addClientEmployeeStart());
     try {
@@ -34,7 +34,10 @@ export const addClientEmployee = (employeeData,navigate) => {
       if(response?.data){
         dispatch(addClientEmployeeSuccess(response.data));
         toast.success("Employee added successfully!");
-        navigate('/client-employees')
+        navigate("/client-employees", {
+          state: navState,
+        });
+
       }else{
         dispatch(addClientEmployeeFailure("Client employee Already exist."));
         toast.error(response?.data?.message || "Client employee Already exist.");
@@ -91,7 +94,7 @@ export const getEmployeeById = (employeeId) => {
   };
 };
 
-export const updateClientEmployee = (employeeId, updatedEmployeeData,navigate) => {
+export const updateClientEmployee = (employeeId, updatedEmployeeData,navigate,navState = null) => {
   return async (dispatch) => {
     dispatch(updateClientEmployeeStart());
     try {
@@ -101,7 +104,10 @@ export const updateClientEmployee = (employeeId, updatedEmployeeData,navigate) =
       dispatch(updateClientEmployeeSuccess(response.data));
       // Optionally, you can dispatch any additional actions or perform other logic here
       toast.success("Client employee updated successfully");
-      navigate('/client-employees')
+      navigate("/client-employees", {
+        state: navState,
+      });
+
     } catch (error) {
       // Dispatch failure action if there was an error
       dispatch(updateClientEmployeeFailure(error.message));

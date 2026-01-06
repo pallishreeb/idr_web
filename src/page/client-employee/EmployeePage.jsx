@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { BiLockAlt, BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
@@ -10,6 +11,7 @@ import { Link,useNavigate } from 'react-router-dom';
 import { getClientEmployeeByClientId,deleteClientEmployee } from '../../actions/clientEmployeeActions'; // Import your client employee actions
 import { getClients } from "../../actions/clientActions";
 const EmployeePage = () => {
+  const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const clients = useSelector((state) => state.client.clients); // Get clients from the client slice
@@ -23,6 +25,12 @@ const EmployeePage = () => {
   useEffect(() => {
     dispatch(getClients());
   }, [dispatch]);
+
+useEffect(() => {
+  if (location.state?.selectedClient) {
+    setSelectedClient(String(location.state.selectedClient));
+  }
+}, []);
 
   useEffect(() => {
     if (selectedClient) {
@@ -59,12 +67,18 @@ const handleDeleteEmployee = (employeeId) => {
 };
   const handleEdit = (employeeId) => {
     // Navigate to the update client page
-    navigate(`/edit-employee/${employeeId}`);
+    navigate(`/edit-employee/${employeeId}`, {
+  state: { selectedClient },
+});
+
   };
 
-  const handleSetPassword = (userId) => {
-    navigate(`/set-user-password/${userId}`);
-  };
+ const handleSetPassword = (userId) => {
+  navigate(`/set-user-password/${userId}`, {
+    state: { selectedClient },
+  });
+};
+
 
   return (
     <>
@@ -102,7 +116,13 @@ const handleDeleteEmployee = (employeeId) => {
             <div className="mb-4">
               <h2 className="text-xl font-semibold mb-2">Employees for {clients?.data?.find(client => client.client_id === selectedClient)?.company_name}</h2>
               <div className="flex justify-end mb-2">
-                <button className="bg-indigo-700 text-white px-4 py-2 rounded"><Link to={`/add-employee/${selectedClient}`}>Add Employee</Link></button>
+                <button className="bg-indigo-700 text-white px-4 py-2 rounded">
+                  <Link   
+                  to={`/add-employee/${selectedClient}`}
+                  state={{ selectedClient }}>
+                    Add Employee
+                    </Link>
+                    </button>
               </div>
               {loadingEmployees ? (
                 <p>Loading employees...</p>

@@ -5,11 +5,12 @@ import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { addLocation } from "../../actions/locationActions";
 import { getClientEmployeeByClientId} from '../../actions/clientEmployeeActions'; 
 import { getClients} from "../../actions/clientActions"; // Import action to fetch client employees
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams,useLocation } from 'react-router-dom';
 
 const AddLocation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const locationState = useLocation();
   const { clientId } = useParams();
 
   // Fetch clients and clientEmployees from Redux store
@@ -76,11 +77,32 @@ const AddLocation = () => {
     }
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    delete locations?.selected_client_employee;
-    dispatch(addLocation(locations, navigate));
-  };
+const handleSave = (e) => {
+  e.preventDefault();
+  delete locations?.selected_client_employee;
+
+  dispatch(addLocation(locations));
+
+  setLocations({
+    client_id: locations.client_id, // keep same client selected
+    contact_person_firstname: "",
+    contact_person_lastname: "",
+    contact_person_mail_id: "",
+    address_line_one: "",
+    address_line_two: "",
+    address_line_three: "",
+    city: "",
+    state: "",
+    zipcode: "",
+    fax_number: "",
+    phone_number: "",
+    cell_number: "",
+    active: true,
+  });
+
+  setSelectedClientEmployee("");
+};
+
 
   return (
     <>
@@ -354,7 +376,7 @@ const AddLocation = () => {
                   type="button"
                   className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
                 >
-                  <Link to={'/locations'}>Cancel</Link>
+                  <Link to={'/locations'} state={locationState.state}>Cancel</Link>
                 </button>
               </div>
             </form>

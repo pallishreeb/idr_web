@@ -91,7 +91,7 @@ const EditEquipment = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     editableFields.equipment_id = idr_equipment_id;
-    dispatch(updateEquipment(editableFields, navigate));
+    dispatch(updateEquipment(editableFields, navigate,location.state));
   };
 
   if (loading) {
@@ -123,7 +123,10 @@ const EditEquipment = () => {
                 type="button"
                 className="border py-2 px-4 rounded"
                 // onClick={() => navigate("/idr-equipment")}
-                onClick={() => navigate(-1)}
+                onClick={() =>
+                      navigate("/idr-equipment", { state: location.state })
+                    }
+
               >
                 Back
               </button>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { addClientEmployee } from "../../actions/clientEmployeeActions"; // Import your client employee actions
 import { getClients } from "../../actions/clientActions"; // Import client actions
 import { getLocationByClient } from "../../actions/locationActions"; // Import location actions
@@ -11,6 +11,7 @@ import MultiSelectDropdown from "./MultiSelectDropdown";
 const AddEmployeePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { clientId } = useParams();
 
   const clients = useSelector((state) => state.client.clients);
@@ -68,7 +69,7 @@ const AddEmployeePage = () => {
     }
 
     // Dispatch the updated formData
-    dispatch(addClientEmployee(updatedFormData, navigate));
+    dispatch(addClientEmployee(updatedFormData, navigate,location.state ));
   };
 
   return (
@@ -302,7 +303,7 @@ const AddEmployeePage = () => {
                   type="button"
                   className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
                 >
-                  <Link to={"/client-employees"}>Cancel</Link>
+                  <Link to={"/client-employees"} state={location.state}>Cancel</Link>
                 </button>
               </div>
             </form>

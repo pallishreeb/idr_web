@@ -80,18 +80,32 @@ export const setPassword = (passwordData, navigate) => {
     }
   };
 };
-export const setUserPasswordByAdmin = (passwordData, navigate) => {
+export const setUserPasswordByAdmin = (passwordData, navigate,navState = null,redirectPath = null) => {
   return async (dispatch) => {
     dispatch(setPasswordStart());
     try {
       const response = await axios.patch(apiConfig.setPassword, passwordData);
       dispatch(setPasswordSuccess(response.data.message));
       toast.success(`Password Updated  successfully`);
-      navigate(-1);
+      
+      if (redirectPath) {
+        // ✅ explicit redirect with state
+        navigate(redirectPath, { state: navState });
+      } else {
+        // ✅ safe fallback
+        navigate(-1);
+      }
     } catch (error) {
       dispatch(setPasswordFailure(error.message));
       toast.error("Failed to Update User's Password");
-      navigate(-1);
+      
+      if (redirectPath) {
+        // ✅ explicit redirect with state
+        navigate(redirectPath, { state: navState });
+      } else {
+        // ✅ safe fallback
+        navigate(-1);
+      }
     }
   };
 };

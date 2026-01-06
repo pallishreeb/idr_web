@@ -62,7 +62,7 @@ export const updateIDREmployee = (employeeData) => async (dispatch) => {
     toast.error(error?.message || 'Failed to update employee');
   }
 };
-export const createIDREmployee = (idrEmployeeData,navigate) => {
+export const createIDREmployee = (idrEmployeeData) => {
     return async (dispatch) => {
       dispatch(createIdrEmployeetStart());
       try {
@@ -74,7 +74,7 @@ export const createIDREmployee = (idrEmployeeData,navigate) => {
               dispatch(createIdrEmployeeSuccess(data));
         // console.log(data)
         toast.success("Idr Employee added successfully");
-        navigate('/idr-employees')
+        // navigate('/idr-employees')
       } catch (error) {
         console.log(error.message,"error")
         dispatch(createIdrEmployeeFailure(error?.message));

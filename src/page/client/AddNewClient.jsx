@@ -4,10 +4,11 @@ import { addClient,getIndustries } from "../../actions/clientActions";
 import { toast } from "react-toastify";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import {Link, useNavigate} from "react-router-dom"
+import {Link, useNavigate,useLocation} from "react-router-dom"
 const AddNewClient = () => {
   const dispatch = useDispatch();
 const navigate = useNavigate();
+const location = useLocation();
   // const [cellCountryCode, setCellCountryCode] = useState("+1");
   // const [phoneCountryCode, setPhoneCountryCode] = useState("+1");
   // State to store form data
@@ -56,7 +57,7 @@ const navigate = useNavigate();
     // const fullCellPhone = `${countryCode}${cellPhone}`; 
     // formData.cell_phone = fullCellPhone
     // formData.phone_number = `${phoneCountryCode}${formData.phone_number}`; 
-    dispatch(addClient(formData,navigate))
+    dispatch(addClient(formData,navigate,location.search))
   };
 
   return (
@@ -74,7 +75,7 @@ const navigate = useNavigate();
                  {loading ? 'Saving' : 'Save' }
                 </button>
                 <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                <Link to={'/clients'}>Cancel</Link>
+                <Link to={`/clients${location.search}`}>Cancel</Link>
                 </button>
               </div>
             </div>

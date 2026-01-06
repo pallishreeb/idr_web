@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -21,6 +21,7 @@ import Loader from "../../Images/ZZ5H.gif";
 const TransferIdrEquipment = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const { idr_equipment_id } = useParams();
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedWorkorder, setSelectedWorkorder] = useState("");
@@ -107,7 +108,7 @@ const TransferIdrEquipment = () => {
       )?.technician_name,
       signed_out: formattedDateTime,
     };
-    dispatch(idrWorkOrderAssign(assignData, navigate));
+    dispatch(idrWorkOrderAssign(assignData, navigate,location.state));
   };
 
   const handleAssignIDREmployee = (e) => {
@@ -138,7 +139,7 @@ const TransferIdrEquipment = () => {
       signed_out: formattedDateTime,
       assign_desc: assignDesc,
     };
-    dispatch(idrEmployeeAssign(assignData, navigate));
+    dispatch(idrEmployeeAssign(assignData, navigate,location.state));
   };
 
   if (loading) {
@@ -161,7 +162,12 @@ const TransferIdrEquipment = () => {
               <div className="flex gap-3">
                 <button
                   className="border border-gray-400 text-gray-400 px-6 py-2 rounded hover:bg-gray-100"
-                  onClick={() => navigate("/idr-equipment")}
+                  onClick={() =>
+                    navigate("/idr-equipment", {
+                      state: location.state, // 👈 preserves filters
+                    })
+                  }
+
                 >
                   Cancel
                 </button>

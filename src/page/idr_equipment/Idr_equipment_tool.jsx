@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useLocation } from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
@@ -17,6 +17,9 @@ import * as XLSX from 'xlsx';
 const IdrEquipment = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+const [filtersInitialized, setFiltersInitialized] = useState(false);
+
   // State for filters and search
   const [filters, setFilters] = useState({
     search: "",
@@ -48,12 +51,35 @@ const IdrEquipment = () => {
     navigate(`/assigned-equipment?type=${param}`);
   };
   useEffect(() => {
-    dispatch(getLocationInventory()); // Fetch locations if needed
-  }, [dispatch]);
+  if (location.state?.filters) {
+    setFilters(location.state.filters);
+    setSearchQuery(location.state.filters.search || "");
+    setDeviceTypeFilter(location.state.filters.device_type || "");
+    setModelFilter(location.state.filters.model || "");
+  }
+    setFiltersInitialized(true);
+}, []);
 
   useEffect(() => {
-    dispatch(getIdrEquipments(filters));
-  }, [dispatch,filters]);
+    dispatch(getLocationInventory()); // Fetch locations if needed
+  }, [dispatch]);
+useEffect(() => {
+  if (!filtersInitialized) return;
+
+  dispatch(
+    getIdrEquipments({
+      ...filters,
+      sortBy: sortConfig.key,
+      orderBy: sortConfig.direction,
+    })
+  );
+}, [dispatch, filters, sortConfig, filtersInitialized]);
+
+// useEffect(() => {
+//   if (!filtersInitialized) return;
+//   dispatch(getIdrEquipments(filters));
+// }, [dispatch, filters, filtersInitialized]);
+
 
   const handleSearch = () => {
     const newFilters = {
@@ -64,21 +90,20 @@ const IdrEquipment = () => {
     };
     setFilters(newFilters);
   };
-
-  const handleReset = () => {
-    const resetFilters = {
-      search: "",
-      location: "",
-      model: "",
-      device_type: "",
-      signout: "",
-    };
-    setFilters(resetFilters);
-    setDeviceTypeFilter("");
-    setModelFilter("");
-    setSearchQuery("");
-    dispatch(getIdrEquipments(resetFilters));
+const handleReset = () => {
+  const resetFilters = {
+    search: "",
+    location: "",
+    model: "",
+    device_type: "",
+    signout: "",
   };
+  setFilters(resetFilters);
+  setDeviceTypeFilter("");
+  setModelFilter("");
+  setSearchQuery("");
+};
+
 
   const handleDelete = (equipmentId) => {
     Swal.fire({
@@ -92,7 +117,7 @@ const IdrEquipment = () => {
       if (result.isConfirmed) {
         dispatch(deleteInventory(equipmentId))
           .then(() => {
-            dispatch(getIdrEquipments(filters)); // Refresh the list after deletion
+            //dispatch(getIdrEquipments(filters)); // Refresh the list after deletion
           })
           .catch((error) => {
             console.log(error);
@@ -102,14 +127,14 @@ const IdrEquipment = () => {
     });
   };
 
-  const handleSort = (key) => {
-    let direction = "ASC";
-    if (sortConfig.key === key && sortConfig.direction === "ASC") {
-      direction = "DESC";
-    }
-    setSortConfig({ key, direction });
-    dispatch(getIdrEquipments({ ...filters, sortBy: key, orderBy: direction }));
-  };
+const handleSort = (key) => {
+  let direction = "ASC";
+  if (sortConfig.key === key && sortConfig.direction === "ASC") {
+    direction = "DESC";
+  }
+  setSortConfig({ key, direction });
+};
+
 
   const getSortSymbol = (key) => {
     if (sortConfig.key === key) {
@@ -171,7 +196,7 @@ const handleExportToExcel = () => {
               >
                 Export IDR Equipment
               </button>
-              <Link to="/add-company-equipment">
+              <Link to="/add-company-equipment" state={{ filters }}>
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded">
                   Add Equipment
                 </button>
@@ -268,7 +293,7 @@ const handleExportToExcel = () => {
                     onClick={() => handleSort("location_name")}
                   >
                     Location{" "}
-                    <span className="ml-2">{getSortSymbol("location")}</span>
+                    <span className="ml-2">{getSortSymbol("location_name")}</span>
                   </th>
                   {/* <th
                     className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
@@ -362,7 +387,8 @@ const handleExportToExcel = () => {
                               <BiSolidEditAlt
                                 onClick={() =>
                                   navigate(
-                                    `/edit-company-equipment/${equipment?.equipment_id}`
+                                    `/edit-company-equipment/${equipment?.equipment_id}`,
+                                     { state: { filters } }
                                   )
                                 }
                               />
@@ -372,7 +398,8 @@ const handleExportToExcel = () => {
                               <BiTransferAlt
                                 onClick={() =>
                                   navigate(
-                                    `/transfer-company-equipment/${equipment?.equipment_id}`
+                                    `/transfer-company-equipment/${equipment?.equipment_id}`,
+                                     { state: { filters } }
                                   )
                                 }
                               />
