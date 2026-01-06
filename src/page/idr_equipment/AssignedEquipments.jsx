@@ -39,6 +39,7 @@ const AssignedEquipments = () => {
   //   }
   // }, [dispatch, selectedOption, filters]);
 
+  
   const handleSelectChange = (e) => {
     const selectedValue = e.target.value;
     setSelectedOption(selectedValue);
@@ -153,7 +154,7 @@ const AssignedEquipments = () => {
                   
                   </select>
                 </div>
-              <Link to="/idr-equipment">
+              <Link to="/idr-equipment"   state={location.state}>
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded">
                  Back to Equipments
                 </button>

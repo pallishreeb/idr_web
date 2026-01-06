@@ -9,14 +9,15 @@ import {  apiConfig } from "../config";
 // axios.defaults.headers.common["Content-Type"] = "application/json";
 // axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem('user_idr_token')}`;
 
-export const addClient = (clientData,navigate) => {
+export const addClient = (clientData,navigate,search = "") => {
   return async (dispatch) => {
     dispatch(createClientStart());
     try {
       const response = await axios.post(apiConfig.addClient, clientData);
       dispatch(createClientSuccess(response.data));
       toast.success("Client added successfully");
-      navigate('/clients')
+      navigate(`/clients${search}`);
+
     } catch (error) {
       dispatch(createClientFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to add client");
@@ -104,14 +105,15 @@ export const getIndustries = () => {
   };
 };
 
-export const updateClient = (clientId, clientData,navigate) => {
+export const updateClient = (clientId, clientData,navigate,search = "") => {
   return async (dispatch) => {
     dispatch(updateClientStart());
     try {
       const response = await axios.patch(`${apiConfig.updateClient}`, clientData);
       dispatch(updateClientSuccess(response.data));
       toast.success("Client updated successfully");
-      navigate(`/clients`);
+     navigate(`/clients${search}`);
+
     } catch (error) {
       dispatch(updateClientFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to update client");

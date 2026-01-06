@@ -4,11 +4,12 @@ import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClientEmployeeByClientId } from '../../actions/clientEmployeeActions';
 import { updateLocation, getLocationById } from "../../actions/locationActions";
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate ,useLocation} from 'react-router-dom';
 
 const EditLocationPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const locationState = useLocation();
   const { locationId } = useParams(); // Get the location ID from the URL params
 
   // Fetch location from Redux store
@@ -140,7 +141,7 @@ const EditLocationPage = () => {
     delete formData.created_at;
 
     // Dispatch update location action
-    dispatch(updateLocation(locationId, formData, navigate));
+    dispatch(updateLocation(locationId, formData, navigate,locationState.state));
   };
 
   return (
@@ -413,7 +414,7 @@ const EditLocationPage = () => {
                   type="button"
                   className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
                 >
-                  <Link to="/locations">Cancel</Link>
+                  <Link to="/locations" state={locationState.state}>Cancel</Link>
                 </button>
               </div>
             </form>

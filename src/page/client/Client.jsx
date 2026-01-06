@@ -7,7 +7,7 @@ import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients,deleteClient ,getIndustries} from "../../actions/clientActions";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useSearchParams } from 'react-router-dom';
 
 const Client = () => {
   const dispatch = useDispatch();
@@ -15,16 +15,32 @@ const Client = () => {
   const { clients, loading } = useSelector((state) => state.client);
   const {industries} = useSelector((state) => state.client.industries);
   const { user_type } = useSelector((state) => state.user.user);
-  const [clientName, setClientName] = useState('');
-  const [industryId, setIndustryId] = useState('');
+const [searchParams, setSearchParams] = useSearchParams();
 
-  useEffect(() => {
-    dispatch(getClients());
-  }, [dispatch]);
+const [clientName, setClientName] = useState(
+  searchParams.get("clientName") || ""
+);
+const [industryId, setIndustryId] = useState(
+  searchParams.get("industryId") || ""
+);
+
+
+useEffect(() => {
+  dispatch(getClients({ clientName, industryId }));
+}, [dispatch, clientName, industryId]);
+
 
   useEffect(() => {
     dispatch(getIndustries());
   }, [dispatch]);
+useEffect(() => {
+  const params = new URLSearchParams();
+
+  if (clientName) params.set("clientName", clientName);
+  if (industryId) params.set("industryId", industryId);
+
+  setSearchParams(params);
+}, [clientName, industryId, setSearchParams]);
 
   // useEffect(() => {
   //   if(industryId){
@@ -34,7 +50,8 @@ const Client = () => {
 
   const handleEdit = (clientId) => {
     // Navigate to the update client page
-    navigate(`/update-client/${clientId}`);
+    navigate(`/update-client/${clientId}?${searchParams.toString()}`);
+
   };
 
 const handleDeleteClient = (clientId) => {
@@ -47,21 +64,23 @@ const handleDeleteClient = (clientId) => {
     cancelButtonText: 'No, keep it',
   }).then((result) => {
     if (result.isConfirmed) {
-      dispatch(deleteClient(clientId));
-      dispatch(getClients());
+      dispatch(deleteClient(clientId)).then(() => {
+        // ✅ re-fetch with active filters
+        dispatch(getClients({ clientName, industryId }));
+      });
     }
-
   });
 };
 
   const handleSearch = () => {
     dispatch(getClients({ clientName, industryId }));
   };
-  const clearSearch = () => {
-    setClientName("")
-    setIndustryId("")
-    dispatch(getClients());
-  }
+const clearSearch = () => {
+  setClientName("");
+  setIndustryId("");
+  setSearchParams({});
+};
+
   return (
     <>
       <Header />
@@ -71,7 +90,7 @@ const handleDeleteClient = (clientId) => {
           <div className="flex justify-between items-center mb-4">
             <h1 className="font-bold text-lg">Client Management</h1>
             <button className="bg-indigo-700 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
-              <Link to={"/add-client"}> Add New Client</Link>
+              <Link to={`/add-client?${searchParams.toString()}`}> Add New Client</Link>
             </button>
           </div>
           <div className="flex mb-4">

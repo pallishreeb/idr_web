@@ -51,47 +51,40 @@ const ServiceAgreements = () => {
   });
 
   // Update URL when filters change
-  useEffect(() => {
-    if (filtersApplied) {
-      const params = new URLSearchParams();
-      if (filters.client_id) params.set("client_id", filters.client_id);
-      if (filters.location_id) params.set("location_id", filters.location_id);
-      if (sortConfig.key) params.set("sort_by", sortConfig.key);
-      if (sortConfig.direction) params.set("order", sortConfig.direction);
-      setSearchParams(params);
-    }
-  }, [filters, sortConfig, setSearchParams, filtersApplied]);
+useEffect(() => {
+  const params = new URLSearchParams();
+  if (filters.client_id) params.set("client_id", filters.client_id);
+  if (filters.location_id) params.set("location_id", filters.location_id);
+  if (sortConfig.key) params.set("sort_by", sortConfig.key);
+  if (sortConfig.direction) params.set("order", sortConfig.direction);
+
+  setSearchParams(params);
+}, [filters, sortConfig, setSearchParams]);
+
 
   // Initial data fetch and handle URL filters when returning from add/edit
-  useEffect(() => {
-    if (user_type === "Client Employee") {
-      dispatch(getServiceAgreementLists({}));
-    } else {
-      dispatch(getClients());
-      // If returning from add/edit (URL has both filters), apply them
-      const urlClientId = searchParams.get("client_id");
-      const urlLocationId = searchParams.get("location_id");
-      if (urlClientId && urlLocationId) {
-        // Set the filters in state
-        setFilters({
-          client_id: urlClientId,
-          location_id: urlLocationId,
-        });
-        // Fetch locations for the client
-        dispatch(getLocationByClient(urlClientId));
-        // Apply the filters
-        const query = {
-          client_id: urlClientId,
-          location_id: urlLocationId,
-        };
-        dispatch(
-          getServiceAgreementLists(query, sortConfig.key, sortConfig.direction)
-        );
-      } else {
-        dispatch(getServiceAgreementLists({}));
-      }
-    }
-  }, [dispatch, user_type]);
+useEffect(() => {
+  if (user_type !== "Client Employee") {
+    dispatch(getClients());
+  }
+
+  const client_id = searchParams.get("client_id");
+  const location_id = searchParams.get("location_id");
+
+  const query = {
+    ...(client_id && { client_id }),
+    ...(location_id && { location_id }),
+  };
+
+  dispatch(
+    getServiceAgreementLists(
+      query,
+      sortConfig.key,
+      sortConfig.direction
+    )
+  );
+}, [dispatch, user_type, searchParams, sortConfig]);
+
 
   // Fetch locations when client changes
   useEffect(() => {
@@ -327,10 +320,9 @@ const ServiceAgreements = () => {
                 disabled={!selectedClient}
               >
                 <Link
-                  to={`/add-service-agreement/${selectedClient || "null"}/${
-                    selectedLocation || "null"
-                  }${filtersApplied ? `?${searchParams.toString()}` : ""}`}
-                >
+  to={`/add-service-agreement/${selectedClient || "null"}/${selectedLocation || "null"}?${searchParams.toString()}`}
+>
+
                   Add New Service Agreement
                 </Link>
               </button>

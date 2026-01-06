@@ -27,7 +27,7 @@ import {
 } from "../reducers/IdrEquipmentSlice";
 
 // Add equipments
-export const addIdrEquipment = (idrEquipmentData, navigate) => {
+export const addIdrEquipment = (idrEquipmentData, navigate,navState = null) => {
   return async (dispatch) => {
     dispatch(addIdrEquipmentStart());
 
@@ -39,7 +39,7 @@ export const addIdrEquipment = (idrEquipmentData, navigate) => {
 
       dispatch(addIdrEquipmentSuccess(data));
       toast.success("Idr Equipment added successfully");
-      navigate("/idr-equipment");
+      navigate("/idr-equipment", { state: navState });
     } catch (error) {
       console.error("Error occurred:", error);
 
@@ -129,7 +129,7 @@ export const deleteInventory = (idrEquipmentId) => {
 };
 
 // Update equipments
-export const updateEquipment = (idrEquipmentData, navigate) => {
+export const updateEquipment = (idrEquipmentData, navigate,navState = null) => {
   return async (dispatch) => {
     dispatch(updateIdrEquipmentStart());
     try {
@@ -139,7 +139,9 @@ export const updateEquipment = (idrEquipmentData, navigate) => {
       });
       dispatch(updateIdrEquipmentSuccess(data));
       toast.success("Idr Equipment updated successfully");
-      navigate(`/idr-equipment`);
+      navigate(`/idr-equipment`, {
+        state: navState,
+      });
     } catch (error) {
       dispatch(updateIdrEquipmentFailure(error.message));
       toast.error(
@@ -150,7 +152,7 @@ export const updateEquipment = (idrEquipmentData, navigate) => {
 };
 
 // idrWorkOrderAssign
-export const idrWorkOrderAssign = (idrEquipmentData, navigate) => {
+export const idrWorkOrderAssign = (idrEquipmentData, navigate,navState = null) => {
   return async (dispatch) => {
     dispatch(idrEquipmentWorkOrderAssignStart());
     try {
@@ -160,7 +162,9 @@ export const idrWorkOrderAssign = (idrEquipmentData, navigate) => {
       });
       dispatch(idrEquipmentWorkOrderAssignSuccess(data));
       toast.success(data?.message || "Idr Equipment transferred to WorkOrder");
-      navigate("/idr-equipment");
+      navigate("/idr-equipment", {
+        state: navState,
+      });
     } catch (error) {
       dispatch(idrEquipmentWorkOrderAssignFailure(error.message));
       toast.error(error.message || "Failed to Assign Work Order");
@@ -169,7 +173,7 @@ export const idrWorkOrderAssign = (idrEquipmentData, navigate) => {
 };
 
 //  idrEquipmentTransfer 
-export const idrEmployeeAssign = (idrEquipmentData, navigate) => {
+export const idrEmployeeAssign = (idrEquipmentData, navigate,navState = null) => {
   return async (dispatch) => {
     dispatch(idrEquipmentTransferStart());
     try {
@@ -179,7 +183,9 @@ export const idrEmployeeAssign = (idrEquipmentData, navigate) => {
       });
       dispatch(idrEquipmentTransferSuccess(data));
       toast.success(data?.message || "Idr Equipment transferred successfully");
-      navigate("/idr-equipment");
+      navigate("/idr-equipment", {
+        state: navState,
+      });
     } catch (error) {
       dispatch(idrEquipmentTransferFailure(error.message));
       toast.error(error.message || "Failed to Transfer Idr Equipment");

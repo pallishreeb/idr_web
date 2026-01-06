@@ -65,9 +65,10 @@ const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
                   <th className="border px-4 py-2">Make</th>
                   <th className="border px-4 py-2">Device Type</th>
                   <th className="border px-4 py-2">Quantity</th>
-                  {technicianAccess.includes(user_type) && (
+                 {(user_type === "Admin" || technicianAccess.includes(user_type)) && (
                     <th className="border px-4 py-2">Action</th>
                   )}
+
                 </tr>
               </thead>
               <tbody>

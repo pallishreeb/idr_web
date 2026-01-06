@@ -24,14 +24,14 @@ import { toast } from "react-toastify";
 //axios.defaults.baseURL = API_BASE_URL;
 //axios.defaults.headers.common["Content-Type"] = "application/json";
 //axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem('user_idr_token')}`;
-export const addLocation = (locationData,navigate) => {
+export const addLocation = (locationData) => {
   return async (dispatch) => {
     dispatch(addLocationStart());
     try {
       const response = await axios.post(apiConfig.addLocation, locationData);
       dispatch(addLocationSuccess(response.data.location));
       toast.success("Location added successfully!");
-      navigate("/locations");
+
     } catch (error) {
       dispatch(addLocationFailure(error.message));
       toast.error(error.response?.data?.message || "Error adding location");
@@ -80,7 +80,7 @@ export const getLocationById = (locationId) => {
   };
 };
 
-export const updateLocation = (locationId, updatedLocationData,navigate) => {
+export const updateLocation = (locationId, updatedLocationData,navigate,navState = null) => {
   console.log(updatedLocationData, "updatedLocationData")
   return async (dispatch) => {
     dispatch(updateLocationStart());
@@ -92,7 +92,10 @@ export const updateLocation = (locationId, updatedLocationData,navigate) => {
       dispatch(updateLocationSuccess(response.data));
       // Optionally, you can dispatch any additional actions or perform other logic here
       toast.success("Location updated successfully");
-      navigate("/locations");
+      navigate("/locations", {
+  state: navState,
+});
+
     } catch (error) {
       // Dispatch failure action if there was an error
       dispatch(updateLocationFailure(error.message));

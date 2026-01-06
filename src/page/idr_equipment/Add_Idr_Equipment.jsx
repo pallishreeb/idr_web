@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { MdCloudUpload } from "react-icons/md";
 import Header from "../../Components/Header";
@@ -10,6 +10,7 @@ import { addIdrEquipment } from "../../actions/idrEquipmentAction"; // Replace w
 const AddIdrEquipment = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const locationState = useLocation();
   const [selectedImage, setSelectedImage] = useState(null);
 
   const locationsInventory = useSelector(
@@ -60,7 +61,7 @@ const AddIdrEquipment = () => {
     Object.keys(formData).forEach((key) => {
       data.append(key, formData[key]);
     });
-    dispatch(addIdrEquipment(data, navigate));
+    dispatch(addIdrEquipment(data, navigate, locationState.state));
   };
 
   return (
@@ -157,7 +158,9 @@ const AddIdrEquipment = () => {
               <button
                 type="button"
                 className="border w-1/3 py-2 rounded"
-                onClick={() => navigate('/idr-equipment')} // Adjust the path as needed
+                onClick={() =>
+                    navigate('/idr-equipment', { state: locationState.state })
+                  }
               >
                 Cancel
               </button>

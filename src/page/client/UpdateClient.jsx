@@ -3,12 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { getClientById, updateClient, getIndustries } from "../../actions/clientActions";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams ,useLocation } from "react-router-dom";
 
 const UpdateClient = () => {
   const { clientId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // const [cellCountryCode, setCellCountryCode] = useState("+1");
   // const [phoneCountryCode, setPhoneCountryCode] = useState("+1");
@@ -84,7 +85,7 @@ const UpdateClient = () => {
     // formData.phone_number = `${phoneCountryCode}${formData.phone_number}`;
     delete formData.is_active;
     delete formData.industries;
-    dispatch(updateClient(clientId, formData,navigate));
+    dispatch(updateClient(clientId, formData,navigate,location.search));
 
   };
 
@@ -102,7 +103,7 @@ const UpdateClient = () => {
                 {loading ? 'Saving' : 'Save' }
                 </button>
                 <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                <Link to={'/clients'}>Cancel</Link>
+                <Link to={`/clients${location.search}`}>Cancel</Link>
                 </button>
               </div>
             </div>

@@ -61,14 +61,30 @@ const ClientLicenseList = () => {
   }, [selectedClient, dispatch]);
 
   // Initial data fetch
-  useEffect(() => {
-    if (user_type === "Client Employee") {
-      dispatch(getLicenseLists({}));
-    } else {
-      dispatch(getClients());
-      dispatch(getLicenseLists({}));
-    }
-  }, [dispatch, user_type]);
+useEffect(() => {
+  const client_id = searchParams.get("client_id");
+  const location_id = searchParams.get("location_id");
+  const manufacturer = searchParams.get("manufacturer");
+
+  if (user_type !== "Client Employee") {
+    dispatch(getClients());
+  }
+
+  const query = {
+    ...(client_id && { client_id }),
+    ...(location_id && { location_id }),
+    ...(manufacturer && { manufacturer }),
+  };
+
+  dispatch(
+    getLicenseLists(
+      query,
+      sortConfig.key,
+      sortConfig.direction
+    )
+  );
+}, [dispatch, user_type, searchParams, sortConfig]);
+
   // useEffect(() => {
   //   if (user_type === "Client Employee") {
   //     dispatch(getLicenseLists({}));
@@ -174,28 +190,38 @@ const ClientLicenseList = () => {
     }
   };
 
-  const handleDeleteLicense = (licenseId) => {
-    Swal.fire({
-      title: "Are you sure?",
+const handleDeleteLicense = (licenseId) => {
+  Swal.fire({ 
+          title: "Are you sure?",
       text: "Do you really want to delete this license?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "No, keep it",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        dispatch(deleteLicense(licenseId));
-      }
-    });
-  };
+   }).then((result) => {
+    if (result.isConfirmed) {
+      dispatch(deleteLicense(licenseId)).then(() => {
+        const { client_id, location_id, manufacturer } = filters;
+        dispatch(
+          getLicenseLists(
+            {
+              ...(client_id && { client_id }),
+              ...(location_id && { location_id }),
+              ...(manufacturer && { manufacturer }),
+            },
+            sortConfig.key,
+            sortConfig.direction
+          )
+        );
+      });
+    }
+  });
+};
 
-  const handleEdit = (licenseId) => {
-    // Only include search params if filters were explicitly applied
-    const url = filtersApplied ? 
-      `/edit-client-licensing/${licenseId}?${searchParams.toString()}` :
-      `/edit-client-licensing/${licenseId}`;
-    navigate(url);
-  };
+const handleEdit = (licenseId) => {
+  navigate(`/edit-client-licensing/${licenseId}?${searchParams.toString()}`);
+};
+
 
   const formatDateToMDY = (dateString) => {
     if (!dateString) return ""; // Handle empty values
@@ -358,10 +384,8 @@ const ClientLicenseList = () => {
                 disabled={!selectedClient}
               >
                 <Link
-                  to={`/add-client-licensing/${selectedClient}/${selectedLocation}${
-                    filtersApplied ? `?${searchParams.toString()}` : ''
-                  }`}
-                >
+                  to={`/add-client-licensing/${selectedClient}/${selectedLocation}?${searchParams.toString()}`}>
+
                   Add New Client License
                 </Link>
               </button>

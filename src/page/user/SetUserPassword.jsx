@@ -1,13 +1,14 @@
 import React, { useState,useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import {  fetchUsers, setUserPasswordByAdmin} from '../../actions/userActions';
-import { useNavigate,useParams } from 'react-router-dom'; 
+import { useNavigate,useParams,useLocation } from 'react-router-dom'; 
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 const SetUserPasswordForm = () => {
   const { userId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate()
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -32,7 +33,7 @@ const SetUserPasswordForm = () => {
     }
 
     // Dispatch the setPassword action
-    dispatch(setUserPasswordByAdmin({ password:passwordValue, email_id:email },navigate));
+    dispatch(setUserPasswordByAdmin({ password:passwordValue, email_id:email },navigate,location.state,"/client-employees"));
   };
 
   return (

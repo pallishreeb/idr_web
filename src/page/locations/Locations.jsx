@@ -5,13 +5,14 @@ import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate,useLocation } from 'react-router-dom';
 import { getClients } from "../../actions/clientActions"; // Import the action to fetch clients
 import { getLocationByClient, deleteLocation } from "../../actions/locationActions"; // Import the action to fetch locations
 
 const Locations = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const locationState = useLocation();
   const [selectedClient, setSelectedClient] = useState(null);
   const clients = useSelector((state) => state.client.clients);
   const locations = useSelector((state) => state.location.locations);
@@ -21,6 +22,14 @@ const Locations = () => {
   useEffect(() => {
     dispatch(getClients());
   }, [dispatch]);
+
+  useEffect(() => {
+  if (locationState.state?.selectedClient) {
+    setSelectedClient(locationState.state.selectedClient);
+    dispatch(getLocationByClient(locationState.state.selectedClient));
+  }
+}, []);
+
 
   const handleClientChange = (clientId) => {
     setSelectedClient(clientId);
@@ -37,7 +46,9 @@ const Locations = () => {
   };
 
   const handleEdit = (locationId) => {
-    navigate(`/edit-location/${locationId}`);
+    navigate(`/edit-location/${locationId}`, {
+  state: { selectedClient },
+});
   };
 
 
@@ -53,7 +64,10 @@ const handleDeleteLocation = (locationId) => {
     cancelButtonText: 'No, keep it',
   }).then((result) => {
     if (result.isConfirmed) {
-      dispatch(deleteLocation(locationId));
+      dispatch(deleteLocation(locationId)).then(() => {
+      dispatch(getLocationByClient(selectedClient));
+});
+
     }
   });
 };
@@ -88,7 +102,7 @@ const handleDeleteLocation = (locationId) => {
             <div className="mb-4">
               <h2 className="text-xl font-semibold mb-2">Locations for {clients?.data?.find(client => client.client_id === selectedClient)?.company_name}</h2>
               <div className="flex justify-end mb-2">
-                <button className="bg-indigo-700 text-white px-4 py-2 rounded"><Link to={`/add-location/${selectedClient}`}>Add New Location</Link></button>
+                <button className="bg-indigo-700 text-white px-4 py-2 rounded"><Link to={`/add-location/${selectedClient}`} state={{ selectedClient }}>Add New Location</Link></button>
               </div>
               {loadinglocations ? (
                 <p>Loading Locations...</p>
