@@ -124,7 +124,7 @@ useEffect(() => {
     setSearchTerm("");
     setDeviceType("");
     setModel("");
-    dispatch(getInventories());
+    // dispatch(getInventories());
   };
   const handleSort = (key) => {
     let direction = "ASC";
@@ -296,7 +296,7 @@ const handleInventoryExportToExcel = () => {
                   <input
                     type="text"
                     className="px-3 border border-gray-200 h-10 rounded"
-                    placeholder="Type"
+                    placeholder="Device Type"
                     value={deviceType}
                     onChange={(e) => setDeviceType(e.target.value)}
                   />
@@ -326,11 +326,11 @@ const handleInventoryExportToExcel = () => {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">Search by make</label>
+                  <label className="font-normal text-sm">Search List</label>
                   <div className="flex border border-gray-200 h-10 rounded">
                     <input
                       className="flex-1 border-none text-xs font-normal px-2 py-2 rounded-l"
-                      placeholder="Type"
+                      placeholder="Search inventory..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
