@@ -39,14 +39,14 @@ const AdminSideNavbar = () => {
       ? ["Client Employee"] 
       : [""],},
     { title: "Client Equipment", path: "/client-equipments",     roles: client_type !== "User" 
-      ? ["IDR Employee", "Client Employee"] 
+      ? ["IDR Employee", "Client Employee","Laborer"] 
       : ["IDR Employee"],  },
     { title: "Client Licensing", path: "/client-licensing", roles: client_type !== "User" 
       ? ["IDR Employee", "Client Employee"] 
       : ["IDR Employee"], },
-    { title: "Work Order", path: "/workorder", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"] },
-    { title: "Service Ticket", path: "/service-tickets", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee"] },
-    { title: "RMA", path: "/device-rma", roles: client_type !== "User" ? ["Admin", "Subadmin", "IDR Employee", "Client Employee"]  : ["Admin", "Subadmin", "IDR Employee"] },
+    { title: "Work Order", path: "/workorder", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee","Laborer"] },
+    { title: "Service Ticket", path: "/service-tickets", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee","Laborer"] },
+    { title: "RMA", path: "/device-rma", roles: client_type !== "User" ? ["Admin", "Subadmin", "IDR Employee","Laborer", "Client Employee"]  : ["Admin", "Subadmin", "IDR Employee","Laborer"] },
     { title: "Request Service", path: "/add-service-request", roles: ["Client Employee"]},
     { title: "Inventory", path: "/inventory", roles: ["Admin", "Subadmin", "IDR Employee"] },
     { title: "Inventory Locations", path: "/inventory-locations", roles: ["Admin"] },

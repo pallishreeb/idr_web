@@ -72,6 +72,7 @@ import AcceptServiceRequest from "./page/service-requests/AcceptServiceRequest";
 import useSessionTimeout from "./hooks/useSessionTimeout";
 import sessionConfig from "./config/sessionConfig";
 import SessionWarningModal from "./Components/SessionWarningModal";
+import AddSubcontractorPage from "./page/sub-contractor/AddSubcontractorPage";
 
 
 
@@ -220,7 +221,7 @@ function App() {
           <Route path="/edit-device-rma/:rmaId" element={<EditRma />} />
 
           {/* Sub contractor  */}
-         <Route path="/create-sub-contractor" element={<CreateSubContractor />} />
+         <Route path="/create-sub-contractor" element={<AddSubcontractorPage />} />
          <Route path="/sub-contractors" element={<SubContractorList />} />
           <Route path="/edit-subcontractor/:id" element={<EditSubContractor />} />
 

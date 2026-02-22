@@ -121,6 +121,7 @@ const AddIDREmployeePage = () => {
                     <option value="Admin">Admin</option>
                     <option value="Subadmin">Subadmin</option>
                     <option value="IDR Employee">IDR Employee</option>
+                    <option value="Laborer">Laborer</option>
                   </select>
                 </div>
                 <div className="mb-4">

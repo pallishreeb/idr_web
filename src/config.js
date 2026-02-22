@@ -133,6 +133,15 @@ const apiConfig = {
   updateRmaNotes:"/rma/note",
   deleteServiceRequest:"service_req",
   esignWorkOrder: "/work_order/sign",
+  registerSubcontractor: "/subcontractor/register",
+  contactDetailsUpdate: "/subcontractor/contact_details_update",
+  businessDetailsUpdate: "/subcontractor/business_details_update",
+  technician_rates_update: "/subcontractor/technician_rates_update",
+  areaOfWorkUpdate: "/subcontractor/areaofwork_update",
+  insuranceInfoUpdate: "/subcontractor/insurance_info_update",
+  uploadSubcontractorDoc: "/subcontractor/upload_doc",
+  changeSubcontractorStatus: "/subcontractor/change_status",
+  getSubcontractorInfoByID: "/subcontractor/info",
 };
 
 export { API_BASE_URL, apiConfig,S3_BASE_URL };
