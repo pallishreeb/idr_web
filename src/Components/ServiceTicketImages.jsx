@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import { AiFillDelete } from "react-icons/ai";
-// import Swal from "sweetalert2";
+import { AiFillDelete } from "react-icons/ai";
+import Swal from "sweetalert2";
 import { FaDownload, FaSpinner } from "react-icons/fa";
-import { uploadServiceTicketImages } from "../actions/serviceTicket";
+import {
+  uploadServiceTicketImages,
+  deleteServiceFiles,
+} from "../actions/serviceTicket";
 import { getServiceTicketDetails } from "../actions/serviceTicket";
 import { toast } from "react-toastify";
 import { S3_BASE_URL } from "../config";
@@ -37,22 +40,22 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
     // Check if any file exceeds 150 MB
     const maxFileSize = 150 * 1024 * 1024; // 150 MB in bytes
     const oversizedFiles = selectedFiles.filter(
-      (file) => file.size > maxFileSize
+      (file) => file.size > maxFileSize,
     );
 
     if (oversizedFiles.length > 0) {
       toast.warning(
-        `One or more files exceed the 150 MB limit. Please upload files smaller than 150 MB.`
+        `One or more files exceed the 150 MB limit. Please upload files smaller than 150 MB.`,
       );
       return; // Stop the upload if any file is too large
     }
 
     // Determine if the uploaded files are videos or images
     const isVideoFile = selectedFiles.some((file) =>
-      file.type.startsWith("video/")
+      file.type.startsWith("video/"),
     );
     const isImage = selectedFiles.some((file) =>
-      file.type.startsWith("image/")
+      file.type.startsWith("image/"),
     );
     // Upload files
     dispatch(uploadServiceTicketImages(serviceTicketId, selectedFiles))
@@ -97,6 +100,34 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
   //     }
   //   });
   // };
+
+  const handleDelete = (fileId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this file?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteServiceFiles(fileId))
+          .then((res) => {
+            if (res?.code === "ST203") {
+              toast.success("File deleted successfully.");
+              dispatch(getServiceTicketDetails(serviceTicketId));
+            } else {
+              toast.error("Failed to delete file.");
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            toast.error("Something went wrong.");
+          });
+      }
+    });
+  };
   const handleDownload = (url, filename) => {
     const link = document.createElement("a");
     link.href = url;
@@ -119,14 +150,17 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="font-normal text-xl mb-2">Service Ticket Images</h1>
-        {technicianAccess.includes(user_type) && (
-          <button
-            className="bg-indigo-600 text-white px-6 py-2 rounded"
-            onClick={handleOpenModal}
-          >
-            Add Images/Videos
-          </button>
-        )}
+       {(
+  technicianAccess?.includes(user_type) ||
+  user_type?.trim().toLowerCase() === "subcontractor"
+) && (
+  <button
+    className="bg-indigo-600 text-white px-6 py-2 rounded"
+    onClick={handleOpenModal}
+  >
+    Add Images/Videos
+  </button>
+)}
       </div>
 
       {/* Image table */}
@@ -164,7 +198,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                   <td className="border px-4 py-2">
                     {image?.user_name || "NA"}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-4 py-2 flex gap-2">
                     <button
                       onClick={() =>
                         handleDownload(fileUrl, `attachment-${index + 1}`)
@@ -173,6 +207,15 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                     >
                       <FaDownload />
                     </button>
+                    {/* Delete Button - Only for technician access */}
+                    {technicianAccess.includes(user_type) && (
+                      <button
+                        onClick={() => handleDelete(image?.attachment_id)}
+                        className="bg-red-500 text-white px-3 py-3 rounded"
+                      >
+                        <AiFillDelete />
+                      </button>
+                    )}
                   </td>
                 </tr>
               );

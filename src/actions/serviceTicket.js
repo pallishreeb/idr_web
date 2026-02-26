@@ -45,7 +45,13 @@ import {
   serviceRequestFailure,
 } from "../reducers/serviceTicketSlice";
 import {returnInventoryStart,
-  returnInventorySuccess,returnInventoryFailure
+  returnInventorySuccess,returnInventoryFailure,
+  deleteSubcontractorUserFailure,
+  deleteSubcontractorUserSuccess,
+  deleteSubcontractorUserStart,
+  assignSubcontractorUserFailure,
+  assignSubcontractorUserSuccess,
+  assignSubcontractorUserStart
 } from "../reducers/workOrderSlice";
 import { apiConfig } from "../config";
 import { fetchJson } from '../fetch-config';
@@ -337,7 +343,24 @@ export const deleteServiceNote = (noteId) => {
     }
   };
 };
+export const deleteServiceFiles = (imgId) => {
+  return async (dispatch) => {
+    dispatch(deleteServiceNoteStart());
+    try {
+      const response = await axios.delete(
+        `${apiConfig.deleteServiceFiles}/${imgId}`
+      );
 
+      dispatch(deleteServiceNoteSuccess(imgId));
+
+      return response.data;   // 🔥 VERY IMPORTANT
+
+    } catch (error) {
+      dispatch(deleteServiceNoteFailure(error.message));
+      throw error;   // 🔥 important for catch in component
+    }
+  };
+};
 //esign in service ticket
 export const uploadServiceTicketSign = (serviceTicketId, formData) => {
   return async (dispatch) => {
@@ -512,6 +535,63 @@ export const deleteServiceRequest = (requestId) => {
     } catch (error) {
       dispatch(deleteServiceNoteFailure(error.message));
       toast.error(error.response?.data?.message || "Failed to delete Request");
+    }
+  };
+};
+
+export const assignSubcontractorUsersToServiceTicket = (payload) => {
+  return async (dispatch) => {
+    dispatch(assignSubcontractorUserStart());
+
+    try {
+      const response = await axios.post(
+        "/service_ticket/assign_subcontractor_user",
+        payload
+      );
+
+      dispatch(assignSubcontractorUserSuccess());
+
+      // toast.success("Subcontractor users assigned successfully");
+
+      return response.data;
+
+    } catch (error) {
+      dispatch(
+        assignSubcontractorUserFailure(error.message)
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to assign subcontractor user"
+      );
+    }
+  };
+};
+
+export const deleteSubcontractorUserFromServiceTicket = (assignmentId) => {
+  return async (dispatch) => {
+    dispatch(deleteSubcontractorUserStart());
+
+    try {
+      const res = await axios.delete(
+        `/service_ticket/delete_subcontractor_user/${assignmentId}`
+      );
+
+      dispatch(deleteSubcontractorUserSuccess());
+
+      toast.success("Subcontractor user removed successfully");
+
+      return res;
+
+    } catch (error) {
+      dispatch(
+        deleteSubcontractorUserFailure(error.message)
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to remove subcontractor user"
+      );
     }
   };
 };
