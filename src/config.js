@@ -34,6 +34,7 @@ const apiConfig = {
   getWorkOrderLists: "/work_order/all",
   workOrderbyId: "/work_order/by_id",
   deleteWorkOrder: "/work_order/by_id",
+  deleteWorkOrderFile: "/work_order/delete/attachment",
   updateTicket: "/work_order/update_ticket",
   updateTechnician: "/work_order/update_technician",
   updateNotes: "/work_order/update_note",
@@ -102,6 +103,7 @@ const apiConfig = {
   deleteLicense: "/license/delete",
   addNotesToServiceTicket: "/service_ticket/add_st_notes",
   deleteServiceNote: "/service_ticket/delete_st_notes",
+  deleteServiceFiles: "/service_ticket/delete/attachment",
   esignServiceTicket: "/service_ticket/sign",
   assignInventoryToServiceTicket: "/inventory/service_ticket/assign",
   returnInventoryFromServiceTicket: "/service_ticket/return_inventory",
@@ -142,6 +144,10 @@ const apiConfig = {
   uploadSubcontractorDoc: "/subcontractor/upload_doc",
   changeSubcontractorStatus: "/subcontractor/change_status",
   getSubcontractorInfoByID: "/subcontractor/info",
+  assignSubcontractorUserToWO: "/work_order/assign_subcontractor_user",
+ deleteSubcontractorUserFromWO: "/work_order/delete_subcontractor_user",
+ assignSubcontractorUserToST: "/service_ticket/assign_subcontractor_user",
+ deleteSubcontractorUserFromST: "/service_ticket/delete_subcontractor_user",
 };
 
 export { API_BASE_URL, apiConfig,S3_BASE_URL };

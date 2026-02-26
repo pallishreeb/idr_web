@@ -18,6 +18,8 @@ import {
   updateNotes,
   updateTechnician,
   updateTicket,
+  assignSubcontractorUsersToWorkOrder,
+  deleteSubcontractorUserFromWorkOrder  
 } from "../../actions/workOrderActions";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
@@ -26,6 +28,7 @@ import { fetchIDREmployees } from "../../actions/employeeActions";
 import Loader from "../../Images/ZZ5H.gif"
 import WorkOrderImages from "../../Components/WorkOrderImages";
 import WOSignatureModal from "../../Components/WOSignatureModal";
+import ShowSubcontractorUsers from "../../Components/subcontractor/ShowSubcontractorUsers";
 
 
 const EditWorkOrder = () => {
@@ -49,6 +52,7 @@ const EditWorkOrder = () => {
   const idrEmployees = useSelector((state) => state.employee.idrEmployees);
   const [workOrder, setWorkOrder] = useState(null);
   const [technicians, setTechnicians] = useState([]);
+  const [subcontractorUsers, setSubcontractorUsers] = useState([]);
   const [notes, setNotes] = useState([]);
     const [serviceTicketImages, setServiceTicketImages] = useState([]);
   const [assignees, setAssignees] = useState([]);
@@ -76,6 +80,10 @@ const EditWorkOrder = () => {
         workOrderDetails?.workorder_attachments || []
       );
     setSignatureImage(workOrderDetails?.signature_url);
+    setSubcontractorUsers(
+      workOrderDetails?.subcontractor_in_work_orders || []
+    );
+
     }
   }, [workOrderDetails]);
   useEffect(() => {
@@ -389,6 +397,16 @@ const EditWorkOrder = () => {
             handleAssigneeChange={handleAssigneeChange}
             loading={loading}
             workOrderId={workOrderId}
+          />
+          <ShowSubcontractorUsers
+            subcontractorAssignees={subcontractorUsers}
+            parentId={workOrderId}
+            assignAction={assignSubcontractorUsersToWorkOrder}
+            deleteAction={deleteSubcontractorUserFromWorkOrder}
+            refreshAction={getWorkOrderDetails}
+            parentKey="work_order_id"
+            idKey="subcontractor_in_wo_id" // 🔥 unique id key for WO
+            title="Subcontractor Users"
           />
             {/* Show Images  */}
           <WorkOrderImages

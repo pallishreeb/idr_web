@@ -18,7 +18,13 @@ import {
   getWorkOrderDetailsStart,getWorkOrderDetailsSuccess,getWorkOrderDetailsFailure,
   assignPeopleToWorkOrderStart,assignPeopleToWorkOrderSuccess,assignPeopleToWorkOrderFailure,
   deleteAssigneeSuccess, deleteNoteSuccess,getWorkOrderListsForClientSuccess,returnInventoryStart,
-  returnInventorySuccess,returnInventoryFailure
+  returnInventorySuccess,returnInventoryFailure,
+  assignSubcontractorUserStart,
+  assignSubcontractorUserSuccess,
+  assignSubcontractorUserFailure,
+  deleteSubcontractorUserStart,
+  deleteSubcontractorUserSuccess,
+  deleteSubcontractorUserFailure
 } from "../reducers/workOrderSlice";
 import { serviceTicketImageStart, serviceTicketImageSuccess, serviceTicketImageFailure }  from "../reducers/serviceTicketSlice";
 import { apiConfig } from "../config";
@@ -115,7 +121,26 @@ export const deleteWorkOrder = (workOrderId) => {
     }
   };
 };
+export const deleteWorkOrderFiles = (fileId) => {
+  return async (dispatch) => {
+    dispatch(deleteWorkOrderStart());
 
+    try {
+      const response = await axios.delete(
+        `${apiConfig.deleteWorkOrderFile}/${fileId}`
+      );
+
+      dispatch(deleteWorkOrderSuccess(fileId));
+
+      return response.data;  // 🔥 IMPORTANT
+
+    } catch (error) {
+      dispatch(deleteWorkOrderFailure(error.message));
+
+      throw error;  // 🔥 IMPORTANT
+    }
+  };
+};
 export const updateTicket = ( ticketData) => {
   return async (dispatch) => {
     dispatch(updateTicketStart());
@@ -380,3 +405,61 @@ export const uploadWorkOrderImages = (serviceTicketId, images) => {
   };
 };
 
+export const assignSubcontractorUsersToWorkOrder = (payload) => {
+  return async (dispatch) => {
+    dispatch(assignSubcontractorUserStart());
+
+    try {
+      const response = await axios.post(
+        apiConfig.assignSubcontractorUserToWO,
+        payload
+      );
+
+      dispatch(assignSubcontractorUserSuccess(response?.data));
+
+      // toast.success("Subcontractor user assigned successfully");
+
+      return response?.data;
+
+    } catch (error) {
+      console.log(error);
+
+      dispatch(
+        assignSubcontractorUserFailure(error.message)
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to assign subcontractor user"
+      );
+    }
+  };
+};
+
+export const deleteSubcontractorUserFromWorkOrder = (assignmentId) => {
+  return async (dispatch) => {
+    dispatch(deleteSubcontractorUserStart());
+
+    try {
+      const res = await axios.delete(
+        `${apiConfig.deleteSubcontractorUserFromWO}/${assignmentId}`
+      );
+
+      dispatch(deleteSubcontractorUserSuccess(assignmentId));
+
+      toast.success("Subcontractor user removed successfully");
+
+      return res;
+
+    } catch (error) {
+      dispatch(
+        deleteSubcontractorUserFailure(error.message)
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to remove subcontractor user"
+      );
+    }
+  };
+};

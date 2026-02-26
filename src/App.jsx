@@ -73,6 +73,9 @@ import useSessionTimeout from "./hooks/useSessionTimeout";
 import sessionConfig from "./config/sessionConfig";
 import SessionWarningModal from "./Components/SessionWarningModal";
 import AddSubcontractorPage from "./page/sub-contractor/AddSubcontractorPage";
+import SubcontractorUsersPage from "./page/subcontractor-users/SubcontractorUsersPage";
+import AddSubcontractorUserPage from "./page/subcontractor-users/AddSubcontractorUserPage";
+import EditSubcontractorUserPage from "./page/subcontractor-users/EditSubcontractorUserPage";
 
 
 
@@ -225,6 +228,9 @@ function App() {
          <Route path="/sub-contractors" element={<SubContractorList />} />
           <Route path="/edit-subcontractor/:id" element={<EditSubContractor />} />
 
+         <Route path="/create-sub-contractor-user/:subcontractorId" element={<AddSubcontractorUserPage />} />
+         <Route path="/sub-contractors-users" element={<SubcontractorUsersPage />} />
+          <Route path="/edit-subcontractor-user/:userId" element={<EditSubcontractorUserPage />} />
           {/* Service request */}
           <Route path="/service-requests" element={<ListServiceRequests />} />
           <Route path="/add-service-request" element={<AddServiceRequest />} />

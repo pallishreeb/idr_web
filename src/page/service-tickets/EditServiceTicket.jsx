@@ -17,6 +17,8 @@ import {
   linkDeviceToServiceTicket,
   addNoteToDevice,
   updateNotes,
+  assignSubcontractorUsersToServiceTicket,
+  deleteSubcontractorUserFromServiceTicket,
 } from "../../actions/serviceTicket";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
@@ -26,7 +28,7 @@ import { getClientEquipments } from "../../actions/clientEquipment";
 import Loader from "../../Images/ZZ5H.gif";
 import ServiceTicketImages from "../../Components/ServiceTicketImages";
 import SignatureModal from "../../Components/SignatureModal";
-
+import ShowSubcontractorUsers from "../../Components/subcontractor/ShowSubcontractorUsers";
 import { toast } from "react-toastify";
 
 const EditServiceTicket = () => {
@@ -358,16 +360,18 @@ const EditServiceTicket = () => {
                   )}
                 </>
               )}
-
-              {/* Add Device to Ticket Button */}
-              {technicianAccess.includes(user_type) && (
-                <button
-                  onClick={openDeviceModal}
-                  className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
-                >
-                  Add Device To Ticket
-                </button>
-              )}
+            {(
+              technicianAccess.includes(user_type) ||
+              (user_type === "Subcontractor" &&
+                serviceTicket?.status?.toLowerCase() !== "closed")
+            ) && (
+              <button
+                onClick={openDeviceModal}
+                className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
+              >
+                Add Device To Ticket
+              </button>
+            )}
 
               {/* Download PDF Button */}
               {technicianAccess.includes(user_type) && (
@@ -428,7 +432,18 @@ const EditServiceTicket = () => {
             loading={loading}
             serviceTicketId={serviceTicketId}
           />
-
+        <ShowSubcontractorUsers
+          subcontractorAssignees={
+            serviceTicketDetails?.subcontractor_in_service_tickets
+          }
+          parentId={serviceTicketId}
+          assignAction={assignSubcontractorUsersToServiceTicket}
+          deleteAction={deleteSubcontractorUserFromServiceTicket}
+          refreshAction={getServiceTicketDetails}
+          parentKey="service_ticket_id"
+          idKey="subcontractor_in_st_id" // 🔥 unique id key for ST
+          title="Subcontractor Users"
+        />
           {/* show ClientEquipmentTable */}
           <ClientEquipmentTable
             equipments={serviceTicketEquipments}

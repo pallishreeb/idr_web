@@ -24,8 +24,7 @@ const workOrderSlice = createSlice({
     generateTicketSuccess: (state, action) => {
       state.loading = false;
       // state.workOrders.push(action.payload);
-      state.work_order_id = action.payload,
-      state.error = null;
+      ((state.work_order_id = action.payload), (state.error = null));
     },
     generateTicketFailure: (state, action) => {
       state.loading = false;
@@ -82,7 +81,9 @@ const workOrderSlice = createSlice({
     },
     deleteWorkOrderSuccess: (state, action) => {
       state.loading = false;
-      state.workOrders = state.workOrders?.workOrder.filter(order => order.work_order_id !== action.payload);
+      state.workOrders = state.workOrders?.workOrder.filter(
+        (order) => order.work_order_id !== action.payload,
+      );
       state.error = null;
     },
     deleteWorkOrderFailure: (state, action) => {
@@ -232,25 +233,95 @@ const workOrderSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-  }
+    assignSubcontractorUserStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+
+    assignSubcontractorUserSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+
+    assignSubcontractorUserFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    /* ===============================
+   Delete Subcontractor User
+================================ */
+
+    deleteSubcontractorUserStart: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+
+    deleteSubcontractorUserSuccess: (state, action) => {
+      state.loading = false;
+      state.error = null;
+    },
+
+    deleteSubcontractorUserFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+  },
 });
 
 export const {
-  generateTicketStart, generateTicketSuccess, generateTicketFailure,
-  addTechnicianToTicketStart, addTechnicianToTicketSuccess, addTechnicianToTicketFailure,
-  addNotesToTicketStart, addNotesToTicketSuccess, addNotesToTicketFailure,
-  getWorkOrderListsStart, getWorkOrderListsSuccess, getWorkOrderListsFailure,
-  deleteWorkOrderStart, deleteWorkOrderSuccess, deleteWorkOrderFailure,
-  updateTicketStart, updateTicketSuccess, updateTicketFailure,
-  updateTechnicianStart, updateTechnicianSuccess, updateTechnicianFailure,
-  updateNotesStart, updateNotesSuccess, updateNotesFailure,
-  getTechniciansByWorkOrderStart, getTechniciansByWorkOrderSuccess, getTechniciansByWorkOrderFailure,
-  getNotesByWorkOrderStart, getNotesByWorkOrderSuccess, getNotesByWorkOrderFailure,
-  getWorkOrderByClientIdStart, getWorkOrderByClientIdSuccess, getWorkOrderByClientIdFailure,
-  getWorkOrderDetailsStart,getWorkOrderDetailsSuccess,getWorkOrderDetailsFailure,
-  assignPeopleToWorkOrderStart,assignPeopleToWorkOrderSuccess,assignPeopleToWorkOrderFailure,
-  deleteAssigneeSuccess, deleteNoteSuccess,getWorkOrderListsForClientSuccess,
-  returnInventoryStart, returnInventorySuccess, returnInventoryFailure
+  generateTicketStart,
+  generateTicketSuccess,
+  generateTicketFailure,
+  addTechnicianToTicketStart,
+  addTechnicianToTicketSuccess,
+  addTechnicianToTicketFailure,
+  addNotesToTicketStart,
+  addNotesToTicketSuccess,
+  addNotesToTicketFailure,
+  getWorkOrderListsStart,
+  getWorkOrderListsSuccess,
+  getWorkOrderListsFailure,
+  deleteWorkOrderStart,
+  deleteWorkOrderSuccess,
+  deleteWorkOrderFailure,
+  updateTicketStart,
+  updateTicketSuccess,
+  updateTicketFailure,
+  updateTechnicianStart,
+  updateTechnicianSuccess,
+  updateTechnicianFailure,
+  updateNotesStart,
+  updateNotesSuccess,
+  updateNotesFailure,
+  getTechniciansByWorkOrderStart,
+  getTechniciansByWorkOrderSuccess,
+  getTechniciansByWorkOrderFailure,
+  getNotesByWorkOrderStart,
+  getNotesByWorkOrderSuccess,
+  getNotesByWorkOrderFailure,
+  getWorkOrderByClientIdStart,
+  getWorkOrderByClientIdSuccess,
+  getWorkOrderByClientIdFailure,
+  getWorkOrderDetailsStart,
+  getWorkOrderDetailsSuccess,
+  getWorkOrderDetailsFailure,
+  assignPeopleToWorkOrderStart,
+  assignPeopleToWorkOrderSuccess,
+  assignPeopleToWorkOrderFailure,
+  deleteAssigneeSuccess,
+  deleteNoteSuccess,
+  getWorkOrderListsForClientSuccess,
+  returnInventoryStart,
+  returnInventorySuccess,
+  returnInventoryFailure,
+  assignSubcontractorUserStart,
+  assignSubcontractorUserSuccess,
+  assignSubcontractorUserFailure,
+
+  deleteSubcontractorUserStart,
+  deleteSubcontractorUserSuccess,
+  deleteSubcontractorUserFailure,
 } = workOrderSlice.actions;
 
 export default workOrderSlice.reducer;

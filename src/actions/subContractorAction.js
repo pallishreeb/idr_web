@@ -28,10 +28,24 @@ import {
   getSubcontractorServicesStart,
   getSubcontractorServicesSuccess,
   getSubcontractorServicesFailure,
+  getSubcontractorUsersStart,
+  getSubcontractorUsersSuccess,
+  getSubcontractorUsersFailure,
+  addSubcontractorUserStart,
+  addSubcontractorUserSuccess,
+  addSubcontractorUserFailure,
+  getSubcontractorUserByIdStart,
+  getSubcontractorUserByIdSuccess,
+  getSubcontractorUserByIdFailure,
+  updateSubcontractorUserStart,
+  updateSubcontractorUserSuccess,
+  updateSubcontractorUserFailure,
+  deleteSubcontractorUserStart,
+  deleteSubcontractorUserSuccess,
+  deleteSubcontractorUserFailure,
 } from "../reducers/subcontractorSlice";
 import { apiConfig } from "../config";
-import { fetchJson } from '../fetch-config';
-
+import { fetchJson } from "../fetch-config";
 
 // Register Subcontractor
 export const registerSubcontractor = (subcontractorData) => {
@@ -59,12 +73,12 @@ export const addSubcontractor = (subcontractorData, navigate) => {
     dispatch(subcontractorStart());
     try {
       const data = await fetchJson(apiConfig.addSubcontractor, {
-        method: 'POST',
+        method: "POST",
         body: subcontractorData,
       });
       dispatch(subcontractorSuccess(data));
       toast.success("Subcontractor added successfully");
-      navigate('/sub-contractors');
+      navigate("/sub-contractors");
       return data;
     } catch (error) {
       dispatch(subcontractorFailure(error.message));
@@ -79,12 +93,16 @@ export const getSubcontractorLists = (filters) => {
     dispatch(getSubcontractorListsStart());
     try {
       const params = new URLSearchParams(filters).toString();
-      const url = params ? `${apiConfig.getSubcontractorLists}?${params}` : apiConfig.getSubcontractorLists;
+      const url = params
+        ? `${apiConfig.getSubcontractorLists}?${params}`
+        : apiConfig.getSubcontractorLists;
       const response = await axios.get(url);
       dispatch(getSubcontractorListsSuccess(response?.data?.subcontractors));
     } catch (error) {
       dispatch(getSubcontractorListsFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to fetch subcontractor lists");
+      toast.error(
+        error.response?.data?.message || "Failed to fetch subcontractor lists",
+      );
     }
   };
 };
@@ -99,12 +117,12 @@ export const deleteSubcontractor = (subcontractorId) => {
       toast.success("Subcontractor deleted successfully");
     } catch (error) {
       dispatch(deleteSubcontractorFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to delete subcontractor");
+      toast.error(
+        error.response?.data?.message || "Failed to delete subcontractor",
+      );
     }
   };
 };
-
-
 
 // Update subcontractor details
 export const updateSubcontractor = (subcontractorData) => {
@@ -112,7 +130,7 @@ export const updateSubcontractor = (subcontractorData) => {
     dispatch(updateSubcontractorStart());
     try {
       const data = await fetchJson(apiConfig.updateSubcontractor, {
-        method: 'PATCH',
+        method: "PATCH",
         body: subcontractorData,
       });
       dispatch(updateSubcontractorSuccess(data));
@@ -130,53 +148,57 @@ export const getSubcontractorDetails = (subcontractorId) => {
   return async (dispatch) => {
     dispatch(getSubcontractorDetailsStart());
     try {
-      const response = await axios.get(`${apiConfig.getSubcontractorByID}/${subcontractorId}`);
+      const response = await axios.get(
+        `${apiConfig.getSubcontractorByID}/${subcontractorId}`,
+      );
       dispatch(getSubcontractorDetailsSuccess(response.data?.contractor));
       return response.data?.contractor;
     } catch (error) {
       dispatch(getSubcontractorDetailsFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to fetch subcontractor details");
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to fetch subcontractor details",
+      );
     }
   };
 };
 
 // Add Notes to Subcontractor
 export const addNotesToSubcontractor = (notesData) => {
-    return async (dispatch) => {
-      dispatch(addNotesToSubcontractorStart());
-      try {
-        const data = await fetchJson(apiConfig.addNoteToSubcontractor, {
-          method: "POST",
-          body: notesData,
-        });
-        dispatch(addNotesToSubcontractorSuccess(data));
-        toast.success("Note added successfully");
-        return data;
-      } catch (error) {
-        dispatch(addNotesToSubcontractorFailure(error.message));
-        toast.error(error.message || "Failed to add note");
-      }
-    };
+  return async (dispatch) => {
+    dispatch(addNotesToSubcontractorStart());
+    try {
+      const data = await fetchJson(apiConfig.addNoteToSubcontractor, {
+        method: "POST",
+        body: notesData,
+      });
+      dispatch(addNotesToSubcontractorSuccess(data));
+      toast.success("Note added successfully");
+      return data;
+    } catch (error) {
+      dispatch(addNotesToSubcontractorFailure(error.message));
+      toast.error(error.message || "Failed to add note");
+    }
   };
-  
-  // Delete Subcontractor Note
-  export const deleteSubcontractorNote = (noteId) => {
-    return async (dispatch) => {
-      dispatch(deleteSubcontractorNoteStart());
-      try {
-        await axios.delete(`${apiConfig.deleteNoteForSubcontractor}/${noteId}`);
-        dispatch(deleteSubcontractorNoteSuccess(noteId));
-        toast.success("Note deleted successfully");
-      } catch (error) {
-        dispatch(deleteSubcontractorNoteFailure(error.message));
-        toast.error(error.response?.data?.message || "Failed to delete note");
-      }
-    };
+};
+
+// Delete Subcontractor Note
+export const deleteSubcontractorNote = (noteId) => {
+  return async (dispatch) => {
+    dispatch(deleteSubcontractorNoteStart());
+    try {
+      await axios.delete(`${apiConfig.deleteNoteForSubcontractor}/${noteId}`);
+      dispatch(deleteSubcontractorNoteSuccess(noteId));
+      toast.success("Note deleted successfully");
+    } catch (error) {
+      dispatch(deleteSubcontractorNoteFailure(error.message));
+      toast.error(error.response?.data?.message || "Failed to delete note");
+    }
   };
+};
 
-
-  // Get all subcontractors Types
-export const getSubcontractorTyes= () => {
+// Get all subcontractors Types
+export const getSubcontractorTyes = () => {
   return async (dispatch) => {
     dispatch(getSubcontractorTypesStart());
     try {
@@ -184,27 +206,31 @@ export const getSubcontractorTyes= () => {
       dispatch(getSubcontractorTypesSuccess(response?.data?.types));
     } catch (error) {
       dispatch(getSubcontractorTypesFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to fetch subcontractor types");
+      toast.error(
+        error.response?.data?.message || "Failed to fetch subcontractor types",
+      );
     }
   };
 };
 
-
-  // Get all subcontractors Types
-  export const getSubcontractorServices= () => {
-    return async (dispatch) => {
-      dispatch(getSubcontractorServicesStart());
-      try {
-        const response = await axios.get(`${apiConfig.subcontractorServices}`);
-        dispatch(getSubcontractorServicesSuccess(response?.data?.services));
-      } catch (error) {
-        dispatch(getSubcontractorServicesFailure(error.message));
-        toast.error(error.response?.data?.message || "Failed to fetch subcontractor services");
-      }
-    };
+// Get all subcontractors Types
+export const getSubcontractorServices = () => {
+  return async (dispatch) => {
+    dispatch(getSubcontractorServicesStart());
+    try {
+      const response = await axios.get(`${apiConfig.subcontractorServices}`);
+      dispatch(getSubcontractorServicesSuccess(response?.data?.services));
+    } catch (error) {
+      dispatch(getSubcontractorServicesFailure(error.message));
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to fetch subcontractor services",
+      );
+    }
   };
+};
 
-  export const updateContactDetails = (payload) => {
+export const updateContactDetails = (payload) => {
   return async () => {
     try {
       await fetchJson(apiConfig.contactDetailsUpdate, {
@@ -282,15 +308,11 @@ export const updateInsuranceInfo = (payload) => {
 export const uploadSubcontractorDocument = (formData) => {
   return async () => {
     try {
-      await axios.post(
-        apiConfig.uploadSubcontractorDoc,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      await axios.post(apiConfig.uploadSubcontractorDoc, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       toast.success("Document uploaded successfully");
     } catch (error) {
@@ -308,19 +330,16 @@ export const getSubcontractorInfoById = (subcontractorId) => {
 
     try {
       const response = await axios.get(
-        `${apiConfig.getSubcontractorInfoByID}/${subcontractorId}`
+        `${apiConfig.getSubcontractorInfoByID}/${subcontractorId}`,
       );
 
-      dispatch(
-        getSubcontractorDetailsSuccess(response.data.contractor)
-      );
+      dispatch(getSubcontractorDetailsSuccess(response.data.contractor));
 
       return response.data.contractor;
-
     } catch (error) {
       dispatch(getSubcontractorDetailsFailure(error.message));
       toast.error(
-        error?.response?.data?.message || "Failed to fetch subcontractor"
+        error?.response?.data?.message || "Failed to fetch subcontractor",
       );
       throw error;
     }
@@ -341,4 +360,95 @@ export const changeSubcontractorStatus = (payload) => {
       throw error;
     }
   };
+};
+
+export const getSubcontractorUsersById =
+  (subcontractorId, isActive = true) =>
+  async (dispatch) => {
+    dispatch(getSubcontractorUsersStart());
+
+    try {
+      const data = await fetchJson(
+        `/subcontractor/users/all/${subcontractorId}?isActive=${isActive}`,
+      );
+      console.log(data, "data");
+      dispatch(
+        getSubcontractorUsersSuccess(
+          Array.isArray(data?.subcontractor_users)
+            ? data?.subcontractor_users
+            : [],
+        ),
+      );
+    } catch (error) {
+      dispatch(getSubcontractorUsersFailure(error?.message));
+    }
+  };
+
+export const addSubcontractorUser = (payload, navigate) => async (dispatch) => {
+  dispatch(addSubcontractorUserStart());
+
+  try {
+    const data = await fetchJson("/subcontractor/users/add_user", {
+      method: "POST",
+      body: payload,
+    });
+
+    dispatch(addSubcontractorUserSuccess(data));
+
+    if (navigate) {
+      navigate("/sub-contractors-users", {
+        state: { selectedSubcontractor: payload.subcontractor_id },
+      });
+    }
+  } catch (error) {
+    dispatch(addSubcontractorUserFailure(error?.message));
+  }
+};
+
+export const getSubcontractorUserById = (id) => async (dispatch) => {
+  dispatch(getSubcontractorUserByIdStart());
+
+  try {
+    const data = await fetchJson(`/subcontractor/users/${id}`);
+
+    dispatch(getSubcontractorUserByIdSuccess(data?.subcontractorUser));
+  } catch (error) {
+    dispatch(getSubcontractorUserByIdFailure(error?.message));
+  }
+};
+
+export const updateSubcontractorUser =
+  (payload, navigate) => async (dispatch) => {
+    dispatch(updateSubcontractorUserStart());
+
+    try {
+      const data = await fetchJson("/subcontractor/users/edit", {
+        method: "PATCH",
+        body: payload,
+      });
+
+      dispatch(updateSubcontractorUserSuccess(data));
+
+          if (navigate) {
+      navigate("/sub-contractors-users", {
+        state: { selectedSubcontractor: payload.subcontractor_id },
+      });
+    }
+    } catch (error) {
+      dispatch(updateSubcontractorUserFailure(error?.message));
+    }
+  };
+
+export const deleteSubcontractorUser = (id) => async (dispatch) => {
+  dispatch(deleteSubcontractorUserStart());
+
+  try {
+    await fetchJson(`/subcontractor/users/${id}`, {
+      method: "DELETE",
+    });
+
+    dispatch(deleteSubcontractorUserSuccess(id));
+  } catch (error) {
+    dispatch(deleteSubcontractorUserFailure(error?.message));
+  }
 };
