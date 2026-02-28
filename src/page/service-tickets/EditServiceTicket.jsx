@@ -94,7 +94,8 @@ const EditServiceTicket = () => {
       setInventories(serviceTicketDetails?.inventories || []);
       setServiceTicketAgreement(serviceTicketDetails?.agreement || {});
       // API call should be done only if technicianAccess includes user_type
-      if (technicianAccess.includes(user_type)) {
+      const addRmaAccess =[...technicianAccess, "Subcontractor_User"];
+      if (addRmaAccess.includes(user_type)) {
         dispatch(
           getClientEquipments({
             client_id: serviceTicketDetails.client_id,
@@ -347,7 +348,7 @@ const EditServiceTicket = () => {
                   Cancel
                 </button>
               </Link>
-              {client_type !== "User" && (
+              {(client_type !== "User" && user_type !== "Subcontractor_User") && (
                 <>
                   {serviceTicketAgreement?.agreement_id && (
                     <Link
@@ -362,7 +363,7 @@ const EditServiceTicket = () => {
               )}
             {(
               technicianAccess.includes(user_type) ||
-              (user_type === "Subcontractor" &&
+              (user_type === "Subcontractor_User" &&
                 serviceTicket?.status?.toLowerCase() !== "closed")
             ) && (
               <button
@@ -448,7 +449,7 @@ const EditServiceTicket = () => {
           <ClientEquipmentTable
             equipments={serviceTicketEquipments}
             onAddNote={handleAddNote}
-          />
+          />x
 
           {/* Show Images  */}
           <ServiceTicketImages
@@ -472,6 +473,14 @@ const EditServiceTicket = () => {
             <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
               <div className="bg-white rounded p-6 w-3/4 h-3/4 overflow-y-auto">
                 <h3 className="text-lg font-semibold mb-4">Select Device</h3>
+                <div className="flex justify-end mb-2">
+                  <button
+                    onClick={closeDeviceModal}
+                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                  >
+                    Close
+                  </button>
+                </div>
                 <table className="table-auto w-full border-collapse border border-gray-200">
                   <thead>
                     <tr className="bg-gray-100 text-left">
@@ -528,14 +537,7 @@ const EditServiceTicket = () => {
                     )}
                   </tbody>
                 </table>
-                <div className="flex justify-end mt-4">
-                  <button
-                    onClick={closeDeviceModal}
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-                  >
-                    Close
-                  </button>
-                </div>
+               
               </div>
             </div>
           )}

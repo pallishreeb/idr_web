@@ -29,7 +29,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
       (prev) =>
         prev.includes(equipmentId)
           ? prev.filter((id) => id !== equipmentId) // Remove the ID if it exists
-          : [...prev, equipmentId] // Add the ID if it doesn't exist
+          : [...prev, equipmentId], // Add the ID if it doesn't exist
     );
   };
 
@@ -47,7 +47,17 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
     onAddNote(payload);
     closeModal();
   };
+  const addRmaAccess = [...technicianAccess, "Subcontractor_User"];
+  // 🔐 Simple Access Controls (easy to modify later)
 
+  const canAddNote = technicianAccess.includes(user_type);
+
+  const canViewEquipment = technicianAccess.includes(user_type);
+
+  const canViewRMA =
+    technicianAccess.includes(user_type) || user_type == "Subcontractor_User";
+
+  const canToggleNotes = true;
   return (
     <>
       {equipments.length > 0 && (
@@ -65,7 +75,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                 <tr className="bg-gray-300 text-left">
                   <th className="border px-4 py-2">Hostname</th>
                   <th className="border px-4 py-2">Serial Number</th>
-                  {technicianAccess.includes(user_type) && (
+                  {addRmaAccess.includes(user_type) && (
                     <th className="border px-4 py-2">Action</th>
                   )}
                 </tr>
@@ -80,32 +90,63 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                       <td className="border px-4 py-2">
                         {equipment?.client_equipments?.serial_number}
                       </td>
-                      {technicianAccess.includes(user_type) ? (
+
                         <td className="border px-4 py-2">
-                          <button
-                            onClick={() =>
-                              openModal(equipment.client_equipment_id)
-                            }
-                            className="bg-indigo-600 text-white px-3 py-1 rounded"
-                          >
-                            Add Note
-                          </button>
-                          <button
-                            onClick={() =>
-                              navigate(`/edit-client-equipment/${equipment.client_equipment_id}`)
-                            }
-                            className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
-                          >
-                            View Equipment
-                          </button>
-                          <button
-                            onClick={() =>
-                              navigate(`/add-device-rma/${equipment.client_equipment_id}`)
-                            }
-                            className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
-                          >
-                            RMA
-                          </button>
+                          {canAddNote && (
+                            <button
+                              onClick={() =>
+                                openModal(equipment.client_equipment_id)
+                              }
+                              className="bg-indigo-600 text-white px-3 py-1 rounded"
+                            >
+                              Add Note
+                            </button>
+                          )}
+                          {canViewEquipment && (
+                            <button
+                              onClick={() =>
+                                navigate(
+                                  `/edit-client-equipment/${equipment.client_equipment_id}`,
+                                )
+                              }
+                              className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
+                            >
+                              View Equipment
+                            </button>
+                          )}
+                          {canViewRMA && (
+                            <button
+                              onClick={() =>
+                                navigate(
+                                  `/add-device-rma/${equipment.client_equipment_id}`,
+                                )
+                              }
+                              className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
+                            >
+                              RMA
+                            </button>
+                          )}
+                          {canToggleNotes && (
+                            <button
+                              onClick={() =>
+                                toggleNotes(equipment.device_linked_id)
+                              }
+                              className="ml-4 bg-gray-500 text-white px-3 py-1 rounded"
+                            >
+                              {expandedEquipments.includes(
+                                equipment.device_linked_id,
+                              )
+                                ? "Hide Notes"
+                                : "Show Notes"}{" "}
+                              (
+                              {equipment?.client_equipments
+                                ?.client_equip_histories?.length || 0}
+                              )
+                            </button>
+                          )}
+                        </td>
+
+                        {/* <td className="border px-4 py-2">
                           <button
                             onClick={() =>
                               toggleNotes(equipment.device_linked_id)
@@ -113,33 +154,21 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                             className="ml-4 bg-gray-500 text-white px-3 py-1 rounded"
                           >
                             {expandedEquipments.includes(
-                              equipment.device_linked_id
+                              equipment.device_linked_id,
                             )
                               ? "Hide Notes"
-                              : "Show Notes"} ({equipment?.client_equipments?.client_equip_histories?.length || 0})
-                          </button>
-                        </td>
-                      ) : (
-                        <td className="border px-4 py-2">
-                          <button
-                            onClick={() =>
-                              toggleNotes(equipment.device_linked_id)
-                            }
-                            className="ml-4 bg-gray-500 text-white px-3 py-1 rounded"
-                          >
-                            {expandedEquipments.includes(
-                              equipment.device_linked_id
+                              : "Show Notes"}{" "}
+                            (
+                            {equipment?.client_equipments
+                              ?.client_equip_histories?.length || 0}
                             )
-                              ? "Hide Notes"
-                              : "Show Notes"} ({equipment?.client_equipments?.client_equip_histories?.length || 0})
                           </button>
-                        </td>
-                      )}
+                        </td> */}
                     </tr>
 
                     {/* Collapsible Notes Section */}
                     {expandedEquipments.includes(
-                      equipment.device_linked_id
+                      equipment.device_linked_id,
                     ) && (
                       <tr>
                         <td colSpan={3} className="p-4">
@@ -199,7 +228,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                                           style={{ width: "15%" }}
                                         >
                                           {new Date(
-                                            note.created_at
+                                            note.created_at,
                                           ).toLocaleString("en-US", {
                                             timeZone: "America/New_York",
                                             year: "numeric",
@@ -212,7 +241,7 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                                           })}
                                         </td>
                                       </tr>
-                                    )
+                                    ),
                                   )}
                                 </tbody>
                               </table>

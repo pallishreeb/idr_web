@@ -595,3 +595,50 @@ export const deleteSubcontractorUserFromServiceTicket = (assignmentId) => {
     }
   };
 };
+
+export const updateSubcontractorNoteStatus = (noteId, isAccepted) => {
+  return async (dispatch) => {
+    dispatch(addNoteToDeviceStart());
+
+    try {
+      const response = await axios.post(
+        `/service_ticket/subcontractor/note_status`,
+        {
+          note_id: noteId,
+          is_accepted: isAccepted,
+        }
+      );
+
+      dispatch(addNoteToDeviceSuccess(response.data));
+
+      return response.data;
+
+    } catch (error) {
+      dispatch(addNoteToDeviceFailure(error.message));
+      throw error;
+    }
+  };
+};
+export const updateWOSubcontractorNoteStatus = (noteId, isAccepted) => {
+  return async (dispatch) => {
+    dispatch(addNoteToDeviceStart());
+
+    try {
+      const response = await axios.post(
+        `/work_order/subcontractor/note_status`,
+        {
+          note_id: noteId,
+          is_accepted: isAccepted,
+        }
+      );
+
+      dispatch(addNoteToDeviceSuccess(response.data));
+
+      return response.data;
+
+    } catch (error) {
+      dispatch(addNoteToDeviceFailure(error.message));
+      throw error;
+    }
+  };
+};
