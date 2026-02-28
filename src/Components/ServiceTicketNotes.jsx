@@ -7,22 +7,28 @@ import {
   addNotesToServiceTicket,
   getServiceTicketDetails,
   deleteServiceNote,
+  updateSubcontractorNoteStatus,
 } from "../actions/serviceTicket";
 import { getClients } from "../actions/clientActions";
 import { fetchIDREmployees } from "../actions/employeeActions";
 import { BiSolidEditAlt } from "react-icons/bi";
 import NoteTextarea from "./NoteTextarea";
+import { FaCheck, FaTimes } from "react-icons/fa";
 
-
-const NotesTable = ({ notes, serviceTicketId,handleSaveNote ,handleNoteChange}) => {
+const NotesTable = ({
+  notes,
+  serviceTicketId,
+  handleSaveNote,
+  handleNoteChange,
+}) => {
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const { user_type, user_id } = useSelector((state) => state.user.user);
   const { access, technicianAccess } = useSelector((state) => state.user);
-    const handleEditToggle = (index) => {
-      setEditingIndex(index === editingIndex ? null : index);
-    };
+  const handleEditToggle = (index) => {
+    setEditingIndex(index === editingIndex ? null : index);
+  };
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -67,11 +73,21 @@ const NotesTable = ({ notes, serviceTicketId,handleSaveNote ,handleNoteChange}) 
     });
   };
 
+  const handleApproveReject = (noteId, status) => {
+    dispatch(updateSubcontractorNoteStatus(noteId, status))
+      .then(() => {
+        dispatch(getServiceTicketDetails(serviceTicketId));
+      })
+      .catch(() => {
+        console.error("Failed to update note status");
+      });
+  };
+  const newAccess = [...technicianAccess, "Subcontractor_User"];
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="font-normal text-xl mb-2">Notes</h1>
-        {technicianAccess.includes(user_type) && (
+        {newAccess.includes(user_type) && (
           <button
             className="bg-indigo-600 text-white px-6 py-2 rounded"
             onClick={handleOpenModal}
@@ -114,7 +130,12 @@ const NotesTable = ({ notes, serviceTicketId,handleSaveNote ,handleNoteChange}) 
                     rows={8}
                     disabled={editingIndex !== index}
                   ></textarea> */}
-                  <NoteTextarea note={note} index={index} handleNoteChange={handleNoteChange} editingIndex={editingIndex}/>
+                  <NoteTextarea
+                    note={note}
+                    index={index}
+                    handleNoteChange={handleNoteChange}
+                    editingIndex={editingIndex}
+                  />
                 </td>
                 <td className="border px-4 py-2" style={{ width: "15%" }}>
                   {note?.profile?.first_name} {note?.profile?.last_name}
@@ -131,45 +152,84 @@ const NotesTable = ({ notes, serviceTicketId,handleSaveNote ,handleNoteChange}) 
                     hour12: true,
                   })}
                 </td>
-                {(technicianAccess.includes(user_type) ||
-                  note.profile?.user_id === user_id) && (
+                {(
+                (access.includes(user_type) ||
+                  note.profile?.user_id === user_id) &&
+                user_type !== "Subcontractor_User"
+              ) && (
                   <td className="border px-4 py-2" style={{ width: "5%" }}>
                     <div>
-                    {editingIndex === index ? (
-                      <>
-                        <button
-                          className="bg-indigo-600 text-white px-8 py-2 rounded"
-                          onClick={() => {
-                            handleSaveNote(index);
-                            handleEditToggle(index);
-                          }}
-                        >
-                          Save
-                        </button>
-                        <button
-                          className="bg-gray-500 text-white px-6 py-2 rounded mt-2"
-                          onClick={() => handleEditToggle(index)}
-                        >
-                          Cancel
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                    <button
-                      className="p-[4px] bg-gray-100 cursor-pointer"
-                      onClick={() => handleEditToggle(index)}
-                    >
-                      <BiSolidEditAlt />
-                    </button>
-                    <button
-                      className="p-[4px] bg-gray-100 cursor-pointer"
-                      onClick={() => handleDelete(note.note_id)}
-                    >
-                      <AiFillDelete />
-                    </button>
-                    </>
-                    )}
-                  </div>
+                      {editingIndex === index ? (
+                        <>
+                          <button
+                            className="bg-indigo-600 text-white px-8 py-2 rounded"
+                            onClick={() => {
+                              handleSaveNote(index);
+                              handleEditToggle(index);
+                            }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            className="bg-gray-500 text-white px-6 py-2 rounded mt-2"
+                            onClick={() => handleEditToggle(index)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className="p-[4px] bg-gray-100 cursor-pointer"
+                            onClick={() => handleEditToggle(index)}
+                          >
+                            <BiSolidEditAlt />
+                          </button>
+
+                          {access.includes(user_type) && (
+                            <button
+                              className="p-[4px] bg-gray-100 cursor-pointer"
+                              onClick={() => handleDelete(note.note_id)}
+                            >
+                              <AiFillDelete />
+                            </button>
+                          )}
+
+                          {/* ✅ Accept / Reject Section */}
+                          {note.is_added_by_subcontractor &&
+                            !note.is_accepted_subcontractor_note &&
+                            access.includes(user_type) && (
+                              <>
+                                <button
+                                  className="p-[4px] bg-green-100"
+                                  onClick={() =>
+                                    handleApproveReject(note.note_id, true)
+                                  }
+                                >
+                                  <FaCheck className="text-green-600" />
+                                </button>
+
+                                <button
+                                  className="p-[4px] bg-red-100"
+                                  onClick={() =>
+                                    handleApproveReject(note.note_id, false)
+                                  }
+                                >
+                                  <FaTimes className="text-red-600" />
+                                </button>
+                              </>
+                            )}
+
+                          {/* Accepted Badge */}
+                          {note.is_added_by_subcontractor &&
+                            note.is_accepted_subcontractor_note && (
+                              <span className="text-green-600 text-xs font-semibold">
+                                Accepted
+                              </span>
+                            )}
+                        </>
+                      )}
+                    </div>
                   </td>
                 )}
               </tr>

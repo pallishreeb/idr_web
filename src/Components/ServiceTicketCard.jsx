@@ -23,7 +23,7 @@ const ServiceTicketCard = ({
   useEffect(() => {
     if (serviceTicket.location_id) {
       const selectedLocation = locations.find(
-        (location) => location.location_id === serviceTicket.location_id
+        (location) => location.location_id === serviceTicket.location_id,
       );
       if (selectedLocation) {
         handleServiceTicketChange({
@@ -259,33 +259,38 @@ const ServiceTicketCard = ({
             ))}
           </select>
         </div>
+        {user_type !== "Subcontractor_User" && (
+          <>
+            <div className="flex flex-col gap-2">
+              <label className="font-normal text-base">
+                Contact Phone Number
+              </label>
+              <input
+                type="text"
+                placeholder="Type contact phone number"
+                name="contact_phone_number"
+                className="px-3 py-3 border border-gray-200 h-10 text-sm rounded w-full"
+                value={serviceTicket.contact_phone_number || ""}
+                onChange={(e) => handleServiceTicketChange(e)}
+                required
+                readOnly
+              />
+            </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="font-normal text-base">Contact Phone Number</label>
-          <input
-            type="text"
-            placeholder="Type contact phone number"
-            name="contact_phone_number"
-            className="px-3 py-3 border border-gray-200 h-10 text-sm rounded w-full"
-            value={serviceTicket.contact_phone_number || ""}
-            onChange={(e) => handleServiceTicketChange(e)}
-            required
-            readOnly
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label className="font-normal text-base">Contact Email id</label>
-          <input
-            type="email"
-            placeholder="Type contact mail id"
-            name="contact_email"
-            className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
-            value={serviceTicket.contact_email || ""}
-            onChange={(e) => handleServiceTicketChange(e)}
-            readOnly
-          />
-        </div>
+            <div className="flex flex-col gap-2">
+              <label className="font-normal text-base">Contact Email id</label>
+              <input
+                type="email"
+                placeholder="Type contact mail id"
+                name="contact_email"
+                className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
+                value={serviceTicket.contact_email || ""}
+                onChange={(e) => handleServiceTicketChange(e)}
+                readOnly
+              />
+            </div>
+          </>
+        )}
 
         <div className="flex flex-col gap-2">
           <label className="font-normal text-base">Customer PO Number</label>
@@ -299,7 +304,6 @@ const ServiceTicketCard = ({
             disabled={isFieldDisabled("customer_po")}
           />
         </div>
-
         <div className="flex flex-col gap-2">
           <label className="font-normal text-base">Service date</label>
           <input
@@ -386,21 +390,21 @@ const ServiceTicketCard = ({
           />
         </div>
         <div className="flex flex-col gap-2">
-        <label className="font-normal text-base">Billed</label>
-        <select
-          name="is_billed"
-          className="px-3 border border-gray-200 h-10 text-sm rounded"
-          value={serviceTicket.is_billed || ""}
-          onChange={handleServiceTicketChange}
-          disabled={!isEditing}
-        >
-          <option value="">Choose Option</option>
-          <option value="Yes">Yes</option>
-          <option value="No">No</option>
-          <option value="Service Agreement">Service Agreement</option>
-          <option value="Warranty">Warranty</option>
-        </select>
-      </div>
+          <label className="font-normal text-base">Billed</label>
+          <select
+            name="is_billed"
+            className="px-3 border border-gray-200 h-10 text-sm rounded"
+            value={serviceTicket.is_billed || ""}
+            onChange={handleServiceTicketChange}
+            disabled={!isEditing}
+          >
+            <option value="">Choose Option</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+            <option value="Service Agreement">Service Agreement</option>
+            <option value="Warranty">Warranty</option>
+          </select>
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-8">
         <div className="flex flex-col gap-2">
@@ -428,7 +432,6 @@ const ServiceTicketCard = ({
           ></textarea>
         </div> */}
       </div>
-
     </div>
   );
 };

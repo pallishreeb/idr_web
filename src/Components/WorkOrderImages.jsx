@@ -93,12 +93,17 @@ const WorkOrderImages = ({ images, serviceTicketId }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deleteWorkOrderFiles(imageId))
-          .then(() => {
-            toast.success("File deleted successfully.");
-            dispatch(getWorkOrderDetails(serviceTicketId));
+          .then((res) => {
+            if (res?.code === "ST203") {
+              toast.success("File deleted successfully.");
+              dispatch(getWorkOrderDetails(serviceTicketId));
+            } else {
+              toast.error("Failed to delete file.");
+            }
           })
-          .catch(() => {
-            toast.error("Failed to delete file.");
+          .catch((err) => {
+            console.error(err);
+            toast.error("Something went wrong.");
           });
       }
     });
@@ -124,11 +129,9 @@ const WorkOrderImages = ({ images, serviceTicketId }) => {
   return (
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
-        <h1 className="font-normal text-xl mb-2">Service Ticket Images</h1>
-        {(
-  technicianAccess?.includes(user_type) ||
-  user_type?.trim().toLowerCase() === "subcontractor"
-)&& (
+        <h1 className="font-normal text-xl mb-2">Work Order Images</h1>
+        {(technicianAccess?.includes(user_type) ||
+          user_type?.trim().toLowerCase() === "Subcontractor_User") && (
           <button
             className="bg-indigo-600 text-white px-6 py-2 rounded"
             onClick={handleOpenModal}

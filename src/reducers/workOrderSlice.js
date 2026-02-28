@@ -81,9 +81,9 @@ const workOrderSlice = createSlice({
     },
     deleteWorkOrderSuccess: (state, action) => {
       state.loading = false;
-      state.workOrders = state.workOrders?.workOrder.filter(
-        (order) => order.work_order_id !== action.payload,
-      );
+      // state.workOrders = state.workOrders?.workOrder.filter(
+      //   (order) => order.work_order_id !== action.payload,
+      // );
       state.error = null;
     },
     deleteWorkOrderFailure: (state, action) => {

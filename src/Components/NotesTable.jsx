@@ -1,19 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch,useSelector } from "react-redux";
+import React, { useState} from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
-import Swal from 'sweetalert2';
-import AddNoteModal from './AddNoteModal'; 
-import { addNotesToTicket, getWorkOrderDetails,deleteNote } from '../actions/workOrderActions';
+import Swal from "sweetalert2";
+import AddNoteModal from "./AddNoteModal";
+import {
+  addNotesToTicket,
+  getWorkOrderDetails,
+  deleteNote,
+} from "../actions/workOrderActions";
+import { 
+  updateWOSubcontractorNoteStatus,
+ } from "../actions/serviceTicket";
 import { getClients } from "../actions/clientActions";
 import { fetchIDREmployees } from "../actions/employeeActions";
 import NoteTextarea from "./NoteTextarea";
-const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) => {
+import { FaCheck, FaTimes } from "react-icons/fa";
+const NotesTable = ({
+  notes,
+  handleSaveNote,
+  handleNoteChange,
+  workOrderId,
+}) => {
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const { user_type,user_id } = useSelector((state) => state.user.user);
-  const { access } = useSelector((state) => state.user);
+  const { user_type, user_id } = useSelector((state) => state.user.user);
+  const { access, technicianAccess } = useSelector((state) => state.user);
   const handleEditToggle = (index) => {
     setEditingIndex(index === editingIndex ? null : index);
   };
@@ -28,7 +41,7 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
 
   const handleAddNote = (newNote) => {
     dispatch(addNotesToTicket(newNote))
-      .then(response => {
+      .then((response) => {
         if (response.code === "WO201") {
           handleCloseModal();
           dispatch(getWorkOrderDetails(workOrderId));
@@ -38,19 +51,19 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
           console.error("Error adding notes:", response.error);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("API call error:", error);
       });
   };
 
   const handleDelete = (noteId) => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you really want to delete this Comment?',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "Do you really want to delete this Comment?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it',
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deleteNote(noteId));
@@ -58,21 +71,31 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
         dispatch(getClients());
         dispatch(fetchIDREmployees());
       }
-  
     });
   };
-  const addAccess = ["Admin", "Subadmin", "IDR Employee"];
+
+  const handleApproveReject = (noteId, status) => {
+    dispatch(updateWOSubcontractorNoteStatus(noteId, status))
+      .then(() => {
+        dispatch(getWorkOrderDetails(workOrderId));
+      })
+      .catch(() => {
+        console.error("Failed to update note status");
+      });
+  };
+
+  const newAccess = [...technicianAccess, "Subcontractor_User"];
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="font-normal text-xl mb-2">Notes</h1>
-        {addAccess.includes(user_type) && (
-        <button
-          className="bg-indigo-600 text-white px-6 py-2 rounded"
-          onClick={handleOpenModal}
-        >
-          Add Note
-        </button>
+        {newAccess.includes(user_type) && (
+          <button
+            className="bg-indigo-600 text-white px-6 py-2 rounded"
+            onClick={handleOpenModal}
+          >
+            Add Note
+          </button>
         )}
       </div>
 
@@ -81,17 +104,26 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
         <table className="min-w-full bg-gray-200 border rounded">
           <thead>
             <tr className="bg-gray-300 text-left">
-              <th className="border px-4 py-2" style={{ width: '65%' }}>Comments</th>
-              <th className="border px-4 py-2" style={{ width: '15%' }}>User Name</th>
-              <th className="border px-4 py-2" style={{ width: '15%' }}>Date and Time</th>
-              {addAccess.includes(user_type)  && 
-              <th className="border px-4 py-2" style={{ width: '5%' }}>Actions</th>}
+              <th className="border px-4 py-2" style={{ width: "65%" }}>
+                Comments
+              </th>
+              <th className="border px-4 py-2" style={{ width: "15%" }}>
+                User Name
+              </th>
+              <th className="border px-4 py-2" style={{ width: "15%" }}>
+                Date and Time
+              </th>
+              {technicianAccess.includes(user_type) && (
+                <th className="border px-4 py-2" style={{ width: "5%" }}>
+                  Actions
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
             {notes?.map((note, index) => (
               <tr key={note.note_id} className="bg-white text-sm">
-                <td className="border px-4 py-2" style={{ width: '60%' }}>
+                <td className="border px-4 py-2" style={{ width: "60%" }}>
                   {/* <textarea
                     className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
                     name="comments"
@@ -100,68 +132,106 @@ const NotesTable = ({ notes, handleSaveNote, handleNoteChange, workOrderId }) =>
                     rows={8}
                     disabled={editingIndex !== index}
                   ></textarea> */}
-                  <NoteTextarea note={note} index={index} handleNoteChange={handleNoteChange} editingIndex={editingIndex}/>
-
-
+                  <NoteTextarea
+                    note={note}
+                    index={index}
+                    handleNoteChange={handleNoteChange}
+                    editingIndex={editingIndex}
+                  />
                 </td>
-                <td className="border px-4 py-2" style={{ width: '15%' }}>
-                  {note?.profile?.first_name}{" "}{note?.profile?.last_name}
+                <td className="border px-4 py-2" style={{ width: "15%" }}>
+                  {note?.profile?.first_name} {note?.profile?.last_name}
                 </td>
-                <td className="border px-4 py-2" style={{ width: '15%' }}>
-                {new Date(note.created_at).toLocaleString('en-US', {
-                    timeZone: 'America/New_York',
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
+                <td className="border px-4 py-2" style={{ width: "15%" }}>
+                  {new Date(note.created_at).toLocaleString("en-US", {
+                    timeZone: "America/New_York",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
                     hour12: true,
                   })}
                 </td>
-                {(access.includes(user_type) || note.profile?.user_id  === user_id) && 
-                <td className="border px-4 py-2" style={{ width: '5%' }}>
-                  <div>
-                    {editingIndex === index ? (
-                      <>
-                        <button
-                          className="bg-indigo-600 text-white px-8 py-2 rounded"
-                          onClick={() => {
-                            handleSaveNote(index);
-                            handleEditToggle(index);
-                          }}
-                        >
-                          Save
-                        </button>
-                        <button
-                          className="bg-gray-500 text-white px-6 py-2 rounded mt-2"
-                          onClick={() => handleEditToggle(index)}
-                        >
-                          Cancel
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                      <button
-                        className="p-[4px] bg-gray-100 cursor-pointer"
-                        onClick={() => handleEditToggle(index)}
-                      >
-                        <BiSolidEditAlt/>
-                      </button>
-                      {user_type === "Admin" && (
-                      <button
-                      className="p-[4px] bg-gray-100 cursor-pointer"
-                      onClick={() => handleDelete(note.note_id)}
-                    >
-                      <AiFillDelete/>
-                    </button>
-                    )}
-                    </>
-                    )}
-                  </div>
-                </td>
-                }
-                
+                {(
+                  (access.includes(user_type) ||
+                    note.profile?.user_id === user_id) &&
+                  user_type !== "Subcontractor_User"
+                ) && (
+                  <td className="border px-4 py-2" style={{ width: "5%" }}>
+                    <div>
+                      {editingIndex === index ? (
+                        <>
+                          <button
+                            className="bg-indigo-600 text-white px-8 py-2 rounded"
+                            onClick={() => {
+                              handleSaveNote(index);
+                              handleEditToggle(index);
+                            }}
+                          >
+                            Save
+                          </button>
+                          <button
+                            className="bg-gray-500 text-white px-6 py-2 rounded mt-2"
+                            onClick={() => handleEditToggle(index)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className="p-[4px] bg-gray-100 cursor-pointer"
+                            onClick={() => handleEditToggle(index)}
+                          >
+                            <BiSolidEditAlt />
+                          </button>
+                          {user_type === "Admin" && (
+                            <button
+                              className="p-[4px] bg-gray-100 cursor-pointer"
+                              onClick={() => handleDelete(note.note_id)}
+                            >
+                              <AiFillDelete />
+                            </button>
+                          )}
+                          {/* ✅ Accept / Reject Section */}
+                          {note.is_added_by_subcontractor &&
+                            !note.is_accepted_subcontractor_note &&
+                            access.includes(user_type) && (
+                              <>
+                                <button
+                                  className="p-[4px] bg-green-100"
+                                  onClick={() =>
+                                    handleApproveReject(note.note_id, true)
+                                  }
+                                >
+                                  <FaCheck className="text-green-600" />
+                                </button>
+
+                                <button
+                                  className="p-[4px] bg-red-100"
+                                  onClick={() =>
+                                    handleApproveReject(note.note_id, false)
+                                  }
+                                >
+                                  <FaTimes className="text-red-600" />
+                                </button>
+                              </>
+                            )}
+
+                          {/* Accepted Badge */}
+                          {note.is_added_by_subcontractor &&
+                            note.is_accepted_subcontractor_note && (
+                              <span className="text-green-600 text-xs font-semibold">
+                                Accepted
+                              </span>
+                            )}
+                        </>
+                      )}
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

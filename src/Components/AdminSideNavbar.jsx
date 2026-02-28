@@ -45,15 +45,15 @@ const AdminSideNavbar = () => {
     { title: "Client Licensing", path: "/client-licensing", roles: client_type !== "User" 
       ? ["IDR Employee", "Client Employee"] 
       : ["IDR Employee"], },
-    { title: "Work Order", path: "/workorder", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee","Laborer","Subcontractor"] },
-    { title: "Service Ticket", path: "/service-tickets", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee","Laborer","Subcontractor"] },
+    { title: "Work Order", path: "/workorder", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee","Laborer","Subcontractor_User"] },
+    { title: "Service Ticket", path: "/service-tickets", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee","Laborer","Subcontractor_User"] },
     { title: "RMA", path: "/device-rma", roles: client_type !== "User" ? ["Admin", "Subadmin", "IDR Employee","Laborer", "Client Employee"]  : ["Admin", "Subadmin", "IDR Employee","Laborer"] },
     { title: "Request Service", path: "/add-service-request", roles: ["Client Employee"]},
     { title: "Inventory", path: "/inventory", roles: ["Admin", "Subadmin", "IDR Employee"] },
     { title: "Inventory Locations", path: "/inventory-locations", roles: ["Admin"] },
     { title: "IDR Equipment and Tools", path: "/idr-equipment", roles: ["Admin", "Subadmin", "IDR Employee"] },
     { title: "Reports", path: "/equipment-report", roles: ["Admin", "Subadmin"] },
-    { title: "Sub Contractors", path: "/sub-contractors", roles: ["Admin", "Subadmin"] },
+    { title: "Sub Contractors", path: "/sub-contractors", roles: ["Admin", "Subadmin","Subcontractor"] },
   ];
 
   const toggleSubMenu = () => setIsSubMenuOpen(!isSubMenuOpen);
