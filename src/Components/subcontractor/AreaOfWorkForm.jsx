@@ -4,7 +4,7 @@ import { updateAreaOfWork } from "../../actions/subContractorAction";
 
 /* ===========================
    Allowed Fields (Whitelist)
-   =========================== */
+=========================== */
 
 const STRUCTURED_FIELDS = [
   "data_cabling",
@@ -56,8 +56,12 @@ const SECURITY_FIELDS = [
   "ip_intercom_repair",
 ];
 
-const AreaOfWorkForm = ({ id, data }) => {
+const AreaOfWorkForm = ({ id, data, isEditable }) => {
   const dispatch = useDispatch();
+
+  const disabledClass = !isEditable
+    ? "bg-gray-100 cursor-not-allowed"
+    : "";
 
   const [formData, setFormData] = useState({
     manufacturer_certifications: "",
@@ -69,42 +73,47 @@ const AreaOfWorkForm = ({ id, data }) => {
 
   /* ===========================
      Normalize Incoming Data
-     =========================== */
+  =========================== */
 
-useEffect(() => {
-  const structuredRaw = data?.structured_cablings?.[0] || {};
-  const avRaw = data?.av_works?.[0] || {};
-  const securityRaw = data?.security_works?.[0] || {};
-  const areaRaw = data?.contractor_areaof_works?.[0] || {};
+  useEffect(() => {
+    const structuredRaw = data?.structured_cablings?.[0] || {};
+    const avRaw = data?.av_works?.[0] || {};
+    const securityRaw = data?.security_works?.[0] || {};
+    const areaRaw = data?.contractor_areaof_works?.[0] || {};
 
-  const buildSection = (fields, source) => {
-    const result = {};
-    fields.forEach((field) => {
-      result[field] = source?.[field] ?? false;
+    const buildSection = (fields, source) => {
+      const result = {};
+      fields.forEach((field) => {
+        result[field] = source?.[field] ?? false;
+      });
+      return result;
+    };
+
+    setFormData({
+      manufacturer_certifications:
+        areaRaw?.manufacturer_certifications || "",
+      technical_certifications:
+        areaRaw?.technical_certifications || "",
+
+      structured_cabling: buildSection(
+        STRUCTURED_FIELDS,
+        structuredRaw
+      ),
+      av_work: buildSection(AV_FIELDS, avRaw),
+      security_work: buildSection(
+        SECURITY_FIELDS,
+        securityRaw
+      ),
     });
-    return result;
-  };
-
-  setFormData({
-    manufacturer_certifications:
-      areaRaw?.manufacturer_certifications || "",
-    technical_certifications:
-      areaRaw?.technical_certifications || "",
-
-    structured_cabling: buildSection(
-      STRUCTURED_FIELDS,
-      structuredRaw
-    ),
-    av_work: buildSection(AV_FIELDS, avRaw),
-    security_work: buildSection(SECURITY_FIELDS, securityRaw),
-  });
-}, [data]);
+  }, [data]);
 
   /* ===========================
      Handlers
-     =========================== */
+  =========================== */
 
   const handleCheckboxChange = (section, field) => {
+    if (!isEditable) return;
+
     setFormData((prev) => ({
       ...prev,
       [section]: {
@@ -115,37 +124,20 @@ useEffect(() => {
   };
 
   const handleTextChange = (e) => {
+    if (!isEditable) return;
+
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const renderCheckboxGrid = (sectionName, fields) => {
-    return (
-      <div className="grid grid-cols-3 gap-3">
-        {fields.map((key) => (
-          <label key={key} className="flex items-center text-sm">
-            <input
-              type="checkbox"
-              checked={formData[sectionName]?.[key] || false}
-              onChange={() =>
-                handleCheckboxChange(sectionName, key)
-              }
-              className="mr-2"
-            />
-            {key
-              .replace(/_/g, " ")
-              .replace(/\b\w/g, (c) => c.toUpperCase())}
-          </label>
-        ))}
-      </div>
-    );
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!isEditable) return;
 
     dispatch(
       updateAreaOfWork({
@@ -161,9 +153,35 @@ useEffect(() => {
     );
   };
 
+  const renderCheckboxGrid = (sectionName, fields) => (
+    <div className="grid grid-cols-3 gap-3">
+      {fields.map((key) => (
+        <label
+          key={key}
+          className="flex items-center text-sm"
+        >
+          <input
+            type="checkbox"
+            checked={formData[sectionName]?.[key] || false}
+            onChange={() =>
+              handleCheckboxChange(sectionName, key)
+            }
+            disabled={!isEditable}
+            className="mr-2"
+          />
+          {key
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, (c) =>
+              c.toUpperCase()
+            )}
+        </label>
+      ))}
+    </div>
+  );
+
   /* ===========================
      UI
-     =========================== */
+  =========================== */
 
   return (
     <div className="bg-white shadow rounded-lg p-6 mb-6">
@@ -171,8 +189,12 @@ useEffect(() => {
         Area of Work
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-
+      <form
+        onSubmit={handleSubmit}
+        className={`space-y-8 ${
+          !isEditable ? "opacity-60" : ""
+        }`}
+      >
         {/* Manufacturer Certifications */}
         <div>
           <h3 className="font-semibold mb-3">
@@ -180,9 +202,12 @@ useEffect(() => {
           </h3>
           <textarea
             name="manufacturer_certifications"
-            value={formData.manufacturer_certifications}
+            value={
+              formData.manufacturer_certifications
+            }
             onChange={handleTextChange}
-            className="border p-2 rounded w-full"
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
             rows="3"
           />
         </div>
@@ -194,9 +219,12 @@ useEffect(() => {
           </h3>
           <textarea
             name="technical_certifications"
-            value={formData.technical_certifications}
+            value={
+              formData.technical_certifications
+            }
             onChange={handleTextChange}
-            className="border p-2 rounded w-full"
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
             rows="3"
           />
         </div>
@@ -217,7 +245,10 @@ useEffect(() => {
           <h3 className="font-semibold mb-4">
             AV Work
           </h3>
-          {renderCheckboxGrid("av_work", AV_FIELDS)}
+          {renderCheckboxGrid(
+            "av_work",
+            AV_FIELDS
+          )}
         </div>
 
         {/* Security Work */}
@@ -231,12 +262,13 @@ useEffect(() => {
           )}
         </div>
 
-        <div className="text-right">
-          <button className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">
-            Update Area of Work
-          </button>
-        </div>
-
+        {isEditable && (
+          <div className="text-right">
+            <button className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">
+              Update Area of Work
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );

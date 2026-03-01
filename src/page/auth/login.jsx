@@ -13,12 +13,25 @@ const Login = () => {
   const loginLoading = useSelector(state => state.user.loading);
 
 
-  useEffect(()=>{
-    const token = localStorage.getItem("user");
-    if(token){
-      navigate('/admin/dashboard')
-    }
-  })
+  // useEffect(()=>{
+  //   const token = localStorage.getItem("user");
+  //   if(token){
+  //     navigate('/admin/dashboard')
+  //   }
+  // })
+  useEffect(() => {
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+
+  if (!storedUser) return;
+
+  const { user_type, subcontractor_id } = storedUser;
+
+  if (user_type === "Subcontractor") {
+    navigate(`/edit-subcontractor/${subcontractor_id}`, { replace: true });
+  } else {
+    navigate("/admin/dashboard", { replace: true });
+  }
+}, []);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email || !password) {

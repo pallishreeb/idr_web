@@ -20,6 +20,7 @@ const AdminDashboard = () => {
   const usersLoading = useSelector((state) => state.user.loading);
   const { workOrders, loading } = useSelector((state) => state.workOrder);
   const { serviceTickets } = useSelector((state) => state.serviceTicket);
+  const { user_type } = useSelector((state) => state.user.user);
   // Define a state variable to hold the matched user
   const [user, setUser] = useState(null);
 
@@ -127,6 +128,8 @@ const AdminDashboard = () => {
               <img src={circle} />
             </div>
           </div>
+          {/* work order and service ticket */}
+          {user_type !== "Subcontractor_User" && (
           <div className="flex gap-3">
             <div className="mt-4 border py-7 px-5 bg-white">
               <h1 className="font-medium text-xl">Work Order Assignments</h1>
@@ -250,7 +253,7 @@ const AdminDashboard = () => {
                 </table>
               </div>
             </div>
-          </div>
+          </div>)}
         </div>
       </div>
     </>

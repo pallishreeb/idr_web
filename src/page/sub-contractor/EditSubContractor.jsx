@@ -35,6 +35,7 @@ const EditSubContractor = () => {
     (state) => state.subcontractor
   );
 
+  const { user_type } = useSelector((state) => state.user.user);
   useEffect(() => {
     dispatch(getSubcontractorInfoById(id));
   }, [dispatch, id]);
@@ -45,14 +46,22 @@ const EditSubContractor = () => {
       block: "start",
     });
   };
+const isSubcontractor = user_type === "Subcontractor";
 
+const allowedStatuses = ["Re-Opened", "In Progress"];
+
+const isEditable =
+  !isSubcontractor || // Admin, Subadmin always editable
+  (isSubcontractor &&
+    allowedStatuses.includes(subcontractor?.contract_status));
   return (
     <>
       <Header />
 
       <div className="flex">
-        <AdminSideNavbar />
-
+        {user_type !== "Subcontractor" && (
+          <AdminSideNavbar />
+        )}
         <div className="flex-1 flex bg-gray-50">
 
           {/* LEFT STICKY NAV */}
@@ -96,44 +105,45 @@ const EditSubContractor = () => {
                   title="Business Details"
                   defaultOpen
                 >
-                  <BusinessDetailsForm id={id} data={subcontractor} />
+                  <BusinessDetailsForm id={id} data={subcontractor} isEditable={isEditable} />
                 </AccordionSection>
 
                 <AccordionSection
                   id="contact"
                   title="Contact Details"
                 >
-                  <ContactDetailsForm id={id} data={subcontractor} />
+                  <ContactDetailsForm id={id} data={subcontractor} isEditable={isEditable}/>
                 </AccordionSection>
 
                 <AccordionSection
                   id="technician"
                   title="Technician & Rates"
                 >
-                  <TechnicianRatesForm id={id} data={subcontractor} />
+                  <TechnicianRatesForm id={id} data={subcontractor} isEditable={isEditable} />
                 </AccordionSection>
 
                 <AccordionSection
                   id="area"
                   title="Area of Work"
                 >
-                  <AreaOfWorkForm id={id} data={subcontractor} />
+                  <AreaOfWorkForm id={id} data={subcontractor} isEditable={isEditable}/>
                 </AccordionSection>
 
                 <AccordionSection
                   id="insurance"
                   title="Insurance Information"
                 >
-                  <InsuranceInfoForm id={id} data={subcontractor} />
+                  <InsuranceInfoForm id={id} data={subcontractor} isEditable={isEditable}/>
                 </AccordionSection>
 
                 <AccordionSection
                   id="documents"
                   title="Upload Documents"
                 >
-                  <UploadDocumentsForm id={id} data={subcontractor} />
+                  <UploadDocumentsForm id={id} data={subcontractor} isEditable={isEditable} />
                 </AccordionSection>
 
+               
                 <AccordionSection
                   id="status"
                   title="Change Status"

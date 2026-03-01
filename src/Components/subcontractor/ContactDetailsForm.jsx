@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { updateContactDetails } from "../../actions/subContractorAction";
 
-const ContactDetailsForm = ({ id, data }) => {
+const ContactDetailsForm = ({ id, data, isEditable }) => {
   const dispatch = useDispatch();
+
+  const disabledClass = !isEditable
+    ? "bg-gray-100 cursor-not-allowed"
+    : "";
 
   const [formData, setFormData] = useState({
     p_firstname: "",
@@ -28,7 +32,9 @@ const ContactDetailsForm = ({ id, data }) => {
   const [serviceSameAsProject, setServiceSameAsProject] = useState(false);
   const [accountsSameAsProject, setAccountsSameAsProject] = useState(false);
 
-  // Populate from backend
+  /* ===========================
+     Populate From Backend
+  =========================== */
   useEffect(() => {
     if (data) {
       setFormData({
@@ -56,7 +62,12 @@ const ContactDetailsForm = ({ id, data }) => {
     }
   }, [data]);
 
+  /* ===========================
+     Handlers
+  =========================== */
   const handleChange = (e) => {
+    if (!isEditable) return;
+
     const { name, value } = e.target;
 
     setFormData((prev) => ({
@@ -65,8 +76,12 @@ const ContactDetailsForm = ({ id, data }) => {
     }));
   };
 
-  // Sync when same-as toggled
+  /* ===========================
+     Sync Same-As Toggles
+  =========================== */
   useEffect(() => {
+    if (!isEditable) return;
+
     if (serviceSameAsProject) {
       setFormData((prev) => ({
         ...prev,
@@ -77,9 +92,19 @@ const ContactDetailsForm = ({ id, data }) => {
         s_email: prev.p_email,
       }));
     }
-  }, [serviceSameAsProject, formData.p_firstname, formData.p_lastname, formData.p_phonenumber, formData.p_mobilenumber, formData.p_email]);
+  }, [
+    serviceSameAsProject,
+    formData.p_firstname,
+    formData.p_lastname,
+    formData.p_phonenumber,
+    formData.p_mobilenumber,
+    formData.p_email,
+    isEditable,
+  ]);
 
   useEffect(() => {
+    if (!isEditable) return;
+
     if (accountsSameAsProject) {
       setFormData((prev) => ({
         ...prev,
@@ -90,10 +115,19 @@ const ContactDetailsForm = ({ id, data }) => {
         a_email: prev.p_email,
       }));
     }
-  }, [accountsSameAsProject, formData.p_firstname, formData.p_lastname, formData.p_phonenumber, formData.p_mobilenumber, formData.p_email]);
+  }, [
+    accountsSameAsProject,
+    formData.p_firstname,
+    formData.p_lastname,
+    formData.p_phonenumber,
+    formData.p_mobilenumber,
+    formData.p_email,
+    isEditable,
+  ]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isEditable) return;
 
     dispatch(
       updateContactDetails({
@@ -103,23 +137,43 @@ const ContactDetailsForm = ({ id, data }) => {
     );
   };
 
+  /* ===========================
+     UI
+  =========================== */
+
   return (
     <div className="bg-white shadow rounded-lg p-6 mb-6">
       <h2 className="text-xl font-semibold mb-6">
         Contact Details
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-
+      <form
+        onSubmit={handleSubmit}
+        className={`space-y-8 ${!isEditable ? "opacity-60" : ""}`}
+      >
         {/* Project Contact */}
         <div>
           <h3 className="font-semibold mb-4">Project Contact</h3>
           <div className="grid grid-cols-2 gap-4">
-            <input name="p_firstname" value={formData.p_firstname} onChange={handleChange} className="border p-2 rounded" placeholder="First Name" />
-            <input name="p_lastname" value={formData.p_lastname} onChange={handleChange} className="border p-2 rounded" placeholder="Last Name" />
-            <input name="p_phonenumber" value={formData.p_phonenumber} onChange={handleChange} className="border p-2 rounded" placeholder="Phone Number" />
-            <input name="p_mobilenumber" value={formData.p_mobilenumber} onChange={handleChange} className="border p-2 rounded" placeholder="Mobile Number" />
-            <input name="p_email" value={formData.p_email} onChange={handleChange} className="border p-2 rounded col-span-2" placeholder="Email" />
+            {[
+              "p_firstname",
+              "p_lastname",
+              "p_phonenumber",
+              "p_mobilenumber",
+              "p_email",
+            ].map((field) => (
+              <input
+                key={field}
+                name={field}
+                value={formData[field]}
+                onChange={handleChange}
+                disabled={!isEditable}
+                className={`border p-2 rounded ${
+                  field === "p_email" ? "col-span-2" : ""
+                } ${disabledClass}`}
+                placeholder={field.replace(/_/g, " ").replace("p ", "")}
+              />
+            ))}
           </div>
         </div>
 
@@ -131,7 +185,11 @@ const ContactDetailsForm = ({ id, data }) => {
               <input
                 type="checkbox"
                 checked={serviceSameAsProject}
-                onChange={(e) => setServiceSameAsProject(e.target.checked)}
+                disabled={!isEditable}
+                onChange={(e) =>
+                  isEditable &&
+                  setServiceSameAsProject(e.target.checked)
+                }
                 className="mr-2"
               />
               Same as Project
@@ -140,11 +198,25 @@ const ContactDetailsForm = ({ id, data }) => {
 
           {!serviceSameAsProject && (
             <div className="grid grid-cols-2 gap-4">
-              <input name="s_firstname" value={formData.s_firstname} onChange={handleChange} className="border p-2 rounded" placeholder="First Name" />
-              <input name="s_lastname" value={formData.s_lastname} onChange={handleChange} className="border p-2 rounded" placeholder="Last Name" />
-              <input name="s_phonenumber" value={formData.s_phonenumber} onChange={handleChange} className="border p-2 rounded" placeholder="Phone Number" />
-              <input name="s_mobilenumber" value={formData.s_mobilenumber} onChange={handleChange} className="border p-2 rounded" placeholder="Mobile Number" />
-              <input name="s_email" value={formData.s_email} onChange={handleChange} className="border p-2 rounded col-span-2" placeholder="Email" />
+              {[
+                "s_firstname",
+                "s_lastname",
+                "s_phonenumber",
+                "s_mobilenumber",
+                "s_email",
+              ].map((field) => (
+                <input
+                  key={field}
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                  disabled={!isEditable}
+                  className={`border p-2 rounded ${
+                    field === "s_email" ? "col-span-2" : ""
+                  } ${disabledClass}`}
+                  placeholder={field.replace(/_/g, " ").replace("s ", "")}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -152,12 +224,18 @@ const ContactDetailsForm = ({ id, data }) => {
         {/* Accounts Contact */}
         <div>
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold">Accounts Receivable Contact</h3>
+            <h3 className="font-semibold">
+              Accounts Receivable Contact
+            </h3>
             <label className="flex items-center text-sm">
               <input
                 type="checkbox"
                 checked={accountsSameAsProject}
-                onChange={(e) => setAccountsSameAsProject(e.target.checked)}
+                disabled={!isEditable}
+                onChange={(e) =>
+                  isEditable &&
+                  setAccountsSameAsProject(e.target.checked)
+                }
                 className="mr-2"
               />
               Same as Project
@@ -166,24 +244,39 @@ const ContactDetailsForm = ({ id, data }) => {
 
           {!accountsSameAsProject && (
             <div className="grid grid-cols-2 gap-4">
-              <input name="a_firstname" value={formData.a_firstname} onChange={handleChange} className="border p-2 rounded" placeholder="First Name" />
-              <input name="a_lastname" value={formData.a_lastname} onChange={handleChange} className="border p-2 rounded" placeholder="Last Name" />
-              <input name="a_phonenumber" value={formData.a_phonenumber} onChange={handleChange} className="border p-2 rounded" placeholder="Phone Number" />
-              <input name="a_mobilenumber" value={formData.a_mobilenumber} onChange={handleChange} className="border p-2 rounded" placeholder="Mobile Number" />
-              <input name="a_email" value={formData.a_email} onChange={handleChange} className="border p-2 rounded col-span-2" placeholder="Email" />
+              {[
+                "a_firstname",
+                "a_lastname",
+                "a_phonenumber",
+                "a_mobilenumber",
+                "a_email",
+              ].map((field) => (
+                <input
+                  key={field}
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                  disabled={!isEditable}
+                  className={`border p-2 rounded ${
+                    field === "a_email" ? "col-span-2" : ""
+                  } ${disabledClass}`}
+                  placeholder={field.replace(/_/g, " ").replace("a ", "")}
+                />
+              ))}
             </div>
           )}
         </div>
 
-        <div className="text-right">
-          <button
-            type="submit"
-            className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
-          >
-            Update Contact Details
-          </button>
-        </div>
-
+        {isEditable && (
+          <div className="text-right">
+            <button
+              type="submit"
+              className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
+            >
+              Update Contact Details
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );

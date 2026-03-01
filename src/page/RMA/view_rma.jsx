@@ -170,7 +170,7 @@ const RmaViewList = () => {
         <div className="container mx-auto p-4 w-full h-screen overflow-y-scroll">
           <h2 className="text-xl font-semibold mb-4">RMA List</h2>
           <div className="mb-4">
-            {user_type !== "Client Employee" && (
+            {(user_type !== "Client Employee" && user_type !== "Subcontractor_User") && (
               <form
                 onSubmit={(e) => {
                   e.preventDefault();

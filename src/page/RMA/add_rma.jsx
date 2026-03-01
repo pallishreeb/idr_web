@@ -6,12 +6,15 @@ import { getClientEquipmentById } from "../../actions/clientEquipment";
 import { getLocationById } from "../../actions/locationActions";
 import { generateRMA } from "../../actions/rmaActions";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 export default function AddRma() {
   const { clientEquipmentId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const locationState = useLocation();
+  const { state } = locationState;
+
   const loadingEquipmentDetails = useSelector(
     (state) => state.clientEquipment.loadingDetails
   );
@@ -21,6 +24,7 @@ export default function AddRma() {
 
   const [formData, setFormData] = useState({
     client_equipment_id: clientEquipmentId || "",
+    service_ticket_id: state?.serviceTicketId || "",
     manufacturer: "",
     client_id: "",
     location_id: "",
