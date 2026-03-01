@@ -23,6 +23,7 @@ export default function EditRma() {
   const [formData, setFormData] = useState({
     rma_id: rmaId,
     client_equipment_id: "",
+    service_ticket_id: "",
     manufacturer: "",
     client_id: "",
     location_id: "",
@@ -59,6 +60,7 @@ export default function EditRma() {
           setFormData({
             rma_id:rmaId,
             client_equipment_id: data.client_equipment_id || "",
+            service_ticket_id: data?.service_ticket_id || "",
             manufacturer: data.manufacturer || "",
             client_id: data.client_id || "",
             client_name: data.client_name || "",

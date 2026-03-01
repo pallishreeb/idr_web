@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getServiceRequestLists,
 } from "../actions/serviceTicket";
+import { getSubcontractorLists } from "../actions/subContractorAction";
 const AdminSideNavbar = () => {
     const dispatch = useDispatch();
   const { user_type,client_type } = useSelector((state) => state.user.user);
@@ -17,8 +18,12 @@ const AdminSideNavbar = () => {
   const { serviceRequests, loading } = useSelector(
       (state) => state.serviceTicket
   );
+  const { subcontractors } = useSelector(
+  (state) => state.subcontractor
+);
  useEffect(() => {
     dispatch(getServiceRequestLists({}));
+    dispatch(getSubcontractorLists());
   }, [dispatch]);
 
   const menuItems = [
@@ -53,14 +58,18 @@ const AdminSideNavbar = () => {
     { title: "Inventory Locations", path: "/inventory-locations", roles: ["Admin"] },
     { title: "IDR Equipment and Tools", path: "/idr-equipment", roles: ["Admin", "Subadmin", "IDR Employee"] },
     { title: "Reports", path: "/equipment-report", roles: ["Admin", "Subadmin"] },
-    { title: "Sub Contractors", path: "/sub-contractors", roles: ["Admin", "Subadmin","Subcontractor"] },
+    { title: "Sub Contractors", path: "/sub-contractors", roles: ["Admin", "Subadmin"] },
   ];
 
   const toggleSubMenu = () => setIsSubMenuOpen(!isSubMenuOpen);
   const toggleSubMenuClient = () => setIsSubMenuOpenClient(!isSubMenuOpenClient);
 
-
-  
+const newSubcontractors =
+  subcontractors?.filter(
+    (sub) => sub?.contract_status === "In Progress"
+  ) || [];
+  console.log(subcontractors.map(s => s.contract_status));
+  console.log("newSubcontractors:", newSubcontractors);
   return (
     <div className="flex h-screen">
       <aside className="text-black w-64 flex-shrink-0 border-r border-gray-400">
@@ -70,7 +79,10 @@ const AdminSideNavbar = () => {
               <>
                 <li className="flex items-center justify-between px-4 py-2 bg-gray-300 font-semibold">
                   <span>CLIENT</span>
-                  <button onClick={toggleSubMenuClient} className="focus:outline-none">
+                  <button
+                    onClick={toggleSubMenuClient}
+                    className="focus:outline-none"
+                  >
                     {isSubMenuOpenClient ? (
                       <BsChevronUp className="h-5 w-5" />
                     ) : (
@@ -94,17 +106,18 @@ const AdminSideNavbar = () => {
                             >
                               <MdDashboardCustomize size={20} />
                               <li className="flex items-center justify-between w-full">
-                              <span>{item.title}</span>
-                              {item.title === "Service Requests" && serviceRequests?.length > 0 && (
-                                <span className="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                                  {serviceRequests.length}
-                                </span>
-                              )}
-                            </li>
-
+                                <span>{item.title}</span>
+                                {item.title === "Service Requests" &&
+                                  serviceRequests?.length > 0 && (
+                                    <span className="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                                      {serviceRequests.length}
+                                    </span>
+                                  )}
+                              
+                              </li>
                             </div>
                           </Link>
-                        )
+                        ),
                     )}
                   </ul>
                 )}
@@ -149,9 +162,15 @@ const AdminSideNavbar = () => {
                         >
                           <MdDashboardCustomize size={20} />
                           <li>{item.title}</li>
+                            {item.title === "Sub Contractors" &&
+                                  newSubcontractors?.length > 0 && (
+                                    <span className="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                                      {newSubcontractors.length}
+                                    </span>
+                                  )}
                         </div>
                       </Link>
-                    )
+                    ),
                 )}
               </ul>
             )}

@@ -448,6 +448,7 @@ const EditServiceTicket = () => {
           {/* show ClientEquipmentTable */}
           <ClientEquipmentTable
             equipments={serviceTicketEquipments}
+            serviceTicketId={serviceTicketId}
             onAddNote={handleAddNote}
           />x
 

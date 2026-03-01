@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const ClientEquipmentTable = ({ equipments, onAddNote }) => {
+const ClientEquipmentTable = ({ equipments,serviceTicketId, onAddNote }) => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [selectedEquipmentId, setSelectedEquipmentId] = useState(null);
@@ -118,7 +118,9 @@ const ClientEquipmentTable = ({ equipments, onAddNote }) => {
                             <button
                               onClick={() =>
                                 navigate(
-                                  `/add-device-rma/${equipment.client_equipment_id}`,
+                                  `/add-device-rma/${equipment.client_equipment_id}`,{
+                                  state: { serviceTicketId }
+                                }
                                 )
                               }
                               className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"

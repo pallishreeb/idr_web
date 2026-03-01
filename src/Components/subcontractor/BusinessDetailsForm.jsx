@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { updateBusinessDetails } from "../../actions/subContractorAction";
 
-const BusinessDetailsForm = ({ id, data }) => {
+const BusinessDetailsForm = ({ id, data, isEditable }) => {
   const dispatch = useDispatch();
+
+  const disabledClass = !isEditable
+    ? "bg-gray-100 cursor-not-allowed"
+    : "";
 
   const [formData, setFormData] = useState({
     subcontractor_name: "",
@@ -29,7 +33,9 @@ const BusinessDetailsForm = ({ id, data }) => {
     shop_union: false,
   });
 
-  // Populate form when data loads
+  /* ===========================
+     Populate Form
+  =========================== */
   useEffect(() => {
     if (data) {
       setFormData({
@@ -58,7 +64,12 @@ const BusinessDetailsForm = ({ id, data }) => {
     }
   }, [data]);
 
+  /* ===========================
+     Handlers
+  =========================== */
   const handleChange = (e) => {
+    if (!isEditable) return;
+
     const { name, value, type, checked } = e.target;
 
     setFormData((prev) => ({
@@ -69,6 +80,7 @@ const BusinessDetailsForm = ({ id, data }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isEditable) return;
 
     dispatch(
       updateBusinessDetails({
@@ -78,32 +90,128 @@ const BusinessDetailsForm = ({ id, data }) => {
     );
   };
 
+  /* ===========================
+     UI
+  =========================== */
+
   return (
     <div className="bg-white shadow rounded-lg p-6 mb-6">
       <h2 className="text-xl font-semibold mb-6">
         Business Details
       </h2>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+      <form
+        onSubmit={handleSubmit}
+        className={`grid grid-cols-2 gap-4 ${
+          !isEditable ? "opacity-60" : ""
+        }`}
+      >
+        <input
+          name="subcontractor_name"
+          value={formData.subcontractor_name}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="Subcontractor Name"
+        />
 
-        <input name="subcontractor_name" value={formData.subcontractor_name} onChange={handleChange} className="border p-2 rounded" placeholder="Subcontractor Name" />
-        <input name="business_dba" value={formData.business_dba} onChange={handleChange} className="border p-2 rounded" placeholder="Business DBA" />
+        <input
+          name="business_dba"
+          value={formData.business_dba}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="Business DBA"
+        />
 
-        <input name="street_address" value={formData.street_address} onChange={handleChange} className="border p-2 rounded" placeholder="Street Address" />
-        <input name="suite" value={formData.suite} onChange={handleChange} className="border p-2 rounded" placeholder="Suite" />
+        <input
+          name="street_address"
+          value={formData.street_address}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="Street Address"
+        />
 
-        <input name="city" value={formData.city} onChange={handleChange} className="border p-2 rounded" placeholder="City" />
-        <input name="state" value={formData.state} onChange={handleChange} className="border p-2 rounded" placeholder="State" />
+        <input
+          name="suite"
+          value={formData.suite}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="Suite"
+        />
 
-        <input name="zipcode" value={formData.zipcode} onChange={handleChange} className="border p-2 rounded" placeholder="Zip Code" />
-        <input name="coverage_area" value={formData.coverage_area} onChange={handleChange} className="border p-2 rounded" placeholder="Coverage Area" />
+        <input
+          name="city"
+          value={formData.city}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="City"
+        />
 
-        <input name="hourly_rate" value={formData.hourly_rate} onChange={handleChange} className="border p-2 rounded" placeholder="Hourly Rate" />
-        <input name="trip_charge" value={formData.trip_charge} onChange={handleChange} className="border p-2 rounded" placeholder="Trip Charge" />
+        <input
+          name="state"
+          value={formData.state}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="State"
+        />
 
-        <input name="no_of_technicians" value={formData.no_of_technicians} onChange={handleChange} className="border p-2 rounded" placeholder="No of Technicians" />
+        <input
+          name="zipcode"
+          value={formData.zipcode}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="Zip Code"
+        />
 
-        <select name="rating" value={formData.rating} onChange={handleChange} className="border p-2 rounded">
+        <input
+          name="coverage_area"
+          value={formData.coverage_area}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="Coverage Area"
+        />
+
+        <input
+          name="hourly_rate"
+          value={formData.hourly_rate}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="Hourly Rate"
+        />
+
+        <input
+          name="trip_charge"
+          value={formData.trip_charge}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="Trip Charge"
+        />
+
+        <input
+          name="no_of_technicians"
+          value={formData.no_of_technicians}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="No of Technicians"
+        />
+
+        <select
+          name="rating"
+          value={formData.rating}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+        >
           <option value="">Select Rating</option>
           <option value="A">A</option>
           <option value="B">B</option>
@@ -112,12 +220,40 @@ const BusinessDetailsForm = ({ id, data }) => {
           <option value="F">F</option>
         </select>
 
-        <input name="b_firstname" value={formData.b_firstname} onChange={handleChange} className="border p-2 rounded" placeholder="Business First Name" />
-        <input name="b_lastname" value={formData.b_lastname} onChange={handleChange} className="border p-2 rounded" placeholder="Business Last Name" />
+        <input
+          name="b_firstname"
+          value={formData.b_firstname}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="Business First Name"
+        />
 
-        <input name="referer_name" value={formData.referer_name} onChange={handleChange} className="border p-2 rounded" placeholder="Referer Name" />
+        <input
+          name="b_lastname"
+          value={formData.b_lastname}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="Business Last Name"
+        />
 
-        <select name="company_type" value={formData.company_type} onChange={handleChange} className="border p-2 rounded">
+        <input
+          name="referer_name"
+          value={formData.referer_name}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="Referer Name"
+        />
+
+        <select
+          name="company_type"
+          value={formData.company_type}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+        >
           <option value="">Select Company Type</option>
           <option value="Sole Proprietorship">Sole Proprietorship</option>
           <option value="LLC">LLC</option>
@@ -125,43 +261,74 @@ const BusinessDetailsForm = ({ id, data }) => {
           <option value="Partnership">Partnership</option>
         </select>
 
-        <input name="llc_classification" value={formData.llc_classification} onChange={handleChange} className="border p-2 rounded" placeholder="LLC Classification" />
+        <input
+          name="llc_classification"
+          value={formData.llc_classification}
+          onChange={handleChange}
+          disabled={!isEditable}
+          className={`border p-2 rounded ${disabledClass}`}
+          placeholder="LLC Classification"
+        />
 
         <textarea
           name="licenses_held"
           value={formData.licenses_held}
           onChange={handleChange}
-          className="border p-2 rounded col-span-2"
+          disabled={!isEditable}
+          className={`border p-2 rounded col-span-2 ${disabledClass}`}
           placeholder="Licenses Held"
           rows="3"
         />
 
-        {/* Boolean fields */}
+        {/* Boolean Fields */}
         <div className="flex items-center space-x-6 col-span-2">
           <label className="flex items-center">
-            <input type="checkbox" name="is_certifier" checked={formData.is_certifier} onChange={handleChange} className="mr-2" />
+            <input
+              type="checkbox"
+              name="is_certifier"
+              checked={formData.is_certifier}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className="mr-2"
+            />
             Is Certifier
           </label>
 
           <label className="flex items-center">
-            <input type="checkbox" name="authorized_to_submit" checked={formData.authorized_to_submit} onChange={handleChange} className="mr-2" />
+            <input
+              type="checkbox"
+              name="authorized_to_submit"
+              checked={formData.authorized_to_submit}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className="mr-2"
+            />
             Authorized To Submit
           </label>
 
           <label className="flex items-center">
-            <input type="checkbox" name="shop_union" checked={formData.shop_union} onChange={handleChange} className="mr-2" />
+            <input
+              type="checkbox"
+              name="shop_union"
+              checked={formData.shop_union}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className="mr-2"
+            />
             Shop Union
           </label>
         </div>
 
-        <div className="col-span-2 text-right">
-          <button
-            type="submit"
-            className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
-          >
-            Update Business Details
-          </button>
-        </div>
+        {isEditable && (
+          <div className="col-span-2 text-right">
+            <button
+              type="submit"
+              className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
+            >
+              Update Business Details
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );

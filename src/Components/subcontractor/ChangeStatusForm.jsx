@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { changeSubcontractorStatus } from "../../actions/subContractorAction";
 
 const statusOptions = [
@@ -19,6 +19,7 @@ const ChangeStatusForm = ({ id, data }) => {
   });
 
   const [loading, setLoading] = useState(false);
+  const { user_type } = useSelector((state) => state.user.user);
 
   useEffect(() => {
     if (data?.contract_status) {
@@ -102,6 +103,7 @@ const ChangeStatusForm = ({ id, data }) => {
             onChange={handleChange}
             className="border p-2 rounded w-full"
             required
+            disabled={user_type === "Subcontractor"}
           >
             <option value="">Select Status</option>
             {statusOptions.map((status) => (
@@ -126,6 +128,7 @@ const ChangeStatusForm = ({ id, data }) => {
                 className="border p-2 rounded w-full"
                 rows="3"
                 placeholder="Enter reason for reopening..."
+                disabled={user_type === "Subcontractor"}
               />
             </div>
 
@@ -140,15 +143,18 @@ const ChangeStatusForm = ({ id, data }) => {
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
                 placeholder="Your name"
+                disabled={user_type === "Subcontractor"}
               />
             </div>
           </>
         )}
 
+        {/* Submit Button */}
+        {user_type !== "Subcontractor" && (
         <div className="text-right">
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading }
             className={`px-6 py-2 rounded text-white ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
@@ -157,7 +163,7 @@ const ChangeStatusForm = ({ id, data }) => {
           >
             {loading ? "Updating..." : "Update Status"}
           </button>
-        </div>
+        </div>)}
 
       </form>
     </div>

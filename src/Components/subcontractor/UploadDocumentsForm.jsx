@@ -3,8 +3,7 @@ import { useDispatch } from "react-redux";
 import { uploadSubcontractorDocument } from "../../actions/subContractorAction";
 import { S3_BASE_URL } from "../../config";
 
-
-const UploadDocumentsForm = ({ id, data }) => {
+const UploadDocumentsForm = ({ id, data, isEditable }) => {
   const dispatch = useDispatch();
 
   const existingDocs =
@@ -20,9 +19,10 @@ const UploadDocumentsForm = ({ id, data }) => {
 
   /* ===========================
      File Change
-     =========================== */
-
+  =========================== */
   const handleFileChange = (e) => {
+    if (!isEditable) return; // 🔥 Prevent change if not editable
+
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
 
@@ -37,10 +37,11 @@ const UploadDocumentsForm = ({ id, data }) => {
 
   /* ===========================
      Submit
-     =========================== */
-
+  =========================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isEditable) return; // 🔥 Prevent submit if not editable
 
     if (!file || !documentName.trim()) {
       alert("Document name and file required");
@@ -72,7 +73,7 @@ const UploadDocumentsForm = ({ id, data }) => {
 
       {/* ===========================
           Existing Documents
-         =========================== */}
+      =========================== */}
       {existingDocs.length > 0 && (
         <div className="mb-8">
           <h3 className="font-semibold mb-4">
@@ -88,10 +89,7 @@ const UploadDocumentsForm = ({ id, data }) => {
                   key={doc.subcontractor_doc_id}
                   className="border rounded p-2 text-center hover:shadow transition"
                 >
-                  {/* If image */}
-                  {doc.document_url.match(
-                    /\.(jpg|jpeg|png|webp)$/i
-                  ) ? (
+                  {doc.document_url.match(/\.(jpg|jpeg|png|webp)$/i) ? (
                     <img
                       src={fullUrl}
                       alt={doc.document_name}
@@ -121,58 +119,63 @@ const UploadDocumentsForm = ({ id, data }) => {
 
       {/* ===========================
           Upload New
-         =========================== */}
+      =========================== */}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          value={documentName}
-          onChange={(e) => setDocumentName(e.target.value)}
-          className="border p-2 rounded w-full"
-          placeholder="Document Name"
-          required
-        />
+      {isEditable ? (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            value={documentName}
+            onChange={(e) => setDocumentName(e.target.value)}
+            className="border p-2 rounded w-full"
+            placeholder="Document Name"
+            required
+          />
 
-        <input
-          type="file"
-          onChange={handleFileChange}
-          className="border p-2 rounded w-full"
-          accept="image/*,.pdf"
-          required
-        />
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="border p-2 rounded w-full"
+            accept="image/*,.pdf"
+            required
+          />
 
-        {preview && (
-          <div>
-            <p className="text-sm mb-2">
-              New Upload Preview:
-            </p>
-            <img
-              src={preview}
-              alt="Preview"
-              className="h-24 w-24 object-cover rounded border"
-            />
+          {preview && (
+            <div>
+              <p className="text-sm mb-2">
+                New Upload Preview:
+              </p>
+              <img
+                src={preview}
+                alt="Preview"
+                className="h-24 w-24 object-cover rounded border"
+              />
+            </div>
+          )}
+
+          <div className="text-right">
+            <button
+              type="submit"
+              disabled={loading}
+              className={`px-6 py-2 rounded text-white ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-indigo-600 hover:bg-indigo-700"
+              }`}
+            >
+              {loading ? "Uploading..." : "Upload Document"}
+            </button>
           </div>
-        )}
-
-        <div className="text-right">
-          <button
-            type="submit"
-            disabled={loading}
-            className={`px-6 py-2 rounded text-white ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-700"
-            }`}
-          >
-            {loading ? "Uploading..." : "Upload Document"}
-          </button>
+        </form>
+      ) : (
+        <div className="bg-gray-100 p-4 rounded text-gray-600 text-sm">
+          Document upload is disabled.
         </div>
-      </form>
+      )}
 
       {/* ===========================
           Full Image Modal
-         =========================== */}
-
+      =========================== */}
       {viewImage && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="relative">

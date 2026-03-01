@@ -24,6 +24,7 @@ const SubContractorList = () => {
 
   const { subcontractors, loading } = useSelector((state) => state.subcontractor);
   const { user_type } = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
   
   useEffect(() => {
     dispatch(getSubcontractorLists());
@@ -120,6 +121,8 @@ const SubContractorList = () => {
         <div className="container mx-auto p-4 w-full h-screen overflow-y-scroll">
           <h2 className="text-xl font-semibold mb-4">SubContractor List</h2>
           
+          {access.includes(user_type) && (
+            <>
           {/* Search Filters */}
           <div className="mb-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <input
@@ -184,7 +187,8 @@ const SubContractorList = () => {
               </button>
             )}
           </div>
-
+          </>
+          )}
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="min-w-full table-auto text-left">
@@ -229,16 +233,16 @@ const SubContractorList = () => {
                 ) : (
                   subcontractors?.map((subcontractor) => (
                     <tr key={subcontractor.subcontractor_id}>
-                      <td className="border text-sm px-4 py-3">{subcontractor.subcontractor_name}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.street_address}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.city}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.state}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.zipcode}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.coverage_area}</td>
-                      <td className="border text-sm px-4 py-3">{formatCurrency(subcontractor.hourly_rate)}</td>
-                      <td className="border text-sm px-4 py-3">{formatCurrency(subcontractor.trip_charge)}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.no_of_technicians}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.p_firstname} {subcontractor.p_lastname}</td>
+                      <td className="border text-sm px-4 py-3">{subcontractor.subcontractor_name || "NA"}</td>
+                      <td className="border text-sm px-4 py-3">{subcontractor.street_address || "NA"}</td>
+                      <td className="border text-sm px-4 py-3">{subcontractor.city || "NA"}</td>
+                      <td className="border text-sm px-4 py-3">{subcontractor.state || "NA"}</td>
+                      <td className="border text-sm px-4 py-3">{subcontractor.zipcode || "NA"}</td>
+                      <td className="border text-sm px-4 py-3">{subcontractor.coverage_area || "NA"}</td>
+                      <td className="border text-sm px-4 py-3">{formatCurrency(subcontractor.hourly_rate) || "NA"}</td>
+                      <td className="border text-sm px-4 py-3">{formatCurrency(subcontractor.trip_charge) || "NA"}</td>
+                      <td className="border text-sm px-4 py-3">{subcontractor.no_of_technicians || "NA"}</td>
+                      <td className="border text-sm px-4 py-3">{subcontractor.p_firstname || "NA"} {subcontractor.p_lastname}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor?.rating || "N/A"}</td>
                       {/* <td className="border text-sm px-4 py-3">{subcontractor.p_phonenumber}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.p_mobilenumber}</td>
