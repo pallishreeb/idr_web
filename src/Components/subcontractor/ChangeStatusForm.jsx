@@ -12,6 +12,8 @@ const statusOptions = [
 const ChangeStatusForm = ({ id, data }) => {
   const dispatch = useDispatch();
 
+  const { user_type } = useSelector((state) => state.user.user);
+
   const [formData, setFormData] = useState({
     contract_status: "",
     reject_reason: "",
@@ -19,7 +21,6 @@ const ChangeStatusForm = ({ id, data }) => {
   });
 
   const [loading, setLoading] = useState(false);
-  const { user_type } = useSelector((state) => state.user.user);
 
   useEffect(() => {
     if (data?.contract_status) {
@@ -38,6 +39,10 @@ const ChangeStatusForm = ({ id, data }) => {
       [name]: value,
     }));
   };
+
+  /* ===============================
+     ADMIN / NORMAL SUBMIT
+  =============================== */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,43 +89,92 @@ const ChangeStatusForm = ({ id, data }) => {
     }
   };
 
+  /* ===============================
+     SUBCONTRACTOR BUTTON ACTION
+  =============================== */
+
+  const handleSubmitForReview = async () => {
+    try {
+      setLoading(true);
+
+      await dispatch(
+        changeSubcontractorStatus({
+          subcontractor_id: id,
+          contract_status: "In Review",
+          reject_reason: "",
+          created_by: "",
+        })
+      );
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="bg-white shadow rounded-lg p-6 mb-6">
+
+
+      {/* ===============================
+         SUBCONTRACTOR VIEW
+      =============================== */}
+
+      {user_type === "Subcontractor" ? (
+        <div className="text-right">
+          <button
+            onClick={handleSubmitForReview}
+            disabled={loading || data?.contract_status  == "In Review"}
+            className={`px-6 py-2 rounded text-white ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-700"
+            }`}
+          >
+            {loading ? "Submitting..." : "Submit For Review"}
+          </button>
+        </div>
+      ) : (
+
+      /* ===============================
+         ADMIN / NORMAL FORM
+      =============================== */
+<>
       <h2 className="text-xl font-semibold mb-6">
         Change Contract Status
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
-        {/* Status Dropdown */}
         <div>
           <label className="block font-medium mb-2">
             Contract Status
           </label>
+
           <select
             name="contract_status"
             value={formData.contract_status}
             onChange={handleChange}
             className="border p-2 rounded w-full"
             required
-            disabled={user_type === "Subcontractor"}
           >
             <option value="">Select Status</option>
+
             {statusOptions.map((status) => (
               <option key={status} value={status}>
                 {status}
               </option>
             ))}
+
           </select>
         </div>
 
-        {/* Conditional Fields */}
         {formData.contract_status === "Re-Opened" && (
           <>
             <div>
               <label className="block font-medium mb-2">
                 Reject Reason
               </label>
+
               <textarea
                 name="reject_reason"
                 value={formData.reject_reason}
@@ -128,7 +182,6 @@ const ChangeStatusForm = ({ id, data }) => {
                 className="border p-2 rounded w-full"
                 rows="3"
                 placeholder="Enter reason for reopening..."
-                disabled={user_type === "Subcontractor"}
               />
             </div>
 
@@ -136,6 +189,7 @@ const ChangeStatusForm = ({ id, data }) => {
               <label className="block font-medium mb-2">
                 Created By
               </label>
+
               <input
                 type="text"
                 name="created_by"
@@ -143,18 +197,15 @@ const ChangeStatusForm = ({ id, data }) => {
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
                 placeholder="Your name"
-                disabled={user_type === "Subcontractor"}
               />
             </div>
           </>
         )}
 
-        {/* Submit Button */}
-        {user_type !== "Subcontractor" && (
         <div className="text-right">
           <button
             type="submit"
-            disabled={loading }
+            disabled={loading}
             className={`px-6 py-2 rounded text-white ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
@@ -163,9 +214,11 @@ const ChangeStatusForm = ({ id, data }) => {
           >
             {loading ? "Updating..." : "Update Status"}
           </button>
-        </div>)}
+        </div>
 
       </form>
+      </>
+      )}
     </div>
   );
 };

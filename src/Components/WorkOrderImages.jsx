@@ -126,11 +126,12 @@ const WorkOrderImages = ({ images, serviceTicketId }) => {
     setSelectedImageUrl(null); // Close the image modal
   };
   const isVideo = (fileName) => /\.(mp4|mov|avi|webm|mkv)$/i.test(fileName);
+  const newAccess = [...technicianAccess, "Subcontractor_User"];
   return (
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="font-normal text-xl mb-2">Work Order Images</h1>
-        {(technicianAccess?.includes(user_type) ||
+        {(newAccess?.includes(user_type) ||
           user_type?.trim().toLowerCase() === "Subcontractor_User") && (
           <button
             className="bg-indigo-600 text-white px-6 py-2 rounded"

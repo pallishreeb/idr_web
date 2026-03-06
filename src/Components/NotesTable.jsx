@@ -221,12 +221,12 @@ const NotesTable = ({
                             )}
 
                           {/* Accepted Badge */}
-                          {note.is_added_by_subcontractor &&
+                          {/* {note.is_added_by_subcontractor &&
                             note.is_accepted_subcontractor_note && (
                               <span className="text-green-600 text-xs font-semibold">
                                 Accepted
                               </span>
-                            )}
+                            )} */}
                         </>
                       )}
                     </div>

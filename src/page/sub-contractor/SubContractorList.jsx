@@ -18,7 +18,8 @@ const SubContractorList = () => {
     name: "",
     city: "",
     coverage: "",
-    type: ""
+    type: "",
+    status: "In Review"
   });
   const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ASC' });
 
@@ -70,7 +71,8 @@ const SubContractorList = () => {
       name: "",
       city: "",
       coverage: "",
-      type: ""
+      type: "",
+      status: "In Review"
     });
     dispatch(getSubcontractorLists({}));
   };
@@ -113,6 +115,10 @@ const SubContractorList = () => {
     }
     return "↕";
   };
+  const filteredSubcontractors = subcontractors?.filter((sub) => {
+  if (!filters.status) return true;
+  return sub.contract_status === filters.status;
+});
   return (
     <>
       <Header />
@@ -165,6 +171,18 @@ const SubContractorList = () => {
               value={filters.type}
               onChange={handleFilterChange}
             />
+            <select
+                name="status"
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+                value={filters.status}
+                onChange={handleFilterChange}
+              >
+                <option value="">All Status</option>
+                <option value="In Review">In Review</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Re-Opened">Re-Opened</option>
+                <option value="Active">Active</option>
+              </select>
           </div>
           
           {/* Action Buttons */}
@@ -231,7 +249,7 @@ const SubContractorList = () => {
                     <td colSpan="14" className="text-center py-4">No subcontractors found</td>
                   </tr>
                 ) : (
-                  subcontractors?.map((subcontractor) => (
+                  filteredSubcontractors?.map((subcontractor) => (
                     <tr key={subcontractor.subcontractor_id}>
                       <td className="border text-sm px-4 py-3">{subcontractor.subcontractor_name || "NA"}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.street_address || "NA"}</td>

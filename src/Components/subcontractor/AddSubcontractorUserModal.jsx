@@ -23,7 +23,7 @@ const AddSubcontractorUserModal = ({
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   useEffect(() => {
-    dispatch(getSubcontractorLists());
+    dispatch(getSubcontractorLists({ contractor_state_active: true }));
   }, []);
 
   useEffect(() => {
