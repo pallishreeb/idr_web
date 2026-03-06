@@ -45,14 +45,14 @@ const AdminSideNavbar = () => {
       ? ["Client Employee"] 
       : [""],},
     { title: "Client Equipment", path: "/client-equipments",     roles: client_type !== "User" 
-      ? ["IDR Employee", "Client Employee","Laborer"] 
+      ? ["IDR Employee", "Client Employee"] 
       : ["IDR Employee"],  },
     { title: "Client Licensing", path: "/client-licensing", roles: client_type !== "User" 
       ? ["IDR Employee", "Client Employee"] 
       : ["IDR Employee"], },
-    { title: "Work Order", path: "/workorder", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee","Laborer","Subcontractor_User"] },
-    { title: "Service Ticket", path: "/service-tickets", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee","Laborer","Subcontractor_User"] },
-    { title: "RMA", path: "/device-rma", roles: client_type !== "User" ? ["Admin", "Subadmin", "IDR Employee","Laborer", "Client Employee"]  : ["Admin", "Subadmin", "IDR Employee","Laborer"] },
+    { title: "Work Order", path: "/workorder", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee","Subcontractor_User"] },
+    { title: "Service Ticket", path: "/service-tickets", roles: ["Admin", "Subadmin", "IDR Employee", "Client Employee","Subcontractor_User"] },
+    { title: "RMA", path: "/device-rma", roles: client_type !== "User" ? ["Admin", "Subadmin", "IDR Employee","Subcontractor_User", "Client Employee"]  : ["Admin", "Subadmin", "IDR Employee","Subcontractor_User"] },
     { title: "Request Service", path: "/add-service-request", roles: ["Client Employee"]},
     { title: "Inventory", path: "/inventory", roles: ["Admin", "Subadmin", "IDR Employee"] },
     { title: "Inventory Locations", path: "/inventory-locations", roles: ["Admin"] },
@@ -66,10 +66,9 @@ const AdminSideNavbar = () => {
 
 const newSubcontractors =
   subcontractors?.filter(
-    (sub) => sub?.contract_status === "In Progress"
+    (sub) => sub?.contract_status === "In Review"
   ) || [];
-  console.log(subcontractors.map(s => s.contract_status));
-  console.log("newSubcontractors:", newSubcontractors);
+
   return (
     <div className="flex h-screen">
       <aside className="text-black w-64 flex-shrink-0 border-r border-gray-400">
@@ -162,12 +161,12 @@ const newSubcontractors =
                         >
                           <MdDashboardCustomize size={20} />
                           <li>{item.title}</li>
-                            {item.title === "Sub Contractors" &&
+                            {/* {item.title === "Sub Contractors" &&
                                   newSubcontractors?.length > 0 && (
                                     <span className="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                                       {newSubcontractors.length}
                                     </span>
-                                  )}
+                                  )} */}
                         </div>
                       </Link>
                     ),

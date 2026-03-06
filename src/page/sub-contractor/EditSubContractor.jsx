@@ -16,16 +16,7 @@ import ChangeStatusForm from "../../Components/subcontractor/ChangeStatusForm";
 import SubcontractorNotes from "../../Components/SubcontractorNotes";
 
 
-const sections = [
-  { id: "business", label: "Business Details" },
-  { id: "contact", label: "Contact Details" },
-  { id: "technician", label: "Technician & Rates" },
-  { id: "area", label: "Area of Work" },
-  { id: "insurance", label: "Insurance Info" },
-  { id: "documents", label: "Documents" },
-  { id: "status", label: "Change Status" },
-  { id: "notes", label: "Notes" },
-];
+
 
 const EditSubContractor = () => {
   const { id } = useParams();
@@ -39,7 +30,16 @@ const EditSubContractor = () => {
   useEffect(() => {
     dispatch(getSubcontractorInfoById(id));
   }, [dispatch, id]);
-
+const sections = [
+  { id: "business", label: "Business Details" },
+  { id: "contact", label: "Contact Details" },
+  { id: "technician", label: "Technician & Rates" },
+  { id: "area", label: "Area of Work" },
+  { id: "insurance", label: "Insurance Info" },
+  { id: "documents", label: "Documents" },
+  { id: "status", label: `${user_type === "Subcontractor_User" ? "Submit For Review" : "Change Status"}` },
+  { id: "notes", label: "Notes" },
+];
   const scrollToSection = (sectionId) => {
     document.getElementById(sectionId)?.scrollIntoView({
       behavior: "smooth",
@@ -146,7 +146,7 @@ const isEditable =
                
                 <AccordionSection
                   id="status"
-                  title="Change Status"
+                  title={user_type === "Subcontractor" ? "Submit For Review" : "Update Status"}
                 >
                   <ChangeStatusForm id={id} data={subcontractor} />
                 </AccordionSection>
