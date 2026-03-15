@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, Link,useLocation } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
@@ -28,14 +28,14 @@ const SubcontractorUsersPage = () => {
   const loadingUsers = useSelector((state) => state.subcontractor.loadingUsers);
 
   const user = useSelector((state) => state.subcontractor.subcontractorUser);
-const { user_type, subcontractor_id } = useSelector(
-  (state) => state.user.user
-);
-const [selectedSubcontractor, setSelectedSubcontractor] = useState(
-  user_type === "Subcontractor"
-    ? subcontractor_id
-    : location.state?.selectedSubcontractor || ""
-);
+  const { user_type, subcontractor_id } = useSelector(
+    (state) => state.user.user,
+  );
+  const [selectedSubcontractor, setSelectedSubcontractor] = useState(
+    user_type === "Subcontractor"
+      ? subcontractor_id
+      : location.state?.selectedSubcontractor || "",
+  );
 
   /* ===========================
      Load Subcontractors
@@ -43,18 +43,18 @@ const [selectedSubcontractor, setSelectedSubcontractor] = useState(
   useEffect(() => {
     dispatch(getSubcontractorLists());
   }, [dispatch]);
-  
-useEffect(() => {
-  if (location.state?.selectedSubcontractor) {
-    setSelectedSubcontractor(location.state.selectedSubcontractor);
-  }
-}, [location.state]);
 
-useEffect(() => {
-  if (user_type === "Subcontractor" && subcontractor_id) {
-    setSelectedSubcontractor(subcontractor_id);
-  }
-}, [user_type, subcontractor_id]);
+  useEffect(() => {
+    if (location.state?.selectedSubcontractor) {
+      setSelectedSubcontractor(location.state.selectedSubcontractor);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    if (user_type === "Subcontractor" && subcontractor_id) {
+      setSelectedSubcontractor(subcontractor_id);
+    }
+  }, [user_type, subcontractor_id]);
   /* ===========================
      Fetch Users On Select
      =========================== */
@@ -141,15 +141,15 @@ useEffect(() => {
                 <h2 className="text-xl font-semibold">Users List</h2>
 
                 {user_type !== "Subcontractor" && (
-  <button className="bg-indigo-700 text-white px-4 py-2 rounded hover:bg-indigo-800">
-    <Link
-      to={`/create-sub-contractor-user/${selectedSubcontractor}`}
-      state={{ selectedSubcontractor }}
-    >
-      Add Subcontractor User
-    </Link>
-  </button>
-)}
+                  <button className="bg-indigo-700 text-white px-4 py-2 rounded hover:bg-indigo-800">
+                    <Link
+                      to={`/create-sub-contractor-user/${selectedSubcontractor}`}
+                      state={{ selectedSubcontractor }}
+                    >
+                      Add Subcontractor User
+                    </Link>
+                  </button>
+                )}
               </div>
 
               {loadingUsers ? (
@@ -162,9 +162,9 @@ useEffect(() => {
                       <th className="border px-4 py-2 text-left">Email</th>
                       <th className="border px-4 py-2 text-left">Contact</th>
                       <th className="border px-4 py-2 text-left">Role</th>
-                     {user_type !== "Subcontractor" && (
-  <th className="border px-4 py-2 text-center">Actions</th>
-)}
+                        <th className="border px-4 py-2 text-center">
+                          Actions
+                        </th>
                     </tr>
                   </thead>
 
@@ -179,11 +179,9 @@ useEffect(() => {
                       users
                         ?.slice()
                         .sort((a, b) =>
-                            (a?.first_name || "")
+                          (a?.first_name || "")
                             .toLowerCase()
-                            .localeCompare(
-                                (b?.first_name || "").toLowerCase()
-                            )
+                            .localeCompare((b?.first_name || "").toLowerCase()),
                         )
                         .map((userItem) => (
                           <tr
@@ -206,27 +204,28 @@ useEffect(() => {
                               {userItem.is_active ? "Active" : "Inactive"}
                             </td>
 
-                            {user_type !== "Subcontractor" && (
-  <td className="border px-4 py-2 text-center space-x-2">
-    <button
-      onClick={() =>
-        handleEdit(userItem.subcontractor_user_id)
-      }
-      className="p-[6px] bg-gray-100 rounded hover:bg-gray-200"
-    >
-      <BiSolidEditAlt />
-    </button>
-
-    <button
-      onClick={() =>
-        handleDeleteUser(userItem.subcontractor_user_id)
-      }
-      className="p-[6px] bg-gray-100 rounded hover:bg-gray-200"
-    >
-      <AiFillDelete />
-    </button>
-  </td>
-)}
+                            <td className="border px-4 py-2 text-center space-x-2">
+                              <button
+                                onClick={() =>
+                                  handleEdit(userItem.subcontractor_user_id)
+                                }
+                                className="p-[6px] bg-gray-100 rounded hover:bg-gray-200"
+                              >
+                                <BiSolidEditAlt />
+                              </button>
+                             {user_type == "Admin" && (
+                              <button
+                                onClick={() =>
+                                  handleDeleteUser(
+                                    userItem.subcontractor_user_id,
+                                  )
+                                }
+                                className="p-[6px] bg-gray-100 rounded hover:bg-gray-200"
+                              >
+                                <AiFillDelete />
+                              </button>
+                              )}
+                            </td>
                           </tr>
                         ))
                     )}

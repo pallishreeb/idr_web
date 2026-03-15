@@ -19,7 +19,7 @@ const SubContractorList = () => {
     city: "",
     coverage: "",
     type: "",
-    status: "In Review"
+    status: ""
   });
   const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ASC' });
 

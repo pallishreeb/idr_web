@@ -123,9 +123,9 @@ const ChangeStatusForm = ({ id, data }) => {
         <div className="text-right">
           <button
             onClick={handleSubmitForReview}
-            disabled={loading || data?.contract_status  == "In Review"}
-            className={`px-6 py-2 rounded text-white ${
-              loading
+             disabled={loading || data?.contract_status?.toLowerCase() === "in review"}
+              className={`px-6 py-2 rounded text-white ${
+              loading || data?.contract_status?.toLowerCase() === "in review"
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-indigo-600 hover:bg-indigo-700"
             }`}

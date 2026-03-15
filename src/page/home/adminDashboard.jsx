@@ -72,7 +72,7 @@ const AdminDashboard = () => {
   const column2 = statuses.slice(Math.ceil(statuses.length / 2));
   const column3 = ticketStatuses.slice(0, Math.ceil(ticketStatuses.length / 2));
   const column4 = ticketStatuses.slice(Math.ceil(ticketStatuses.length / 2));
-
+  const subcontractorsAccess = ['Subcontractor','Subcontractor_User']
   return (
     <>
       <Header />
@@ -129,7 +129,7 @@ const AdminDashboard = () => {
             </div>
           </div>
           {/* work order and service ticket */}
-          {user_type !== "Subcontractor_User" && (
+          {!subcontractorsAccess.includes(user_type) && (
           <div className="flex gap-3">
             <div className="mt-4 border py-7 px-5 bg-white">
               <h1 className="font-medium text-xl">Work Order Assignments</h1>
