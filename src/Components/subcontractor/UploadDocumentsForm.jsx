@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaDownload, FaFilePdf} from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { uploadSubcontractorDocument } from "../../actions/subContractorAction";
 import { S3_BASE_URL } from "../../config";
@@ -64,7 +65,14 @@ const UploadDocumentsForm = ({ id, data, isEditable }) => {
       setLoading(false);
     }
   };
-
+const handleDownload = (url, name) => {
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name || "file";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
   return (
     <div className="bg-white shadow rounded-lg p-6 mb-6">
       <h2 className="text-xl font-semibold mb-6">
@@ -80,40 +88,65 @@ const UploadDocumentsForm = ({ id, data, isEditable }) => {
             Existing Documents
           </h3>
 
-          <div className="grid grid-cols-4 gap-4">
-            {existingDocs.map((doc) => {
-              const fullUrl = S3_BASE_URL + "/" + doc.document_url;
+          <div className="overflow-x-auto">
+  <table className="min-w-full border">
+    <thead>
+      <tr className="bg-gray-100 text-left">
+        <th className="px-4 py-2 border">Attachment</th>
+        <th className="px-4 py-2 border">Document Name</th>
+        <th className="px-4 py-2 border text-center">Action</th>
+      </tr>
+    </thead>
 
-              return (
+    <tbody>
+      {existingDocs.map((doc) => {
+        const fullUrl = S3_BASE_URL + "/" + doc.document_url;
+
+        return (
+          <tr key={doc.subcontractor_doc_id} className="bg-white">
+            {/* Attachment Preview */}
+           <td className="border px-4 py-2">
+              {doc.document_url.match(/\.(jpg|jpeg|png|webp)$/i) ? (
+                <img
+                  src={fullUrl}
+                  alt={doc.document_name}
+                  className="h-16 w-16 object-cover rounded cursor-pointer"
+                  onClick={() => setViewImage(fullUrl)}
+                />
+              ) : doc.document_url.match(/\.pdf$/i) ? (
                 <div
-                  key={doc.subcontractor_doc_id}
-                  className="border rounded p-2 text-center hover:shadow transition"
+                  className="flex  cursor-pointer"
+                  onClick={() => window.open(fullUrl, "_blank")}
                 >
-                  {doc.document_url.match(/\.(jpg|jpeg|png|webp)$/i) ? (
-                    <img
-                      src={fullUrl}
-                      alt={doc.document_name}
-                      className="h-24 w-full object-cover rounded mb-2 cursor-pointer"
-                      onClick={() => setViewImage(fullUrl)}
-                    />
-                  ) : (
-                    <a
-                      href={fullUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="block bg-gray-100 p-4 rounded text-sm text-indigo-600"
-                    >
-                      View PDF
-                    </a>
-                  )}
-
-                  <p className="text-sm truncate">
-                    {doc.document_name}
-                  </p>
+                  <FaFilePdf size={40} className="text-red-600" />
                 </div>
-              );
-            })}
-          </div>
+              ) : (
+                <span className="text-gray-500">File</span>
+              )}
+            </td>
+
+            {/* Document Name */}
+            <td className="border px-4 py-2">
+              {doc.document_name}
+            </td>
+
+            {/* Download Action */}
+            <td className="border px-4 py-2 text-center">
+              <button
+                onClick={() =>
+                  handleDownload(fullUrl, doc.document_name)
+                }
+                className="bg-indigo-600 text-white px-3 py-2 rounded hover:bg-indigo-700"
+              >
+                <FaDownload />
+              </button>
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
         </div>
       )}
 

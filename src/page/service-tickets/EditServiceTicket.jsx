@@ -450,7 +450,7 @@ const EditServiceTicket = () => {
             equipments={serviceTicketEquipments}
             serviceTicketId={serviceTicketId}
             onAddNote={handleAddNote}
-          />x
+          />
 
           {/* Show Images  */}
           <ServiceTicketImages

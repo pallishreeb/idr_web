@@ -83,6 +83,7 @@ const NotesTable = ({
       });
   };
   const newAccess = [...technicianAccess, "Subcontractor_User"];
+
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
