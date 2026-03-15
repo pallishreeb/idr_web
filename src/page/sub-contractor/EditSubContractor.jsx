@@ -37,7 +37,7 @@ const sections = [
   { id: "area", label: "Area of Work" },
   { id: "insurance", label: "Insurance Info" },
   { id: "documents", label: "Documents" },
-  { id: "status", label: `${user_type === "Subcontractor_User" ? "Submit For Review" : "Change Status"}` },
+  { id: "status", label: `${user_type === "Subcontractor" ? "Submit For Review" : "Change Status"}` },
   { id: "notes", label: "Notes" },
 ];
   const scrollToSection = (sectionId) => {
@@ -59,9 +59,9 @@ const isEditable =
       <Header />
 
       <div className="flex">
-        {user_type !== "Subcontractor" && (
+
           <AdminSideNavbar />
-        )}
+        
         <div className="flex-1 flex bg-gray-50">
 
           {/* LEFT STICKY NAV */}

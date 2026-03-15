@@ -25,7 +25,6 @@ const Login = () => {
   if (!storedUser) return;
 
   const { user_type, subcontractor_id } = storedUser;
-
   if (user_type === "Subcontractor") {
     navigate(`/edit-subcontractor/${subcontractor_id}`, { replace: true });
   } else {

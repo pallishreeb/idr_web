@@ -170,6 +170,7 @@ const EditSubcontractorUserPage = () => {
                   }
                   className="border p-2 rounded w-full"
                   required
+                  disabled
                 >
                   <option value="">
                     Select Subcontractor
