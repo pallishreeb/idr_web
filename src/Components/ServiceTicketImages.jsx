@@ -14,7 +14,7 @@ import ImageModal from "./ImageModal";
 
 const ServiceTicketImages = ({ images, serviceTicketId }) => {
   const dispatch = useDispatch();
-  const { user_type } = useSelector((state) => state.user.user);
+  const { user_type, user_id } = useSelector((state) => state.user.user);
   const { technicianAccess } = useSelector((state) => state.user);
   const { loadingAssignImage } = useSelector((state) => state.serviceTicket);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -206,7 +206,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                       <FaDownload />
                     </button>
                     {/* Delete Button - Only for technician access */}
-                    {technicianAccess.includes(user_type) && (
+                    {(technicianAccess.includes(user_type) && image?.by_user_id === user_id) && (
                       <button
                         onClick={() => handleDelete(image?.attachment_id)}
                         className="bg-red-500 text-white px-3 py-3 rounded"
