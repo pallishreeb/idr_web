@@ -220,7 +220,7 @@ const AdminSideNavbar = () => {
                           <Link to={item.path} key={item.title}>
                             <div
                               className={`flex items-center gap-3 px-4 py-2 rounded ${
-                                location.pathname.includes(item.path)
+                                location.pathname === item.path
                                   ? "bg-indigo-700 text-white"
                                   : "bg-gray-100 hover:bg-indigo-700 hover:text-white"
                               } cursor-pointer`}
@@ -280,7 +280,7 @@ const AdminSideNavbar = () => {
                       <Link to={finalPath} key={item.title}>
                         <div
                           className={`flex items-center gap-3 px-4 py-2 rounded ${
-                            location.pathname.includes(item.path)
+                            location.pathname === item.path
                               ? "bg-indigo-700 text-white"
                               : "bg-gray-100 hover:bg-indigo-700 hover:text-white"
                           } cursor-pointer`}
