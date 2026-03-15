@@ -63,12 +63,12 @@ const RmaNotes = ({ notes, rmaId,handleSaveNote ,handleNoteChange }) => {
   
     });
   };
-
+  const newAccess = [...technicianAccess, "Subcontractor_User"];
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="font-normal text-xl mb-2">Notes</h1>
-        {technicianAccess.includes(user_type) && (
+        {newAccess.includes(user_type) && (
         <button
           className="bg-indigo-600 text-white px-6 py-2 rounded"
           onClick={handleOpenModal}
