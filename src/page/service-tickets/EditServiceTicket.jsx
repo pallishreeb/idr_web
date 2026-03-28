@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "../../axios-config";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import { S3_BASE_URL } from "../../config";
 import { FaDownload } from "react-icons/fa";
 import Header from "../../Components/Header";
@@ -34,6 +34,7 @@ import { toast } from "react-toastify";
 const EditServiceTicket = () => {
   const { serviceTicketId } = useParams();
   const dispatch = useDispatch();
+  const location = useLocation()
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [signatureImage, setSignatureImage] = useState(null);
 
@@ -343,9 +344,9 @@ const EditServiceTicket = () => {
           <div className="flex justify-between">
             <h1 className="font-bold text-lg">Edit Service Ticket</h1>
             <div className="flex gap-3">
-              <Link to={"/service-tickets"}>
+              <Link to="/service-tickets" state={location.state}>
                 <button className="border border-gray-400 text-gray-400 px-6 py-2 rounded">
-                  Cancel
+                 Back
                 </button>
               </Link>
               {(client_type !== "User" && user_type !== "Subcontractor_User") && (

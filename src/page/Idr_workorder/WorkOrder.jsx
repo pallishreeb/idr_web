@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 
 const WorkOrder = () => {
   const dispatch = useDispatch();
+  const location = useLocation()
   // const navigate = useNavigate();
   const [filters, setFilters] = useState({
     client_id: "",
@@ -40,11 +41,14 @@ const WorkOrder = () => {
   const { idrEmployees } = useSelector((state) => state.employee);
   const loadingLocations = useSelector((state) => state.location.loading);
   const clientLocations = useSelector((state) => state.location.locations);
+
   useEffect(() => {
-    dispatch(getWorkOrderLists({}));
+  const appliedFilters = location.state?.filters || {};
+  setFilters(appliedFilters);
+  dispatch(getWorkOrderLists(appliedFilters));
     dispatch(getClients());
     dispatch(fetchIDREmployees());
-  }, [dispatch]);
+  }, [dispatch, location]);
 
   useEffect(() => {
     if (filters?.client_id) {
@@ -158,7 +162,7 @@ const WorkOrder = () => {
           <div className="flex justify-between">
             <h1 className="font-bold text-lg">Work Orders</h1>
             {access.includes(user_type) && (
-              <Link to={"/add-work-order"}>
+              <Link to="/add-work-order" state={{ filters }}>
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded mt-7">
                   New Work Order
                 </button>
@@ -497,12 +501,12 @@ const WorkOrder = () => {
                         <td className="border text-sm px-1 py-3">
                           <div className="flex gap-2">
                             <div className="p-[4px] bg-gray-100 cursor-pointer">
-                              <a
-                                href={`/edit-work-order/${order?.work_order_id}`}
-                                className="inline-block"
-                              >
+                             <Link
+  to={`/edit-work-order/${order?.work_order_id}`}
+  state={{ filters }}
+>
                                 <BiSolidEditAlt />
-                              </a>
+                              </Link>
                             </div>
 
                             {user_type === "Admin" && (

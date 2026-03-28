@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 
 const ServiceTickets = () => {
   const dispatch = useDispatch();
+  const location = useLocation()
   // const navigate = useNavigate();
   const [filters, setFilters] = useState({
     client_id: "",
@@ -43,10 +44,12 @@ const ServiceTickets = () => {
   const loadingLocations = useSelector((state) => state.location.loading);
   const clientLocations = useSelector((state) => state.location.locations);
   useEffect(() => {
-    dispatch(getServiceTicketLists({}));
+    const appliedFilters = location.state?.filters || {};
+  setFilters(appliedFilters);
+  dispatch(getServiceTicketLists(appliedFilters));
     dispatch(getClients());
     dispatch(fetchIDREmployees());
-  }, [dispatch]);
+  }, [dispatch,location]);
   useEffect(() => {
     if (filters?.client_id) {
       dispatch(getLocationByClient(filters.client_id));
@@ -163,7 +166,7 @@ const ServiceTickets = () => {
           <div className="flex justify-between">
             <h1 className="font-bold text-lg">Service Tickets</h1>
             {access.includes(user_type) && (
-              <Link to={"/add-service-ticket"}>
+              <Link to="/add-service-ticket" state={{ filters }}>
                 <button className="bg-indigo-600 text-white px-6 py-2 rounded">
                   New Service Ticket
                 </button>
@@ -479,12 +482,12 @@ const ServiceTickets = () => {
                         <td className="border text-sm px-1 py-3">
                           <div className="flex gap-2">
                             <div className="p-[4px] bg-gray-100 cursor-pointer">
-                              <a
-                                href={`/edit-service-ticket/${order?.service_ticket_id}`}
-                                className="inline-block"
-                              >
+                             <Link
+                                  to={`/edit-service-ticket/${order?.service_ticket_id}`}
+                                  state={{ filters }}
+                                >
                                 <BiSolidEditAlt />
-                              </a>
+                              </Link>
                             </div>
 
                             {user_type === "Admin" && (

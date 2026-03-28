@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
@@ -15,6 +15,7 @@ function AddServiceTicket() {
 //   const navigate = useNavigate();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation()
   const [step, setStep] = useState(1);
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
@@ -164,7 +165,7 @@ function AddServiceTicket() {
 
     try {
       console.log("technician data---154",assigns)
-      dispatch(assignPeopleToServiceTicket(assigns,navigate,false));
+      dispatch(assignPeopleToServiceTicket(assigns,navigate,false,location.state));
     } catch (error) {
       console.error("Failed to assign technicians:", error);
     }
@@ -186,6 +187,16 @@ function AddServiceTicket() {
         <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between">
             <h1 className="font-bold text-lg">New Service Ticket</h1>
+            <button
+            onClick={() =>
+              navigate("/service-tickets", {
+                state: location.state, // ✅ preserves filters
+              })
+            }
+            className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+          >
+            Back
+          </button>
           </div>
           {step === 1 && (
              <form 
