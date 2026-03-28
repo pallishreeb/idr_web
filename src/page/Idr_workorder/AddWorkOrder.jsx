@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
@@ -14,11 +14,14 @@ import {
 } from "../../actions/workOrderActions";
 import { toast } from "react-toastify";
 
+
+
 function AddWorkOrder() {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const location = useLocation();
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
   const locations = useSelector((state) => state.location.locations);
@@ -243,8 +246,10 @@ function AddWorkOrder() {
       .then((response) => {
         if (response.code == "WO201") {
           toast.success("Work Order Created.")
-          navigate("/workorder");
-        } else {
+          navigate("/workorder", {
+          state: location.state,
+        });
+          } else {
           console.error("Error adding assigns:", response.error);
         }
       })
@@ -270,8 +275,18 @@ function AddWorkOrder() {
         <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
           <div className="flex justify-between">
             <h1 className="font-bold text-lg">New Work Orders</h1>
+              <button
+              onClick={() =>
+                navigate("/workorder", {
+                  state: location.state, // ✅ preserves filters
+                })
+              }
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+            >
+              Back
+            </button>
           </div>
-
+         
           {step === 1 && (
             <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
               <div className="mb-2">

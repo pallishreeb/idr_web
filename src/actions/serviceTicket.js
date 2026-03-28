@@ -158,7 +158,7 @@ export const updateServiceTicket = (ticketData,serviceTicketId) => {
 };
 
 // Assign people to a service ticket
-export const assignPeopleToServiceTicket = (technicians,navigate,isEditing) => {
+export const assignPeopleToServiceTicket = (technicians,navigate,isEditing,navState) => {
   return async (dispatch) => {
     dispatch(assignPeopleToServiceTicketStart());
     try {
@@ -167,7 +167,9 @@ export const assignPeopleToServiceTicket = (technicians,navigate,isEditing) => {
       if(isEditing){
         return response?.data;
         } else {
-          navigate('/service-tickets');
+          navigate('/service-tickets', {
+            state: navState,
+          });
       }
 
     } catch (error) {
