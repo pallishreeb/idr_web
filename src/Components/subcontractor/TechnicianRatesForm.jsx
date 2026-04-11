@@ -216,12 +216,12 @@ const TechnicianRatesForm = ({ id, data, isEditable }) => {
 
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: "# of BICSI Certified Technicians", name: "bicsi_certified_technicians" },
-              { label: "# of OSHA 10 Certified Technicians", name: "osha_10_technicians" },
-              { label: "# of OSHA 30 Certified Technicians", name: "osha_30_technicians" },
-              { label: "# of OSHA 62 Certified Technicians", name: "osha_62_technicians" },
-              { label: "# of SST Certified Technicians", name: "sst_technicians" },
-              { label: "# of Aerial Lift Certified Technicians", name: "aerial_lift_certification_technicians" },
+              { label: "No. of BICSI Certified Technicians", name: "bicsi_certified_technicians" },
+              { label: "No. of OSHA 10 Certified Technicians", name: "osha_10_technicians" },
+              { label: "No. of OSHA 30 Certified Technicians", name: "osha_30_technicians" },
+              { label: "No. of OSHA 62 Certified Technicians", name: "osha_62_technicians" },
+              { label: "No. of SST Certified Technicians", name: "sst_technicians" },
+              { label: "No. of Aerial Lift Certified Technicians", name: "aerial_lift_certification_technicians" },
             ].map((field) => (
               <div key={field.name}>
                 <label className="text-sm font-medium">
