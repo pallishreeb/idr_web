@@ -169,7 +169,12 @@ const AdminSideNavbar = () => {
     {
       title: "Sub Contractors",
       path: "/sub-contractors",
-      roles: ["Admin", "Subadmin","Subcontractor"],
+      roles: ["Admin", "Subadmin"],
+    },
+        {
+      title: "Business Information",
+      path: "/sub-contractors",
+      roles: ["Subcontractor"],
     },
   ];
 
@@ -271,7 +276,7 @@ const AdminSideNavbar = () => {
                 )}
                 {idrMenuItems.map((item) => {
                   const finalPath =
-                    item.title === "Sub Contractors" &&
+                    item.title === "Business Information" &&
                     user_type === "Subcontractor"
                       ? `/edit-subcontractor/${subcontractor_id}`
                       : item.path;

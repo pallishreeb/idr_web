@@ -140,7 +140,7 @@ const SubcontractorUsersPage = () => {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Users List</h2>
 
-                {user_type !== "Subcontractor" && (
+                
                   <button className="bg-indigo-700 text-white px-4 py-2 rounded hover:bg-indigo-800">
                     <Link
                       to={`/create-sub-contractor-user/${selectedSubcontractor}`}
@@ -149,7 +149,7 @@ const SubcontractorUsersPage = () => {
                       Add Subcontractor User
                     </Link>
                   </button>
-                )}
+
               </div>
 
               {loadingUsers ? (

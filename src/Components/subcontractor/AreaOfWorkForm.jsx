@@ -3,65 +3,99 @@ import { useDispatch } from "react-redux";
 import { updateAreaOfWork } from "../../actions/subContractorAction";
 
 /* ===========================
-   Allowed Fields (Whitelist)
+   Label Mapping (UI ONLY)
+=========================== */
+
+const LABELS = {
+  // Structured
+  fibre_splicing: "Fiber Splicing",
+  cable_tray: "Cable Tray / Runway",
+  fibre_cabling: "Fiber Cabling",
+  rack_stack: "Rack & Stack",
+  waste_recycle: "e-waste Recycle",
+  it_relocation: "Computer Room Construction",
+  data_center: "Data Center",
+
+  // AV
+  dsp: "DSP",
+  ohm8_speaker_system: "8 ohm Speaker Systems",
+  ohm70v_speaker_system: "70v Speaker Systems",
+
+  // Security
+  control_programming: "Access Control Programming",
+  ip_camera_system: "IP Camera Systems",
+  nvr_configuration: "NVR Configuration",
+  intercom_diagnostic_3_4wire:
+    "Intercom Diagnostics of 3/4 wire systems",
+  ip_intercom_install: "IP Intercom Install",
+  control_door_lock: "Access Control Lock install",
+  control_diagnostic: "Access Control Diagnostics",
+  vms_configuration: "VMS Configuration",
+  ip_intercom_repair: "IP Intercom Repair",
+  alarm_programming: "Alarm Panel Programming",
+  control_panel_install: "Access Control Panel Install",
+  nvr_installation: "NVR Installation",
+  intercom_install_3_4wire:
+    "Intercom Install 3/4 Wire",
+};
+
+/* ===========================
+   Fields
 =========================== */
 
 const STRUCTURED_FIELDS = [
-  "data_cabling",
   "analog_cabling",
+  "cable_tray",
+  "data_cabling",
+  "data_center", // ✅ new
+  "electrical",
   "fibre_cabling",
   "fibre_splicing",
-  "rack_stack",
-  "electrical",
-  "cable_tray",
-  "waste_recycle",
-  "office_computer_setup",
   "it_relocation",
+  "office_computer_setup",
+  "rack_stack",
+  "waste_recycle",
 ];
 
 const AV_FIELDS = [
   "automation",
   "dsp",
+  "lighting_control",
+  "ohm70v_speaker_system",
+  "ohm8_speaker_system",
+  "poe_lighting",
+  "smartboard",
+  "sound_masking",
+  "video_confrencing",
   "video_display_installation",
   "video_wall",
-  "ohm8_speaker_system",
-  "ohm70v_speaker_system",
-  "sound_masking",
-  "poe_lighting",
-  "lighting_control",
-  "video_confrencing",
-  "smartboard",
 ];
 
 const SECURITY_FIELDS = [
   "alarm_device_install",
+  "alarm_diagnostic",
   "alarm_panel_install",
   "alarm_programming",
-  "alarm_diagnostic",
+  "analog_camera_system",
+  "camera_diagnostic",
+  "control_diagnostic",
   "control_door_lock",
   "control_panel_install",
   "control_programming",
-  "control_diagnostic",
-  "analog_camera_system",
-  "ip_camera_system",
-  "camera_diagnostic",
-  "nvr_installation",
-  "nvr_configuration",
-  "vms_configuration",
-  "intercom_install_3_4wire",
+  "intercom_diagnostic_2_wire",
   "intercom_diagnostic_3_4wire",
   "intercom_install_2_wire",
-  "intercom_diagnostic_2_wire",
+  "intercom_install_3_4wire",
+  "ip_camera_system",
   "ip_intercom_install",
   "ip_intercom_repair",
+  "nvr_configuration",
+  "nvr_installation",
+  "vms_configuration",
 ];
 
 const AreaOfWorkForm = ({ id, data, isEditable }) => {
   const dispatch = useDispatch();
-
-  const disabledClass = !isEditable
-    ? "bg-gray-100 cursor-not-allowed"
-    : "";
 
   const [formData, setFormData] = useState({
     manufacturer_certifications: "",
@@ -70,10 +104,6 @@ const AreaOfWorkForm = ({ id, data, isEditable }) => {
     av_work: {},
     security_work: {},
   });
-
-  /* ===========================
-     Normalize Incoming Data
-  =========================== */
 
   useEffect(() => {
     const structuredRaw = data?.structured_cablings?.[0] || {};
@@ -94,7 +124,6 @@ const AreaOfWorkForm = ({ id, data, isEditable }) => {
         areaRaw?.manufacturer_certifications || "",
       technical_certifications:
         areaRaw?.technical_certifications || "",
-
       structured_cabling: buildSection(
         STRUCTURED_FIELDS,
         structuredRaw
@@ -106,10 +135,6 @@ const AreaOfWorkForm = ({ id, data, isEditable }) => {
       ),
     });
   }, [data]);
-
-  /* ===========================
-     Handlers
-  =========================== */
 
   const handleCheckboxChange = (section, field) => {
     if (!isEditable) return;
@@ -123,43 +148,24 @@ const AreaOfWorkForm = ({ id, data, isEditable }) => {
     }));
   };
 
-  const handleTextChange = (e) => {
-    if (!isEditable) return;
-
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!isEditable) return;
-
-    dispatch(
-      updateAreaOfWork({
-        subcontractor_id: id,
-        manufacturer_certifications:
-          formData.manufacturer_certifications,
-        technical_certifications:
-          formData.technical_certifications,
-        structured_cabling: formData.structured_cabling,
-        av_work: formData.av_work,
-        security_work: formData.security_work,
-      })
+  const getLabel = (key) => {
+    return (
+      LABELS[key] ||
+      key
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase())
     );
   };
 
+  const sortFields = (fields) =>
+    [...fields].sort((a, b) =>
+      getLabel(a).localeCompare(getLabel(b))
+    );
+
   const renderCheckboxGrid = (sectionName, fields) => (
     <div className="grid grid-cols-3 gap-3">
-      {fields.map((key) => (
-        <label
-          key={key}
-          className="flex items-center text-sm"
-        >
+      {sortFields(fields).map((key) => (
+        <label key={key} className="flex items-center text-sm">
           <input
             type="checkbox"
             checked={formData[sectionName]?.[key] || false}
@@ -169,67 +175,32 @@ const AreaOfWorkForm = ({ id, data, isEditable }) => {
             disabled={!isEditable}
             className="mr-2"
           />
-          {key
-            .replace(/_/g, " ")
-            .replace(/\b\w/g, (c) =>
-              c.toUpperCase()
-            )}
+          {getLabel(key)}
         </label>
       ))}
     </div>
   );
 
-  /* ===========================
-     UI
-  =========================== */
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!isEditable) return;
+
+    dispatch(
+      updateAreaOfWork({
+        subcontractor_id: id,
+        ...formData,
+      })
+    );
+  };
 
   return (
     <div className="bg-white shadow rounded-lg p-6 mb-6">
+      {/* ✅ TITLE CHANGE */}
       <h2 className="text-xl font-semibold mb-6">
-        Area of Work
+        Services Provided
       </h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className={`space-y-8 ${
-          !isEditable ? "opacity-60" : ""
-        }`}
-      >
-        {/* Manufacturer Certifications */}
-        <div>
-          <h3 className="font-semibold mb-3">
-            Manufacturer Certifications
-          </h3>
-          <textarea
-            name="manufacturer_certifications"
-            value={
-              formData.manufacturer_certifications
-            }
-            onChange={handleTextChange}
-            disabled={!isEditable}
-            className={`border p-2 rounded w-full ${disabledClass}`}
-            rows="3"
-          />
-        </div>
-
-        {/* Technical Certifications */}
-        <div>
-          <h3 className="font-semibold mb-3">
-            Technical Certifications
-          </h3>
-          <textarea
-            name="technical_certifications"
-            value={
-              formData.technical_certifications
-            }
-            onChange={handleTextChange}
-            disabled={!isEditable}
-            className={`border p-2 rounded w-full ${disabledClass}`}
-            rows="3"
-          />
-        </div>
-
-        {/* Structured Cabling */}
+      <form onSubmit={handleSubmit} className="space-y-8">
         <div>
           <h3 className="font-semibold mb-4">
             Structured Cabling
@@ -240,18 +211,11 @@ const AreaOfWorkForm = ({ id, data, isEditable }) => {
           )}
         </div>
 
-        {/* AV Work */}
         <div>
-          <h3 className="font-semibold mb-4">
-            AV Work
-          </h3>
-          {renderCheckboxGrid(
-            "av_work",
-            AV_FIELDS
-          )}
+          <h3 className="font-semibold mb-4">AV Work</h3>
+          {renderCheckboxGrid("av_work", AV_FIELDS)}
         </div>
 
-        {/* Security Work */}
         <div>
           <h3 className="font-semibold mb-4">
             Security Work
@@ -265,7 +229,7 @@ const AreaOfWorkForm = ({ id, data, isEditable }) => {
         {isEditable && (
           <div className="text-right">
             <button className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">
-              Update Area of Work
+              Update
             </button>
           </div>
         )}

@@ -15,7 +15,6 @@ const TechnicianRatesForm = ({ id, data, isEditable }) => {
     security_technicians: "",
     it_engineers: "",
     after_hours_rates: "",
-
     weekend_rates: "",
     holiday_rates: "",
     cabling_work_hourly_rate: "",
@@ -23,24 +22,23 @@ const TechnicianRatesForm = ({ id, data, isEditable }) => {
     security_work_hourly_rate: "",
     it_work_hourly_rate: "",
     trip_charge: "",
-    coverage_area: "",
-    level_2_testers: "",
-    aerial_lift_certification_technicians: "",
 
+    aerial_lift_certification_technicians: "",
+    level_2_testers:false,
     certify_mm_fibre: false,
     certify_sm_fibre: false,
     camera_test_monitors: false,
-    company_provide_service: false,
-    bicsi_certified_technicians: false,
+
+    bicsi_certified_technicians: "",
 
     osha_10_technicians: "",
     osha_30_technicians: "",
-    sst_technicians: "",
     osha_62_technicians: "",
+    sst_technicians: "",
   });
 
   /* ===========================
-     Load Existing Data
+     Load Data
   =========================== */
   useEffect(() => {
     const technician = data?.contractor_technician_rates?.[0] || {};
@@ -50,8 +48,8 @@ const TechnicianRatesForm = ({ id, data, isEditable }) => {
       av_technicians: technician.av_technicians || "",
       security_technicians: technician.security_technicians || "",
       it_engineers: technician.it_engineers || "",
-      after_hours_rates: technician.after_hours_rates || "",
 
+      after_hours_rates: technician.after_hours_rates || "",
       weekend_rates: technician.weekend_rates || "",
       holiday_rates: technician.holiday_rates || "",
       cabling_work_hourly_rate: technician.cabling_work_hourly_rate || "",
@@ -59,22 +57,21 @@ const TechnicianRatesForm = ({ id, data, isEditable }) => {
       security_work_hourly_rate: technician.security_work_hourly_rate || "",
       it_work_hourly_rate: technician.it_work_hourly_rate || "",
       trip_charge: technician.trip_charge || "",
-      coverage_area: technician.coverage_area || "",
-      level_2_testers: technician.level_2_testers || "",
+      level_2_testers: technician.level_2_testers || false,
       aerial_lift_certification_technicians:
         technician.aerial_lift_certification_technicians || "",
 
       certify_mm_fibre: technician.certify_mm_fibre || false,
       certify_sm_fibre: technician.certify_sm_fibre || false,
       camera_test_monitors: technician.camera_test_monitors || false,
-      company_provide_service: technician.company_provide_service || false,
+
       bicsi_certified_technicians:
-        technician.bicsi_certified_technicians || false,
+        technician.bicsi_certified_technicians || "",
 
       osha_10_technicians: technician.osha_10_technicians || "",
       osha_30_technicians: technician.osha_30_technicians || "",
-      sst_technicians: technician.sst_technicians || "",
       osha_62_technicians: technician.osha_62_technicians || "",
+      sst_technicians: technician.sst_technicians || "",
     });
   }, [data]);
 
@@ -85,6 +82,11 @@ const TechnicianRatesForm = ({ id, data, isEditable }) => {
     if (!isEditable) return;
 
     const { name, value, type, checked } = e.target;
+
+    // 🔥 Allow only numbers for rates
+    if (name.includes("rate") || name.includes("charge")) {
+      if (!/^\d*\.?\d*$/.test(value)) return;
+    }
 
     setFormData((prev) => ({
       ...prev,
@@ -109,86 +111,89 @@ const TechnicianRatesForm = ({ id, data, isEditable }) => {
   =========================== */
   return (
     <div className="bg-white shadow rounded-lg p-6 mb-6">
+      {/* ✅ Updated Heading */}
       <h2 className="text-xl font-semibold mb-6">
-        Technician & Rates Information
+        Technician & Rate Details
       </h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className={`space-y-8 ${!isEditable ? "opacity-60" : ""}`}
-      >
-        {/* Technician Counts */}
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* ================= TECHNICIANS ================= */}
         <div>
-          <h3 className="font-semibold mb-4">Technician Counts</h3>
+          <h3 className="font-semibold mb-4">
+            Technician Counts
+          </h3>
+
           <div className="grid grid-cols-3 gap-4">
             {[
               { label: "Cable Technicians", name: "cable_technicians" },
               { label: "AV Technicians", name: "av_technicians" },
               { label: "Security Technicians", name: "security_technicians" },
               { label: "IT Engineers", name: "it_engineers" },
-              { label: "Level 2 Testers", name: "level_2_testers" },
               {
                 label: "Aerial Lift Certified Technicians",
                 name: "aerial_lift_certification_technicians",
               },
             ].map((field) => (
-              <div key={field.name} className="flex flex-col">
-                <label className="text-sm font-medium mb-1">
+              <div key={field.name}>
+                <label className="text-sm font-medium">
                   {field.label}
                 </label>
                 <input
+                  type="number"
                   name={field.name}
                   value={formData[field.name]}
                   onChange={handleChange}
                   disabled={!isEditable}
-                  className={`border p-2 rounded ${disabledClass}`}
+                  className={`border p-2 rounded w-full ${disabledClass}`}
                 />
               </div>
             ))}
           </div>
         </div>
 
-        {/* Rates */}
+        {/* ================= RATES ================= */}
         <div>
-          <h3 className="font-semibold mb-4">Rates</h3>
+          <h3 className="font-semibold mb-4">Rates ($)</h3>
+
           <div className="grid grid-cols-3 gap-4">
             {[
-              "after_hours_rates",
-              "weekend_rates",
-              "holiday_rates",
-              "cabling_work_hourly_rate",
-              "av_work_hourly_rate",
-              "security_work_hourly_rate",
-              "it_work_hourly_rate",
-              "trip_charge",
-              "coverage_area",
-            ].map((name) => (
-              <div key={name} className="flex flex-col">
-                <label className="text-sm font-medium mb-1">
-                  {name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+              { label: "After Hours Rate", name: "after_hours_rates" },
+              { label: "Weekend Rate", name: "weekend_rates" },
+              { label: "Holiday Rate", name: "holiday_rates" },
+              { label: "Cabling Work Hourly Rate", name: "cabling_work_hourly_rate" },
+              { label: "AV Work Hourly Rate", name: "av_work_hourly_rate" },
+              { label: "Security Work Hourly Rate", name: "security_work_hourly_rate" },
+              { label: "IT Work Hourly Rate", name: "it_work_hourly_rate" },
+              { label: "Trip Charge", name: "trip_charge" },
+            ].map((field) => (
+              <div key={field.name}>
+                <label className="text-sm font-medium">
+                  {field.label}
                 </label>
                 <input
-                  name={name}
-                  value={formData[name]}
+                  type="text"
+                  name={field.name}
+                  value={formData[field.name]}
                   onChange={handleChange}
                   disabled={!isEditable}
-                  className={`border p-2 rounded ${disabledClass}`}
+                  className={`border p-2 rounded w-full ${disabledClass}`}
+                  placeholder="$"
                 />
               </div>
             ))}
           </div>
         </div>
 
-        {/* Certifications */}
+        {/* ================= TOOLS ================= */}
         <div>
-          <h3 className="font-semibold mb-4">Certifications</h3>
+          <h3 className="font-semibold mb-4">Tools</h3>
+
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: "Certify MM Fibre", name: "certify_mm_fibre" },
-              { label: "Certify SM Fibre", name: "certify_sm_fibre" },
+              { label: "Level 2 Tester / Certifier", name: "level_2_testers" },
+              { label: "MM Fiber Certifier", name: "certify_mm_fibre" },
+              { label: "SM Fiber Certifier", name: "certify_sm_fibre" },
               { label: "Camera Test Monitors", name: "camera_test_monitors" },
-              { label: "Company Provide Service", name: "company_provide_service" },
-              { label: "BICSI Certified", name: "bicsi_certified_technicians" },
             ].map((field) => (
               <label key={field.name} className="flex items-center">
                 <input
@@ -205,18 +210,21 @@ const TechnicianRatesForm = ({ id, data, isEditable }) => {
           </div>
         </div>
 
-        {/* Compliance */}
+        {/* ================= COMPLIANCE ================= */}
         <div>
           <h3 className="font-semibold mb-4">Compliance</h3>
-          <div className="grid grid-cols-4 gap-4">
+
+          <div className="grid grid-cols-3 gap-4">
             {[
-              { label: "OSHA 10 Certified Technicians", name: "osha_10_technicians" },
-              { label: "OSHA 30 Certified Technicians", name: "osha_30_technicians" },
-              { label: "SST Certified Technicians", name: "sst_technicians" },
-              { label: "OSHA 62 Certified Technicians", name: "osha_62_technicians" },
+              { label: "# of BICSI Certified Technicians", name: "bicsi_certified_technicians" },
+              { label: "# of OSHA 10 Certified Technicians", name: "osha_10_technicians" },
+              { label: "# of OSHA 30 Certified Technicians", name: "osha_30_technicians" },
+              { label: "# of OSHA 62 Certified Technicians", name: "osha_62_technicians" },
+              { label: "# of SST Certified Technicians", name: "sst_technicians" },
+              { label: "# of Aerial Lift Certified Technicians", name: "aerial_lift_certification_technicians" },
             ].map((field) => (
-              <div key={field.name} className="flex flex-col">
-                <label className="text-sm font-medium mb-1">
+              <div key={field.name}>
+                <label className="text-sm font-medium">
                   {field.label}
                 </label>
                 <input
@@ -225,7 +233,7 @@ const TechnicianRatesForm = ({ id, data, isEditable }) => {
                   value={formData[field.name]}
                   onChange={handleChange}
                   disabled={!isEditable}
-                  className={`border p-2 rounded ${disabledClass}`}
+                  className={`border p-2 rounded w-full ${disabledClass}`}
                 />
               </div>
             ))}
@@ -235,7 +243,7 @@ const TechnicianRatesForm = ({ id, data, isEditable }) => {
         {isEditable && (
           <div className="text-right">
             <button className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">
-              Update Technician & Rates
+              Update Technician & Rate Details
             </button>
           </div>
         )}

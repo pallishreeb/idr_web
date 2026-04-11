@@ -7,7 +7,6 @@ import { updateInsuranceInfo } from "../../actions/subContractorAction";
 =========================== */
 const formatToDisplay = (dateString) => {
   if (!dateString) return "";
-
   if (dateString.includes("/")) return dateString;
 
   const date = new Date(dateString);
@@ -42,6 +41,15 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
     company_vehicles: "",
     emp_use_personal_vehicles: false,
 
+    /* ✅ NEW VEHICLE POLICY FIELDS */
+    vehicle_policy_number: "",
+    vehicle_bodily_injury_per_person: "",
+    vehicle_bodily_injury_per_accident: "",
+    vehicle_property_damage_per_accident: "",
+    vehicle_policy_startdate: "",
+    vehicle_policy_enddate: "",
+
+    /* EXISTING */
     gl_coverage_amount_perocurance: "",
     gl_aggregate_coverage_amount: "",
     gl_insurer: "",
@@ -74,8 +82,9 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
     if (data?.insurance_requirements?.length > 0) {
       const insurance = data.insurance_requirements[0];
 
-      setFormData({
-        company_vehicles: insurance.company_vehicles || "",
+      setFormData((prev) => ({
+        ...prev,
+             company_vehicles: insurance.company_vehicles || "",
         emp_use_personal_vehicles:
           insurance.emp_use_personal_vehicles || false,
 
@@ -92,7 +101,7 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
           insurance.ui_coverage_amount_perocurance || "",
         ui_aggregate_coverage_amount:
           insurance.ui_aggregate_coverage_amount || "",
-        ui_insurer: insurance.ui_insurer || "",
+                ui_insurer: insurance.ui_insurer || "",
         ui_policy: insurance.ui_policy || "",
         ui_policy_startdate: insurance.ui_policy_startdate || "",
         ui_policy_enddate: insurance.ui_policy_enddate || "",
@@ -110,12 +119,25 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
           insurance.commercial_auto_insurance_policy || false,
         hired_nonowned_auto_insurance_policy:
           insurance.hired_nonowned_auto_insurance_policy || false,
-      });
+
+        // ensure new fields exist
+        vehicle_policy_number: insurance.vehicle_policy_number || "",
+        vehicle_bodily_injury_per_person:
+          insurance.vehicle_bodily_injury_per_person || "",
+        vehicle_bodily_injury_per_accident:
+          insurance.vehicle_bodily_injury_per_accident || "",
+        vehicle_property_damage_per_accident:
+          insurance.vehicle_property_damage_per_accident || "",
+        vehicle_policy_startdate:
+          insurance.vehicle_policy_startdate || "",
+        vehicle_policy_enddate:
+          insurance.vehicle_policy_enddate || "",
+      }));
     }
   }, [data]);
 
   /* ===========================
-     Handle Change
+     Handlers
   =========================== */
   const handleChange = (e) => {
     if (!isEditable) return;
@@ -128,12 +150,8 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
     }));
   };
 
-  /* ===========================
-     Submit
-  =========================== */
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!isEditable) return;
 
     dispatch(
@@ -150,10 +168,11 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
   const renderPolicySection = (title, prefix) => (
     <div>
       <h3 className="font-semibold mb-4">{title}</h3>
+
       <div className="grid grid-cols-3 gap-4">
         <input
           name={`${prefix}_coverage_amount_perocurance`}
-          value={formData[`${prefix}_coverage_amount_perocurance`]}
+          value={formData[`${prefix}_coverage_amount_perocurance`] || ""}
           onChange={handleChange}
           disabled={!isEditable}
           className={`border p-2 rounded ${disabledClass}`}
@@ -162,7 +181,7 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
 
         <input
           name={`${prefix}_aggregate_coverage_amount`}
-          value={formData[`${prefix}_aggregate_coverage_amount`]}
+          value={formData[`${prefix}_aggregate_coverage_amount`] || ""}
           onChange={handleChange}
           disabled={!isEditable}
           className={`border p-2 rounded ${disabledClass}`}
@@ -171,7 +190,7 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
 
         <input
           name={`${prefix}_insurer`}
-          value={formData[`${prefix}_insurer`]}
+          value={formData[`${prefix}_insurer`] || ""}
           onChange={handleChange}
           disabled={!isEditable}
           className={`border p-2 rounded ${disabledClass}`}
@@ -180,17 +199,17 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
 
         <input
           name={`${prefix}_policy`}
-          value={formData[`${prefix}_policy`]}
+          value={formData[`${prefix}_policy`] || ""}
           onChange={handleChange}
           disabled={!isEditable}
           className={`border p-2 rounded ${disabledClass}`}
           placeholder="Policy #"
         />
 
+        {/* Start */}
         <input
           type="date"
           value={formatToInput(formData[`${prefix}_policy_startdate`])}
-          disabled={!isEditable}
           onChange={(e) =>
             setFormData((prev) => ({
               ...prev,
@@ -202,10 +221,10 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
           className={`border p-2 rounded ${disabledClass}`}
         />
 
+        {/* End */}
         <input
           type="date"
           value={formatToInput(formData[`${prefix}_policy_enddate`])}
-          disabled={!isEditable}
           onChange={(e) =>
             setFormData((prev) => ({
               ...prev,
@@ -229,29 +248,89 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
         Insurance Information
       </h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className={`space-y-8 ${
-          !isEditable ? "opacity-60" : ""
-        }`}
-      >
-        {/* Vehicle Info */}
+      <form onSubmit={handleSubmit} className="space-y-8">
+
+        {/* ================= VEHICLE ================= */}
         <div>
           <h3 className="font-semibold mb-4">
             Vehicle Information
           </h3>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <input
               name="company_vehicles"
               value={formData.company_vehicles}
               onChange={handleChange}
               disabled={!isEditable}
               className={`border p-2 rounded ${disabledClass}`}
-              placeholder="Company Vehicles"
+              placeholder="# of company owned vehicles"
             />
 
-            <label className="flex items-center">
+            <input
+              name="vehicle_policy_number"
+              value={formData.vehicle_policy_number}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className={`border p-2 rounded ${disabledClass}`}
+              placeholder="Policy #"
+            />
+
+            <input
+              name="vehicle_bodily_injury_per_person"
+              value={formData.vehicle_bodily_injury_per_person}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className={`border p-2 rounded ${disabledClass}`}
+              placeholder="Bodily Injury per person"
+            />
+
+            <input
+              name="vehicle_bodily_injury_per_accident"
+              value={formData.vehicle_bodily_injury_per_accident}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className={`border p-2 rounded ${disabledClass}`}
+              placeholder="Bodily Injury per accident"
+            />
+
+            <input
+              name="vehicle_property_damage_per_accident"
+              value={formData.vehicle_property_damage_per_accident}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className={`border p-2 rounded ${disabledClass}`}
+              placeholder="Property Damage per accident"
+            />
+
+            <input
+              type="date"
+              value={formatToInput(formData.vehicle_policy_startdate)}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  vehicle_policy_startdate: formatToDisplay(
+                    e.target.value
+                  ),
+                }))
+              }
+              className={`border p-2 rounded ${disabledClass}`}
+            />
+
+            <input
+              type="date"
+              value={formatToInput(formData.vehicle_policy_enddate)}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  vehicle_policy_enddate: formatToDisplay(
+                    e.target.value
+                  ),
+                }))
+              }
+              className={`border p-2 rounded ${disabledClass}`}
+            />
+          </div>
+          <label className="flex items-center">
               <input
                 type="checkbox"
                 name="emp_use_personal_vehicles"
@@ -262,14 +341,14 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
               />
               Employees Use Personal Vehicles
             </label>
-          </div>
         </div>
 
+        {/* ================= POLICIES ================= */}
         {renderPolicySection("General Liability (GL)", "gl")}
         {renderPolicySection("Umbrella Insurance (UI)", "ui")}
         {renderPolicySection("Workers Compensation (WC)", "wc")}
 
-        {/* Auto Policies */}
+        {/* ================= AUTO ================= */}
         <div>
           <h3 className="font-semibold mb-4">Auto Policies</h3>
 
@@ -300,9 +379,14 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
           </div>
         </div>
 
+        {/* ================= COI ================= */}
+        <div className="bg-gray-50 p-4 rounded text-sm">
+          Please submit a certificate of insurance (COI) including required details mentioned above.
+        </div>
+
         {isEditable && (
           <div className="text-right">
-            <button className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">
+            <button className="bg-indigo-600 text-white px-6 py-2 rounded">
               Update Insurance Info
             </button>
           </div>
