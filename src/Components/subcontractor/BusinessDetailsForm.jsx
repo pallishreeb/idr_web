@@ -18,8 +18,8 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
     state: "",
     zipcode: "",
     coverage_area: "",
-    hourly_rate: "", // kept for backend
-    trip_charge: "", // kept for backend
+    hourly_rate: "",
+    trip_charge: "",
     no_of_technicians: "",
     is_certifier: false,
     rating: "",
@@ -107,123 +107,169 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
           !isEditable ? "opacity-60" : ""
         }`}
       >
-        <input
-          name="subcontractor_name"
-          value={formData.subcontractor_name}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Subcontractor Name"
-        />
 
-        <input
-          name="business_dba"
-          value={formData.business_dba}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Business DBA"
-        />
-
-        <input
-          name="street_address"
-          value={formData.street_address}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Street Address"
-        />
-
-        <input
-          name="suite"
-          value={formData.suite}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Suite"
-        />
-
-        <input
-          name="city"
-          value={formData.city}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="City"
-        />
-
-        {/* STATE DROPDOWN */}
-        <select
-          name="state"
-          value={formData.state}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-        >
-          <option value="">Select State</option>
-          {states.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
-
-        <input
-          name="zipcode"
-          value={formData.zipcode}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Zip Code"
-        />
-
-        {/* COVERAGE AREA */}
-        <textarea
-          name="coverage_area"
-          value={formData.coverage_area}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded col-span-2 ${disabledClass}`}
-          placeholder="Coverage Area"
-          rows="3"
-        />
-
-        <input
-          name="no_of_technicians"
-          value={formData.no_of_technicians}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="No. of Technicians"
-        />
-
-        {/* HIDE RATING FOR SUBCONTRACTOR */}
-        {user_type !== "Subcontractor" && (
-          <select
-            name="rating"
-            value={formData.rating}
+        {/* Subcontractor Name */}
+        <div>
+          <label className="text-sm font-medium">Subcontractor Name</label>
+          <input
+            name="subcontractor_name"
+            value={formData.subcontractor_name}
             onChange={handleChange}
             disabled={!isEditable}
-            className={`border p-2 rounded ${disabledClass}`}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+            placeholder="Enter subcontractor name"
+          />
+        </div>
+
+        {/* DBA */}
+        <div>
+          <label className="text-sm font-medium">Business DBA</label>
+          <input
+            name="business_dba"
+            value={formData.business_dba}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+            placeholder="Enter DBA name"
+          />
+        </div>
+
+        {/* Street */}
+        <div>
+          <label className="text-sm font-medium">Street Address</label>
+          <input
+            name="street_address"
+            value={formData.street_address}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+            placeholder="Enter street address"
+          />
+        </div>
+
+        {/* Suite */}
+        <div>
+          <label className="text-sm font-medium">Suite</label>
+          <input
+            name="suite"
+            value={formData.suite}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+            placeholder="Enter suite (if any)"
+          />
+        </div>
+
+        {/* City */}
+        <div>
+          <label className="text-sm font-medium">City</label>
+          <input
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+            placeholder="Enter city"
+          />
+        </div>
+
+        {/* State */}
+        <div>
+          <label className="text-sm font-medium">State</label>
+          <select
+            name="state"
+            value={formData.state}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
           >
-            <option value="">Select Rating</option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="D">D</option>
-            <option value="F">F</option>
+            <option value="">Select State</option>
+            {states.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
           </select>
+        </div>
+
+        {/* Zip */}
+        <div>
+          <label className="text-sm font-medium">Zip Code</label>
+          <input
+            name="zipcode"
+            value={formData.zipcode}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+            placeholder="Enter zip code"
+          />
+        </div>
+
+        {/* Coverage */}
+        <div className="col-span-2">
+          <label className="text-sm font-medium">Coverage Area</label>
+          <textarea
+            name="coverage_area"
+            value={formData.coverage_area}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+            placeholder="Enter coverage areas"
+            rows="3"
+          />
+        </div>
+
+        {/* Technicians */}
+        <div>
+          <label className="text-sm font-medium">
+            No. of Technicians
+          </label>
+          <input
+            name="no_of_technicians"
+            value={formData.no_of_technicians}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+            placeholder="Enter number"
+          />
+        </div>
+
+        {/* Rating */}
+        {user_type !== "Subcontractor" && (
+          <div>
+            <label className="text-sm font-medium">Rating</label>
+            <select
+              name="rating"
+              value={formData.rating}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className={`border p-2 rounded w-full ${disabledClass}`}
+            >
+              <option value="">Select Rating</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="F">F</option>
+            </select>
+          </div>
         )}
 
-        <textarea
-          name="licenses_held"
-          value={formData.licenses_held}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded col-span-2 ${disabledClass}`}
-          placeholder="Please enter all licenses held, include both the license type and license ID for each license entered"
-          rows="3"
-        />
+        {/* Licenses */}
+        <div className="col-span-2">
+          <label className="text-sm font-medium">
+            Licenses Held
+          </label>
+          <textarea
+            name="licenses_held"
+            value={formData.licenses_held}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+            placeholder="Enter license type and ID"
+            rows="3"
+          />
+        </div>
 
-        {/* CHECKBOX SECTION */}
+        {/* Checkbox section */}
         <div className="col-span-2 text-sm font-medium text-gray-600">
           Please select all that apply
         </div>
@@ -266,7 +312,7 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
           </label>
         </div>
 
-        {/* CERTIFICATION */}
+        {/* Certification */}
         <div className="col-span-2">
           <label className="flex items-center text-sm">
             <input
@@ -277,7 +323,7 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
               disabled={!isEditable}
               className="mr-2"
             />
-            I certify that I am legally authorized to submit this form on behalf of the company
+            I certify that I am legally authorized to submit this form
           </label>
         </div>
 
