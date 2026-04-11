@@ -57,8 +57,21 @@ const ContactDetailsForm = ({ id, data, isEditable }) => {
         a_email: data.a_email || "",
       });
 
-      setServiceSameAsProject(!data.s_firstname);
-      setAccountsSameAsProject(!data.a_firstname);
+setServiceSameAsProject(
+  data.s_firstname === data.p_firstname &&
+  data.s_lastname === data.p_lastname &&
+  data.s_phonenumber === data.p_phonenumber &&
+  data.s_mobilenumber === data.p_mobilenumber &&
+  data.s_email === data.p_email
+);
+
+setAccountsSameAsProject(
+  data.a_firstname === data.p_firstname &&
+  data.a_lastname === data.p_lastname &&
+  data.a_phonenumber === data.p_phonenumber &&
+  data.a_mobilenumber === data.p_mobilenumber &&
+  data.a_email === data.p_email
+);
     }
   }, [data]);
 
@@ -140,146 +153,170 @@ const ContactDetailsForm = ({ id, data, isEditable }) => {
   /* ===========================
      UI
   =========================== */
+const getLabel = (field) => {
+  const map = {
+    firstname: "First Name",
+    lastname: "Last Name",
+    phonenumber: "Phone Number",
+    mobilenumber: "Mobile Number",
+    email: "Email",
+  };
 
-  return (
-    <div className="bg-white shadow rounded-lg p-6 mb-6">
-      <h2 className="text-xl font-semibold mb-6">
-        Contact Details
-      </h2>
+  const key = field.split("_")[1]; // remove p_/s_/a_
+  return map[key] || field;
+};
+return (
+  <div className="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 className="text-xl font-semibold mb-6">
+      Contact Details
+    </h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className={`space-y-8 ${!isEditable ? "opacity-60" : ""}`}
-      >
-        {/* Project Contact */}
-        <div>
-          <h3 className="font-semibold mb-4">Project Contact</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              "p_firstname",
-              "p_lastname",
-              "p_phonenumber",
-              "p_mobilenumber",
-              "p_email",
-            ].map((field) => (
+    <form
+      onSubmit={handleSubmit}
+      className={`space-y-8 ${!isEditable ? "opacity-60" : ""}`}
+    >
+
+      {/* ================= PROJECT CONTACT ================= */}
+      <div>
+        <h3 className="font-semibold mb-4">Project Contact</h3>
+
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            "p_firstname",
+            "p_lastname",
+            "p_phonenumber",
+            "p_mobilenumber",
+            "p_email",
+          ].map((field) => (
+            <div key={field} className={field === "p_email" ? "col-span-2" : ""}>
+              <label className="text-sm font-medium">
+                {getLabel(field)}
+              </label>
+
               <input
-                key={field}
                 name={field}
                 value={formData[field]}
                 onChange={handleChange}
                 disabled={!isEditable}
-                className={`border p-2 rounded ${
-                  field === "p_email" ? "col-span-2" : ""
-                } ${disabledClass}`}
-                placeholder={field.replace(/_/g, " ").replace("p ", "")}
+                className={`border p-2 rounded w-full ${disabledClass}`}
               />
-            ))}
-          </div>
-        </div>
-
-        {/* Service Contact */}
-        <div>
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold">Service Contact</h3>
-            <label className="flex items-center text-sm">
-              <input
-                type="checkbox"
-                checked={serviceSameAsProject}
-                disabled={!isEditable}
-                onChange={(e) =>
-                  isEditable &&
-                  setServiceSameAsProject(e.target.checked)
-                }
-                className="mr-2"
-              />
-              Same as Project
-            </label>
-          </div>
-
-          {!serviceSameAsProject && (
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                "s_firstname",
-                "s_lastname",
-                "s_phonenumber",
-                "s_mobilenumber",
-                "s_email",
-              ].map((field) => (
-                <input
-                  key={field}
-                  name={field}
-                  value={formData[field]}
-                  onChange={handleChange}
-                  disabled={!isEditable}
-                  className={`border p-2 rounded ${
-                    field === "s_email" ? "col-span-2" : ""
-                  } ${disabledClass}`}
-                  placeholder={field.replace(/_/g, " ").replace("s ", "")}
-                />
-              ))}
             </div>
-          )}
+          ))}
+        </div>
+      </div>
+
+      {/* ================= SERVICE CONTACT ================= */}
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-semibold">Service Contact</h3>
+
+          <label className="flex items-center text-sm font-medium">
+            <input
+              type="checkbox"
+              checked={serviceSameAsProject}
+              disabled={!isEditable}
+              onChange={(e) =>
+                isEditable && setServiceSameAsProject(e.target.checked)
+              }
+              className="mr-2"
+            />
+            Same as Project Contact
+          </label>
         </div>
 
-        {/* Accounts Contact */}
-        <div>
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold">
-              Accounts Receivable Contact
-            </h3>
-            <label className="flex items-center text-sm">
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            "s_firstname",
+            "s_lastname",
+            "s_phonenumber",
+            "s_mobilenumber",
+            "s_email",
+          ].map((field) => (
+            <div key={field} className={field === "s_email" ? "col-span-2" : ""}>
+              <label className="text-sm font-medium">
+                {getLabel(field)}
+              </label>
+
               <input
-                type="checkbox"
-                checked={accountsSameAsProject}
-                disabled={!isEditable}
-                onChange={(e) =>
-                  isEditable &&
-                  setAccountsSameAsProject(e.target.checked)
-                }
-                className="mr-2"
+                name={field}
+                value={formData[field]}
+                onChange={handleChange}
+                disabled={!isEditable || serviceSameAsProject}
+                className={`border p-2 rounded w-full ${
+                  !isEditable || serviceSameAsProject
+                    ? "bg-gray-100 cursor-not-allowed"
+                    : ""
+                }`}
               />
-              Same as Project
-            </label>
-          </div>
-
-          {!accountsSameAsProject && (
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                "a_firstname",
-                "a_lastname",
-                "a_phonenumber",
-                "a_mobilenumber",
-                "a_email",
-              ].map((field) => (
-                <input
-                  key={field}
-                  name={field}
-                  value={formData[field]}
-                  onChange={handleChange}
-                  disabled={!isEditable}
-                  className={`border p-2 rounded ${
-                    field === "a_email" ? "col-span-2" : ""
-                  } ${disabledClass}`}
-                  placeholder={field.replace(/_/g, " ").replace("a ", "")}
-                />
-              ))}
             </div>
-          )}
+          ))}
+        </div>
+      </div>
+
+      {/* ================= ACCOUNTS CONTACT ================= */}
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-semibold">
+            Accounts Receivable Contact
+          </h3>
+
+          <label className="flex items-center text-sm font-medium">
+            <input
+              type="checkbox"
+              checked={accountsSameAsProject}
+              disabled={!isEditable}
+              onChange={(e) =>
+                isEditable && setAccountsSameAsProject(e.target.checked)
+              }
+              className="mr-2"
+            />
+            Same as Project Contact
+          </label>
         </div>
 
-        {isEditable && (
-          <div className="text-right">
-            <button
-              type="submit"
-              className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
-            >
-              Update Contact Details
-            </button>
-          </div>
-        )}
-      </form>
-    </div>
-  );
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            "a_firstname",
+            "a_lastname",
+            "a_phonenumber",
+            "a_mobilenumber",
+            "a_email",
+          ].map((field) => (
+            <div key={field} className={field === "a_email" ? "col-span-2" : ""}>
+              <label className="text-sm font-medium">
+                {getLabel(field)}
+              </label>
+
+              <input
+                name={field}
+                value={formData[field]}
+                onChange={handleChange}
+                disabled={!isEditable || accountsSameAsProject}
+                className={`border p-2 rounded w-full ${
+                  !isEditable || accountsSameAsProject
+                    ? "bg-gray-100 cursor-not-allowed"
+                    : ""
+                }`}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ================= SUBMIT ================= */}
+      {isEditable && (
+        <div className="text-right">
+          <button
+            type="submit"
+            className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
+          >
+            Update Contact Details
+          </button>
+        </div>
+      )}
+    </form>
+  </div>
+);
 };
 
 export default ContactDetailsForm;

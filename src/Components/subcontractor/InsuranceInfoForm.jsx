@@ -165,83 +165,90 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
   /* ===========================
      Policy Section
   =========================== */
-  const renderPolicySection = (title, prefix) => (
+const renderPolicySection = (title, prefix) => (
     <div>
       <h3 className="font-semibold mb-4">{title}</h3>
 
       <div className="grid grid-cols-3 gap-4">
-        <input
-          name={`${prefix}_coverage_amount_perocurance`}
-          value={formData[`${prefix}_coverage_amount_perocurance`] || ""}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Coverage Per Occurrence"
-        />
 
-        <input
-          name={`${prefix}_aggregate_coverage_amount`}
-          value={formData[`${prefix}_aggregate_coverage_amount`] || ""}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Aggregate Coverage"
-        />
+        <div>
+          <label>Coverage Per Occurrence</label>
+          <input
+            name={`${prefix}_coverage_amount_perocurance`}
+            value={formData[`${prefix}_coverage_amount_perocurance`] || ""}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+          />
+        </div>
 
-        <input
-          name={`${prefix}_insurer`}
-          value={formData[`${prefix}_insurer`] || ""}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Insurer"
-        />
+        <div>
+          <label>Aggregate Coverage</label>
+          <input
+            name={`${prefix}_aggregate_coverage_amount`}
+            value={formData[`${prefix}_aggregate_coverage_amount`] || ""}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+          />
+        </div>
 
-        <input
-          name={`${prefix}_policy`}
-          value={formData[`${prefix}_policy`] || ""}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Policy #"
-        />
+        <div>
+          <label>Insurer</label>
+          <input
+            name={`${prefix}_insurer`}
+            value={formData[`${prefix}_insurer`] || ""}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+          />
+        </div>
 
-        {/* Start */}
-        <input
-          type="date"
-          value={formatToInput(formData[`${prefix}_policy_startdate`])}
-          onChange={(e) =>
-            setFormData((prev) => ({
-              ...prev,
-              [`${prefix}_policy_startdate`]: formatToDisplay(
-                e.target.value
-              ),
-            }))
-          }
-          className={`border p-2 rounded ${disabledClass}`}
-        />
+        <div>
+          <label>Policy</label>
+          <input
+            name={`${prefix}_policy`}
+            value={formData[`${prefix}_policy`] || ""}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded w-full ${disabledClass}`}
+          />
+        </div>
 
-        {/* End */}
-        <input
-          type="date"
-          value={formatToInput(formData[`${prefix}_policy_enddate`])}
-          onChange={(e) =>
-            setFormData((prev) => ({
-              ...prev,
-              [`${prefix}_policy_enddate`]: formatToDisplay(
-                e.target.value
-              ),
-            }))
-          }
-          className={`border p-2 rounded ${disabledClass}`}
-        />
+        <div>
+          <label>Coverage Start Date</label>
+          <input
+            type="date"
+            value={formatToInput(formData[`${prefix}_policy_startdate`])}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                [`${prefix}_policy_startdate`]: formatToDisplay(e.target.value),
+              }))
+            }
+            className={`border p-2 rounded w-full ${disabledClass}`}
+          />
+        </div>
+
+        <div>
+          <label>Coverage Expiration Date</label>
+          <input
+            type="date"
+            value={formatToInput(formData[`${prefix}_policy_enddate`])}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                [`${prefix}_policy_enddate`]: formatToDisplay(e.target.value),
+              }))
+            }
+            className={`border p-2 rounded w-full ${disabledClass}`}
+          />
+        </div>
+
       </div>
     </div>
   );
 
-  /* ===========================
-     UI
-  =========================== */
   return (
     <div className="bg-white shadow rounded-lg p-6 mb-6">
       <h2 className="text-xl font-semibold mb-6">
@@ -250,109 +257,122 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
 
       <form onSubmit={handleSubmit} className="space-y-8">
 
-        {/* ================= VEHICLE ================= */}
+        {/* VEHICLE */}
         <div>
-          <h3 className="font-semibold mb-4">
-            Vehicle Information
-          </h3>
+          <h3 className="font-semibold mb-4">Vehicle Information</h3>
 
           <div className="grid grid-cols-3 gap-4">
-            <input
-              name="company_vehicles"
-              value={formData.company_vehicles}
-              onChange={handleChange}
-              disabled={!isEditable}
-              className={`border p-2 rounded ${disabledClass}`}
-              placeholder="# of company owned vehicles"
-            />
 
-            <input
-              name="vehicle_policy_number"
-              value={formData.vehicle_policy_number}
-              onChange={handleChange}
-              disabled={!isEditable}
-              className={`border p-2 rounded ${disabledClass}`}
-              placeholder="Policy #"
-            />
-
-            <input
-              name="vehicle_bodily_injury_per_person"
-              value={formData.vehicle_bodily_injury_per_person}
-              onChange={handleChange}
-              disabled={!isEditable}
-              className={`border p-2 rounded ${disabledClass}`}
-              placeholder="Bodily Injury per person"
-            />
-
-            <input
-              name="vehicle_bodily_injury_per_accident"
-              value={formData.vehicle_bodily_injury_per_accident}
-              onChange={handleChange}
-              disabled={!isEditable}
-              className={`border p-2 rounded ${disabledClass}`}
-              placeholder="Bodily Injury per accident"
-            />
-
-            <input
-              name="vehicle_property_damage_per_accident"
-              value={formData.vehicle_property_damage_per_accident}
-              onChange={handleChange}
-              disabled={!isEditable}
-              className={`border p-2 rounded ${disabledClass}`}
-              placeholder="Property Damage per accident"
-            />
-
-            <input
-              type="date"
-              value={formatToInput(formData.vehicle_policy_startdate)}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  vehicle_policy_startdate: formatToDisplay(
-                    e.target.value
-                  ),
-                }))
-              }
-              className={`border p-2 rounded ${disabledClass}`}
-            />
-
-            <input
-              type="date"
-              value={formatToInput(formData.vehicle_policy_enddate)}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  vehicle_policy_enddate: formatToDisplay(
-                    e.target.value
-                  ),
-                }))
-              }
-              className={`border p-2 rounded ${disabledClass}`}
-            />
-          </div>
-          <label className="flex items-center">
+            <div>
+              <label>No. of Company Owned Vehicles</label>
               <input
-                type="checkbox"
-                name="emp_use_personal_vehicles"
-                checked={formData.emp_use_personal_vehicles}
+                name="company_vehicles"
+                value={formData.company_vehicles}
                 onChange={handleChange}
                 disabled={!isEditable}
-                className="mr-2"
+                className={`border p-2 rounded w-full ${disabledClass}`}
               />
-              Employees Use Personal Vehicles
-            </label>
+            </div>
+
+            <div>
+              <label>Policy</label>
+              <input
+                name="vehicle_policy_number"
+                value={formData.vehicle_policy_number}
+                onChange={handleChange}
+                disabled={!isEditable}
+                className={`border p-2 rounded w-full ${disabledClass}`}
+              />
+            </div>
+
+            <div>
+              <label>Bodily Injury (Per Person)</label>
+              <input
+                name="vehicle_bodily_injury_per_person"
+                value={formData.vehicle_bodily_injury_per_person}
+                onChange={handleChange}
+                disabled={!isEditable}
+                className={`border p-2 rounded w-full ${disabledClass}`}
+              />
+            </div>
+
+            <div>
+              <label>Bodily Injury (Per Accident)</label>
+              <input
+                name="vehicle_bodily_injury_per_accident"
+                value={formData.vehicle_bodily_injury_per_accident}
+                onChange={handleChange}
+                disabled={!isEditable}
+                className={`border p-2 rounded w-full ${disabledClass}`}
+              />
+            </div>
+
+            <div>
+              <label>Property Damage (Per Accident)</label>
+              <input
+                name="vehicle_property_damage_per_accident"
+                value={formData.vehicle_property_damage_per_accident}
+                onChange={handleChange}
+                disabled={!isEditable}
+                className={`border p-2 rounded w-full ${disabledClass}`}
+              />
+            </div>
+
+            <div>
+              <label>Coverage Start Date</label>
+              <input
+                type="date"
+                value={formatToInput(formData.vehicle_policy_startdate)}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    vehicle_policy_startdate: formatToDisplay(e.target.value),
+                  }))
+                }
+                className={`border p-2 rounded w-full ${disabledClass}`}
+              />
+            </div>
+
+            <div>
+              <label>Coverage Expiration Date</label>
+              <input
+                type="date"
+                value={formatToInput(formData.vehicle_policy_enddate)}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    vehicle_policy_enddate: formatToDisplay(e.target.value),
+                  }))
+                }
+                className={`border p-2 rounded w-full ${disabledClass}`}
+              />
+            </div>
+
+          </div>
+
+          <label className="flex items-center mt-3">
+            <input
+              type="checkbox"
+              name="emp_use_personal_vehicles"
+              checked={formData.emp_use_personal_vehicles}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className="mr-2"
+            />
+            Employees Use Personal Vehicles
+          </label>
         </div>
 
-        {/* ================= POLICIES ================= */}
+        {/* POLICIES */}
         {renderPolicySection("General Liability (GL)", "gl")}
         {renderPolicySection("Umbrella Insurance (UI)", "ui")}
         {renderPolicySection("Workers Compensation (WC)", "wc")}
 
-        {/* ================= AUTO ================= */}
+        {/* AUTO */}
         <div>
           <h3 className="font-semibold mb-4">Auto Policies</h3>
 
-          <div className="flex space-x-6">
+          <div className="flex gap-6">
             <label className="flex items-center">
               <input
                 type="checkbox"
@@ -379,11 +399,12 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
           </div>
         </div>
 
-        {/* ================= COI ================= */}
+        {/* COI NOTE */}
         <div className="bg-gray-50 p-4 rounded text-sm">
-          Please submit a certificate of insurance (COI) including required details mentioned above.
+          Please complete and submit a certificate of insurance as per the sample COI which is available for download under the “Upload Documents” section of this submission form.
         </div>
 
+        {/* SUBMIT */}
         {isEditable && (
           <div className="text-right">
             <button className="bg-indigo-600 text-white px-6 py-2 rounded">
@@ -391,6 +412,7 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
             </button>
           </div>
         )}
+
       </form>
     </div>
   );
