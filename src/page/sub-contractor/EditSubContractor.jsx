@@ -27,18 +27,19 @@ const EditSubContractor = () => {
   );
 
   const { user_type } = useSelector((state) => state.user.user);
+  const { access } = useSelector((state) => state.user);
   useEffect(() => {
     dispatch(getSubcontractorInfoById(id));
   }, [dispatch, id]);
 const sections = [
   { id: "business", label: "Business Details" },
   { id: "contact", label: "Contact Details" },
-  { id: "technician", label: "Technician & Rates" },
+{ id: "technician", label: "Technician & Rate Details" },
   { id: "area", label: "Area of Work" },
   { id: "insurance", label: "Insurance Info" },
   { id: "documents", label: "Documents" },
   { id: "status", label: `${user_type === "Subcontractor" ? "Submit For Review" : "Change Status"}` },
-  { id: "notes", label: "Notes" },
+  { id: "notes", label: `${user_type === "Subcontractor" ? "" : "Notes"}` },
 ];
   const scrollToSection = (sectionId) => {
     document.getElementById(sectionId)?.scrollIntoView({
@@ -117,7 +118,7 @@ const isEditable =
 
                 <AccordionSection
                   id="technician"
-                  title="Technician & Rates"
+title="Technician & Rate Details"
                 >
                   <TechnicianRatesForm id={id} data={subcontractor} isEditable={isEditable} />
                 </AccordionSection>
@@ -150,7 +151,8 @@ const isEditable =
                 >
                   <ChangeStatusForm id={id} data={subcontractor} />
                 </AccordionSection>
-
+ 
+               {access.includes(user_type) &&
                 <AccordionSection
                   id="notes"
                   title="Subcontractor Notes"
@@ -159,7 +161,7 @@ const isEditable =
                     subcontractorId={id}
                     notes={subcontractor?.subcontractorNotes || []}
                   />
-                </AccordionSection>
+                </AccordionSection>}
               </>
             )}
           </div>

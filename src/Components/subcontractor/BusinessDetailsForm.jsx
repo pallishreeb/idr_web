@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateBusinessDetails } from "../../actions/subContractorAction";
 
 const BusinessDetailsForm = ({ id, data, isEditable }) => {
   const dispatch = useDispatch();
+  const { user_type } = useSelector((state) => state.user.user);
 
   const disabledClass = !isEditable
     ? "bg-gray-100 cursor-not-allowed"
@@ -17,8 +18,8 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
     state: "",
     zipcode: "",
     coverage_area: "",
-    hourly_rate: "",
-    trip_charge: "",
+    hourly_rate: "", // kept for backend
+    trip_charge: "", // kept for backend
     no_of_technicians: "",
     is_certifier: false,
     rating: "",
@@ -31,11 +32,9 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
     llc_classification: "",
     licenses_held: "",
     shop_union: false,
+    company_provide_service: false,
   });
 
-  /* ===========================
-     Populate Form
-  =========================== */
   useEffect(() => {
     if (data) {
       setFormData({
@@ -60,16 +59,14 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
         llc_classification: data.llc_classification || "",
         licenses_held: data.licenses_held || "",
         shop_union: data.shop_union || false,
+        company_provide_service:
+          data.company_provide_service || false,
       });
     }
   }, [data]);
 
-  /* ===========================
-     Handlers
-  =========================== */
   const handleChange = (e) => {
     if (!isEditable) return;
-
     const { name, value, type, checked } = e.target;
 
     setFormData((prev) => ({
@@ -90,9 +87,13 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
     );
   };
 
-  /* ===========================
-     UI
-  =========================== */
+  const states = [
+    "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA",
+    "HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
+    "MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
+    "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC",
+    "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"
+  ];
 
   return (
     <div className="bg-white shadow rounded-lg p-6 mb-6">
@@ -151,14 +152,19 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
           placeholder="City"
         />
 
-        <input
+        {/* STATE DROPDOWN */}
+        <select
           name="state"
           value={formData.state}
           onChange={handleChange}
           disabled={!isEditable}
           className={`border p-2 rounded ${disabledClass}`}
-          placeholder="State"
-        />
+        >
+          <option value="">Select State</option>
+          {states.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
 
         <input
           name="zipcode"
@@ -169,31 +175,15 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
           placeholder="Zip Code"
         />
 
-        <input
+        {/* COVERAGE AREA */}
+        <textarea
           name="coverage_area"
           value={formData.coverage_area}
           onChange={handleChange}
           disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
+          className={`border p-2 rounded col-span-2 ${disabledClass}`}
           placeholder="Coverage Area"
-        />
-
-        <input
-          name="hourly_rate"
-          value={formData.hourly_rate}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Hourly Rate"
-        />
-
-        <input
-          name="trip_charge"
-          value={formData.trip_charge}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Trip Charge"
+          rows="3"
         />
 
         <input
@@ -202,73 +192,26 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
           onChange={handleChange}
           disabled={!isEditable}
           className={`border p-2 rounded ${disabledClass}`}
-          placeholder="No of Technicians"
+          placeholder="No. of Technicians"
         />
 
-        <select
-          name="rating"
-          value={formData.rating}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-        >
-          <option value="">Select Rating</option>
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-          <option value="D">D</option>
-          <option value="F">F</option>
-        </select>
-
-        <input
-          name="b_firstname"
-          value={formData.b_firstname}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Business First Name"
-        />
-
-        <input
-          name="b_lastname"
-          value={formData.b_lastname}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Business Last Name"
-        />
-
-        <input
-          name="referer_name"
-          value={formData.referer_name}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="Referer Name"
-        />
-
-        <select
-          name="company_type"
-          value={formData.company_type}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-        >
-          <option value="">Select Company Type</option>
-          <option value="Sole Proprietorship">Sole Proprietorship</option>
-          <option value="LLC">LLC</option>
-          <option value="Corporation">Corporation</option>
-          <option value="Partnership">Partnership</option>
-        </select>
-
-        <input
-          name="llc_classification"
-          value={formData.llc_classification}
-          onChange={handleChange}
-          disabled={!isEditable}
-          className={`border p-2 rounded ${disabledClass}`}
-          placeholder="LLC Classification"
-        />
+        {/* HIDE RATING FOR SUBCONTRACTOR */}
+        {user_type !== "Subcontractor" && (
+          <select
+            name="rating"
+            value={formData.rating}
+            onChange={handleChange}
+            disabled={!isEditable}
+            className={`border p-2 rounded ${disabledClass}`}
+          >
+            <option value="">Select Rating</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="F">F</option>
+          </select>
+        )}
 
         <textarea
           name="licenses_held"
@@ -276,12 +219,16 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
           onChange={handleChange}
           disabled={!isEditable}
           className={`border p-2 rounded col-span-2 ${disabledClass}`}
-          placeholder="Licenses Held"
+          placeholder="Please enter all licenses held, include both the license type and license ID for each license entered"
           rows="3"
         />
 
-        {/* Boolean Fields */}
-        <div className="flex items-center space-x-6 col-span-2">
+        {/* CHECKBOX SECTION */}
+        <div className="col-span-2 text-sm font-medium text-gray-600">
+          Please select all that apply
+        </div>
+
+        <div className="flex items-center space-x-6 col-span-2 flex-wrap">
           <label className="flex items-center">
             <input
               type="checkbox"
@@ -291,19 +238,7 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
               disabled={!isEditable}
               className="mr-2"
             />
-            Is Certifier
-          </label>
-
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              name="authorized_to_submit"
-              checked={formData.authorized_to_submit}
-              onChange={handleChange}
-              disabled={!isEditable}
-              className="mr-2"
-            />
-            Authorized To Submit
+            Company owns a certifier
           </label>
 
           <label className="flex items-center">
@@ -315,16 +250,40 @@ const BusinessDetailsForm = ({ id, data, isEditable }) => {
               disabled={!isEditable}
               className="mr-2"
             />
-            Shop Union
+            Company is a Union Shop
+          </label>
+
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              name="company_provide_service"
+              checked={formData.company_provide_service}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className="mr-2"
+            />
+            Does your company provide service?
+          </label>
+        </div>
+
+        {/* CERTIFICATION */}
+        <div className="col-span-2">
+          <label className="flex items-center text-sm">
+            <input
+              type="checkbox"
+              name="authorized_to_submit"
+              checked={formData.authorized_to_submit}
+              onChange={handleChange}
+              disabled={!isEditable}
+              className="mr-2"
+            />
+            I certify that I am legally authorized to submit this form on behalf of the company
           </label>
         </div>
 
         {isEditable && (
           <div className="col-span-2 text-right">
-            <button
-              type="submit"
-              className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
-            >
+            <button className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">
               Update Business Details
             </button>
           </div>
