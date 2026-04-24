@@ -7,14 +7,11 @@ import { updateInsuranceInfo } from "../../actions/subContractorAction";
 =========================== */
 const formatToDisplay = (dateString) => {
   if (!dateString) return "";
+
+  // If already formatted
   if (dateString.includes("/")) return dateString;
 
-  const date = new Date(dateString);
-  if (isNaN(date)) return "";
-
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
+  const [year, month, day] = dateString.split("-");
 
   return `${day}/${month}/${year}`;
 };
@@ -73,6 +70,7 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
 
     commercial_auto_insurance_policy: false,
     hired_nonowned_auto_insurance_policy: false,
+    auto_insurer_name:"",
   });
 
   /* ===========================
@@ -119,6 +117,7 @@ const InsuranceInfoForm = ({ id, data, isEditable }) => {
           insurance.commercial_auto_insurance_policy || false,
         hired_nonowned_auto_insurance_policy:
           insurance.hired_nonowned_auto_insurance_policy || false,
+        auto_insurer_name: insurance.auto_insurer_name || "",
 
         // ensure new fields exist
         vehicle_policy_number: insurance.vehicle_policy_number || "",
@@ -368,36 +367,52 @@ const renderPolicySection = (title, prefix) => (
         {renderPolicySection("Umbrella Insurance (UI)", "ui")}
         {renderPolicySection("Workers Compensation (WC)", "wc")}
 
-        {/* AUTO */}
-        <div>
-          <h3 className="font-semibold mb-4">Auto Policies</h3>
+{/* AUTO */}
+<div>
+  <h3 className="font-semibold mb-4">Auto Policies</h3>
 
-          <div className="flex gap-6">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="commercial_auto_insurance_policy"
-                checked={formData.commercial_auto_insurance_policy}
-                onChange={handleChange}
-                disabled={!isEditable}
-                className="mr-2"
-              />
-              Commercial Auto Insurance
-            </label>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-center">
 
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="hired_nonowned_auto_insurance_policy"
-                checked={formData.hired_nonowned_auto_insurance_policy}
-                onChange={handleChange}
-                disabled={!isEditable}
-                className="mr-2"
-              />
-              Hired/Non-Owned Auto Insurance
-            </label>
-          </div>
-        </div>
+    {/* Auto Insurer Name */}
+    <div>
+      <label>Auto Insurer Name</label>
+      <input
+        name="auto_insurer_name"
+        value={formData.auto_insurer_name}
+        onChange={handleChange}
+        disabled={!isEditable}
+        className={`border p-2 rounded w-full ${disabledClass}`}
+      />
+    </div>
+
+    {/* Commercial Auto */}
+    <div className="flex items-center mt-6">
+      <input
+        type="checkbox"
+        name="commercial_auto_insurance_policy"
+        checked={formData.commercial_auto_insurance_policy}
+        onChange={handleChange}
+        disabled={!isEditable}
+        className="mr-2"
+      />
+      <label>Commercial Auto Insurance</label>
+    </div>
+
+    {/* Hired/Non-Owned */}
+    <div className="flex items-center mt-6">
+      <input
+        type="checkbox"
+        name="hired_nonowned_auto_insurance_policy"
+        checked={formData.hired_nonowned_auto_insurance_policy}
+        onChange={handleChange}
+        disabled={!isEditable}
+        className="mr-2"
+      />
+      <label>Hired/Non-Owned Auto Insurance</label>
+    </div>
+
+  </div>
+</div>
 
         {/* COI NOTE */}
         <div className="bg-gray-50 p-4 rounded text-sm">
