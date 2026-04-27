@@ -1,10 +1,15 @@
+/** @format */
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { AiFillDelete } from "react-icons/ai";
-import { getSubcontractorLists, deleteSubcontractor } from "../../actions/subContractorAction";
+import {
+  getSubcontractorLists,
+  deleteSubcontractor,
+} from "../../actions/subContractorAction";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import Header from "../../Components/Header";
 import Loader from "../../Images/ZZ5H.gif";
@@ -19,35 +24,38 @@ const SubContractorList = () => {
     city: "",
     coverage: "",
     type: "",
-    status: ""
+    status: "",
   });
-  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ASC' });
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
 
-  const { subcontractors, loading } = useSelector((state) => state.subcontractor);
+  const { subcontractors, loading } = useSelector(
+    (state) => state.subcontractor,
+  );
   const { user_type } = useSelector((state) => state.user.user);
   const { access } = useSelector((state) => state.user);
-  
+
   useEffect(() => {
     dispatch(getSubcontractorLists());
   }, [dispatch]);
 
   const handleDelete = (subcontractorId) => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you really want to delete this subcontractor?',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "Do you really want to delete this subcontractor?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it',
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(deleteSubcontractor(subcontractorId)).then(() => {
-          dispatch(getSubcontractorLists());
-        })
-        .catch((error) => {
-          console.log(error);
-          toast.error("Failed to delete this item");
-        });
+        dispatch(deleteSubcontractor(subcontractorId))
+          .then(() => {
+            dispatch(getSubcontractorLists());
+          })
+          .catch((error) => {
+            console.log(error);
+            toast.error("Failed to delete this item");
+          });
       }
     });
   };
@@ -58,13 +66,13 @@ const SubContractorList = () => {
     //   return acc;
     // }, {});
     const query = Object.fromEntries(
-      Object.entries(filters).filter(([_, value]) => value.trim() !== "")
+      Object.entries(filters).filter(([_, value]) => value.trim() !== ""),
     );
     dispatch(getSubcontractorLists(query));
-    
+
     // dispatch(getSubcontractorLists(query));
   };
-  
+
   const handleReset = () => {
     setFilters({
       state: "",
@@ -72,14 +80,14 @@ const SubContractorList = () => {
       city: "",
       coverage: "",
       type: "",
-      status: "In Review"
+      status: "In Review",
     });
     dispatch(getSubcontractorLists({}));
   };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleEdit = (subcontractorId) => {
@@ -89,7 +97,7 @@ const SubContractorList = () => {
   const formatCurrency = (value) => {
     if (typeof value === "string") {
       // value = value.replace(/,/g, ""); // Remove all commas
-      value = value.replace(/[^0-9.]/g, ""); 
+      value = value.replace(/[^0-9.]/g, "");
     }
 
     return new Intl.NumberFormat("en-US", {
@@ -99,16 +107,22 @@ const SubContractorList = () => {
     }).format(value);
   };
   const requestSort = (key) => {
-    let direction = 'ASC';
-    if (sortConfig.key === key && sortConfig.direction === 'ASC') {
-      direction = 'DESC';
+    let direction = "ASC";
+    if (sortConfig.key === key && sortConfig.direction === "ASC") {
+      direction = "DESC";
     }
     setSortConfig({ key, direction });
     const nonEmptyFilters = Object.fromEntries(
-      Object.entries(filters).filter(([_, value]) => value.trim() !== "")
+      Object.entries(filters).filter(([_, value]) => value.trim() !== ""),
     );
-    dispatch(getSubcontractorLists({ ...nonEmptyFilters, sort_by: key, order: direction }));
-    };
+    dispatch(
+      getSubcontractorLists({
+        ...nonEmptyFilters,
+        sort_by: key,
+        order: direction,
+      }),
+    );
+  };
   const getSortSymbol = (key) => {
     if (sortConfig.key === key) {
       return sortConfig.direction === "ASC" ? "▲" : "▼";
@@ -116,9 +130,9 @@ const SubContractorList = () => {
     return "↕";
   };
   const filteredSubcontractors = subcontractors?.filter((sub) => {
-  if (!filters.status) return true;
-  return sub.contract_status === filters.status;
-});
+    if (!filters.status) return true;
+    return sub.contract_status === filters.status;
+  });
   return (
     <>
       <Header />
@@ -126,150 +140,236 @@ const SubContractorList = () => {
         <AdminSideNavbar />
         <div className="container mx-auto p-4 w-full h-screen overflow-y-scroll">
           <h2 className="text-xl font-semibold mb-4">SubContractor List</h2>
-          
+
           {access.includes(user_type) && (
             <>
-          {/* Search Filters */}
-          <div className="mb-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            <input
-              type="text"
-              placeholder="Name"
-              name="name"
-              className="border border-gray-300 rounded px-3 py-2 w-full"
-              value={filters.name}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="text"
-              placeholder="City"
-              name="city"
-              className="border border-gray-300 rounded px-3 py-2 w-full"
-              value={filters.city}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="text"
-              placeholder="State"
-              name="state"
-              className="border border-gray-300 rounded px-3 py-2 w-full"
-              value={filters.state}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="text"
-              placeholder="Coverage Area"
-              name="coverage"
-              className="border border-gray-300 rounded px-3 py-2 w-full"
-              value={filters.coverage}
-              onChange={handleFilterChange}
-            />
-            <input
-              type="text"
-              placeholder="Contractor Type"
-              name="type"
-              className="border border-gray-300 rounded px-3 py-2 w-full"
-              value={filters.type}
-              onChange={handleFilterChange}
-            />
-            <select
-                name="status"
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-                value={filters.status}
-                onChange={handleFilterChange}
-              >
-                <option value="">All Status</option>
-                <option value="In Review">In Review</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Re-Opened">Re-Opened</option>
-                <option value="Active">Active</option>
-              </select>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex gap-4 mb-6">
-            <button
-              className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
-              onClick={handleSearch}
-            >
-              Search
-            </button>
-            <button
-              className="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400"
-              onClick={handleReset}
-            >
-              Clear
-            </button>
-            {user_type === "Admin" && (
-              <button className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 ml-auto">
-                <Link to="/create-sub-contractor">Add New SubContractor</Link>
-              </button>
-            )}
-          </div>
-          </>
+              {/* Search Filters */}
+              <div className="mb-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <input
+                  type="text"
+                  placeholder="Name"
+                  name="name"
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                  value={filters.name}
+                  onChange={handleFilterChange}
+                />
+                <input
+                  type="text"
+                  placeholder="City"
+                  name="city"
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                  value={filters.city}
+                  onChange={handleFilterChange}
+                />
+                <input
+                  type="text"
+                  placeholder="State"
+                  name="state"
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                  value={filters.state}
+                  onChange={handleFilterChange}
+                />
+                <input
+                  type="text"
+                  placeholder="Coverage Area"
+                  name="coverage"
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                  value={filters.coverage}
+                  onChange={handleFilterChange}
+                />
+                <input
+                  type="text"
+                  placeholder="Contractor Type"
+                  name="type"
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                  value={filters.type}
+                  onChange={handleFilterChange}
+                />
+                <select
+                  name="status"
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                  value={filters.status}
+                  onChange={handleFilterChange}
+                >
+                  <option value="">All Status</option>
+                  <option value="In Review">In Review</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Re-Opened">Re-Opened</option>
+                  <option value="Active">Active</option>
+                </select>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-4 mb-6">
+                <button
+                  className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
+                  onClick={handleSearch}
+                >
+                  Search
+                </button>
+                <button
+                  className="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400"
+                  onClick={handleReset}
+                >
+                  Clear
+                </button>
+                {user_type === "Admin" && (
+                  <button className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 ml-auto">
+                    <Link to="/create-sub-contractor">
+                      Add New SubContractor
+                    </Link>
+                  </button>
+                )}
+              </div>
+            </>
           )}
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="min-w-full table-auto text-left">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border" onClick={() => requestSort('subcontractor_name')}>
-                    Subcontractor Name <span className="ml-1">{getSortSymbol("subcontractor_name")}</span>
-                    </th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Street Address</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border" onClick={() => requestSort('city')}>
-                    City  <span className="ml-1">{getSortSymbol("city")}</span>
-                    </th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border" onClick={() => requestSort('state')}>
-                    State  <span className="ml-1">{getSortSymbol("state")}</span>
-                    </th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Zipcode</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Coverage Area</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border" onClick={() => requestSort('hourly_rate')}>
-                    Hourly Rate  <span className="ml-1">{getSortSymbol("hourly_rate")}</span>
-                    </th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Trip Charge</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Technicians</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Primary Contact</th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Rating</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Full Name{" "}
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Email
+                  </th>
+                  <th
+                    className="px-4 py-2 text-sm font-semibold tracking-wider border"
+                    onClick={() => requestSort("subcontractor_name")}
+                  >
+                    Subcontractor Name{" "}
+                    <span className="ml-1">
+                      {getSortSymbol("subcontractor_name")}
+                    </span>
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Street Address
+                  </th>
+                  <th
+                    className="px-4 py-2 text-sm font-semibold tracking-wider border"
+                    onClick={() => requestSort("city")}
+                  >
+                    City <span className="ml-1">{getSortSymbol("city")}</span>
+                  </th>
+                  <th
+                    className="px-4 py-2 text-sm font-semibold tracking-wider border"
+                    onClick={() => requestSort("state")}
+                  >
+                    State <span className="ml-1">{getSortSymbol("state")}</span>
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Zipcode
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Coverage Area
+                  </th>
+                  <th
+                    className="px-4 py-2 text-sm font-semibold tracking-wider border"
+                    onClick={() => requestSort("hourly_rate")}
+                  >
+                    Hourly Rate{" "}
+                    <span className="ml-1">{getSortSymbol("hourly_rate")}</span>
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Trip Charge
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Technicians
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Primary Contact
+                  </th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Rating
+                  </th>
                   {/* <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Phone</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Mobile</th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Email</th> */}
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">Action</th>
+                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
                     <td colSpan="14" className="py-4 text-center">
-                      <img src={Loader} alt="Loading..." className="h-16 w-16 mx-auto" />
+                      <img
+                        src={Loader}
+                        alt="Loading..."
+                        className="h-16 w-16 mx-auto"
+                      />
                     </td>
                   </tr>
                 ) : subcontractors?.length === 0 ? (
                   <tr>
-                    <td colSpan="14" className="text-center py-4">No subcontractors found</td>
+                    <td colSpan="14" className="text-center py-4">
+                      No subcontractors found
+                    </td>
                   </tr>
                 ) : (
                   filteredSubcontractors?.map((subcontractor) => (
                     <tr key={subcontractor.subcontractor_id}>
-                      <td className="border text-sm px-4 py-3">{subcontractor.subcontractor_name || "NA"}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.street_address || "NA"}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.city || "NA"}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.state || "NA"}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.zipcode || "NA"}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.coverage_area || "NA"}</td>
-                      <td className="border text-sm px-4 py-3">{formatCurrency(subcontractor.hourly_rate) || "NA"}</td>
-                      <td className="border text-sm px-4 py-3">{formatCurrency(subcontractor.trip_charge) || "NA"}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.no_of_technicians || "NA"}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor.p_firstname || "NA"} {subcontractor.p_lastname}</td>
-                      <td className="border text-sm px-4 py-3">{subcontractor?.rating || "N/A"}</td>
+                      <td className="border text-sm px-4 py-3">
+                        {subcontractor.b_firstname + subcontractor.b_lastname ||
+                          "NA"}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {subcontractor.b_email || "NA"}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {subcontractor.subcontractor_name || "NA"}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {subcontractor.street_address || "NA"}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {subcontractor.city || "NA"}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {subcontractor.state || "NA"}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {subcontractor.zipcode || "NA"}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {subcontractor.coverage_area || "NA"}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {formatCurrency(subcontractor.hourly_rate) || "NA"}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {formatCurrency(subcontractor.trip_charge) || "NA"}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {subcontractor.no_of_technicians || "NA"}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {subcontractor.p_firstname || "NA"}{" "}
+                        {subcontractor.p_lastname}
+                      </td>
+                      <td className="border text-sm px-4 py-3">
+                        {subcontractor?.rating || "N/A"}
+                      </td>
                       {/* <td className="border text-sm px-4 py-3">{subcontractor.p_phonenumber}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.p_mobilenumber}</td>
                       <td className="border text-sm px-4 py-3">{subcontractor.p_email}</td> */}
                       <td className="border text-sm px-4 py-3 flex gap-2">
-                        <button className="bg-gray-100" onClick={() => handleEdit(subcontractor.subcontractor_id)}>
+                        <button
+                          className="bg-gray-100"
+                          onClick={() =>
+                            handleEdit(subcontractor.subcontractor_id)
+                          }
+                        >
                           <BiSolidEditAlt size={18} />
                         </button>
-                        <button className="bg-gray-100" onClick={() => handleDelete(subcontractor.subcontractor_id)}>
+                        <button
+                          className="bg-gray-100"
+                          onClick={() =>
+                            handleDelete(subcontractor.subcontractor_id)
+                          }
+                        >
                           <AiFillDelete size={18} />
                         </button>
                       </td>

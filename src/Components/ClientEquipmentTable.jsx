@@ -1,8 +1,15 @@
+/** @format */
+
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const ClientEquipmentTable = ({ equipments,serviceTicketId, onAddNote }) => {
+const ClientEquipmentTable = ({
+  equipments,
+  serviceTicketId,
+  onAddNote,
+  serviceTicket,
+}) => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [selectedEquipmentId, setSelectedEquipmentId] = useState(null);
@@ -47,7 +54,11 @@ const ClientEquipmentTable = ({ equipments,serviceTicketId, onAddNote }) => {
     onAddNote(payload);
     closeModal();
   };
-  const addRmaAccess = [...technicianAccess, "Subcontractor_User"];
+  const addRmaAccess = [
+    ...technicianAccess,
+    "Subcontractor_User",
+    "Subcontractor",
+  ];
   // 🔐 Simple Access Controls (easy to modify later)
 
   const canAddNote = technicianAccess.includes(user_type);
@@ -55,8 +66,9 @@ const ClientEquipmentTable = ({ equipments,serviceTicketId, onAddNote }) => {
   const canViewEquipment = technicianAccess.includes(user_type);
 
   const canViewRMA =
-    technicianAccess.includes(user_type) || user_type == "Subcontractor_User";
-
+    technicianAccess.includes(user_type) ||
+    user_type == "Subcontractor_User" ||
+    user_type == "Subcontractor";
   const canToggleNotes = true;
   return (
     <>
@@ -91,18 +103,31 @@ const ClientEquipmentTable = ({ equipments,serviceTicketId, onAddNote }) => {
                         {equipment?.client_equipments?.serial_number}
                       </td>
 
-                        <td className="border px-4 py-2">
-                          {canAddNote && (
-                            <button
-                              onClick={() =>
-                                openModal(equipment.client_equipment_id)
-                              }
-                              className="bg-indigo-600 text-white px-3 py-1 rounded"
-                            >
-                              Add Note
-                            </button>
-                          )}
-                          {canViewEquipment && (
+                      <td className="border px-4 py-2">
+                        {canAddNote && (
+                          <button
+                            onClick={() =>
+                              openModal(equipment.client_equipment_id)
+                            }
+                            className="bg-indigo-600 text-white px-3 py-1 rounded"
+                          >
+                            Add Note
+                          </button>
+                        )}
+                        {canViewEquipment && (
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/edit-client-equipment/${equipment.client_equipment_id}`,
+                              )
+                            }
+                            className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
+                          >
+                            View Equipment
+                          </button>
+                        )}
+                        {canViewRMA &&
+                          serviceTicket?.status?.toLowerCase() !== "closed" && (
                             <button
                               onClick={() =>
                                 navigate(
@@ -114,13 +139,16 @@ const ClientEquipmentTable = ({ equipments,serviceTicketId, onAddNote }) => {
                               View Equipment
                             </button>
                           )}
-                          {canViewRMA && (
+
+                        {canViewRMA &&
+                          serviceTicket?.status?.toLowerCase() !== "closed" && (
                             <button
                               onClick={() =>
                                 navigate(
-                                  `/add-device-rma/${equipment.client_equipment_id}`,{
-                                  state: { serviceTicketId }
-                                }
+                                  `/add-device-rma/${equipment.client_equipment_id}`,
+                                  {
+                                    state: { serviceTicketId },
+                                  },
                                 )
                               }
                               className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
@@ -128,27 +156,42 @@ const ClientEquipmentTable = ({ equipments,serviceTicketId, onAddNote }) => {
                               RMA
                             </button>
                           )}
-                          {canToggleNotes && (
-                            <button
-                              onClick={() =>
-                                toggleNotes(equipment.device_linked_id)
-                              }
-                              className="ml-4 bg-gray-500 text-white px-3 py-1 rounded"
-                            >
-                              {expandedEquipments.includes(
-                                equipment.device_linked_id,
+                        {technicianAccess.includes(user_type) && (
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/add-device-rma/${equipment.client_equipment_id}`,
+                                {
+                                  state: { serviceTicketId },
+                                },
                               )
-                                ? "Hide Notes"
-                                : "Show Notes"}{" "}
-                              (
-                              {equipment?.client_equipments
-                                ?.client_equip_histories?.length || 0}
-                              )
-                            </button>
-                          )}
-                        </td>
+                            }
+                            className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
+                          >
+                            RMA
+                          </button>
+                        )}
+                        {canToggleNotes && (
+                          <button
+                            onClick={() =>
+                              toggleNotes(equipment.device_linked_id)
+                            }
+                            className="ml-4 bg-gray-500 text-white px-3 py-1 rounded"
+                          >
+                            {expandedEquipments.includes(
+                              equipment.device_linked_id,
+                            )
+                              ? "Hide Notes"
+                              : "Show Notes"}{" "}
+                            (
+                            {equipment?.client_equipments
+                              ?.client_equip_histories?.length || 0}
+                            )
+                          </button>
+                        )}
+                      </td>
 
-                        {/* <td className="border px-4 py-2">
+                      {/* <td className="border px-4 py-2">
                           <button
                             onClick={() =>
                               toggleNotes(equipment.device_linked_id)

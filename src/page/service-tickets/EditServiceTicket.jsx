@@ -1,3 +1,5 @@
+/** @format */
+
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "../../axios-config";
@@ -10,7 +12,7 @@ import ServiceTicketCard from "../../Components/ServiceTicketCard";
 import ShowTechnicians from "../../Components/ServiceTicketAssigneePeopleCard";
 import ClientEquipmentTable from "../../Components/ClientEquipmentTable";
 import ServiceTicketNotes from "../../Components/ServiceTicketNotes";
-import InventoryTable from "../../Components/InventoryTable"
+import InventoryTable from "../../Components/InventoryTable";
 import {
   getServiceTicketDetails,
   updateServiceTicket,
@@ -34,7 +36,7 @@ import { toast } from "react-toastify";
 const EditServiceTicket = () => {
   const { serviceTicketId } = useParams();
   const dispatch = useDispatch();
-  const location = useLocation()
+  const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [signatureImage, setSignatureImage] = useState(null);
 
@@ -52,7 +54,7 @@ const EditServiceTicket = () => {
   const clients = useSelector((state) => state.client.clients);
   const locations = useSelector((state) => state.location.locations);
   const clientEmployees = useSelector(
-    (state) => state.clientEmployee.clientEmployees
+    (state) => state.clientEmployee.clientEmployees,
   );
   const equipments = useSelector((state) => state.clientEquipment.equipments);
   const idrEmployees = useSelector((state) => state.employee.idrEmployees);
@@ -89,19 +91,19 @@ const EditServiceTicket = () => {
       setNotes(serviceTicketDetails.serviceTicketNotes || []);
       setAssignees(serviceTicketDetails?.service_ticket_assignees || []);
       setServiceTicketImages(
-        serviceTicketDetails?.service_ticket_attachments || []
+        serviceTicketDetails?.service_ticket_attachments || [],
       );
       setServiceTicketEquipments(serviceTicketDetails?.linkedDevices || []);
       setInventories(serviceTicketDetails?.inventories || []);
       setServiceTicketAgreement(serviceTicketDetails?.agreement || {});
       // API call should be done only if technicianAccess includes user_type
-      const addRmaAccess =[...technicianAccess, "Subcontractor_User"];
+      const addRmaAccess = [...technicianAccess, "Subcontractor_User"];
       if (addRmaAccess.includes(user_type)) {
         dispatch(
           getClientEquipments({
             client_id: serviceTicketDetails.client_id,
             location_id: serviceTicketDetails.location_id,
-          })
+          }),
         );
       }
     }
@@ -126,7 +128,7 @@ const EditServiceTicket = () => {
 
       // Autofill client name
       const selectedClient = clients?.data?.find(
-        (client) => client.client_id === value
+        (client) => client.client_id === value,
       );
       if (selectedClient) {
         setServiceTicket((prev) => ({
@@ -141,7 +143,7 @@ const EditServiceTicket = () => {
     // Autofill contact phone number and email when contact_person changes
     if (name === "contact_person") {
       const selectedEmployee = clientEmployees?.find(
-        (employee) => employee.first_name + " " + employee.last_name === value
+        (employee) => employee.first_name + " " + employee.last_name === value,
       );
       if (selectedEmployee) {
         setServiceTicket((prev) => ({
@@ -162,7 +164,7 @@ const EditServiceTicket = () => {
     updatedAssignees[index] = { ...updatedAssignees[index], [name]: value };
     if (name === "technician_name") {
       const selectedTechnician = idrEmployees.find(
-        (employee) => employee.first_name + "" + employee.last_name === value
+        (employee) => employee.first_name + "" + employee.last_name === value,
       );
 
       if (selectedTechnician) {
@@ -174,7 +176,7 @@ const EditServiceTicket = () => {
     }
     if (name === "project_manager") {
       const selectedTechnician = idrEmployees.find(
-        (employee) => employee.first_name + "" + employee.last_name === value
+        (employee) => employee.first_name + "" + employee.last_name === value,
       );
 
       if (selectedTechnician) {
@@ -267,11 +269,12 @@ const EditServiceTicket = () => {
   };
   const getFilteredNote = (note) => {
     const allowedFields = [
-      "service_ticket_id", "comments" // "note_id",
+      "service_ticket_id",
+      "comments", // "note_id",
     ];
 
     const filteredNote = {};
-    allowedFields.forEach(field => {
+    allowedFields.forEach((field) => {
       if (Object.prototype.hasOwnProperty.call(note, field)) {
         filteredNote[field] = note[field];
       }
@@ -281,7 +284,7 @@ const EditServiceTicket = () => {
   const handleSaveNote = (index) => {
     const note = notes[index];
     const filteredNote = getFilteredNote(notes[index]);
-    dispatch(updateNotes(filteredNote, note?.['note_id']));
+    dispatch(updateNotes(filteredNote, note?.["note_id"]));
   };
   const handleNoteChange = (index, e) => {
     const { name, value } = e.target;
@@ -301,7 +304,7 @@ const EditServiceTicket = () => {
             "Content-Type": "application/json", // If backend expects this
           },
           responseType: "blob", // For PDF download
-        }
+        },
       );
 
       // Debugging response
@@ -335,6 +338,7 @@ const EditServiceTicket = () => {
     const [day, month, year] = dateString.split("/"); // Extract parts
     return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
   };
+  const newAccess = ["Subcontractor_User", "Subcontractor"];
   return (
     <>
       <Header />
@@ -346,10 +350,10 @@ const EditServiceTicket = () => {
             <div className="flex gap-3">
               <Link to="/service-tickets" state={location.state}>
                 <button className="border border-gray-400 text-gray-400 px-6 py-2 rounded">
-                 Back
+                  Back
                 </button>
               </Link>
-              {(client_type !== "User" && user_type !== "Subcontractor_User") && (
+              {client_type !== "User" && user_type !== "Subcontractor_User" && (
                 <>
                   {serviceTicketAgreement?.agreement_id && (
                     <Link
@@ -362,19 +366,23 @@ const EditServiceTicket = () => {
                   )}
                 </>
               )}
-            {(
-              technicianAccess.includes(user_type) ||
-              (user_type === "Subcontractor_User" &&
-                serviceTicket?.status?.toLowerCase() !== "closed")
-            ) && (
-              <button
-                onClick={openDeviceModal}
-                className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
-              >
-                Add Device To Ticket
-              </button>
-            )}
-
+              {newAccess.includes(user_type) &&
+                serviceTicket?.status?.toLowerCase() !== "closed" && (
+                  <button
+                    onClick={openDeviceModal}
+                    className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
+                  >
+                    Add Device To Ticket
+                  </button>
+                )}
+              {technicianAccess.includes(user_type) && (
+                <button
+                  onClick={openDeviceModal}
+                  className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
+                >
+                  Add Device To Ticket
+                </button>
+              )}
               {/* Download PDF Button */}
               {technicianAccess.includes(user_type) && (
                 <button
@@ -434,23 +442,24 @@ const EditServiceTicket = () => {
             loading={loading}
             serviceTicketId={serviceTicketId}
           />
-        <ShowSubcontractorUsers
-          subcontractorAssignees={
-            serviceTicketDetails?.subcontractor_in_service_tickets
-          }
-          parentId={serviceTicketId}
-          assignAction={assignSubcontractorUsersToServiceTicket}
-          deleteAction={deleteSubcontractorUserFromServiceTicket}
-          refreshAction={getServiceTicketDetails}
-          parentKey="service_ticket_id"
-          idKey="subcontractor_in_st_id" // 🔥 unique id key for ST
-          title="Subcontractor Users"
-        />
+          <ShowSubcontractorUsers
+            subcontractorAssignees={
+              serviceTicketDetails?.subcontractor_in_service_tickets
+            }
+            parentId={serviceTicketId}
+            assignAction={assignSubcontractorUsersToServiceTicket}
+            deleteAction={deleteSubcontractorUserFromServiceTicket}
+            refreshAction={getServiceTicketDetails}
+            parentKey="service_ticket_id"
+            idKey="subcontractor_in_st_id" // 🔥 unique id key for ST
+            title="Subcontractor Users"
+          />
           {/* show ClientEquipmentTable */}
           <ClientEquipmentTable
             equipments={serviceTicketEquipments}
             serviceTicketId={serviceTicketId}
             onAddNote={handleAddNote}
+            serviceTicket={serviceTicket}
           />
 
           {/* Show Images  */}
@@ -458,10 +467,10 @@ const EditServiceTicket = () => {
             images={serviceTicketImages}
             serviceTicketId={serviceTicketId}
           />
-           {/* InventoryTable */}
-            <InventoryTable
-             inventories={inventories}
-             service_ticket_id={serviceTicketId}
+          {/* InventoryTable */}
+          <InventoryTable
+            inventories={inventories}
+            service_ticket_id={serviceTicketId}
           />
           {/* Ticket Notes */}
           <ServiceTicketNotes
@@ -519,7 +528,7 @@ const EditServiceTicket = () => {
                             <button
                               onClick={() =>
                                 handleAddDeviceToTicket(
-                                  equipment.client_equipment_id
+                                  equipment.client_equipment_id,
                                 )
                               }
                               className="bg-blue-500 text-white px-4 py-2 rounded"
@@ -539,17 +548,13 @@ const EditServiceTicket = () => {
                     )}
                   </tbody>
                 </table>
-               
               </div>
             </div>
           )}
 
-
           {/* Segnature modal */}
 
-              
           <div className="p-6">
-            
             {signatureImage ? (
               <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
                 <h2 className="text-lg font-semibold text-gray-700">
@@ -583,16 +588,16 @@ const EditServiceTicket = () => {
               </div>
             ) : (
               <>
-              {user_type === "Client Employee" && (
-              <button
-                onClick={openModal}
-                className="bg-indigo-600 text-white px-4 py-2 rounded"
-              >
-                Add Signature
-              </button>
+                {user_type === "Client Employee" && (
+                  <button
+                    onClick={openModal}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded"
+                  >
+                    Add Signature
+                  </button>
+                )}
+              </>
             )}
-            </>
-          )}
             <SignatureModal
               isOpen={isModalOpen}
               onClose={closeModal}

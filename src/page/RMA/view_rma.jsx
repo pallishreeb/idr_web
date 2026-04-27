@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -27,7 +29,7 @@ const RmaViewList = () => {
     manufacturer: "",
     status: "",
   });
-  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ASC' });
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
   // const [selectedClient, setSelectedClient] = useState(null);
   // const [selectedLocation, setSelectedLocation] = useState(null);
 
@@ -138,30 +140,34 @@ const RmaViewList = () => {
     return `${month}/${day}/${year}`;
   };
 
-    const handleSort = (key) => {
-      let direction = "ASC";
-      if (sortConfig.key === key && sortConfig.direction === "ASC") {
-        direction = "DESC";
-      }
-      setSortConfig({ key, direction });
-      const { client_id, location_id, manufacturer, status } = filters;
-      const query = {
-        ...(client_id && { client_id }),
-        ...(location_id && { location_id }),
-        ...(manufacturer && { manufacturer }),
-        ...(status && { status }),
-      };
-      dispatch(getRmaLists(query, key, direction));
-      
+  const handleSort = (key) => {
+    let direction = "ASC";
+    if (sortConfig.key === key && sortConfig.direction === "ASC") {
+      direction = "DESC";
+    }
+    setSortConfig({ key, direction });
+    const { client_id, location_id, manufacturer, status } = filters;
+    const query = {
+      ...(client_id && { client_id }),
+      ...(location_id && { location_id }),
+      ...(manufacturer && { manufacturer }),
+      ...(status && { status }),
     };
-  
-    const getSortSymbol = (key) => {
-      if (sortConfig.key === key) {
-        return sortConfig.direction === "ASC" ? "▲" : "▼";
-      }
-      return "↕";
-    };
-  
+    dispatch(getRmaLists(query, key, direction));
+  };
+
+  const getSortSymbol = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "ASC" ? "▲" : "▼";
+    }
+    return "↕";
+  };
+  const userTypesWithClientPermission = [
+    "Subcontractor_User",
+    "Client Employee",
+    "Subcontractor",
+  ];
+
   return (
     <>
       <Header />
@@ -170,7 +176,7 @@ const RmaViewList = () => {
         <div className="container mx-auto p-4 w-full h-screen overflow-y-scroll">
           <h2 className="text-xl font-semibold mb-4">RMA List</h2>
           <div className="mb-4">
-            {(user_type !== "Client Employee" && user_type !== "Subcontractor_User") && (
+            {!userTypesWithClientPermission.includes(user_type) && (
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -283,7 +289,7 @@ const RmaViewList = () => {
                 </div>
               </form>
             )}
-            {(user_type === "Client Employee" && client_type !== "user") && (
+            {user_type === "Client Employee" && client_type !== "user" && (
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -386,8 +392,12 @@ const RmaViewList = () => {
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
                     Serial
                   </th>
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border" onClick={() => handleSort('status')}>
-                    Status <span className="ml-1">{getSortSymbol("status")}</span>
+                  <th
+                    className="px-4 py-2 text-sm font-semibold tracking-wider border"
+                    onClick={() => handleSort("status")}
+                  >
+                    Status{" "}
+                    <span className="ml-1">{getSortSymbol("status")}</span>
                   </th>
                   <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
                     Approved Date

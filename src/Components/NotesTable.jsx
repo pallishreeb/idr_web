@@ -1,4 +1,6 @@
-import React, { useState} from "react";
+/** @format */
+
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
@@ -9,9 +11,7 @@ import {
   getWorkOrderDetails,
   deleteNote,
 } from "../actions/workOrderActions";
-import { 
-  updateWOSubcontractorNoteStatus,
- } from "../actions/serviceTicket";
+import { updateWOSubcontractorNoteStatus } from "../actions/serviceTicket";
 import { getClients } from "../actions/clientActions";
 import { fetchIDREmployees } from "../actions/employeeActions";
 import NoteTextarea from "./NoteTextarea";
@@ -84,7 +84,11 @@ const NotesTable = ({
       });
   };
 
-  const newAccess = [...technicianAccess, "Subcontractor_User"];
+  const newAccess = [
+    ...technicianAccess,
+    "Subcontractor_User",
+    "Subcontractor",
+  ];
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -113,7 +117,7 @@ const NotesTable = ({
               <th className="border px-4 py-2" style={{ width: "15%" }}>
                 Date and Time
               </th>
-              {technicianAccess.includes(user_type) && (
+              {newAccess.includes(user_type) && (
                 <th className="border px-4 py-2" style={{ width: "5%" }}>
                   Actions
                 </th>
@@ -154,11 +158,8 @@ const NotesTable = ({
                     hour12: true,
                   })}
                 </td>
-                {(
-                  (access.includes(user_type) ||
-                    note.profile?.user_id === user_id) &&
-                  user_type !== "Subcontractor_User"
-                ) && (
+                {(access.includes(user_type) ||
+                  note.profile?.user_id === user_id) && (
                   <td className="border px-4 py-2" style={{ width: "5%" }}>
                     <div>
                       {editingIndex === index ? (

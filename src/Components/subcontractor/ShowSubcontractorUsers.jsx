@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
@@ -49,8 +51,9 @@ const ShowSubcontractorUsers = ({
   return (
     <div className="flex flex-col mt-6 border py-7 px-5 bg-white gap-6">
       <div className="flex justify-between">
-        <h1 className="text-xl">{title}</h1>
-
+        {user_type !== "Client Employee" && (
+          <h1 className="text-xl">{title}</h1>
+        )}
         {access.includes(user_type) && (
           <button
             className="bg-indigo-600 text-white px-6 py-2 rounded"

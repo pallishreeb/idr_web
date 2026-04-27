@@ -1,3 +1,5 @@
+/** @format */
+
 import { useState, useEffect } from "react";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { MdDashboardCustomize } from "react-icons/md";
@@ -61,19 +63,14 @@ const AdminSideNavbar = () => {
       path: "/service-requests",
       roles: ["Admin", "Subadmin"],
     },
-    {
-      title: "Subcontractor Users",
-      path: "/sub-contractors-users",
-      roles: ["Admin", "Subadmin"],
-    },
+    // {
+    //   title: "Subcontractor Users",
+    //   path: "/sub-contractors-users",
+    //   roles: ["Admin", "Subadmin"],
+    // },
   ];
 
   const idrMenuItems = [
-    {
-      title: "Subcontractor Users",
-      path: "/sub-contractors-users",
-      roles: ["Subcontractor"],
-    },
     {
       title: "Users",
       path: "/client-employees",
@@ -83,6 +80,11 @@ const AdminSideNavbar = () => {
       title: "IDR Employees",
       path: "/idr-employees",
       roles: ["Admin", "Subadmin"],
+    },
+    {
+      title: "Subcontractor Users",
+      path: "/sub-contractors-users",
+      roles: ["Admin", "Subadmin", "Subcontractor"],
     },
     {
       title: "Service Agreements",
@@ -114,6 +116,7 @@ const AdminSideNavbar = () => {
         "IDR Employee",
         "Client Employee",
         "Subcontractor_User",
+        "Subcontractor",
       ],
     },
     {
@@ -125,6 +128,7 @@ const AdminSideNavbar = () => {
         "IDR Employee",
         "Client Employee",
         "Subcontractor_User",
+        "Subcontractor",
       ],
     },
     {
@@ -138,8 +142,15 @@ const AdminSideNavbar = () => {
               "IDR Employee",
               "Subcontractor_User",
               "Client Employee",
+              "Subcontractor",
             ]
-          : ["Admin", "Subadmin", "IDR Employee", "Subcontractor_User"],
+          : [
+              "Admin",
+              "Subadmin",
+              "IDR Employee",
+              "Subcontractor_User",
+              "Subcontractor",
+            ],
     },
     {
       title: "Request Service",
@@ -171,7 +182,7 @@ const AdminSideNavbar = () => {
       path: "/sub-contractors",
       roles: ["Admin", "Subadmin"],
     },
-        {
+    {
       title: "Business Information",
       path: "/sub-contractors",
       roles: ["Subcontractor"],

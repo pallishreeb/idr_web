@@ -1,3 +1,5 @@
+/** @format */
+
 import axios from "../axios-config";
 import { toast } from "react-toastify";
 import {
@@ -268,9 +270,9 @@ export const updateBusinessDetails = (payload) => {
         body: payload,
       });
 
-      toast.success("Technician & Rates updated successfully");
+      toast.success("Business Details updated successfully");
     } catch (error) {
-      toast.error(error?.message || "Failed to update technician data");
+      toast.error(error?.message || "Failed to update data");
     }
   };
 };
@@ -429,11 +431,11 @@ export const updateSubcontractorUser =
 
       dispatch(updateSubcontractorUserSuccess(data));
 
-          if (navigate) {
-      navigate("/sub-contractors-users", {
-        state: { selectedSubcontractor: payload.subcontractor_id },
-      });
-    }
+      if (navigate) {
+        navigate("/sub-contractors-users", {
+          state: { selectedSubcontractor: payload.subcontractor_id },
+        });
+      }
     } catch (error) {
       dispatch(updateSubcontractorUserFailure(error?.message));
     }

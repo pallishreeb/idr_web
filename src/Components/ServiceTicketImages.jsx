@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AiFillDelete } from "react-icons/ai";
@@ -146,19 +148,23 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
     setSelectedImageUrl(null); // Close the image modal
   };
   const isVideo = (fileName) => /\.(mp4|mov|avi|webm|mkv)$/i.test(fileName);
-  const newAccess = [...technicianAccess, "Subcontractor_User"];
+  const newAccess = [
+    ...technicianAccess,
+    "Subcontractor_User",
+    "Subcontractor",
+  ];
   return (
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="font-normal text-xl mb-2">Service Ticket Images</h1>
-       {(newAccess?.includes(user_type)) && (
-  <button
-    className="bg-indigo-600 text-white px-6 py-2 rounded"
-    onClick={handleOpenModal}
-  >
-    Add Images/Videos
-  </button>
-)}
+        {newAccess?.includes(user_type) && (
+          <button
+            className="bg-indigo-600 text-white px-6 py-2 rounded"
+            onClick={handleOpenModal}
+          >
+            Add Images/Videos
+          </button>
+        )}
       </div>
 
       {/* Image table */}
@@ -206,14 +212,15 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                       <FaDownload />
                     </button>
                     {/* Delete Button - Only for technician access */}
-                    {(technicianAccess.includes(user_type) && image?.by_user_id === user_id) && (
-                      <button
-                        onClick={() => handleDelete(image?.attachment_id)}
-                        className="bg-red-500 text-white px-3 py-3 rounded"
-                      >
-                        <AiFillDelete />
-                      </button>
-                    )}
+                    {newAccess.includes(user_type) &&
+                      image?.by_user_id === user_id && (
+                        <button
+                          onClick={() => handleDelete(image?.attachment_id)}
+                          className="bg-red-500 text-white px-3 py-3 rounded"
+                        >
+                          <AiFillDelete />
+                        </button>
+                      )}
                   </td>
                 </tr>
               );
