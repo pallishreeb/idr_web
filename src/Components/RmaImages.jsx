@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import { AiFillDelete } from "react-icons/ai";
@@ -11,9 +13,9 @@ import ImageModal from "./ImageModal";
 const RmaImages = ({ images, rmaId }) => {
   const dispatch = useDispatch();
   const { user_type } = useSelector((state) => state.user.user);
-  const {  technicianAccess} = useSelector((state) => state.user);
+  const { technicianAccess } = useSelector((state) => state.user);
   const { loadingAssignImage } = useSelector((state) => state.rma);
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
@@ -35,13 +37,12 @@ const RmaImages = ({ images, rmaId }) => {
 
     dispatch(uploadRmaImages(rmaId, selectedFiles))
       .then((data) => {
-        if(data.code === "RMA201"){
+        if (data.code === "RMA201") {
           toast.success("Images uploaded successfully.");
           dispatch(getRMADetails(rmaId));
           window.location.reload();
           handleCloseModal();
         }
-
       })
       .catch((error) => {
         console.error("Error uploading images:", error);
@@ -85,12 +86,16 @@ const RmaImages = ({ images, rmaId }) => {
     setSelectedImageUrl(null); // Close the image modal
   };
   const isVideo = (fileName) => /\.(mp4|mov|avi|webm|mkv)$/i.test(fileName);
-   const newAccess = [...technicianAccess, "Subcontractor_User"];
+  const newAccess = [
+    ...technicianAccess,
+    "Subcontractor_User",
+    "Subcontractor",
+  ];
   return (
     <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
         <h1 className="font-normal text-xl mb-2">Service Ticket Images</h1>
-         {newAccess.includes(user_type) &&   (
+        {newAccess.includes(user_type) && (
           <button
             className="bg-indigo-600 text-white px-6 py-2 rounded"
             onClick={handleOpenModal}
@@ -111,14 +116,12 @@ const RmaImages = ({ images, rmaId }) => {
             </tr>
           </thead>
           <tbody>
-            {images?.map((image, index) =>{
-               const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
-             return (
-              
-              <tr key={index} className="bg-white text-sm">
-                <td className="border px-4 py-2">
-                 
-                {isVideo(image?.attachment_url) ? (
+            {images?.map((image, index) => {
+              const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
+              return (
+                <tr key={index} className="bg-white text-sm">
+                  <td className="border px-4 py-2">
+                    {isVideo(image?.attachment_url) ? (
                       <video
                         src={fileUrl}
                         className="w-20 h-20 object-cover rounded"
@@ -133,22 +136,23 @@ const RmaImages = ({ images, rmaId }) => {
                         onClick={() => handleImageClick(fileUrl)}
                       />
                     )}
-                </td>
-                <td className="border px-4 py-2">{image?.user_name || "NA"}</td>
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() =>
-                      handleDownload(
-                        fileUrl, `attachment-${index + 1}`
-                      )
-                    }
-                    className="bg-blue-500 text-white px-3 py-3 rounded"
-                  >
-                     <FaDownload />
-                  </button>
-                </td>
-              </tr>
-            )})}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {image?.user_name || "NA"}
+                  </td>
+                  <td className="border px-4 py-2">
+                    <button
+                      onClick={() =>
+                        handleDownload(fileUrl, `attachment-${index + 1}`)
+                      }
+                      className="bg-blue-500 text-white px-3 py-3 rounded"
+                    >
+                      <FaDownload />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -157,7 +161,9 @@ const RmaImages = ({ images, rmaId }) => {
       {isModalOpen && (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-4 my-8 max-h-[95vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4 text-center">Add Images/Videos</h2>
+            <h2 className="text-xl font-bold mb-4 text-center">
+              Add Images/Videos
+            </h2>
             <div className="mb-4">
               <label className="block font-normal text-base mb-2">
                 Select File
@@ -188,8 +194,8 @@ const RmaImages = ({ images, rmaId }) => {
         </div>
       )}
 
-            {/* Image Modal */}
-            {selectedImageUrl && (
+      {/* Image Modal */}
+      {selectedImageUrl && (
         <ImageModal imageUrl={selectedImageUrl} onClose={closeImageModal} />
       )}
     </div>
