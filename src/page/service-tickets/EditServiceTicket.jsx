@@ -353,7 +353,7 @@ const EditServiceTicket = () => {
                   Back
                 </button>
               </Link>
-              {client_type !== "User" && user_type !== "Subcontractor_User" && (
+              {client_type !== "User" && !newAccess.includes(user_type) && (
                 <>
                   {serviceTicketAgreement?.agreement_id && (
                     <Link

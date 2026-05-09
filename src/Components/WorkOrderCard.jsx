@@ -1,4 +1,9 @@
-/* eslint-disable react/prop-types */
+/**
+ * eslint-disable react/prop-types
+ *
+ * @format
+ */
+
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -23,7 +28,7 @@ const WorkOrderCard = ({
   useEffect(() => {
     if (workOrder.location_id) {
       const selectedLocation = locations.find(
-        (location) => location.location_id === workOrder.location_id
+        (location) => location.location_id === workOrder.location_id,
       );
       if (selectedLocation) {
         handleWorkOrderChange({
@@ -56,7 +61,7 @@ const WorkOrderCard = ({
       }
     }
   }, [workOrder.location_id, locations]);
-
+  const newAccess = ["Subcontractor_User", "Subcontractor"];
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -198,56 +203,61 @@ const WorkOrderCard = ({
           />
         </div>
 
-        {/* Add other fields similarly */}
-        <div className="flex flex-col gap-2">
-          <label className="font-normal text-base">Contact Person</label>
-          <select
-            name="contact_person"
-            className="px-3 py-3 border border-gray-200 text-sm rounded"
-            required
-            value={workOrder.contact_person || ""}
-            onChange={(e) => handleWorkOrderChange(e)}
-            disabled={!isEditing}
-          >
-            <option value="">Choose Contact Person</option>
-            {clientEmployees.map((employee) => (
-              <option
-                key={employee.client_emp_id}
-                value={employee.first_name + " " + employee.last_name}
+        {!newAccess.includes(user_type) && (
+          <>
+            {/* Add other fields similarly */}
+            <div className="flex flex-col gap-2">
+              <label className="font-normal text-base">Contact Person</label>
+              <select
+                name="contact_person"
+                className="px-3 py-3 border border-gray-200 text-sm rounded"
+                required
+                value={workOrder.contact_person || ""}
+                onChange={(e) => handleWorkOrderChange(e)}
+                disabled={!isEditing}
               >
-                {employee.first_name} {employee.last_name}
-              </option>
-            ))}
-          </select>
-        </div>
+                <option value="">Choose Contact Person</option>
+                {clientEmployees.map((employee) => (
+                  <option
+                    key={employee.client_emp_id}
+                    value={employee.first_name + " " + employee.last_name}
+                  >
+                    {employee.first_name} {employee.last_name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="font-normal text-base">Contact Phone Number</label>
-          <input
-            type="text"
-            placeholder="Type contact phone number"
-            name="contact_phone_number"
-            className="px-3 py-3 border border-gray-200 h-10 text-sm rounded w-full"
-            value={workOrder.contact_phone_number || ""}
-            onChange={(e) => handleWorkOrderChange(e)}
-            required
-            readOnly
-          />
-        </div>
+            <div className="flex flex-col gap-2">
+              <label className="font-normal text-base">
+                Contact Phone Number
+              </label>
+              <input
+                type="text"
+                placeholder="Type contact phone number"
+                name="contact_phone_number"
+                className="px-3 py-3 border border-gray-200 h-10 text-sm rounded w-full"
+                value={workOrder.contact_phone_number || ""}
+                onChange={(e) => handleWorkOrderChange(e)}
+                required
+                readOnly
+              />
+            </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="font-normal text-base">Contact Email id</label>
-          <input
-            type="email"
-            placeholder="Type contact mail id"
-            name="contact_mail_id"
-            className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
-            value={workOrder.contact_mail_id || ""}
-            onChange={(e) => handleWorkOrderChange(e)}
-            readOnly
-          />
-        </div>
-
+            <div className="flex flex-col gap-2">
+              <label className="font-normal text-base">Contact Email id</label>
+              <input
+                type="email"
+                placeholder="Type contact mail id"
+                name="contact_mail_id"
+                className="px-3 py-3 border border-gray-200 h-10 text-sm rounded"
+                value={workOrder.contact_mail_id || ""}
+                onChange={(e) => handleWorkOrderChange(e)}
+                readOnly
+              />
+            </div>
+          </>
+        )}
         <div className="flex flex-col gap-2">
           <label className="font-normal text-base">Customer PO Number</label>
           <input

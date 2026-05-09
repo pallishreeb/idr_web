@@ -1,31 +1,46 @@
+/** @format */
+
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
-import { getClientEquipmentById, updateClientEquipment } from "../../actions/clientEquipment"; // Actions to fetch and update client equipment
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  getClientEquipmentById,
+  updateClientEquipment,
+} from "../../actions/clientEquipment"; // Actions to fetch and update client equipment
+import {
+  useNavigate,
+  useParams,
+  useSearchParams,
+  useLocation,
+} from "react-router-dom";
 
 const EditClientEquipment = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { clientEquipmentId } = useParams(); // Get client equipment ID from route params
   const [searchParams] = useSearchParams();
+  const returnTo = location.state?.returnTo;
+  const serviceTicketId = location.state?.serviceTicketId;
 
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
   const clientLocations = useSelector((state) => state.location.locations);
   const loadingClients = useSelector((state) => state.client.loading);
   const loadingLocations = useSelector((state) => state.location.loading);
-  const loadingEquipmentDetails = useSelector((state) => state.clientEquipment.loadingDetails);
+  const loadingEquipmentDetails = useSelector(
+    (state) => state.clientEquipment.loadingDetails,
+  );
   const loading = useSelector((state) => state.clientEquipment.loading);
   const [clientEquipmentNotes, setClientEquipmentNotes] = useState([]);
   const { user_type } = useSelector((state) => state.user.user);
   const { technicianAccess } = useSelector((state) => state.user);
   // State for form data
   const [clientEquipment, setClientEquipment] = useState({
-    client_equipment_id:clientEquipmentId,
+    client_equipment_id: clientEquipmentId,
     client_id: "",
     client_name: "",
     location_id: "",
@@ -38,11 +53,11 @@ const EditClientEquipment = () => {
     lan_ip_address: "", // Optional
     wan_ip_address: "", // Optional
     general_info: "", // Optional
-    device_location:"",// Optional
-    username:"",// Optional
-    password:"",// Optional
-    decomission_reason:"",
-    is_deleted:false
+    device_location: "", // Optional
+    username: "", // Optional
+    password: "", // Optional
+    decomission_reason: "",
+    is_deleted: false,
   });
 
   // Fetch clients when the component mounts
@@ -56,7 +71,7 @@ const EditClientEquipment = () => {
       dispatch(getClientEquipmentById(clientEquipmentId)).then((data) => {
         if (data) {
           setClientEquipment({
-            client_equipment_id:clientEquipmentId,
+            client_equipment_id: clientEquipmentId,
             client_id: data.client_id || "",
             client_name: data.client_name || "",
             location_id: data.location_id || "",
@@ -68,14 +83,14 @@ const EditClientEquipment = () => {
             mac_address: data.mac_address || "",
             lan_ip_address: data.lan_ip_address || "",
             wan_ip_address: data.wan_ip_address || "",
-            device_location:data.device_location || "",
-            username:data.username || "",
-            password:data.password || "",
+            device_location: data.device_location || "",
+            username: data.username || "",
+            password: data.password || "",
             general_info: data.general_info || "",
-            decomission_reason:data?.decomission_reason || "",
-            is_deleted:data?.is_deleted
+            decomission_reason: data?.decomission_reason || "",
+            is_deleted: data?.is_deleted,
           });
-            setClientEquipmentNotes(data?.client_equip_histories || [])
+          setClientEquipmentNotes(data?.client_equip_histories || []);
           if (data.client_id) {
             dispatch(getLocationByClient(data.client_id));
           }
@@ -96,7 +111,9 @@ const EditClientEquipment = () => {
     setClientEquipment((prev) => ({ ...prev, [name]: value }));
 
     if (name === "client_id") {
-      const selectedClient = clients?.data?.find((client) => client.client_id === value);
+      const selectedClient = clients?.data?.find(
+        (client) => client.client_id === value,
+      );
       if (selectedClient) {
         setClientEquipment((prev) => ({
           ...prev,
@@ -110,14 +127,23 @@ const EditClientEquipment = () => {
   const handleSave = (e) => {
     e.preventDefault();
     // Create a copy of clientEquipment without decomission_reason
-    const { decomission_reason, is_deleted, ...updatePayload } = clientEquipment;
+    const { decomission_reason, is_deleted, ...updatePayload } =
+      clientEquipment;
     dispatch(updateClientEquipment(updatePayload, navigate));
   };
 
   const handleBack = () => {
-    navigate(`/client-equipments?${searchParams.toString()}`);
+    if (returnTo === "edit-service-ticket") {
+      navigate(`/edit-service-ticket/${serviceTicketId}`);
+    } else {
+      navigate(`/client-equipments?${searchParams.toString()}`);
+    }
   };
-
+  const readOnlyAccess = [
+    "Subcontractor_User",
+    "Subcontractor",
+    "Client Employee",
+  ];
   return (
     <>
       <Header />
@@ -210,7 +236,7 @@ const EditClientEquipment = () => {
                       value={clientEquipment.device_type}
                       onChange={handleChange}
                       required
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                   <div>
@@ -227,7 +253,7 @@ const EditClientEquipment = () => {
                       value={clientEquipment.device_id}
                       onChange={handleChange}
                       required
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                 </div>
@@ -247,7 +273,7 @@ const EditClientEquipment = () => {
                       value={clientEquipment.manufacturer}
                       onChange={handleChange}
                       required
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                   <div>
@@ -264,7 +290,7 @@ const EditClientEquipment = () => {
                       value={clientEquipment.model}
                       onChange={handleChange}
                       required
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                   <div>
@@ -281,7 +307,7 @@ const EditClientEquipment = () => {
                       value={clientEquipment.serial_number}
                       onChange={handleChange}
                       required
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                 </div>
@@ -301,7 +327,7 @@ const EditClientEquipment = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={clientEquipment.mac_address}
                       onChange={handleChange}
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                   <div>
@@ -317,7 +343,7 @@ const EditClientEquipment = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={clientEquipment.lan_ip_address}
                       onChange={handleChange}
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                   <div>
@@ -333,7 +359,7 @@ const EditClientEquipment = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={clientEquipment.wan_ip_address}
                       onChange={handleChange}
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                 </div>
@@ -352,7 +378,7 @@ const EditClientEquipment = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={clientEquipment.device_location}
                       onChange={handleChange}
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                   <div>
@@ -368,7 +394,7 @@ const EditClientEquipment = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={clientEquipment.username}
                       onChange={handleChange}
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                   <div>
@@ -384,7 +410,7 @@ const EditClientEquipment = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={clientEquipment.password}
                       onChange={handleChange}
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                 </div>
@@ -403,7 +429,7 @@ const EditClientEquipment = () => {
                       className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
                       value={clientEquipment.general_info}
                       onChange={handleChange}
-                      readOnly={user_type === "Client Employee"}
+                      readOnly={readOnlyAccess.includes(user_type)}
                     />
                   </div>
                 </div>

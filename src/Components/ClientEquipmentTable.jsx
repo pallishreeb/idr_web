@@ -59,9 +59,12 @@ const ClientEquipmentTable = ({
     "Subcontractor_User",
     "Subcontractor",
   ];
+  const canAddNote = [
+    ...technicianAccess,
+    "Subcontractor_User",
+    "Subcontractor",
+  ];
   // 🔐 Simple Access Controls (easy to modify later)
-
-  const canAddNote = technicianAccess.includes(user_type);
 
   const canViewEquipment = technicianAccess.includes(user_type);
 
@@ -70,6 +73,7 @@ const ClientEquipmentTable = ({
     user_type == "Subcontractor_User" ||
     user_type == "Subcontractor";
   const canToggleNotes = true;
+
   return (
     <>
       {equipments.length > 0 && (
@@ -78,6 +82,25 @@ const ClientEquipmentTable = ({
             <h1 className="font-normal text-xl mb-2">
               Devices Added To Ticket
             </h1>
+            {canViewRMA &&
+              serviceTicket?.status?.toLowerCase() !== "closed" && (
+                <button
+                  onClick={() =>
+                    navigate(
+                      `/add-client-equipment/${serviceTicket?.client_id}/${serviceTicket?.location_id}/?&sort_key=device_type&sort_direction=ASC`,
+                      {
+                        state: {
+                          serviceTicketId,
+                          returnTo: "edit-service-ticket",
+                        },
+                      },
+                    )
+                  }
+                  className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
+                >
+                  Add Client Eqipment
+                </button>
+              )}
           </div>
 
           {/* Equipment Table */}
@@ -132,6 +155,12 @@ const ClientEquipmentTable = ({
                               onClick={() =>
                                 navigate(
                                   `/edit-client-equipment/${equipment.client_equipment_id}`,
+                                  {
+                                    state: {
+                                      serviceTicketId,
+                                      returnTo: "edit-service-ticket",
+                                    },
+                                  },
                                 )
                               }
                               className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
@@ -153,7 +182,7 @@ const ClientEquipmentTable = ({
                               }
                               className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
                             >
-                              RMA
+                              Add RMA
                             </button>
                           )}
                         {technicianAccess.includes(user_type) && (

@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,7 +17,7 @@ const AddSubcontractorUserPage = () => {
   const subcontractors = useSelector(
     (state) => state.subcontractor.subcontractors,
   );
-
+  const { user_type } = useSelector((state) => state.user.user);
   const loading = useSelector((state) => state.subcontractor.loadingUsers);
 
   const [formData, setFormData] = useState({
@@ -135,6 +137,7 @@ const AddSubcontractorUserPage = () => {
                   onChange={handleSubcontractorChange}
                   className="border p-2 rounded w-full"
                   required
+                  disabled={user_type === "Subcontractor"}
                 >
                   <option value="">Select Subcontractor</option>
 
@@ -222,7 +225,9 @@ const AddSubcontractorUserPage = () => {
                   type="button"
                   onClick={() =>
                     navigate("/sub-contractors-users", {
-                      state: { selectedSubcontractor: formData.subcontractor_id },
+                      state: {
+                        selectedSubcontractor: formData.subcontractor_id,
+                      },
                     })
                   }
                   className="px-4 py-2 bg-gray-200 rounded"

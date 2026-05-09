@@ -403,6 +403,7 @@ export const addSubcontractorUser = (payload, navigate) => async (dispatch) => {
       });
     }
   } catch (error) {
+    toast.error(error?.message || "Something went wrong");
     dispatch(addSubcontractorUserFailure(error?.message));
   }
 };

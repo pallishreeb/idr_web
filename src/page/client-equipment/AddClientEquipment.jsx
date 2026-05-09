@@ -1,25 +1,38 @@
+/** @format */
+
 import React, { useState, useEffect, useRef } from "react"; // Add useRef
 import { useDispatch, useSelector } from "react-redux";
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
-import { addClientEquipment, addEquipmentThroughCsv } from "../../actions/clientEquipment";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  addClientEquipment,
+  addEquipmentThroughCsv,
+} from "../../actions/clientEquipment";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+  useLocation,
+} from "react-router-dom";
 
 const AddClientEquipment = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { clientId, locationId } = useParams();
   const [searchParams] = useSearchParams();
-
+  const returnTo = location.state?.returnTo;
+  const serviceTicketId = location.state?.serviceTicketId;
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
   const clientLocations = useSelector((state) => state.location.locations);
   const loadingClients = useSelector((state) => state.client.loading);
   const loadingLocations = useSelector((state) => state.location.loading);
   const loading = useSelector((state) => state.clientEquipment.loading);
-
+  const { user_type } = useSelector((state) => state.user.user);
   // State for form data
   const [clientEquipment, setClientEquipment] = useState({
     client_id: clientId && clientId !== "null" ? clientId : "",
@@ -34,9 +47,9 @@ const AddClientEquipment = () => {
     lan_ip_address: "", // Optional
     wan_ip_address: "", // Optional
     general_info: "", // Optional
-    device_location:"",// Optional
-    username:"",// Optional
-    password:"",// Optional
+    device_location: "", // Optional
+    username: "", // Optional
+    password: "", // Optional
   });
 
   const [file, setFile] = useState(null);
@@ -60,7 +73,9 @@ const AddClientEquipment = () => {
   // Set `client_name` when `client_id` and clients data are available
   useEffect(() => {
     if (clientId && clients?.data?.length) {
-      const selectedClient = clients.data.find((client) => client.client_id === clientId);
+      const selectedClient = clients.data.find(
+        (client) => client.client_id === clientId,
+      );
       if (selectedClient) {
         setClientEquipment((prev) => ({
           ...prev,
@@ -74,7 +89,7 @@ const AddClientEquipment = () => {
   useEffect(() => {
     if (locationId && clientLocations?.length) {
       const selectedLocation = clientLocations.find(
-        (location) => location.location_id === locationId
+        (location) => location.location_id === locationId,
       );
       if (selectedLocation) {
         setClientEquipment((prev) => ({
@@ -90,7 +105,9 @@ const AddClientEquipment = () => {
     setClientEquipment((prev) => ({ ...prev, [name]: value }));
 
     if (name === "client_id") {
-      const selectedClient = clients?.data?.find((client) => client.client_id === value);
+      const selectedClient = clients?.data?.find(
+        (client) => client.client_id === value,
+      );
       if (selectedClient) {
         setClientEquipment((prev) => ({
           ...prev,
@@ -139,9 +156,9 @@ const AddClientEquipment = () => {
             lan_ip_address: "",
             wan_ip_address: "",
             general_info: "",
-            device_location:"",
-            username:"",
-            password:"",
+            device_location: "",
+            username: "",
+            password: "",
           }));
         }
       });
@@ -161,19 +178,22 @@ const AddClientEquipment = () => {
             lan_ip_address: "",
             wan_ip_address: "",
             general_info: "",
-            device_location:"",
-            username:"",
-            password:"",
+            device_location: "",
+            username: "",
+            password: "",
           }));
         }
       });
     }
   };
-
   const handleBack = () => {
-    navigate(`/client-equipments?${searchParams.toString()}`);
+    if (returnTo === "edit-service-ticket") {
+      navigate(`/edit-service-ticket/${serviceTicketId}`);
+    } else {
+      navigate(`/client-equipments?${searchParams.toString()}`);
+    }
   };
-
+  const newAccess = ["Subcontractor_User", "Subcontractor"];
   return (
     <>
       <Header />
@@ -205,6 +225,7 @@ const AddClientEquipment = () => {
                     value={clientEquipment.client_id}
                     onChange={handleChange}
                     required
+                    disabled={newAccess.includes(user_type)}
                   >
                     <option value="">Select a client</option>
                     {loadingClients ? (
@@ -230,6 +251,11 @@ const AddClientEquipment = () => {
                     className="border border-gray-300 rounded px-3 py-1 w-full"
                     value={clientEquipment.location_id}
                     onChange={handleChange}
+                    required
+                    disabled={
+                      newAccess.includes(user_type) ||
+                      !clientEquipment.client_id
+                    }
                   >
                     <option value="">Select a location</option>
                     {loadingLocations ? (
@@ -238,8 +264,12 @@ const AddClientEquipment = () => {
                       </option>
                     ) : (
                       clientLocations?.map((location) => (
-                        <option key={location.location_id} value={location.location_id}>
-                          {location.address_line_one} {location.address_line_two}
+                        <option
+                          key={location.location_id}
+                          value={location.location_id}
+                        >
+                          {location.address_line_one}{" "}
+                          {location.address_line_two}
                         </option>
                       ))
                     )}
@@ -271,7 +301,10 @@ const AddClientEquipment = () => {
                   {/* Device Details */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="device_type" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="device_type"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Device Type*
                       </label>
                       <input
@@ -284,7 +317,10 @@ const AddClientEquipment = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="device_id" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="device_id"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Device ID (Hostname)*
                       </label>
                       <input
@@ -301,7 +337,10 @@ const AddClientEquipment = () => {
                   {/* Manufacturer, Model, Serial Number */}
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label htmlFor="manufacturer" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="manufacturer"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Manufacturer*
                       </label>
                       <input
@@ -314,7 +353,10 @@ const AddClientEquipment = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="model" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="model"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Model*
                       </label>
                       <input
@@ -327,7 +369,10 @@ const AddClientEquipment = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="serial_number" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="serial_number"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Serial Number*
                       </label>
                       <input
@@ -344,7 +389,10 @@ const AddClientEquipment = () => {
                   {/* Optional Details */}
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label htmlFor="mac_address" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="mac_address"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         MAC Address
                       </label>
                       <input
@@ -356,7 +404,10 @@ const AddClientEquipment = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="lan_ip_address" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="lan_ip_address"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         LAN IP Address
                       </label>
                       <input
@@ -368,7 +419,10 @@ const AddClientEquipment = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="wan_ip_address" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="wan_ip_address"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         WAN IP Address
                       </label>
                       <input
@@ -381,10 +435,13 @@ const AddClientEquipment = () => {
                     </div>
                   </div>
                   {/*more Optional Details */}
-                 <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label htmlFor="device_location" className="block text-sm font-medium text-gray-700">
-                      Device Location
+                      <label
+                        htmlFor="device_location"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Device Location
                       </label>
                       <input
                         type="text"
@@ -395,8 +452,11 @@ const AddClientEquipment = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                       Username
+                      <label
+                        htmlFor="username"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Username
                       </label>
                       <input
                         type="text"
@@ -407,8 +467,11 @@ const AddClientEquipment = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                       Password
+                      <label
+                        htmlFor="password"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Password
                       </label>
                       <input
                         type="text"
@@ -423,7 +486,10 @@ const AddClientEquipment = () => {
                   {/* General Notes */}
                   <div className="grid grid-cols-1 gap-4">
                     <div>
-                      <label htmlFor="general_info" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="general_info"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         General Device Information
                       </label>
                       <textarea
@@ -440,7 +506,10 @@ const AddClientEquipment = () => {
 
               {/* Submit Button */}
               <div className="flex justify-end mt-4">
-                <button type="submit" className="bg-indigo-700 text-white px-4 py-2 rounded">
+                <button
+                  type="submit"
+                  className="bg-indigo-700 text-white px-4 py-2 rounded"
+                >
                   {loading ? "Saving..." : "Add Client Device"}
                 </button>
                 <button

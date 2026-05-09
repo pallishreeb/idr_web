@@ -65,7 +65,7 @@ const ServiceTicketCard = ({
       return !isEditing || !access.includes(user_type); // Admins/subadmins follow edit mode
     }
   };
-
+ const newAccess = ["Subcontractor_User", "Subcontractor"];
   return (
     <div className="flex flex-col mt-4 border py-7 px-5 bg-white gap-6">
       <div className="mb-2 flex justify-between">
@@ -236,31 +236,31 @@ const ServiceTicketCard = ({
             disabled={!isEditing}
           />
         </div>
-
-        {/* Add other fields similarly */}
-        <div className="flex flex-col gap-2">
-          <label className="font-normal text-base">Contact Person</label>
-          <select
-            name="contact_person"
-            className="px-3 py-3 border border-gray-200 text-sm rounded"
-            required
-            value={serviceTicket.contact_person || ""}
-            onChange={(e) => handleServiceTicketChange(e)}
-            disabled={isFieldDisabled("contact_person")}
-          >
-            <option value="">Choose Contact Person</option>
-            {clientEmployees.map((employee) => (
-              <option
-                key={employee.client_emp_id}
-                value={employee.first_name + " " + employee.last_name}
-              >
-                {employee.first_name} {employee.last_name}
-              </option>
-            ))}
-          </select>
-        </div>
-        {user_type !== "Subcontractor_User" && (
+        {!newAccess.includes(user_type) && (
           <>
+            {/* Add other fields similarly */}
+            <div className="flex flex-col gap-2">
+              <label className="font-normal text-base">Contact Person</label>
+              <select
+                name="contact_person"
+                className="px-3 py-3 border border-gray-200 text-sm rounded"
+                required
+                value={serviceTicket.contact_person || ""}
+                onChange={(e) => handleServiceTicketChange(e)}
+                disabled={isFieldDisabled("contact_person")}
+              >
+                <option value="">Choose Contact Person</option>
+                {clientEmployees.map((employee) => (
+                  <option
+                    key={employee.client_emp_id}
+                    value={employee.first_name + " " + employee.last_name}
+                  >
+                    {employee.first_name} {employee.last_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="flex flex-col gap-2">
               <label className="font-normal text-base">
                 Contact Phone Number
