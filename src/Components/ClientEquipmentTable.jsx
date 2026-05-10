@@ -73,7 +73,8 @@ const ClientEquipmentTable = ({
     user_type == "Subcontractor_User" ||
     user_type == "Subcontractor";
   const canToggleNotes = true;
-
+  const canAddClientEquip =
+    user_type == "Subcontractor_User" || user_type == "Subcontractor";
   return (
     <>
       {equipments.length > 0 && (
@@ -82,7 +83,7 @@ const ClientEquipmentTable = ({
             <h1 className="font-normal text-xl mb-2">
               Devices Added To Ticket
             </h1>
-            {canViewRMA &&
+            {canAddClientEquip &&
               serviceTicket?.status?.toLowerCase() !== "closed" && (
                 <button
                   onClick={() =>
@@ -149,7 +150,7 @@ const ClientEquipmentTable = ({
                             View Equipment
                           </button>
                         )}
-                        {canViewRMA &&
+                        {canAddClientEquip &&
                           serviceTicket?.status?.toLowerCase() !== "closed" && (
                             <button
                               onClick={() =>
@@ -169,7 +170,7 @@ const ClientEquipmentTable = ({
                             </button>
                           )}
 
-                        {canViewRMA &&
+                        {canAddClientEquip &&
                           serviceTicket?.status?.toLowerCase() !== "closed" && (
                             <button
                               onClick={() =>
@@ -197,7 +198,7 @@ const ClientEquipmentTable = ({
                             }
                             className="ml-4 bg-blue-500 text-white px-3 py-1 rounded"
                           >
-                            RMA
+                            Add RMA
                           </button>
                         )}
                         {canToggleNotes && (
