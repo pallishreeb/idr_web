@@ -189,6 +189,8 @@ const AddClientEquipment = () => {
   const handleBack = () => {
     if (returnTo === "edit-service-ticket") {
       navigate(`/edit-service-ticket/${serviceTicketId}`);
+    } else if (returnTo === "edit-work-order") {
+      navigate(`/edit-work-order/${serviceTicketId}`);
     } else {
       navigate(`/client-equipments?${searchParams.toString()}`);
     }

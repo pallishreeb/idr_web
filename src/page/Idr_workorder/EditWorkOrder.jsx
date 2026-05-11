@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useParams,useLocation } from "react-router-dom";
+import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import { FaDownload } from "react-icons/fa";
 import axios from '../../axios-config';
 import { S3_BASE_URL } from "../../config";
@@ -35,6 +35,7 @@ const EditWorkOrder = () => {
   const { workOrderId } = useParams();
   const dispatch = useDispatch();
   const location = useLocation()
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [signatureImage, setSignatureImage] = useState(null);
 
@@ -318,7 +319,8 @@ const EditWorkOrder = () => {
   if (!workOrder) {
     return <div className="text-center mt-5">No work order details found</div>;
   }
-
+const canAddClientEquip =
+  user_type == "Subcontractor_User" || user_type == "Subcontractor";
   return (
     <>
       <Header />
@@ -333,41 +335,58 @@ const EditWorkOrder = () => {
                   Back
                 </button>
               </Link>
-              {/* Download PDF Button */}
-            <button
-              onClick={handleDownloadPdf}
-              className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                // Display loading spinner while downloading
-                <svg
-                  className="animate-spin h-5 w-5 mr-2 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
+              {canAddClientEquip && workOrder.status?.toLowerCase() !== "Closed" && (
+                <button
+                  onClick={() =>
+                    navigate(
+                      `/add-client-equipment/${workOrder?.client_id}/${workOrder?.location_id}/?&sort_key=device_type&sort_direction=ASC`,
+                      {
+                        state: {
+                          serviceTicketId: workOrderId,
+                          returnTo: "edit-work-order",
+                        },
+                      },
+                    )
+                  }
+                  className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded"
                 >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  ></path>
-                </svg>
-              ) : (
-                <>
-                Download WO PDF <FaDownload className="ml-1" />
-                </>
-                
+                  Add Client Equipment
+                </button>
               )}
-            </button>
+              {/* Download PDF Button */}
+              <button
+                onClick={handleDownloadPdf}
+                className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
+                disabled={isDownloading}
+              >
+                {isDownloading ? (
+                  // Display loading spinner while downloading
+                  <svg
+                    className="animate-spin h-5 w-5 mr-2 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    ></path>
+                  </svg>
+                ) : (
+                  <>
+                    Download WO PDF <FaDownload className="ml-1" />
+                  </>
+                )}
+              </button>
             </div>
           </div>
           {/* update Work order ticket details */}
@@ -391,8 +410,8 @@ const EditWorkOrder = () => {
             isWorkOrderEditing={isWorkOrderEditing}
             setIsWorkOrderEditing={setIsWorkOrderEditing}
           />
-            {/* update Assignee */}
-            <ShowTechnicians
+          {/* update Assignee */}
+          <ShowTechnicians
             assignees={assignees}
             idrEmployees={idrEmployees}
             handleAssigneeChange={handleAssigneeChange}
@@ -409,7 +428,7 @@ const EditWorkOrder = () => {
             idKey="subcontractor_in_wo_id" // 🔥 unique id key for WO
             title="Subcontractor Users"
           />
-            {/* Show Images  */}
+          {/* Show Images  */}
           <WorkOrderImages
             images={serviceTicketImages}
             serviceTicketId={workOrderId}
@@ -424,33 +443,26 @@ const EditWorkOrder = () => {
           />
           {/* InventoryTable */}
           <InventoryTable
-             inventories={inventories}
-             work_order_id={workOrderId}
+            inventories={inventories}
+            work_order_id={workOrderId}
           />
           {/* Equipments Table */}
-          <EquipmentTable
-             equipments={equipments}
-             work_order_id={workOrderId}
-          />
+          <EquipmentTable equipments={equipments} work_order_id={workOrderId} />
 
           {/* Segnature modal */}
 
-              
           <div className="p-6">
-            
             {signatureImage ? (
               <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
                 <h2 className="text-lg font-semibold text-gray-700">
                   Signature:
                 </h2>
 
-
                 <img
                   src={`${S3_BASE_URL}/${signatureImage}`}
                   alt="Signature"
                   className="w-full max-w-xs h-auto border border-gray-400 rounded-md p-2 bg-white"
                 />
-
 
                 <div className="flex flex-col w-full text-gray-700">
                   <p className="text-sm font-medium">
@@ -471,22 +483,23 @@ const EditWorkOrder = () => {
               </div>
             ) : (
               <>
-              {(user_type !== "Client Employee" && user_type !== "Subcontractor_User")&& (
-              <button
-                onClick={openModal}
-                className="bg-indigo-600 text-white px-4 py-2 rounded"
-              >
-                Add Signature
-              </button>
+                {user_type !== "Client Employee" &&
+                  user_type !== "Subcontractor_User" && (
+                    <button
+                      onClick={openModal}
+                      className="bg-indigo-600 text-white px-4 py-2 rounded"
+                    >
+                      Add Signature
+                    </button>
+                  )}
+              </>
             )}
-            </>
-          )}
             <WOSignatureModal
               isOpen={isModalOpen}
               onClose={closeModal}
               serviceTicketId={workOrderId}
             />
-          </div> 
+          </div>
         </div>
       </div>
     </>

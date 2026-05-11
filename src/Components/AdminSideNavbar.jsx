@@ -20,10 +20,10 @@ const AdminSideNavbar = () => {
   const { serviceRequests, loading } = useSelector(
     (state) => state.serviceTicket,
   );
-  const { subcontractors } = useSelector((state) => state.subcontractor);
+  // const { subcontractors } = useSelector((state) => state.subcontractor);
   useEffect(() => {
     dispatch(getServiceRequestLists({}));
-    dispatch(getSubcontractorLists());
+    // dispatch(getSubcontractorLists());
   }, [dispatch]);
 
   const menuItems = [
