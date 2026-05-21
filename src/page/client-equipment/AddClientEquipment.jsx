@@ -1,525 +1,864 @@
 /** @format */
 
-import React, { useState, useEffect, useRef } from "react"; // Add useRef
-import { useDispatch, useSelector } from "react-redux";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+} from "react";
+
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
+
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { getClients } from "../../actions/clientActions";
-import { getLocationByClient } from "../../actions/locationActions";
+
+import {
+  getClients,
+} from "../../actions/clientActions";
+
+import {
+  getLocationByClient,
+} from "../../actions/locationActions";
+
 import {
   addClientEquipment,
   addEquipmentThroughCsv,
 } from "../../actions/clientEquipment";
+
 import {
-  Link,
   useNavigate,
   useParams,
   useSearchParams,
   useLocation,
 } from "react-router-dom";
 
+import {
+  MdBusiness,
+  MdLocationOn,
+  MdDevices,
+  MdUploadFile,
+  MdInventory,
+  MdNotes,
+  MdWifi,
+  MdSettingsEthernet,
+  MdPerson,
+  MdLock,
+  MdAdd,
+  MdArrowBack,
+} from "react-icons/md";
+
 const AddClientEquipment = () => {
   const dispatch = useDispatch();
+
   const navigate = useNavigate();
+
   const location = useLocation();
-  const { clientId, locationId } = useParams();
-  const [searchParams] = useSearchParams();
-  const returnTo = location.state?.returnTo;
-  const serviceTicketId = location.state?.serviceTicketId;
-  // Redux state selectors
-  const clients = useSelector((state) => state.client.clients);
-  const clientLocations = useSelector((state) => state.location.locations);
-  const loadingClients = useSelector((state) => state.client.loading);
-  const loadingLocations = useSelector((state) => state.location.loading);
-  const loading = useSelector((state) => state.clientEquipment.loading);
-  const { user_type } = useSelector((state) => state.user.user);
-  // State for form data
-  const [clientEquipment, setClientEquipment] = useState({
-    client_id: clientId && clientId !== "null" ? clientId : "",
-    client_name: "",
-    location_id: locationId && locationId !== "null" ? locationId : "",
-    device_type: "",
-    device_id: "",
-    manufacturer: "",
-    model: "",
-    serial_number: "",
-    mac_address: "", // Optional
-    lan_ip_address: "", // Optional
-    wan_ip_address: "", // Optional
-    general_info: "", // Optional
-    device_location: "", // Optional
-    username: "", // Optional
-    password: "", // Optional
-  });
 
-  const [file, setFile] = useState(null);
-  const [showCsvUpload, setShowCsvUpload] = useState(false); // State to toggle CSV upload view
+  const { clientId, locationId } =
+    useParams();
 
-  // Create a ref for the file input
-  const fileInputRef = useRef(null);
+  const [searchParams] =
+    useSearchParams();
 
-  // Fetch clients when the component mounts
+  const returnTo =
+    location.state?.returnTo;
+
+  const serviceTicketId =
+    location.state?.serviceTicketId;
+
+  const clients = useSelector(
+    (state) => state.client.clients,
+  );
+
+  const clientLocations =
+    useSelector(
+      (state) =>
+        state.location.locations,
+    );
+
+  const loadingClients =
+    useSelector(
+      (state) => state.client.loading,
+    );
+
+  const loadingLocations =
+    useSelector(
+      (state) =>
+        state.location.loading,
+    );
+
+  const loading = useSelector(
+    (state) =>
+      state.clientEquipment.loading,
+  );
+
+  const { user_type } =
+    useSelector(
+      (state) => state.user.user,
+    );
+
+  const [clientEquipment,
+    setClientEquipment] =
+    useState({
+      client_id:
+        clientId &&
+        clientId !== "null"
+          ? clientId
+          : "",
+
+      client_name: "",
+
+      location_id:
+        locationId &&
+        locationId !== "null"
+          ? locationId
+          : "",
+
+      device_type: "",
+      device_id: "",
+      manufacturer: "",
+      model: "",
+      serial_number: "",
+      mac_address: "",
+      lan_ip_address: "",
+      wan_ip_address: "",
+      general_info: "",
+      device_location: "",
+      username: "",
+      password: "",
+    });
+
+  const [file, setFile] =
+    useState(null);
+
+  const [showCsvUpload,
+    setShowCsvUpload] =
+    useState(false);
+
+  const fileInputRef =
+    useRef(null);
+
   useEffect(() => {
     dispatch(getClients());
   }, [dispatch]);
 
-  // Fetch locations based on client_id
   useEffect(() => {
-    if (clientEquipment?.client_id) {
-      dispatch(getLocationByClient(clientEquipment?.client_id));
-    }
-  }, [dispatch, clientEquipment?.client_id]);
-
-  // Set `client_name` when `client_id` and clients data are available
-  useEffect(() => {
-    if (clientId && clients?.data?.length) {
-      const selectedClient = clients.data.find(
-        (client) => client.client_id === clientId,
+    if (
+      clientEquipment?.client_id
+    ) {
+      dispatch(
+        getLocationByClient(
+          clientEquipment?.client_id,
+        ),
       );
+    }
+  }, [
+    dispatch,
+    clientEquipment?.client_id,
+  ]);
+
+  useEffect(() => {
+    if (
+      clientId &&
+      clients?.data?.length
+    ) {
+      const selectedClient =
+        clients.data.find(
+          (client) =>
+            client.client_id ===
+            clientId,
+        );
+
       if (selectedClient) {
-        setClientEquipment((prev) => ({
-          ...prev,
-          client_name: selectedClient.company_name,
-        }));
+        setClientEquipment(
+          (prev) => ({
+            ...prev,
+            client_name:
+              selectedClient.company_name,
+          }),
+        );
       }
     }
   }, [clientId, clients]);
 
-  // Pre-select location if locationId is provided
   useEffect(() => {
-    if (locationId && clientLocations?.length) {
-      const selectedLocation = clientLocations.find(
-        (location) => location.location_id === locationId,
-      );
+    if (
+      locationId &&
+      clientLocations?.length
+    ) {
+      const selectedLocation =
+        clientLocations.find(
+          (location) =>
+            location.location_id ===
+            locationId,
+        );
+
       if (selectedLocation) {
-        setClientEquipment((prev) => ({
-          ...prev,
-          location_id: selectedLocation.location_id,
-        }));
+        setClientEquipment(
+          (prev) => ({
+            ...prev,
+            location_id:
+              selectedLocation.location_id,
+          }),
+        );
       }
     }
-  }, [locationId, clientLocations]);
+  }, [
+    locationId,
+    clientLocations,
+  ]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setClientEquipment((prev) => ({ ...prev, [name]: value }));
+    const { name, value } =
+      e.target;
+
+    setClientEquipment((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
     if (name === "client_id") {
-      const selectedClient = clients?.data?.find(
-        (client) => client.client_id === value,
-      );
+      const selectedClient =
+        clients?.data?.find(
+          (client) =>
+            client.client_id ===
+            value,
+        );
+
       if (selectedClient) {
-        setClientEquipment((prev) => ({
-          ...prev,
-          client_name: selectedClient.company_name,
-          location_id: "", // Reset location when client changes
-        }));
+        setClientEquipment(
+          (prev) => ({
+            ...prev,
+            client_name:
+              selectedClient.company_name,
+            location_id: "",
+          }),
+        );
       }
-      dispatch(getLocationByClient(value));
+
+      dispatch(
+        getLocationByClient(value),
+      );
     }
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0]; // Get the first file
+  const handleFileChange = (
+    event,
+  ) => {
+    const file =
+      event.target.files[0];
+
     if (file) {
       setFile(file);
-      console.log("Selected File:", file);
     }
   };
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (file) {
-      // If a file is present, use the CSV action
-      const formData = new FormData();
-      formData.append("client_id", clientEquipment.client_id);
-      formData.append("client_name", clientEquipment.client_name);
-      formData.append("location_id", clientEquipment.location_id);
-      formData.append("csv", file); // Append the CSV file
 
-      dispatch(addEquipmentThroughCsv(formData)).then((success) => {
+    if (file) {
+      const formData =
+        new FormData();
+
+      formData.append(
+        "client_id",
+        clientEquipment.client_id,
+      );
+
+      formData.append(
+        "client_name",
+        clientEquipment.client_name,
+      );
+
+      formData.append(
+        "location_id",
+        clientEquipment.location_id,
+      );
+
+      formData.append(
+        "csv",
+        file,
+      );
+
+      dispatch(
+        addEquipmentThroughCsv(
+          formData,
+        ),
+      ).then((success) => {
         if (success) {
-          // Only clear form fields on successful submission
-          if (fileInputRef.current) {
-            fileInputRef.current.value = ""; // Reset the file input
+          if (
+            fileInputRef.current
+          ) {
+            fileInputRef.current.value =
+              "";
           }
-          setFile(null); // Clear the file state
-          // Reset the form fields after successful submission
-          setClientEquipment((prev) => ({
-            ...prev,
-            device_type: "",
-            device_id: "",
-            manufacturer: "",
-            model: "",
-            serial_number: "",
-            mac_address: "",
-            lan_ip_address: "",
-            wan_ip_address: "",
-            general_info: "",
-            device_location: "",
-            username: "",
-            password: "",
-          }));
+
+          setFile(null);
+
+          setClientEquipment(
+            (prev) => ({
+              ...prev,
+              device_type: "",
+              device_id: "",
+              manufacturer: "",
+              model: "",
+              serial_number: "",
+              mac_address: "",
+              lan_ip_address: "",
+              wan_ip_address: "",
+              general_info: "",
+              device_location: "",
+              username: "",
+              password: "",
+            }),
+          );
         }
       });
     } else {
-      // If no file is present, use the regular equipment action
-      dispatch(addClientEquipment(clientEquipment)).then((success) => {
+      dispatch(
+        addClientEquipment(
+          clientEquipment,
+        ),
+      ).then((success) => {
         if (success) {
-          // Only clear form fields on successful submission
-          setClientEquipment((prev) => ({
-            ...prev,
-            device_type: "",
-            device_id: "",
-            manufacturer: "",
-            model: "",
-            serial_number: "",
-            mac_address: "",
-            lan_ip_address: "",
-            wan_ip_address: "",
-            general_info: "",
-            device_location: "",
-            username: "",
-            password: "",
-          }));
+          setClientEquipment(
+            (prev) => ({
+              ...prev,
+              device_type: "",
+              device_id: "",
+              manufacturer: "",
+              model: "",
+              serial_number: "",
+              mac_address: "",
+              lan_ip_address: "",
+              wan_ip_address: "",
+              general_info: "",
+              device_location: "",
+              username: "",
+              password: "",
+            }),
+          );
         }
       });
     }
   };
+
   const handleBack = () => {
-    if (returnTo === "edit-service-ticket") {
-      navigate(`/edit-service-ticket/${serviceTicketId}`);
-    } else if (returnTo === "edit-work-order") {
-      navigate(`/edit-work-order/${serviceTicketId}`);
+    if (
+      returnTo ===
+      "edit-service-ticket"
+    ) {
+      navigate(
+        `/edit-service-ticket/${serviceTicketId}`,
+      );
+    } else if (
+      returnTo ===
+      "edit-work-order"
+    ) {
+      navigate(
+        `/edit-work-order/${serviceTicketId}`,
+      );
     } else {
-      navigate(`/client-equipments?${searchParams.toString()}`);
+      navigate(
+        `/client-equipments?${searchParams.toString()}`,
+      );
     }
   };
-  const newAccess = ["Subcontractor_User", "Subcontractor"];
+
+  const newAccess = [
+    "Subcontractor_User",
+    "Subcontractor",
+  ];
+
+  const inputClass =
+    "w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-300";
+
+  const labelClass =
+    "block text-sm font-semibold text-[#1E1B4B] mb-2";
+
   return (
     <>
       <Header />
+
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-2">Add Client Device</h2>
-            <div className="flex justify-end mb-4">
+
+        <div className="flex-1 bg-gradient-to-br from-[#FAFAFA] to-indigo-50 min-h-screen overflow-y-auto p-8">
+          {/* HEADER */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">
+                Add Client Device
+              </h1>
+
+              <p className="text-gray-500 mt-1">
+                Add device manually
+                or upload via CSV
+              </p>
+            </div>
+
+            <div className="flex gap-3 flex-wrap">
               <button
                 type="button"
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-                onClick={() => setShowCsvUpload(!showCsvUpload)}
+                onClick={() =>
+                  setShowCsvUpload(
+                    !showCsvUpload,
+                  )
+                }
+                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-all duration-300"
               >
-                {showCsvUpload ? "Back to Manual Entry" : "Upload CSV"}
+                <MdUploadFile size={20} />
+
+                {showCsvUpload
+                  ? "Manual Entry"
+                  : "Upload CSV"}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-all duration-300"
+              >
+                <MdArrowBack size={20} />
+                Back
               </button>
             </div>
-            <form onSubmit={handleSave}>
-              {/* Client and Location Fields (Always Visible) */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col mb-4">
-                  <label htmlFor="client_id" className="mr-2">
-                    Select Client:
-                  </label>
-                  <select
-                    id="client_id"
-                    name="client_id"
-                    className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={clientEquipment.client_id}
-                    onChange={handleChange}
-                    required
-                    disabled={newAccess.includes(user_type)}
-                  >
-                    <option value="">Select a client</option>
-                    {loadingClients ? (
-                      <option value="" disabled>
-                        Loading...
-                      </option>
-                    ) : (
-                      clients?.data?.map((client) => (
-                        <option key={client.client_id} value={client.client_id}>
-                          {client.company_name}
-                        </option>
-                      ))
-                    )}
-                  </select>
+          </div>
+
+          {/* FORM CARD */}
+          <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
+            <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+            <form
+              onSubmit={handleSave}
+              className="p-8"
+            >
+              {/* TITLE */}
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
+                  <MdDevices size={24} />
                 </div>
-                <div className="flex flex-col mb-4">
-                  <label htmlFor="location_id" className="mr-2">
-                    Select Location:
-                  </label>
-                  <select
-                    id="location_id"
-                    name="location_id"
-                    className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={clientEquipment.location_id}
-                    onChange={handleChange}
-                    required
-                    disabled={
-                      newAccess.includes(user_type) ||
-                      !clientEquipment.client_id
-                    }
-                  >
-                    <option value="">Select a location</option>
-                    {loadingLocations ? (
-                      <option value="" disabled>
-                        Loading...
-                      </option>
-                    ) : (
-                      clientLocations?.map((location) => (
-                        <option
-                          key={location.location_id}
-                          value={location.location_id}
-                        >
-                          {location.address_line_one}{" "}
-                          {location.address_line_two}
-                        </option>
-                      ))
-                    )}
-                  </select>
+
+                <div>
+                  <h2 className="text-2xl font-bold text-[#1E1B4B]">
+                    Device Details
+                  </h2>
+
+                  <p className="text-gray-500 text-sm">
+                    Fill equipment
+                    details below
+                  </p>
                 </div>
               </div>
 
-              {/* CSV Upload Section (Conditionally Rendered) */}
-              {showCsvUpload && (
-                <div className="grid grid-cols-2 gap-4 mt-4 mb-4">
-                  <div className="flex flex-col">
-                    <label htmlFor="file">Upload Excel File:</label>
-                    <input
-                      type="file"
-                      id="file"
-                      accept=".csv"
-                      className="border border-gray-300 rounded px-3 py-1"
-                      onChange={handleFileChange}
-                      ref={fileInputRef} // Attach the ref
-                      required={showCsvUpload}
-                    />
+              {/* CLIENT + LOCATION */}
+              <div className="mb-10">
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+                  <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                    Client Information
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* CLIENT */}
+                  <div>
+                    <label
+                      className={
+                        labelClass
+                      }
+                    >
+                      Select Client
+                    </label>
+
+                    <div className="relative">
+                      <MdBusiness className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                      <select
+                        id="client_id"
+                        name="client_id"
+                        className={`${inputClass} pl-12`}
+                        value={
+                          clientEquipment.client_id
+                        }
+                        onChange={
+                          handleChange
+                        }
+                        required
+                        disabled={newAccess.includes(
+                          user_type,
+                        )}
+                      >
+                        <option value="">
+                          Select Client
+                        </option>
+
+                        {loadingClients ? (
+                          <option
+                            disabled
+                          >
+                            Loading...
+                          </option>
+                        ) : (
+                          clients?.data?.map(
+                            (
+                              client,
+                            ) => (
+                              <option
+                                key={
+                                  client.client_id
+                                }
+                                value={
+                                  client.client_id
+                                }
+                              >
+                                {
+                                  client.company_name
+                                }
+                              </option>
+                            ),
+                          )
+                        )}
+                      </select>
+                    </div>
                   </div>
+
+                  {/* LOCATION */}
+                  <div>
+                    <label
+                      className={
+                        labelClass
+                      }
+                    >
+                      Select Location
+                    </label>
+
+                    <div className="relative">
+                      <MdLocationOn className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                      <select
+                        id="location_id"
+                        name="location_id"
+                        className={`${inputClass} pl-12`}
+                        value={
+                          clientEquipment.location_id
+                        }
+                        onChange={
+                          handleChange
+                        }
+                        required
+                        disabled={
+                          newAccess.includes(
+                            user_type,
+                          ) ||
+                          !clientEquipment.client_id
+                        }
+                      >
+                        <option value="">
+                          Select Location
+                        </option>
+
+                        {loadingLocations ? (
+                          <option
+                            disabled
+                          >
+                            Loading...
+                          </option>
+                        ) : (
+                          clientLocations?.map(
+                            (
+                              location,
+                            ) => (
+                              <option
+                                key={
+                                  location.location_id
+                                }
+                                value={
+                                  location.location_id
+                                }
+                              >
+                                {
+                                  location.address_line_one
+                                }{" "}
+                                {
+                                  location.address_line_two
+                                }
+                              </option>
+                            ),
+                          )
+                        )}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CSV UPLOAD */}
+              {showCsvUpload && (
+                <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-6 mb-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <MdUploadFile className="text-indigo-600 text-2xl" />
+
+                    <h3 className="text-lg font-bold text-[#1E1B4B]">
+                      Upload CSV
+                    </h3>
+                  </div>
+
+                  <input
+                    type="file"
+                    id="file"
+                    accept=".csv"
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white"
+                    onChange={
+                      handleFileChange
+                    }
+                    ref={fileInputRef}
+                    required={
+                      showCsvUpload
+                    }
+                  />
+
+                  {file && (
+                    <p className="mt-3 text-sm text-indigo-600 font-medium">
+                      Selected:{" "}
+                      {file.name}
+                    </p>
+                  )}
                 </div>
               )}
 
-              {/* Manual Entry Section (Conditionally Rendered) */}
+              {/* MANUAL ENTRY */}
               {!showCsvUpload && (
                 <>
-                  {/* Device Details */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label
-                        htmlFor="device_type"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Device Type*
-                      </label>
-                      <input
-                        type="text"
-                        name="device_type"
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.device_type}
-                        onChange={handleChange}
-                        required
-                      />
+                  {/* DEVICE DETAILS */}
+                  <div className="mb-10">
+                    <div className="flex items-center gap-2 mb-5">
+                      <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+                      <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                        Device Information
+                      </h3>
                     </div>
-                    <div>
-                      <label
-                        htmlFor="device_id"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Device ID (Hostname)*
-                      </label>
-                      <input
-                        type="text"
-                        name="device_id"
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.device_id}
-                        onChange={handleChange}
-                        required
-                      />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {[
+                        {
+                          label:
+                            "Device Type",
+                          name: "device_type",
+                          icon: (
+                            <MdDevices />
+                          ),
+                          required: true,
+                        },
+
+                        {
+                          label:
+                            "Device ID (Hostname)",
+                          name: "device_id",
+                          icon: (
+                            <MdInventory />
+                          ),
+                          required: true,
+                        },
+
+                        {
+                          label:
+                            "Manufacturer",
+                          name: "manufacturer",
+                          icon: (
+                            <MdBusiness />
+                          ),
+                          required: true,
+                        },
+
+                        {
+                          label:
+                            "Model",
+                          name: "model",
+                          icon: (
+                            <MdDevices />
+                          ),
+                          required: true,
+                        },
+
+                        {
+                          label:
+                            "Serial Number",
+                          name: "serial_number",
+                          icon: (
+                            <MdInventory />
+                          ),
+                          required: true,
+                        },
+
+                        {
+                          label:
+                            "Device Location",
+                          name: "device_location",
+                          icon: (
+                            <MdLocationOn />
+                          ),
+                        },
+
+                        {
+                          label:
+                            "MAC Address",
+                          name: "mac_address",
+                          icon: (
+                            <MdSettingsEthernet />
+                          ),
+                        },
+
+                        {
+                          label:
+                            "LAN IP Address",
+                          name: "lan_ip_address",
+                          icon: (
+                            <MdWifi />
+                          ),
+                        },
+
+                        {
+                          label:
+                            "WAN IP Address",
+                          name: "wan_ip_address",
+                          icon: (
+                            <MdWifi />
+                          ),
+                        },
+
+                        {
+                          label:
+                            "Username",
+                          name: "username",
+                          icon: (
+                            <MdPerson />
+                          ),
+                        },
+
+                        {
+                          label:
+                            "Password",
+                          name: "password",
+                          icon: (
+                            <MdLock />
+                          ),
+                        },
+                      ].map(
+                        (
+                          field,
+                        ) => (
+                          <div
+                            key={
+                              field.name
+                            }
+                          >
+                            <label
+                              className={
+                                labelClass
+                              }
+                            >
+                              {
+                                field.label
+                              }
+                            </label>
+
+                            <div className="relative">
+                              <div className="absolute top-4 left-4 text-indigo-400 text-xl">
+                                {
+                                  field.icon
+                                }
+                              </div>
+
+                              <input
+                                type="text"
+                                name={
+                                  field.name
+                                }
+                                value={
+                                  clientEquipment[
+                                    field
+                                      .name
+                                  ]
+                                }
+                                onChange={
+                                  handleChange
+                                }
+                                required={
+                                  field.required
+                                }
+                                className={`${inputClass} pl-12`}
+                              />
+                            </div>
+                          </div>
+                        ),
+                      )}
                     </div>
                   </div>
 
-                  {/* Manufacturer, Model, Serial Number */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label
-                        htmlFor="manufacturer"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Manufacturer*
-                      </label>
-                      <input
-                        type="text"
-                        name="manufacturer"
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.manufacturer}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="model"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Model*
-                      </label>
-                      <input
-                        type="text"
-                        name="model"
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.model}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="serial_number"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Serial Number*
-                      </label>
-                      <input
-                        type="text"
-                        name="serial_number"
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.serial_number}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
+                  {/* NOTES */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-5">
+                      <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
 
-                  {/* Optional Details */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label
-                        htmlFor="mac_address"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        MAC Address
-                      </label>
-                      <input
-                        type="text"
-                        name="mac_address"
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.mac_address}
-                        onChange={handleChange}
-                      />
+                      <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                        Additional Notes
+                      </h3>
                     </div>
-                    <div>
-                      <label
-                        htmlFor="lan_ip_address"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        LAN IP Address
-                      </label>
-                      <input
-                        type="text"
-                        name="lan_ip_address"
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.lan_ip_address}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="wan_ip_address"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        WAN IP Address
-                      </label>
-                      <input
-                        type="text"
-                        name="wan_ip_address"
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.wan_ip_address}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-                  {/*more Optional Details */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label
-                        htmlFor="device_location"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Device Location
-                      </label>
-                      <input
-                        type="text"
-                        name="device_location"
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.device_location}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="username"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Username
-                      </label>
-                      <input
-                        type="text"
-                        name="username"
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.username}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Password
-                      </label>
-                      <input
-                        type="text"
-                        name="password"
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.password}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
 
-                  {/* General Notes */}
-                  <div className="grid grid-cols-1 gap-4">
                     <div>
                       <label
-                        htmlFor="general_info"
-                        className="block text-sm font-medium text-gray-700"
+                        className={
+                          labelClass
+                        }
                       >
-                        General Device Information
+                        General Device
+                        Information
                       </label>
-                      <textarea
-                        name="general_info"
-                        rows={5}
-                        className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                        value={clientEquipment.general_info}
-                        onChange={handleChange}
-                      />
+
+                      <div className="relative">
+                        <MdNotes className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <textarea
+                          name="general_info"
+                          rows={5}
+                          value={
+                            clientEquipment.general_info
+                          }
+                          onChange={
+                            handleChange
+                          }
+                          className={`${inputClass} pl-12 pt-4`}
+                        />
+                      </div>
                     </div>
                   </div>
                 </>
               )}
 
-              {/* Submit Button */}
-              <div className="flex justify-end mt-4">
+              {/* ACTION BUTTONS */}
+              <div className="flex flex-wrap justify-end gap-3 mt-10">
                 <button
                   type="submit"
-                  className="bg-indigo-700 text-white px-4 py-2 rounded"
+                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
                 >
-                  {loading ? "Saving..." : "Add Client Device"}
+                  <MdAdd size={20} />
+
+                  {loading
+                    ? "Saving..."
+                    : "Add Client Device"}
                 </button>
+
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"
+                  className="px-6 py-3 rounded-2xl bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-all duration-300"
                 >
-                  Back
+                  Cancel
                 </button>
               </div>
             </form>

@@ -558,6 +558,16 @@ const EditServiceTicket = () => {
           {/* Segnature modal */}
 
           <div className="p-6">
+              {/* Agreement Text - Always Visible */}
+       {user_type === "Client Employee" && (       
+  <div className="max-w-xl mt-5 mb-4 text-sm text-gray-600 leading-relaxed">
+    <p>
+      By signing below, the client confirms that the services outlined
+      in this ticket have been completed satisfactorily in accordance
+      with the notes, updates, and supporting photos provided.
+    </p>
+  </div>)}
+
             {signatureImage ? (
               <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
                 <h2 className="text-lg font-semibold text-gray-700">

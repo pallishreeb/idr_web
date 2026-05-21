@@ -1,558 +1,1351 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { BiSolidEditAlt } from "react-icons/bi";
+/** @format */
+
+import React, {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
+
+import {
+  Link,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
+
+import {
+  BiSolidEditAlt,
+} from "react-icons/bi";
+
+import {
+  AiFillDelete,
+} from "react-icons/ai";
+
+import {
+  MdBusiness,
+  MdLocationOn,
+  MdSearch,
+  MdRefresh,
+  MdAdd,
+  MdKey,
+} from "react-icons/md";
+
 import Swal from "sweetalert2";
-import { AiFillDelete } from "react-icons/ai";
-import { getClients } from "../../actions/clientActions";
-import { getLocationByClient } from "../../actions/locationActions";
-import { getLicenseLists, deleteLicense } from "../../actions/licenseActions";
+
+import {
+  getClients,
+} from "../../actions/clientActions";
+
+import {
+  getLocationByClient,
+} from "../../actions/locationActions";
+
+import {
+  getLicenseLists,
+  deleteLicense,
+} from "../../actions/licenseActions";
+
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
+
 import Header from "../../Components/Header";
+
 import Loader from "../../Images/ZZ5H.gif";
+
 import { clearLicense } from "../../reducers/licenseSlice";
 
 const ClientLicenseList = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { clients } = useSelector((state) => state.client);
-  const { locations } = useSelector((state) => state.location);
-  const { licenses, loading } = useSelector((state) => state.license);
-  const { user_type , client_type, locations: userLocations} = useSelector((state) => state.user.user);
-  const { access , clientAccess} = useSelector((state) => state.user);
 
-  // Initialize filtersApplied based on URL parameters
-  const [filtersApplied, setFiltersApplied] = useState(
-    searchParams.has("client_id") && searchParams.has("location_id")
+  const navigate = useNavigate();
+
+  const [
+    searchParams,
+    setSearchParams,
+  ] = useSearchParams();
+
+  // REDUX
+  const { clients } =
+    useSelector(
+      (state) => state.client,
+    );
+
+  const { locations } =
+    useSelector(
+      (state) => state.location,
+    );
+
+  const {
+    licenses,
+    loading,
+  } = useSelector(
+    (state) => state.license,
   );
 
-  // Initialize state from URL parameters
-  const [filters, setFilters] = useState({
-    client_id: searchParams.get("client_id") || "",
-    location_id: searchParams.get("location_id") || "",
-    manufacturer: searchParams.get("manufacturer") || "",
-  });
-  const [selectedClient, setSelectedClient] = useState(searchParams.get("client_id") || null);
-  const [selectedLocation, setSelectedLocation] = useState(searchParams.get("location_id") || null);
-  const [sortConfig, setSortConfig] = useState({
-    key: searchParams.get("sort_by") || "",
-    direction: searchParams.get("order") || "ASC"
+  const {
+    user_type,
+    client_type,
+    locations:
+      userLocations,
+  } = useSelector(
+    (state) => state.user.user,
+  );
+
+  const {
+    access,
+    clientAccess,
+  } = useSelector(
+    (state) => state.user,
+  );
+
+  // FILTERS APPLIED
+  const [
+    filtersApplied,
+    setFiltersApplied,
+  ] = useState(
+    searchParams.has(
+      "client_id",
+    ) &&
+      searchParams.has(
+        "location_id",
+      ),
+  );
+
+  // FILTERS
+  const [filters, setFilters] =
+    useState({
+      client_id:
+        searchParams.get(
+          "client_id",
+        ) || "",
+      location_id:
+        searchParams.get(
+          "location_id",
+        ) || "",
+      manufacturer:
+        searchParams.get(
+          "manufacturer",
+        ) || "",
+    });
+
+  const [
+    selectedClient,
+    setSelectedClient,
+  ] = useState(
+    searchParams.get(
+      "client_id",
+    ) || null,
+  );
+
+  const [
+    selectedLocation,
+    setSelectedLocation,
+  ] = useState(
+    searchParams.get(
+      "location_id",
+    ) || null,
+  );
+
+  // SORT
+  const [
+    sortConfig,
+    setSortConfig,
+  ] = useState({
+    key:
+      searchParams.get(
+        "sort_by",
+      ) || "",
+    direction:
+      searchParams.get(
+        "order",
+      ) || "ASC",
   });
 
-  // Update URL when filters change
+  // URL UPDATE
   useEffect(() => {
     if (filtersApplied) {
-      const params = new URLSearchParams();
-      if (filters.client_id) params.set("client_id", filters.client_id);
-      if (filters.location_id) params.set("location_id", filters.location_id);
-      if (filters.manufacturer) params.set("manufacturer", filters.manufacturer);
-      if (sortConfig.key) params.set("sort_by", sortConfig.key);
-      if (sortConfig.direction) params.set("order", sortConfig.direction);
-      setSearchParams(params);
-    }
-  }, [filters, sortConfig, setSearchParams, filtersApplied]);
+      const params =
+        new URLSearchParams();
 
-  // Reset client and location when unmounting or navigating back
-  useEffect(() => {
-    if (selectedClient == null) {
-      dispatch(clearLicense(selectedClient));
-    }
-  }, [selectedClient, dispatch]);
-
-  // Initial data fetch
-useEffect(() => {
-  const client_id = searchParams.get("client_id");
-  const location_id = searchParams.get("location_id");
-  const manufacturer = searchParams.get("manufacturer");
-
-  if (user_type !== "Client Employee") {
-    dispatch(getClients());
-  }
-
-  const query = {
-    ...(client_id && { client_id }),
-    ...(location_id && { location_id }),
-    ...(manufacturer && { manufacturer }),
-  };
-
-  dispatch(
-    getLicenseLists(
-      query,
-      sortConfig.key,
-      sortConfig.direction
-    )
-  );
-}, [dispatch, user_type, searchParams, sortConfig]);
-
-  // useEffect(() => {
-  //   if (user_type === "Client Employee") {
-  //     dispatch(getLicenseLists({}));
-  //   } else {
-  //     dispatch(getClients());
-  //     // Apply URL filters if they exist
-  //     const urlClientId = searchParams.get("client_id");
-  //     const urlLocationId = searchParams.get("location_id");
-  //     if (urlClientId && urlLocationId) {
-  //       setFilters({
-  //         client_id: urlClientId,
-  //         location_id: urlLocationId,
-  //         manufacturer: searchParams.get("manufacturer") || "",
-  //       });
-  //       dispatch(getLocationByClient(urlClientId));
-  //       const query = {
-  //         client_id: urlClientId,
-  //         location_id: urlLocationId,
-  //         manufacturer: searchParams.get("manufacturer") || "",
-  //       };
-  //       dispatch(getLicenseLists(query, sortConfig.key, sortConfig.direction));
-  //     } else {
-  //       dispatch(getLicenseLists({}));
-  //     }
-  //   }
-  // }, [dispatch, user_type, searchParams,sortConfig]);
-
-  // Fetch locations when client changes
-  useEffect(() => {
-    if (filters.client_id) {
-      dispatch(getLocationByClient(filters.client_id));
-    }
-  }, [dispatch, filters.client_id]);
-
-  const handleClientChange = (e) => {
-    const { value } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      client_id: value,
-      location_id: "",
-      manufacturer: "",
-    }));
-    setSelectedClient(value);
-    dispatch(getLocationByClient(value));
-  };
-
-  const handleLocationChange = (e) => {
-    const { value } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      location_id: value,
-    }));
-    setSelectedLocation(value);
-  };
-
-  const handleManufacturerChange = (e) => {
-    const { value } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      manufacturer: value,
-    }));
-  };
-
-  const handleSearch = () => {
-    setFiltersApplied(true);
-    const { client_id, location_id, manufacturer } = filters;
-  
-    // Update URL params
-    const params = new URLSearchParams();
-    if (client_id) params.set("client_id", client_id);
-    if (location_id) params.set("location_id", location_id);
-    if (manufacturer) params.set("manufacturer", manufacturer);
-    if (sortConfig.key) params.set("sort_by", sortConfig.key);
-    if (sortConfig.direction) params.set("order", sortConfig.direction);
-    setSearchParams(params);
-  
-    // Dispatch fetch
-    const query = {
-      ...(client_id && { client_id }),
-      ...(location_id && { location_id }),
-      ...(manufacturer && { manufacturer }),
-    };
-    dispatch(getLicenseLists(query, sortConfig.key, sortConfig.direction));
-  };
-  
-
-  const handleReset = () => {
-    setFiltersApplied(false); // Reset filters applied state
-    setFilters({
-      client_id: "",
-      location_id: "",
-      manufacturer: "",
-    });
-    setSelectedClient(null);
-    setSelectedLocation(null);
-    setSortConfig({ key: "", direction: "ASC" });
-    setSearchParams(new URLSearchParams()); // Clear URL params
-    if (user_type === "Client Employee") {
-      dispatch(getLicenseLists({}));
-    } else {
-      dispatch(getLicenseLists({}));
-      dispatch(getClients());
-    }
-  };
-
-const handleDeleteLicense = (licenseId) => {
-  Swal.fire({ 
-          title: "Are you sure?",
-      text: "Do you really want to delete this license?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, keep it",
-   }).then((result) => {
-    if (result.isConfirmed) {
-      dispatch(deleteLicense(licenseId)).then(() => {
-        const { client_id, location_id, manufacturer } = filters;
-        dispatch(
-          getLicenseLists(
-            {
-              ...(client_id && { client_id }),
-              ...(location_id && { location_id }),
-              ...(manufacturer && { manufacturer }),
-            },
-            sortConfig.key,
-            sortConfig.direction
-          )
+      if (
+        filters.client_id
+      )
+        params.set(
+          "client_id",
+          filters.client_id,
         );
-      });
+
+      if (
+        filters.location_id
+      )
+        params.set(
+          "location_id",
+          filters.location_id,
+        );
+
+      if (
+        filters.manufacturer
+      )
+        params.set(
+          "manufacturer",
+          filters.manufacturer,
+        );
+
+      if (
+        sortConfig.key
+      )
+        params.set(
+          "sort_by",
+          sortConfig.key,
+        );
+
+      if (
+        sortConfig.direction
+      )
+        params.set(
+          "order",
+          sortConfig.direction,
+        );
+
+      setSearchParams(
+        params,
+      );
     }
-  });
-};
+  }, [
+    filters,
+    sortConfig,
+    setSearchParams,
+    filtersApplied,
+  ]);
 
-const handleEdit = (licenseId) => {
-  navigate(`/edit-client-licensing/${licenseId}?${searchParams.toString()}`);
-};
+  // CLEAR ON RESET
+  useEffect(() => {
+    if (
+      selectedClient ==
+      null
+    ) {
+      dispatch(
+        clearLicense(
+          selectedClient,
+        ),
+      );
+    }
+  }, [
+    selectedClient,
+    dispatch,
+  ]);
 
+  // INITIAL FETCH
+  useEffect(() => {
+    const client_id =
+      searchParams.get(
+        "client_id",
+      );
 
-  const formatDateToMDY = (dateString) => {
-    if (!dateString) return ""; // Handle empty values
+    const location_id =
+      searchParams.get(
+        "location_id",
+      );
 
-    const [day, month, year] = dateString.split("/"); // Extract parts
-    return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
-  };
+    const manufacturer =
+      searchParams.get(
+        "manufacturer",
+      );
 
-  const formatCurrency = (value) => {
-    if (typeof value === "string") {
-      // value = value.replace(/,/g, ""); // Remove all commas
-      value = value.replace(/[^0-9.]/g, ""); 
+    if (
+      user_type !==
+      "Client Employee"
+    ) {
+      dispatch(
+        getClients(),
+      );
     }
 
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD", // Change to appropriate currency if needed
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
-
-  const handleSort = (key) => {
-    let direction = "ASC";
-    if (sortConfig.key === key && sortConfig.direction === "ASC") {
-      direction = "DESC";
-    }
-    setSortConfig({ key, direction });
-    const { client_id, location_id, manufacturer } = filters;
     const query = {
-      ...(client_id && { client_id }),
-      ...(location_id && { location_id }),
-      ...(manufacturer && { manufacturer }),
+      ...(client_id && {
+        client_id,
+      }),
+
+      ...(location_id && {
+        location_id,
+      }),
+
+      ...(manufacturer && {
+        manufacturer,
+      }),
     };
-    dispatch(getLicenseLists(query, key, direction));
+
+    dispatch(
+      getLicenseLists(
+        query,
+        sortConfig.key,
+        sortConfig.direction,
+      ),
+    );
+  }, [
+    dispatch,
+    user_type,
+    searchParams,
+    sortConfig,
+  ]);
+
+  // FETCH LOCATIONS
+  useEffect(() => {
+    if (
+      filters.client_id
+    ) {
+      dispatch(
+        getLocationByClient(
+          filters.client_id,
+        ),
+      );
+    }
+  }, [
+    dispatch,
+    filters.client_id,
+  ]);
+
+  // CLIENT CHANGE
+  const handleClientChange = (
+    e,
+  ) => {
+    const { value } =
+      e.target;
+
+    setFilters(
+      (
+        prevFilters,
+      ) => ({
+        ...prevFilters,
+        client_id:
+          value,
+        location_id:
+          "",
+        manufacturer:
+          "",
+      }),
+    );
+
+    setSelectedClient(
+      value,
+    );
+
+    dispatch(
+      getLocationByClient(
+        value,
+      ),
+    );
   };
 
-  const getSortSymbol = (key) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === "ASC" ? "▲" : "▼";
-    }
-    return "↕";
+  // LOCATION CHANGE
+  const handleLocationChange = (
+    e,
+  ) => {
+    const { value } =
+      e.target;
+
+    setFilters(
+      (
+        prevFilters,
+      ) => ({
+        ...prevFilters,
+        location_id:
+          value,
+      }),
+    );
+
+    setSelectedLocation(
+      value,
+    );
   };
+
+  // MANUFACTURER
+  const handleManufacturerChange =
+    (e) => {
+      const {
+        value,
+      } = e.target;
+
+      setFilters(
+        (
+          prevFilters,
+        ) => ({
+          ...prevFilters,
+          manufacturer:
+            value,
+        }),
+      );
+    };
+
+  // SEARCH
+  const handleSearch =
+    () => {
+      setFiltersApplied(
+        true,
+      );
+
+      const {
+        client_id,
+        location_id,
+        manufacturer,
+      } = filters;
+
+      const params =
+        new URLSearchParams();
+
+      if (client_id)
+        params.set(
+          "client_id",
+          client_id,
+        );
+
+      if (
+        location_id
+      )
+        params.set(
+          "location_id",
+          location_id,
+        );
+
+      if (
+        manufacturer
+      )
+        params.set(
+          "manufacturer",
+          manufacturer,
+        );
+
+      if (
+        sortConfig.key
+      )
+        params.set(
+          "sort_by",
+          sortConfig.key,
+        );
+
+      if (
+        sortConfig.direction
+      )
+        params.set(
+          "order",
+          sortConfig.direction,
+        );
+
+      setSearchParams(
+        params,
+      );
+
+      const query = {
+        ...(client_id && {
+          client_id,
+        }),
+
+        ...(location_id && {
+          location_id,
+        }),
+
+        ...(manufacturer && {
+          manufacturer,
+        }),
+      };
+
+      dispatch(
+        getLicenseLists(
+          query,
+          sortConfig.key,
+          sortConfig.direction,
+        ),
+      );
+    };
+
+  // RESET
+  const handleReset =
+    () => {
+      setFiltersApplied(
+        false,
+      );
+
+      setFilters({
+        client_id: "",
+        location_id: "",
+        manufacturer:
+          "",
+      });
+
+      setSelectedClient(
+        null,
+      );
+
+      setSelectedLocation(
+        null,
+      );
+
+      setSortConfig({
+        key: "",
+        direction:
+          "ASC",
+      });
+
+      setSearchParams(
+        new URLSearchParams(),
+      );
+
+      dispatch(
+        getLicenseLists(
+          {},
+        ),
+      );
+
+      if (
+        user_type !==
+        "Client Employee"
+      ) {
+        dispatch(
+          getClients(),
+        );
+      }
+    };
+
+  // DELETE
+  const handleDeleteLicense =
+    (
+      licenseId,
+    ) => {
+      Swal.fire({
+        title:
+          "Are you sure?",
+        text: "Do you really want to delete this license?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText:
+          "Yes, delete it!",
+        cancelButtonText:
+          "No, keep it",
+        confirmButtonColor:
+          "#6366F1",
+      }).then(
+        (
+          result,
+        ) => {
+          if (
+            result.isConfirmed
+          ) {
+            dispatch(
+              deleteLicense(
+                licenseId,
+              ),
+            ).then(
+              () => {
+                const {
+                  client_id,
+                  location_id,
+                  manufacturer,
+                } =
+                  filters;
+
+                dispatch(
+                  getLicenseLists(
+                    {
+                      ...(client_id && {
+                        client_id,
+                      }),
+
+                      ...(location_id && {
+                        location_id,
+                      }),
+
+                      ...(manufacturer && {
+                        manufacturer,
+                      }),
+                    },
+                    sortConfig.key,
+                    sortConfig.direction,
+                  ),
+                );
+              },
+            );
+          }
+        },
+      );
+    };
+
+  // EDIT
+  const handleEdit = (
+    licenseId,
+  ) => {
+    navigate(
+      `/edit-client-licensing/${licenseId}?${searchParams.toString()}`,
+    );
+  };
+
+  // FORMAT DATE
+  const formatDateToMDY =
+    (
+      dateString,
+    ) => {
+      if (
+        !dateString
+      )
+        return "";
+
+      const [
+        day,
+        month,
+        year,
+      ] =
+        dateString.split(
+          "/",
+        );
+
+      return `${month}/${day}/${year}`;
+    };
+
+  // FORMAT CURRENCY
+  const formatCurrency =
+    (
+      value,
+    ) => {
+      if (
+        typeof value ===
+        "string"
+      ) {
+        value =
+          value.replace(
+            /[^0-9.]/g,
+            "",
+          );
+      }
+
+      return new Intl.NumberFormat(
+        "en-US",
+        {
+          style:
+            "currency",
+          currency:
+            "USD",
+          minimumFractionDigits: 2,
+        },
+      ).format(value);
+    };
+
+  // SORT
+  const handleSort = (
+    key,
+  ) => {
+    let direction =
+      "ASC";
+
+    if (
+      sortConfig.key ===
+        key &&
+      sortConfig.direction ===
+        "ASC"
+    ) {
+      direction =
+        "DESC";
+    }
+
+    setSortConfig({
+      key,
+      direction,
+    });
+
+    const {
+      client_id,
+      location_id,
+      manufacturer,
+    } = filters;
+
+    const query = {
+      ...(client_id && {
+        client_id,
+      }),
+
+      ...(location_id && {
+        location_id,
+      }),
+
+      ...(manufacturer && {
+        manufacturer,
+      }),
+    };
+
+    dispatch(
+      getLicenseLists(
+        query,
+        key,
+        direction,
+      ),
+    );
+  };
+
+  // SORT SYMBOL
+  const getSortSymbol =
+    (key) => {
+      if (
+        sortConfig.key ===
+        key
+      ) {
+        return sortConfig.direction ===
+          "ASC"
+          ? "▲"
+          : "▼";
+      }
+
+      return "↕";
+    };
+
+  // TOTALS
+  const totalIdrCost =
+    licenses?.reduce(
+      (
+        sum,
+        license,
+      ) => {
+        const cost =
+          parseFloat(
+            String(
+              license.idr_cost ||
+                "0",
+            ).replace(
+              /[^0-9.-]/g,
+              "",
+            ),
+          );
+
+        return (
+          sum + cost
+        );
+      },
+      0,
+    );
+
+  const totalSalePrice =
+    licenses?.reduce(
+      (
+        sum,
+        license,
+      ) => {
+        const cost =
+          parseFloat(
+            String(
+              license.sale_cost ||
+                "0",
+            ).replace(
+              /[^0-9.-]/g,
+              "",
+            ),
+          );
+
+        return (
+          sum + cost
+        );
+      },
+      0,
+    );
 
   return (
     <>
       <Header />
+
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4 w-full h-screen overflow-y-scroll">
-          <h2 className="text-xl font-semibold mb-4">Client License List</h2>
-          <div className="mb-4">
-            {user_type !== "Client Employee" && (
-              <form className="grid grid-cols-3 gap-4">
-                <div className="flex flex-col">
-                  <label htmlFor="client_id" className="text-sm mb-2">
-                    Filter by Client:
-                  </label>
-                  <select
-                    id="client_id"
-                    name="client_id"
-                    className="border border-gray-300 rounded px-3 py-1"
-                    value={filters.client_id}
-                    onChange={handleClientChange}
+
+        <div className="flex-1 bg-gradient-to-br from-[#FAFAFA] to-indigo-50 min-h-screen overflow-y-auto p-8">
+          {/* PAGE HEADER */}
+          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">
+                Client Licenses
+              </h1>
+
+              <p className="text-gray-500 mt-1">
+                Manage client
+                licensing,
+                subscriptions and
+                renewal tracking
+              </p>
+            </div>
+
+            {/* ADD BUTTON */}
+            <div>
+              {access?.includes(
+                user_type,
+              ) && (
+                <Link
+                  to={`/add-client-licensing/${selectedClient}/${selectedLocation}?${searchParams.toString()}`}
+                >
+                  <button
+                    disabled={
+                      !selectedClient
+                    }
+                    className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-semibold shadow-lg transition-all duration-300
+                      
+                      ${
+                        !selectedClient
+                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                          : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white hover:shadow-xl hover:scale-[1.02]"
+                      }
+                    `}
                   >
-                    <option value="">Select Client</option>
-                    {clients?.data?.map((client) => (
-                      <option key={client.client_id} value={client.client_id}>
-                        {client.company_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex flex-col">
-                  <label htmlFor="location_id" className="text-sm mb-2">
-                    Filter by Location:
-                  </label>
-                  <select
-                    id="location_id"
-                    name="location_id"
-                    className={`border border-gray-300 rounded px-3 py-1 ${
-                      !filters.client_id ? "bg-gray-100 text-gray-500" : ""
-                    }`}
-                    value={filters.location_id}
-                    onChange={handleLocationChange}
-                    disabled={!filters.client_id}
-                  >
-                    <option value="">Select Location</option>
-                    {locations?.map((location) => (
-                      <option
-                        key={location.location_id}
-                        value={location.location_id}
-                      >
-                        {location.address_line_one} {location.address_line_two}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </form>
-            )}
-            <div className="flex flex-row items-end gap-2 mt-2">
-            {clientAccess?.includes(client_type) && userLocations?.length > 0 && (
-              <div className="flex flex-col">
-                  <label htmlFor="location_id" className="text-sm mb-2">
-                    Filter by Location:
-                  </label>
-                  <select
-                    id="location_id"
-                    name="location_id"
-                    className={`border border-gray-300 rounded px-3 py-1`}
-                    value={filters.location_id}
-                    onChange={handleLocationChange}
-                  >
-                    <option value="">Select Location</option>
-                    {[...userLocations]
-          .sort((a, b) => {
-            const addressA = `${a.address_line_one} ${a.address_line_two}`.toLowerCase();
-            const addressB = `${b.address_line_one} ${b.address_line_two}`.toLowerCase();
-            return addressA.localeCompare(addressB);
-          })
-          .map((location) => (
-            <option key={location.location_id} value={location.location_id}>
-              {location.address_line_one} {location.address_line_two}
-            </option>
-          ))}
-                  </select>
-                </div>
-            )}
-              <div className="flex flex-col">
-                <label htmlFor="manufacturer" className="text-sm mb-2">
-                  Filter by Manufacturer:
-                </label>
-                <input
-                  type="text"
-                  id="manufacturer"
-                  name="manufacturer"
-                  className="border border-gray-300 rounded px-3 py-1"
-                  value={filters.manufacturer}
-                  onChange={handleManufacturerChange}
-                />
-              </div>
-              <button
-                className="bg-indigo-600 text-white px-4 py-2 rounded"
-                onClick={handleSearch}
-              >
-                Search
-              </button>
-              <button
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-                onClick={handleReset}
-              >
-                Reset
-              </button>
+                    <MdAdd size={20} />
+                    Add License
+                  </button>
+                </Link>
+              )}
             </div>
           </div>
 
-          <div className="mb-4 flex justify-end">
-            {access?.includes(user_type) && (
-              <button
-                className="bg-indigo-700 text-white px-4 py-2 rounded"
-                disabled={!selectedClient}
-              >
-                <Link
-                  to={`/add-client-licensing/${selectedClient}/${selectedLocation}?${searchParams.toString()}`}>
+          {/* FILTER CARD */}
+          <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 p-6 mb-6">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
 
-                  Add New Client License
-                </Link>
-              </button>
+              <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                Filters
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5">
+              {/* CLIENT */}
+              {user_type !==
+                "Client Employee" && (
+                <div>
+                  <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                    Client
+                  </label>
+
+                  <div className="relative">
+                    <MdBusiness className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                    <select
+                      value={
+                        filters.client_id
+                      }
+                      onChange={
+                        handleClientChange
+                      }
+                      className="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
+                    >
+                      <option value="">
+                        Select Client
+                      </option>
+
+                      {[...(clients?.data ||
+                        [])]
+                        .sort(
+                          (
+                            a,
+                            b,
+                          ) =>
+                            (
+                              a.company_name ||
+                              ""
+                            ).localeCompare(
+                              b.company_name ||
+                                "",
+                            ),
+                        )
+                        .map(
+                          (
+                            client,
+                          ) => (
+                            <option
+                              key={
+                                client.client_id
+                              }
+                              value={
+                                client.client_id
+                              }
+                            >
+                              {
+                                client.company_name
+                              }
+                            </option>
+                          ),
+                        )}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* LOCATION */}
+              {(user_type !==
+                "Client Employee" ||
+                (clientAccess?.includes(
+                  client_type,
+                ) &&
+                  userLocations?.length >
+                    0)) && (
+                <div>
+                  <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                    Location
+                  </label>
+
+                  <div className="relative">
+                    <MdLocationOn className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                    <select
+                      value={
+                        filters.location_id
+                      }
+                      onChange={
+                        handleLocationChange
+                      }
+                      disabled={
+                        user_type !==
+                          "Client Employee" &&
+                        !filters.client_id
+                      }
+                      className={`w-full pl-12 pr-4 py-3 rounded-2xl border transition-all duration-300
+                        
+                        ${
+                          user_type !==
+                            "Client Employee" &&
+                          !filters.client_id
+                            ? "bg-gray-100 text-gray-500 border-gray-200"
+                            : "bg-white border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                        }
+                      `}
+                    >
+                      <option value="">
+                        Select Location
+                      </option>
+
+                      {(clientAccess?.includes(
+                        client_type,
+                      )
+                        ? [
+                            ...userLocations,
+                          ]
+                        : [
+                            ...locations,
+                          ]
+                      )
+                        ?.sort(
+                          (
+                            a,
+                            b,
+                          ) => {
+                            const addressA =
+                              `${a.address_line_one || ""} ${a.address_line_two || ""}`.toLowerCase();
+
+                            const addressB =
+                              `${b.address_line_one || ""} ${b.address_line_two || ""}`.toLowerCase();
+
+                            return addressA.localeCompare(
+                              addressB,
+                            );
+                          },
+                        )
+                        .map(
+                          (
+                            location,
+                          ) => (
+                            <option
+                              key={
+                                location.location_id
+                              }
+                              value={
+                                location.location_id
+                              }
+                            >
+                              {
+                                location.address_line_one
+                              }{" "}
+                              {
+                                location.address_line_two
+                              }
+                            </option>
+                          ),
+                        )}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* MANUFACTURER */}
+              <div>
+                <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                  Manufacturer
+                </label>
+
+                <div className="relative">
+                  <MdKey className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                  <input
+                    type="text"
+                    value={
+                      filters.manufacturer
+                    }
+                    onChange={
+                      handleManufacturerChange
+                    }
+                    placeholder="Enter manufacturer"
+                    className="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
+                  />
+                </div>
+              </div>
+
+              {/* SEARCH */}
+              <div className="flex items-end">
+                <button
+                  onClick={
+                    handleSearch
+                  }
+                  className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                >
+                  <MdSearch size={20} />
+                  Search
+                </button>
+              </div>
+
+              {/* RESET */}
+              <div className="flex items-end">
+                <button
+                  onClick={
+                    handleReset
+                  }
+                  className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-all duration-300"
+                >
+                  <MdRefresh size={20} />
+                  Reset
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* TOTAL CARDS */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {access.includes(
+              user_type,
+            ) && (
+              <div className="bg-white rounded-[28px] shadow-lg border border-gray-100 p-6">
+                <p className="text-sm text-gray-500 mb-2">
+                  Total Sales Cost
+                </p>
+
+                <h3 className="text-3xl font-bold text-[#1E1B4B]">
+                  {formatCurrency(
+                    totalIdrCost,
+                  )}
+                </h3>
+              </div>
+            )}
+
+            {user_type !==
+              "IDR Employee" && (
+              <div className="bg-white rounded-[28px] shadow-lg border border-gray-100 p-6">
+                <p className="text-sm text-gray-500 mb-2">
+                  Total Sale Price
+                </p>
+
+                <h3 className="text-3xl font-bold text-[#1E1B4B]">
+                  {formatCurrency(
+                    totalSalePrice,
+                  )}
+                </h3>
+              </div>
             )}
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full table-auto text-left">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th
-                    className="px-2 py-2 text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("client_name")}
-                  >
-                    Client{" "}
-                    <span className="ml-1">{getSortSymbol("client_name")}</span>
-                  </th>
-                  <th
-                    className="px-2 py-2 text-sm tracking-wider border"
-                    onClick={() => handleSort("address_line_one")}
-                  >
-                    Location{" "}
-                    <span className="ml-1">{getSortSymbol("location")}</span>
-                  </th>
-                  <th
-                    className="px-2 py-2 text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("quantity")}
-                  >
-                    Qty <span className="ml-1">{getSortSymbol("quantity")}</span>
-                  </th>
-                  <th
-                    className="px-2 py-2 text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("manufacturer")}
-                  >
-                    Manufacturer{" "}
-                    <span className="ml-1">
-                      {getSortSymbol("manufacturer")}
-                    </span>
-                  </th>
-                  <th
-                    className="px-2 py-2 text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("license_type")}
-                  >
-                    License Type{" "}
-                    <span className="ml-1">
-                      {getSortSymbol("license_type")}
-                    </span>
-                  </th>
-                  <th
-                    className="px-2 py-2 text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("start_date")}
-                  >
-                    Start Date{" "}
-                    <span className="ml-1">{getSortSymbol("start_date")}</span>
-                  </th>
-                  <th
-                    className="px-2 py-2 text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("expiration_date")}
-                  >
-                    Expiration Date{" "}
-                    <span className="ml-1">
-                      {getSortSymbol("expiration_date")}
-                    </span>
-                  </th>
-                  {access.includes(user_type) && (
-                    <th
-                      className="px-2 py-2 text-sm font-semibold tracking-wider border"
-                      onClick={() => handleSort("idr_cost")}
-                    >
-                      IDR Cost{" "}
-                      <span className="ml-1">{getSortSymbol("idr_cost")}</span>
-                    </th>
-                  )}
-                  {(user_type !== "IDR Employee") && (
-                    <th
-                      className="px-2 py-2 text-sm font-semibold tracking-wider border"
-                      onClick={() => handleSort("sale_cost")}
-                    >
-                      Sale Price{" "}
-                      <span className="ml-1">
-                        {getSortSymbol("sale_price")}
-                      </span>
-                    </th>
-                  )}
+          {/* TABLE */}
+          <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
+            {/* TOP BAR */}
+            <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
-                  <th className="px-4 py-2 text-sm font-semibold tracking-wider border">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
+            {/* HEADER */}
+            <div className="px-6 py-5 border-b border-gray-100">
+              <h2 className="text-2xl font-bold text-[#1E1B4B]">
+                License List
+              </h2>
+
+              <p className="text-sm text-gray-500">
+                Total Licenses:{" "}
+                {licenses?.length ||
+                  0}
+              </p>
+            </div>
+
+            {/* TABLE CONTENT */}
+            <div className="overflow-x-auto xl:overflow-x-hidden">
+              <table className="w-full table-auto">
+                <thead className="bg-indigo-50">
                   <tr>
-                    <td colSpan={"9"} className="py-4">
-                      <div className="flex justify-center items-center">
-                        <img
-                          src={Loader}
-                          alt="Loading..."
-                          className="h-16 w-16"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ) : licenses?.length === 0 ? (
-                  <tr>
-                    <td colSpan="9" className="text-center py-4">
-                      No licenses found
-                    </td>
-                  </tr>
-                ) : (
-                  licenses?.map((license) => (
-                    <tr key={license.license_id}>
-                      <td className="border text-sm px-1 py-3">
-                        {license.client_name}
-                      </td>
-                      <td className="border text-sm px-1 py-3">
-                        {`${license?.location_details?.address_line_one}` ||
-                          "NA"}
-                      </td>
-                      <td className="border text-sm px-1 py-3">
-                        {license.quantity}
-                      </td>
-                      <td className="border text-sm px-1 py-3">
-                        {license.manufacturer}
-                      </td>
-                      <td className="border text-sm px-1 py-3">
-                        {license.license_type}
-                      </td>
-                      <td className="border text-sm px-1 py-3">
-                        {formatDateToMDY(license.start_date) || ""}
-                      </td>
-                      <td className="border text-sm px-1 py-3">
-                        {formatDateToMDY(license.expiration_date) || ""}
-                      </td>
-                      {access.includes(user_type) && (
-                        <td className="border text-sm px-1 py-3">
-                          {formatCurrency(license.idr_cost)}
-                        </td>
-                      )}
-                      {(user_type !== "IDR Employee") && (
-                        <td className="border text-sm px-1 py-3">
-                          {formatCurrency(license.sale_cost)}
-                        </td>
-                      )}
-                      <td className="border text-sm px-1 py-3">
-                        <button
-                          onClick={() => handleEdit(license.license_id)}
-                          className="p-2 bg-gray-100"
+                    {[
+                      {
+                        key:
+                          "client_name",
+                        label:
+                          "Client",
+                      },
+
+                      {
+                        key:
+                          "address_line_one",
+                        label:
+                          "Location",
+                      },
+
+                      {
+                        key:
+                          "quantity",
+                        label:
+                          "Qty",
+                      },
+
+                      {
+                        key:
+                          "manufacturer",
+                        label:
+                          "Manufacturer",
+                      },
+
+                      {
+                        key:
+                          "license_type",
+                        label:
+                          "License Type",
+                      },
+
+                      {
+                        key:
+                          "start_date",
+                        label:
+                          "Start Date",
+                      },
+
+                      {
+                        key:
+                          "expiration_date",
+                        label:
+                          "Expiration Date",
+                      },
+                    ].map(
+                      (
+                        column,
+                      ) => (
+                        <th
+                          key={
+                            column.key
+                          }
+                          onClick={() =>
+                            handleSort(
+                              column.key,
+                            )
+                          }
+                          className="px-4 py-4 text-left text-xs uppercase tracking-wider font-bold text-indigo-600 cursor-pointer select-none whitespace-nowrap"
                         >
-                          <BiSolidEditAlt />
-                        </button>
-                        {user_type === "Admin" && (
-                          <button
-                            onClick={() =>
-                              handleDeleteLicense(license.license_id)
+                          <div className="flex items-center gap-1">
+                            {
+                              column.label
                             }
-                            className="p-2 bg-gray-100"
-                          >
-                            <AiFillDelete />
-                          </button>
-                        )}
+
+                            <span>
+                              {getSortSymbol(
+                                column.key,
+                              )}
+                            </span>
+                          </div>
+                        </th>
+                      ),
+                    )}
+
+                    {/* IDR COST */}
+                    {access.includes(
+                      user_type,
+                    ) && (
+                      <th
+                        onClick={() =>
+                          handleSort(
+                            "idr_cost",
+                          )
+                        }
+                        className="px-4 py-4 text-left text-xs uppercase tracking-wider font-bold text-indigo-600 cursor-pointer whitespace-nowrap"
+                      >
+                        IDR Cost{" "}
+                        {
+                          getSortSymbol(
+                            "idr_cost",
+                          )
+                        }
+                      </th>
+                    )}
+
+                    {/* SALE PRICE */}
+                    {user_type !==
+                      "IDR Employee" && (
+                      <th
+                        onClick={() =>
+                          handleSort(
+                            "sale_cost",
+                          )
+                        }
+                        className="px-4 py-4 text-left text-xs uppercase tracking-wider font-bold text-indigo-600 cursor-pointer whitespace-nowrap"
+                      >
+                        Sale Price{" "}
+                        {
+                          getSortSymbol(
+                            "sale_cost",
+                          )
+                        }
+                      </th>
+                    )}
+
+                    {/* ACTIONS */}
+                    <th className="w-[150px] px-4 py-4 text-center text-xs uppercase tracking-wider font-bold text-indigo-600">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td
+                        colSpan={
+                          12
+                        }
+                        className="py-12"
+                      >
+                        <div className="flex justify-center items-center">
+                          <img
+                            src={
+                              Loader
+                            }
+                            alt="Loading..."
+                            className="h-16 w-16"
+                          />
+                        </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : licenses?.length ===
+                    0 ? (
+                    <tr>
+                      <td
+                        colSpan={
+                          12
+                        }
+                        className="text-center py-14"
+                      >
+                        <p className="text-gray-500">
+                          No licenses
+                          found
+                        </p>
+                      </td>
+                    </tr>
+                  ) : (
+                    licenses?.map(
+                      (
+                        license,
+                      ) => (
+                        <tr
+                          key={
+                            license.license_id
+                          }
+                          className="border-b border-gray-100 hover:bg-gray-50 transition-all duration-200"
+                        >
+                          <td className="px-4 py-4 text-sm font-semibold text-[#1E1B4B]">
+                            {
+                              license.client_name
+                            }
+                          </td>
+
+                          <td className="px-4 py-4 text-sm text-gray-600">
+                            {`${license?.location_details?.address_line_one || "NA"}`}
+                          </td>
+
+                          <td className="px-4 py-4 text-sm text-gray-600">
+                            {
+                              license.quantity
+                            }
+                          </td>
+
+                          <td className="px-4 py-4 text-sm text-gray-600">
+                            {
+                              license.manufacturer
+                            }
+                          </td>
+
+                          <td className="px-4 py-4 text-sm text-gray-600">
+                            {
+                              license.license_type
+                            }
+                          </td>
+
+                          <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
+                            {formatDateToMDY(
+                              license.start_date,
+                            ) ||
+                              ""}
+                          </td>
+
+                          <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
+                            {formatDateToMDY(
+                              license.expiration_date,
+                            ) ||
+                              ""}
+                          </td>
+
+                          {access.includes(
+                            user_type,
+                          ) && (
+                            <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
+                              {formatCurrency(
+                                license.idr_cost,
+                              )}
+                            </td>
+                          )}
+
+                          {user_type !==
+                            "IDR Employee" && (
+                            <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
+                              {formatCurrency(
+                                license.sale_cost,
+                              )}
+                            </td>
+                          )}
+
+                          {/* ACTIONS */}
+                          <td className="px-4 py-4">
+                            <div className="flex items-center justify-center gap-2">
+                              {/* EDIT */}
+                              <button
+                                onClick={() =>
+                                  handleEdit(
+                                    license.license_id,
+                                  )
+                                }
+                                className="w-10 h-10 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-all duration-300"
+                              >
+                                <BiSolidEditAlt size={18} />
+                              </button>
+
+                              {/* DELETE */}
+                              {user_type ===
+                                "Admin" && (
+                                <button
+                                  onClick={() =>
+                                    handleDeleteLicense(
+                                      license.license_id,
+                                    )
+                                  }
+                                  className="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-all duration-300"
+                                >
+                                  <AiFillDelete size={18} />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ),
+                    )
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

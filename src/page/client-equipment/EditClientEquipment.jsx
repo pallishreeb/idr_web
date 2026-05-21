@@ -1,15 +1,31 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, {
+  useState,
+  useEffect,
+} from "react";
+
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
+
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { getClients } from "../../actions/clientActions";
-import { getLocationByClient } from "../../actions/locationActions";
+
+import {
+  getClients,
+} from "../../actions/clientActions";
+
+import {
+  getLocationByClient,
+} from "../../actions/locationActions";
+
 import {
   getClientEquipmentById,
   updateClientEquipment,
-} from "../../actions/clientEquipment"; // Actions to fetch and update client equipment
+} from "../../actions/clientEquipment";
+
 import {
   useNavigate,
   useParams,
@@ -17,30 +33,98 @@ import {
   useLocation,
 } from "react-router-dom";
 
+import {
+  MdBusiness,
+  MdLocationOn,
+  MdDevices,
+  MdInventory,
+  MdWifi,
+  MdSettingsEthernet,
+  MdPerson,
+  MdLock,
+  MdNotes,
+  MdArrowBack,
+  MdEdit,
+} from "react-icons/md";
+
 const EditClientEquipment = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { clientEquipmentId } = useParams(); // Get client equipment ID from route params
-  const [searchParams] = useSearchParams();
-  const returnTo = location.state?.returnTo;
-  const serviceTicketId = location.state?.serviceTicketId;
 
-  // Redux state selectors
-  const clients = useSelector((state) => state.client.clients);
-  const clientLocations = useSelector((state) => state.location.locations);
-  const loadingClients = useSelector((state) => state.client.loading);
-  const loadingLocations = useSelector((state) => state.location.loading);
-  const loadingEquipmentDetails = useSelector(
-    (state) => state.clientEquipment.loadingDetails,
+  const navigate = useNavigate();
+
+  const location = useLocation();
+
+  const { clientEquipmentId } =
+    useParams();
+
+  const [searchParams] =
+    useSearchParams();
+
+  const returnTo =
+    location.state?.returnTo;
+
+  const serviceTicketId =
+    location.state?.serviceTicketId;
+
+  // REDUX
+  const clients = useSelector(
+    (state) => state.client.clients,
   );
-  const loading = useSelector((state) => state.clientEquipment.loading);
-  const [clientEquipmentNotes, setClientEquipmentNotes] = useState([]);
-  const { user_type } = useSelector((state) => state.user.user);
-  const { technicianAccess } = useSelector((state) => state.user);
-  // State for form data
-  const [clientEquipment, setClientEquipment] = useState({
-    client_equipment_id: clientEquipmentId,
+
+  const clientLocations =
+    useSelector(
+      (state) =>
+        state.location.locations,
+    );
+
+  const loadingClients =
+    useSelector(
+      (state) => state.client.loading,
+    );
+
+  const loadingLocations =
+    useSelector(
+      (state) =>
+        state.location.loading,
+    );
+
+  const loadingEquipmentDetails =
+    useSelector(
+      (state) =>
+        state.clientEquipment
+          .loadingDetails,
+    );
+
+  const loading = useSelector(
+    (state) =>
+      state.clientEquipment.loading,
+  );
+
+  const {
+    user_type,
+  } = useSelector(
+    (state) => state.user.user,
+  );
+
+  const {
+    technicianAccess,
+  } = useSelector(
+    (state) => state.user,
+  );
+
+  // NOTES
+  const [
+    clientEquipmentNotes,
+    setClientEquipmentNotes,
+  ] = useState([]);
+
+  // FORM STATE
+  const [
+    clientEquipment,
+    setClientEquipment,
+  ] = useState({
+    client_equipment_id:
+      clientEquipmentId,
     client_id: "",
     client_name: "",
     location_id: "",
@@ -49,473 +133,752 @@ const EditClientEquipment = () => {
     manufacturer: "",
     model: "",
     serial_number: "",
-    mac_address: "", // Optional
-    lan_ip_address: "", // Optional
-    wan_ip_address: "", // Optional
-    general_info: "", // Optional
-    device_location: "", // Optional
-    username: "", // Optional
-    password: "", // Optional
+    mac_address: "",
+    lan_ip_address: "",
+    wan_ip_address: "",
+    general_info: "",
+    device_location: "",
+    username: "",
+    password: "",
     decomission_reason: "",
     is_deleted: false,
   });
 
-  // Fetch clients when the component mounts
+  // FETCH CLIENTS
   useEffect(() => {
     dispatch(getClients());
   }, [dispatch]);
 
-  // Fetch client equipment details using clientEquipmentId
+  // FETCH EQUIPMENT DETAILS
   useEffect(() => {
     if (clientEquipmentId) {
-      dispatch(getClientEquipmentById(clientEquipmentId)).then((data) => {
+      dispatch(
+        getClientEquipmentById(
+          clientEquipmentId,
+        ),
+      ).then((data) => {
         if (data) {
           setClientEquipment({
-            client_equipment_id: clientEquipmentId,
-            client_id: data.client_id || "",
-            client_name: data.client_name || "",
-            location_id: data.location_id || "",
-            device_type: data.device_type || "",
-            device_id: data.device_id || "",
-            manufacturer: data.manufacturer || "",
-            model: data.model || "",
-            serial_number: data.serial_number || "",
-            mac_address: data.mac_address || "",
-            lan_ip_address: data.lan_ip_address || "",
-            wan_ip_address: data.wan_ip_address || "",
-            device_location: data.device_location || "",
-            username: data.username || "",
-            password: data.password || "",
-            general_info: data.general_info || "",
-            decomission_reason: data?.decomission_reason || "",
-            is_deleted: data?.is_deleted,
+            client_equipment_id:
+              clientEquipmentId,
+            client_id:
+              data.client_id || "",
+            client_name:
+              data.client_name ||
+              "",
+            location_id:
+              data.location_id ||
+              "",
+            device_type:
+              data.device_type ||
+              "",
+            device_id:
+              data.device_id ||
+              "",
+            manufacturer:
+              data.manufacturer ||
+              "",
+            model:
+              data.model || "",
+            serial_number:
+              data.serial_number ||
+              "",
+            mac_address:
+              data.mac_address ||
+              "",
+            lan_ip_address:
+              data.lan_ip_address ||
+              "",
+            wan_ip_address:
+              data.wan_ip_address ||
+              "",
+            device_location:
+              data.device_location ||
+              "",
+            username:
+              data.username ||
+              "",
+            password:
+              data.password ||
+              "",
+            general_info:
+              data.general_info ||
+              "",
+            decomission_reason:
+              data?.decomission_reason ||
+              "",
+            is_deleted:
+              data?.is_deleted,
           });
-          setClientEquipmentNotes(data?.client_equip_histories || []);
+
+          setClientEquipmentNotes(
+            data?.client_equip_histories ||
+              [],
+          );
+
           if (data.client_id) {
-            dispatch(getLocationByClient(data.client_id));
+            dispatch(
+              getLocationByClient(
+                data.client_id,
+              ),
+            );
           }
         }
       });
     }
-  }, [dispatch, clientEquipmentId]);
+  }, [
+    dispatch,
+    clientEquipmentId,
+  ]);
 
-  // Fetch locations based on client_id
+  // FETCH LOCATIONS
   useEffect(() => {
-    if (clientEquipment.client_id) {
-      dispatch(getLocationByClient(clientEquipment.client_id));
+    if (
+      clientEquipment.client_id
+    ) {
+      dispatch(
+        getLocationByClient(
+          clientEquipment.client_id,
+        ),
+      );
     }
-  }, [dispatch, clientEquipment.client_id]);
+  }, [
+    dispatch,
+    clientEquipment.client_id,
+  ]);
 
+  // HANDLE CHANGE
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setClientEquipment((prev) => ({ ...prev, [name]: value }));
+    const { name, value } =
+      e.target;
+
+    setClientEquipment((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
     if (name === "client_id") {
-      const selectedClient = clients?.data?.find(
-        (client) => client.client_id === value,
-      );
+      const selectedClient =
+        clients?.data?.find(
+          (client) =>
+            client.client_id ===
+            value,
+        );
+
       if (selectedClient) {
-        setClientEquipment((prev) => ({
-          ...prev,
-          client_name: selectedClient.company_name,
-        }));
+        setClientEquipment(
+          (prev) => ({
+            ...prev,
+            client_name:
+              selectedClient.company_name,
+          }),
+        );
       }
-      dispatch(getLocationByClient(value));
+
+      dispatch(
+        getLocationByClient(value),
+      );
     }
   };
 
+  // SAVE
   const handleSave = (e) => {
     e.preventDefault();
-    // Create a copy of clientEquipment without decomission_reason
-    const { decomission_reason, is_deleted, ...updatePayload } =
-      clientEquipment;
-    dispatch(updateClientEquipment(updatePayload, navigate));
+
+    const {
+      decomission_reason,
+      is_deleted,
+      ...updatePayload
+    } = clientEquipment;
+
+    dispatch(
+      updateClientEquipment(
+        updatePayload,
+        navigate,
+      ),
+    );
   };
 
+  // BACK
   const handleBack = () => {
-    if (returnTo === "edit-service-ticket") {
-      navigate(`/edit-service-ticket/${serviceTicketId}`);
+    if (
+      returnTo ===
+      "edit-service-ticket"
+    ) {
+      navigate(
+        `/edit-service-ticket/${serviceTicketId}`,
+      );
     } else {
-      navigate(`/client-equipments?${searchParams.toString()}`);
+      navigate(
+        `/client-equipments?${searchParams.toString()}`,
+      );
     }
   };
+
+  // READ ONLY USERS
   const readOnlyAccess = [
     "Subcontractor_User",
     "Subcontractor",
     "Client Employee",
   ];
+
+  // COMMON CLASSES
+  const inputClass =
+    "w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-300";
+
+  const labelClass =
+    "block text-sm font-semibold text-[#1E1B4B] mb-2";
+
   return (
     <>
       <Header />
+
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-2">Edit Client Device</h2>
+
+        <div className="flex-1 bg-gradient-to-br from-[#FAFAFA] to-indigo-50 min-h-screen overflow-y-auto p-8">
+          {/* PAGE HEADER */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">
+                Edit Client Device
+              </h1>
+
+              <p className="text-gray-500 mt-1">
+                Update equipment
+                details and device
+                information
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              {technicianAccess.includes(
+                user_type,
+              ) && (
+                <button
+                  type="submit"
+                  form="editDeviceForm"
+                  className="px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+                >
+                  {loading
+                    ? "Updating..."
+                    : "Update Device"}
+                </button>
+              )}
+
+              <button
+                onClick={handleBack}
+                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-all duration-300"
+              >
+                <MdArrowBack size={20} />
+                Back
+              </button>
+            </div>
+          </div>
+
+          {/* FORM CARD */}
+          <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
+            {/* TOP BAR */}
+            <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
             {loadingEquipmentDetails ? (
-              <p>Loading equipment details...</p>
+              <div className="p-10 text-center text-gray-500">
+                Loading equipment
+                details...
+              </div>
             ) : (
-              <form onSubmit={handleSave}>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col mb-4">
-                    <label htmlFor="client_id" className="mr-2">
-                      Select Client:
-                    </label>
-                    <select
-                      id="client_id"
-                      name="client_id"
-                      className="border border-gray-300 rounded px-3 py-1 w-full"
-                      value={clientEquipment.client_id}
-                      onChange={handleChange}
-                      required
-                      disabled
-                    >
-                      <option value="">Select a client</option>
-                      {loadingClients ? (
-                        <option value="" disabled>
-                          Loading...
-                        </option>
-                      ) : (
-                        clients?.data?.map((client) => (
-                          <option
-                            key={client.client_id}
-                            value={client.client_id}
-                          >
-                            {client.company_name}
+              <form
+                id="editDeviceForm"
+                onSubmit={handleSave}
+                className="p-8"
+              >
+                {/* TITLE */}
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
+                    <MdEdit size={24} />
+                  </div>
+
+                  <div>
+                    <h2 className="text-2xl font-bold text-[#1E1B4B]">
+                      Device Details
+                    </h2>
+
+                    <p className="text-gray-500 text-sm">
+                      Edit client
+                      equipment
+                      information
+                    </p>
+                  </div>
+                </div>
+
+                {/* CLIENT INFO */}
+                <div className="mb-10">
+                  <div className="flex items-center gap-2 mb-5">
+                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+                    <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                      Client Information
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* CLIENT */}
+                    <div>
+                      <label
+                        className={
+                          labelClass
+                        }
+                      >
+                        Client
+                      </label>
+
+                      <div className="relative">
+                        <MdBusiness className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <select
+                          name="client_id"
+                          className={`${inputClass} pl-12`}
+                          value={
+                            clientEquipment.client_id
+                          }
+                          onChange={
+                            handleChange
+                          }
+                          disabled
+                        >
+                          <option value="">
+                            Select Client
                           </option>
-                        ))
-                      )}
-                    </select>
-                  </div>
-                  <div className="flex flex-col mb-4">
-                    <label htmlFor="location_id" className="mr-2">
-                      Select Location:
-                    </label>
-                    <select
-                      id="location_id"
-                      name="location_id"
-                      className="border border-gray-300 rounded px-3 py-1 w-full"
-                      value={clientEquipment.location_id}
-                      onChange={handleChange}
-                      // disabled={!clientEquipment.client_id}
-                      disabled
-                    >
-                      <option value="">Select a location</option>
-                      {loadingLocations ? (
-                        <option value="" disabled>
-                          Loading...
-                        </option>
-                      ) : (
-                        clientLocations?.map((location) => (
-                          <option
-                            key={location.location_id}
-                            value={location.location_id}
-                          >
-                            {location.address_line_one}{" "}
-                            {location.address_line_two}
+
+                          {loadingClients ? (
+                            <option disabled>
+                              Loading...
+                            </option>
+                          ) : (
+                            clients?.data?.map(
+                              (
+                                client,
+                              ) => (
+                                <option
+                                  key={
+                                    client.client_id
+                                  }
+                                  value={
+                                    client.client_id
+                                  }
+                                >
+                                  {
+                                    client.company_name
+                                  }
+                                </option>
+                              ),
+                            )
+                          )}
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* LOCATION */}
+                    <div>
+                      <label
+                        className={
+                          labelClass
+                        }
+                      >
+                        Location
+                      </label>
+
+                      <div className="relative">
+                        <MdLocationOn className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <select
+                          name="location_id"
+                          className={`${inputClass} pl-12`}
+                          value={
+                            clientEquipment.location_id
+                          }
+                          onChange={
+                            handleChange
+                          }
+                          disabled
+                        >
+                          <option value="">
+                            Select Location
                           </option>
-                        ))
-                      )}
-                    </select>
+
+                          {loadingLocations ? (
+                            <option disabled>
+                              Loading...
+                            </option>
+                          ) : (
+                            clientLocations?.map(
+                              (
+                                location,
+                              ) => (
+                                <option
+                                  key={
+                                    location.location_id
+                                  }
+                                  value={
+                                    location.location_id
+                                  }
+                                >
+                                  {
+                                    location.address_line_one
+                                  }{" "}
+                                  {
+                                    location.address_line_two
+                                  }
+                                </option>
+                              ),
+                            )
+                          )}
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Device Details */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="device_type"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Device Type*
-                    </label>
-                    <input
-                      type="text"
-                      name="device_type"
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.device_type}
-                      onChange={handleChange}
-                      required
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
+                {/* DEVICE DETAILS */}
+                <div className="mb-10">
+                  <div className="flex items-center gap-2 mb-5">
+                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+                    <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                      Device Information
+                    </h3>
                   </div>
-                  <div>
-                    <label
-                      htmlFor="device_id"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Device ID(Hostname)*
-                    </label>
-                    <input
-                      type="text"
-                      name="device_id"
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.device_id}
-                      onChange={handleChange}
-                      required
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {[
+                      {
+                        label:
+                          "Device Type",
+                        name:
+                          "device_type",
+                        icon: (
+                          <MdDevices />
+                        ),
+                        required: true,
+                      },
+
+                      {
+                        label:
+                          "Device ID (Hostname)",
+                        name:
+                          "device_id",
+                        icon: (
+                          <MdInventory />
+                        ),
+                        required: true,
+                      },
+
+                      {
+                        label:
+                          "Manufacturer",
+                        name:
+                          "manufacturer",
+                        icon: (
+                          <MdBusiness />
+                        ),
+                        required: true,
+                      },
+
+                      {
+                        label:
+                          "Model",
+                        name: "model",
+                        icon: (
+                          <MdDevices />
+                        ),
+                        required: true,
+                      },
+
+                      {
+                        label:
+                          "Serial Number",
+                        name:
+                          "serial_number",
+                        icon: (
+                          <MdInventory />
+                        ),
+                        required: true,
+                      },
+
+                      {
+                        label:
+                          "Device Location",
+                        name:
+                          "device_location",
+                        icon: (
+                          <MdLocationOn />
+                        ),
+                      },
+
+                      {
+                        label:
+                          "MAC Address",
+                        name:
+                          "mac_address",
+                        icon: (
+                          <MdSettingsEthernet />
+                        ),
+                      },
+
+                      {
+                        label:
+                          "LAN IP Address",
+                        name:
+                          "lan_ip_address",
+                        icon: (
+                          <MdWifi />
+                        ),
+                      },
+
+                      {
+                        label:
+                          "WAN IP Address",
+                        name:
+                          "wan_ip_address",
+                        icon: (
+                          <MdWifi />
+                        ),
+                      },
+
+                      {
+                        label:
+                          "Username",
+                        name:
+                          "username",
+                        icon: (
+                          <MdPerson />
+                        ),
+                      },
+
+                      {
+                        label:
+                          "Password",
+                        name:
+                          "password",
+                        icon: (
+                          <MdLock />
+                        ),
+                      },
+                    ].map(
+                      (
+                        field,
+                      ) => (
+                        <div
+                          key={
+                            field.name
+                          }
+                        >
+                          <label
+                            className={
+                              labelClass
+                            }
+                          >
+                            {
+                              field.label
+                            }
+                          </label>
+
+                          <div className="relative">
+                            <div className="absolute top-4 left-4 text-indigo-400 text-xl">
+                              {
+                                field.icon
+                              }
+                            </div>
+
+                            <input
+                              type="text"
+                              name={
+                                field.name
+                              }
+                              value={
+                                clientEquipment[
+                                  field
+                                    .name
+                                ]
+                              }
+                              onChange={
+                                handleChange
+                              }
+                              required={
+                                field.required
+                              }
+                              readOnly={readOnlyAccess.includes(
+                                user_type,
+                              )}
+                              className={`${inputClass} pl-12`}
+                            />
+                          </div>
+                        </div>
+                      ),
+                    )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label
-                      htmlFor="manufacturer"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Manufacturer*
-                    </label>
-                    <input
-                      type="text"
-                      name="manufacturer"
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.manufacturer}
-                      onChange={handleChange}
-                      required
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="model"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Model
-                    </label>
-                    <input
-                      type="text"
-                      name="model"
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.model}
-                      onChange={handleChange}
-                      required
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="serial_number"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Serial Number*
-                    </label>
-                    <input
-                      type="text"
-                      name="serial_number"
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.serial_number}
-                      onChange={handleChange}
-                      required
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
-                  </div>
-                </div>
+                {/* NOTES */}
+                <div>
+                  <div className="flex items-center gap-2 mb-5">
+                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
 
-                {/* Optional Details */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label
-                      htmlFor="mac_address"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      MAC Address
-                    </label>
-                    <input
-                      type="text"
-                      name="mac_address"
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.mac_address}
-                      onChange={handleChange}
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
+                    <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                      Additional Notes
+                    </h3>
                   </div>
-                  <div>
-                    <label
-                      htmlFor="lan_ip_address"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      LAN IP Address
-                    </label>
-                    <input
-                      type="text"
-                      name="lan_ip_address"
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.lan_ip_address}
-                      onChange={handleChange}
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="wan_ip_address"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      WAN IP Address
-                    </label>
-                    <input
-                      type="text"
-                      name="wan_ip_address"
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.wan_ip_address}
-                      onChange={handleChange}
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
-                  </div>
-                </div>
-                {/*More Optional Details */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label
-                      htmlFor="device_location"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Device Location
-                    </label>
-                    <input
-                      type="text"
-                      name="device_location"
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.device_location}
-                      onChange={handleChange}
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="username"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      name="username"
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.username}
-                      onChange={handleChange}
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="password"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Password
-                    </label>
-                    <input
-                      type="text"
-                      name="password"
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.password}
-                      onChange={handleChange}
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
-                  </div>
-                </div>
-                {/* General Notes */}
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <label
-                      htmlFor="general_info"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      General Device Information
-                    </label>
-                    <textarea
-                      name="general_info"
-                      rows={5}
-                      className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 w-full"
-                      value={clientEquipment.general_info}
-                      onChange={handleChange}
-                      readOnly={readOnlyAccess.includes(user_type)}
-                    />
-                  </div>
-                </div>
 
-                <div className="flex justify-end mt-4">
-                  {technicianAccess.includes(user_type) && (
-                    <button
-                      type="submit"
-                      className="bg-indigo-700 text-white px-4 py-2 rounded"
+                  <div>
+                    <label
+                      className={
+                        labelClass
+                      }
                     >
-                      {loading ? "Updating..." : "Update Client Device"}
-                    </button>
-                  )}
-                  <button
-                    onClick={handleBack}
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"
-                  >
-                    Back
-                  </button>
+                      General Device
+                      Information
+                    </label>
+
+                    <div className="relative">
+                      <MdNotes className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                      <textarea
+                        name="general_info"
+                        rows={5}
+                        value={
+                          clientEquipment.general_info
+                        }
+                        onChange={
+                          handleChange
+                        }
+                        readOnly={readOnlyAccess.includes(
+                          user_type,
+                        )}
+                        className={`${inputClass} pl-12 pt-4`}
+                      />
+                    </div>
+                  </div>
                 </div>
               </form>
             )}
           </div>
 
-          {/* {decomission_reason} */}
+          {/* DECOMMISSION REASON */}
+          {clientEquipment?.decomission_reason !==
+            "" && (
+            <div className="mt-8 bg-white rounded-[28px] shadow-md border border-gray-100 overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-red-500 to-pink-500" />
 
-          {clientEquipment?.decomission_reason !== "" && (
-            <>
-              <h2 className="text-xl font-semibold mb-2">
-                {clientEquipment?.is_deleted === true
-                  ? "Decommission Reason"
-                  : "Re-activation Reason"}
-              </h2>
-              <p className="text-gray-600 mb-4">
-                {clientEquipment?.decomission_reason}
-              </p>
-            </>
+              <div className="p-6">
+                <h2 className="text-xl font-bold text-[#1E1B4B] mb-3">
+                  {clientEquipment?.is_deleted ===
+                  true
+                    ? "Decommission Reason"
+                    : "Re-activation Reason"}
+                </h2>
+
+                <p className="text-gray-600 leading-relaxed">
+                  {
+                    clientEquipment?.decomission_reason
+                  }
+                </p>
+              </div>
+            </div>
           )}
 
-          {/* Table for notes */}
-          {clientEquipmentNotes?.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-gray-200 border rounded">
-                <thead>
-                  <tr className="bg-gray-300 text-left">
-                    <th className="border px-4 py-2" style={{ width: "65%" }}>
-                      Notes
-                    </th>
-                    <th className="border px-4 py-2" style={{ width: "15%" }}>
-                      User Name
-                    </th>
-                    <th className="border px-4 py-2" style={{ width: "15%" }}>
-                      Date and Time
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {clientEquipmentNotes?.map((note, index) => (
-                    <tr key={note.note_id} className="bg-white text-sm">
-                      <td className="border px-4 py-2" style={{ width: "60%" }}>
-                        <textarea
-                          className="px-2 py-2 border text-sm border-gray-200 resize-y rounded w-full"
-                          name="comments"
-                          value={note.comments || ""}
-                          rows={6}
-                        ></textarea>
-                      </td>
-                      <td className="border px-4 py-2" style={{ width: "15%" }}>
-                        {note?.user_name || "NA"}
-                      </td>
-                      <td className="border px-4 py-2" style={{ width: "15%" }}>
-                        {new Date(note.created_at).toLocaleString("en-US", {
-                          timeZone: "America/New_York",
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                          hour12: true,
-                        })}
-                      </td>
+          {/* HISTORY TABLE */}
+          {clientEquipmentNotes?.length >
+            0 && (
+            <div className="mt-8 bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+              <div className="px-6 py-5 border-b border-gray-100">
+                <h2 className="text-2xl font-bold text-[#1E1B4B]">
+                  Equipment Notes
+                </h2>
+
+                <p className="text-sm text-gray-500">
+                  History and notes for
+                  this equipment
+                </p>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full table-auto">
+                  <thead className="bg-indigo-50">
+                    <tr>
+                      <th className="px-4 py-4 text-left text-xs uppercase tracking-wider font-bold text-indigo-600">
+                        Notes
+                      </th>
+
+                      <th className="px-4 py-4 text-left text-xs uppercase tracking-wider font-bold text-indigo-600">
+                        User Name
+                      </th>
+
+                      <th className="px-4 py-4 text-left text-xs uppercase tracking-wider font-bold text-indigo-600">
+                        Date & Time
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+
+                  <tbody>
+                    {clientEquipmentNotes?.map(
+                      (
+                        note,
+                      ) => (
+                        <tr
+                          key={
+                            note.note_id
+                          }
+                          className="border-b border-gray-100 hover:bg-gray-50 transition-all duration-200"
+                        >
+                          <td className="px-4 py-4 min-w-[350px]">
+                            <textarea
+                              className="w-full rounded-2xl border border-gray-200 p-4 text-sm resize-y bg-gray-50"
+                              value={
+                                note.comments ||
+                                ""
+                              }
+                              rows={5}
+                              readOnly
+                            />
+                          </td>
+
+                          <td className="px-4 py-4 text-gray-700 font-medium whitespace-nowrap">
+                            {note?.user_name ||
+                              "NA"}
+                          </td>
+
+                          <td className="px-4 py-4 text-gray-600 whitespace-nowrap">
+                            {new Date(
+                              note.created_at,
+                            ).toLocaleString(
+                              "en-US",
+                              {
+                                timeZone:
+                                  "America/New_York",
+                                year:
+                                  "numeric",
+                                month:
+                                  "2-digit",
+                                day:
+                                  "2-digit",
+                                hour:
+                                  "2-digit",
+                                minute:
+                                  "2-digit",
+                                second:
+                                  "2-digit",
+                                hour12: true,
+                              },
+                            )}
+                          </td>
+                        </tr>
+                      ),
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>

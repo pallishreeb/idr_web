@@ -1,17 +1,37 @@
 import React, { useState, useEffect } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
-import { addClient,getIndustries } from "../../actions/clientActions";
-import { toast } from "react-toastify";
+
+import {
+  addClient,
+  getIndustries,
+} from "../../actions/clientActions";
+
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import {Link, useNavigate,useLocation} from "react-router-dom"
+
+import {
+  Link,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
+
+import {
+  MdBusiness,
+  MdPerson,
+  MdEmail,
+  MdPhone,
+  MdLocationOn,
+  MdWork,
+} from "react-icons/md";
+
 const AddNewClient = () => {
   const dispatch = useDispatch();
-const navigate = useNavigate();
-const location = useLocation();
-  // const [cellCountryCode, setCellCountryCode] = useState("+1");
-  // const [phoneCountryCode, setPhoneCountryCode] = useState("+1");
-  // State to store form data
+
+  const navigate = useNavigate();
+
+  const location = useLocation();
+
   const [formData, setFormData] = useState({
     industry_id: "",
     staff: "",
@@ -29,327 +49,470 @@ const location = useLocation();
     phone_number: "",
     cell_phone: "",
   });
-  // Fetch industries when component mounts
+
   useEffect(() => {
     dispatch(getIndustries());
   }, [dispatch]);
 
-  // Get industries from Redux store
-  const {industries} = useSelector((state) => state.client.industries);
-  const { loading } = useSelector((state) => state.client);
-  // const handleCellCountryCodeChange = (e) => {
-  //   setCellCountryCode(e.target.value);
-  // };
-  // const handlePhoneCountryCodeChange = (e) => {
-  //   setPhoneCountryCode(e.target.value);
-  // };
-  // Handle form input change
+  const { industries } = useSelector(
+    (state) => state.client.industries,
+  );
+
+  const { loading } = useSelector(
+    (state) => state.client,
+  );
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // const countryCode = cellCountryCode; // Get the selected country code
-    // const cellPhone = formData.cell_phone; // Get the inputted cell phone number
-    // const fullCellPhone = `${countryCode}${cellPhone}`; 
-    // formData.cell_phone = fullCellPhone
-    // formData.phone_number = `${phoneCountryCode}${formData.phone_number}`; 
-    dispatch(addClient(formData,navigate,location.search))
+
+    dispatch(
+      addClient(
+        formData,
+        navigate,
+        location.search,
+      ),
+    );
   };
+
+  const inputClass =
+    "w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-300";
+
+  const labelClass =
+    "block text-sm font-semibold text-[#1E1B4B] mb-2";
 
   return (
     <>
       <Header />
+
       <div className="flex">
-        {/* <SideNavbar /> */}
         <AdminSideNavbar />
-        <div className="container mx-auto p-6 shadow-lg mt-5">
-          <form onSubmit={handleSubmit}>
-            <div className="flex justify-between items-center mb-4">
-              <h1 className="text-2xl font-bold">Add New Client</h1>
+
+        <div className="flex-1 bg-gradient-to-br from-[#FAFAFA] to-indigo-50 min-h-screen overflow-y-auto p-8">
+          {/* PAGE HEADER */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">
+                Add New Client
+              </h1>
+
+              <p className="text-gray-500 mt-1">
+                Create and manage new client
+                information
+              </p>
+            </div>
+
+            <div className="flex gap-3 mt-4 md:mt-0">
+              <button
+                type="submit"
+                form="clientForm"
+                className="px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+              >
+                {loading ? "Saving..." : "Save Client"}
+              </button>
+
+              <Link
+                to={`/clients${location.search}`}
+              >
+                <button className="px-6 py-3 rounded-2xl bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-all duration-300">
+                  Cancel
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* FORM CARD */}
+          <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
+            {/* TOP GRADIENT */}
+            <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+            <form
+              id="clientForm"
+              onSubmit={handleSubmit}
+              className="p-8"
+            >
+              {/* SECTION TITLE */}
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
+                  <MdBusiness size={24} />
+                </div>
+
+                <div>
+                  <h2 className="text-2xl font-bold text-[#1E1B4B]">
+                    Client Details
+                  </h2>
+
+                  <p className="text-gray-500 text-sm">
+                    Enter client information below
+                  </p>
+                </div>
+              </div>
+
+              {/* BASIC INFO */}
+              <div className="mb-10">
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+                  <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                    Basic Information
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* INDUSTRY */}
+                  <div>
+                    <label className={labelClass}>
+                      Industry Code
+                    </label>
+
+                    <select
+                      id="industry_id"
+                      name="industry_id"
+                      value={formData.industry_id}
+                      onChange={handleChange}
+                      className={inputClass}
+                      required
+                    >
+                      <option value="">
+                        Select Industry
+                      </option>
+
+                      {industries
+                        ? [...industries]
+                            .sort((a, b) =>
+                              a.industry_name.localeCompare(
+                                b.industry_name,
+                              ),
+                            )
+                            .map((industry) => (
+                              <option
+                                key={
+                                  industry.industry_id
+                                }
+                                value={
+                                  industry.industry_id
+                                }
+                              >
+                                {
+                                  industry.industry_name
+                                }
+                              </option>
+                            ))
+                        : null}
+                    </select>
+                  </div>
+
+                  {/* STAFF */}
+                  <div>
+                    <label className={labelClass}>
+                      Staff
+                    </label>
+
+                    <div className="relative">
+                      <MdWork className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                      <input
+                        type="text"
+                        name="staff"
+                        value={formData.staff}
+                        onChange={handleChange}
+                        className={`${inputClass} pl-12`}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* COMPANY */}
+                  <div>
+                    <label className={labelClass}>
+                      Company Name
+                    </label>
+
+                    <div className="relative">
+                      <MdBusiness className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                      <input
+                        type="text"
+                        name="company_name"
+                        value={
+                          formData.company_name
+                        }
+                        onChange={handleChange}
+                        className={`${inputClass} pl-12`}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CONTACT INFO */}
+              <div className="mb-10">
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+                  <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                    Contact Information
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* FIRST NAME */}
+                  <div>
+                    <label className={labelClass}>
+                      First Name
+                    </label>
+
+                    <div className="relative">
+                      <MdPerson className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                      <input
+                        type="text"
+                        name="contact_person_firstname"
+                        value={
+                          formData.contact_person_firstname
+                        }
+                        onChange={handleChange}
+                        className={`${inputClass} pl-12`}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* LAST NAME */}
+                  <div>
+                    <label className={labelClass}>
+                      Last Name
+                    </label>
+
+                    <div className="relative">
+                      <MdPerson className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                      <input
+                        type="text"
+                        name="contact_person_lastname"
+                        value={
+                          formData.contact_person_lastname
+                        }
+                        onChange={handleChange}
+                        className={`${inputClass} pl-12`}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* EMAIL */}
+                  <div>
+                    <label className={labelClass}>
+                      Email
+                    </label>
+
+                    <div className="relative">
+                      <MdEmail className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                      <input
+                        type="email"
+                        name="contact_email"
+                        value={
+                          formData.contact_email
+                        }
+                        onChange={handleChange}
+                        className={`${inputClass} pl-12`}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ADDRESS */}
+              <div className="mb-10">
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+                  <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                    Address Details
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className={labelClass}>
+                      Job Location
+                    </label>
+
+                    <div className="relative">
+                      <MdLocationOn className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                      <input
+                        type="text"
+                        name="address_line_one"
+                        value={
+                          formData.address_line_one
+                        }
+                        onChange={handleChange}
+                        className={`${inputClass} pl-12`}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className={labelClass}>
+                      Address Line 1
+                    </label>
+
+                    <input
+                      type="text"
+                      name="address_line_two"
+                      value={
+                        formData.address_line_two
+                      }
+                      onChange={handleChange}
+                      className={inputClass}
+                    />
+                  </div>
+
+                  <div>
+                    <label className={labelClass}>
+                      Address Line 2
+                    </label>
+
+                    <input
+                      type="text"
+                      name="address_line_three"
+                      value={
+                        formData.address_line_three
+                      }
+                      onChange={handleChange}
+                      className={inputClass}
+                    />
+                  </div>
+
+                  <div>
+                    <label className={labelClass}>
+                      City
+                    </label>
+
+                    <input
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className={inputClass}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className={labelClass}>
+                      State
+                    </label>
+
+                    <input
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleChange}
+                      className={inputClass}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className={labelClass}>
+                      Zipcode
+                    </label>
+
+                    <input
+                      type="text"
+                      name="zipcode"
+                      value={formData.zipcode}
+                      onChange={handleChange}
+                      className={inputClass}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* PHONE DETAILS */}
               <div>
-                <button className="bg-indigo-700 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
-                 {loading ? 'Saving' : 'Save' }
-                </button>
-                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                <Link to={`/clients${location.search}`}>Cancel</Link>
-                </button>
-              </div>
-            </div>
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
 
-            <h6>Client Details</h6>
-            <hr />
-            {/* First Row */}
-            <div className="flex flex-wrap -mx-2 mb-4 mt-5">
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="industryCode" className="block">
-                  Industry Code
-                </label>
-                <select
-                id="industry_id"
-                name="industry_id"
-                value={formData.industry_id}
-                onChange={handleChange}
-                className="block w-full border-gray-300 rounded-md shadow-sm border p-2"
-                required
-                >
-                  <option value="">Select Industry Code</option>
-                  {industries
-                    ? [...industries] // Create a shallow copy of the industries array
-                        .sort((a, b) => a.industry_name.localeCompare(b.industry_name)) // Sort the copied array alphabetically by industry name
-                        .map((industry) => (
-                          <option key={industry.industry_id} value={industry.industry_id}>
-                            {industry.industry_name}
-                          </option>
-                        ))
-                    : null}
-                </select>
-              </div>
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="staffId" className="block">
-                  Staff 
-                </label>
-                <input
-                  type="text"
-                  id="staff"
-                  name="staff"
-                  value={formData.staff}
-                  onChange={handleChange}
-                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
-                />
-              </div>
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="companyName" className="block">
-                  Company Name
-                </label>
-                <input
-                  type="text"
-                  id="company_name"
-                  name="company_name"
-                  value={formData.company_name}
-                  onChange={handleChange}
-                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
-                />
-              </div>
-            </div>
+                  <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                    Phone Details
+                  </h3>
+                </div>
 
-            {/* Second Row */}
-            <div className="flex flex-wrap -mx-2 mb-4">
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="contactFirstName" className="block">
-                  Contact Person First Name
-                </label>
-                <input
-                  type="text"
-                  id="contact_person_firstname"
-                  name="contact_person_firstname"
-                  value={formData.contact_person_firstname}
-                  onChange={handleChange}
-                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
-                />
-              </div>
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="contactLastName" className="block">
-                  Contact Person Last Name
-                </label>
-                <input
-                  type="text"
-                  id="contact_person_lastname"
-                  name="contact_person_lastname"
-                  value={formData.contact_person_lastname}
-                  onChange={handleChange}
-                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
-                />
-              </div>
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="contactEmail" className="block">
-                  Contact Person Email
-                </label>
-                <input
-                type="email"
-                id="contact_email"
-                name="contact_email"
-                value={formData.contact_email}
-                onChange={handleChange}
-                className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                required
-                />
-              </div>
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className={labelClass}>
+                      Fax Number
+                    </label>
 
-            {/* Third Row */}
-            <div className="flex flex-wrap -mx-2 mb-4">
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="addressLine1" className="block">
-                  Job Location
-                </label>
-                <input
-                  type="text"
-                  id="address_line_one"
-                  name="address_line_one"
-                  value={formData.address_line_one}
-                  onChange={handleChange}
-                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
-                />
-              </div>
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="addressLine2" className="block">
-                  Address Line 1
-                </label>
-                <input
-                 type="text"
-                 id="address_line_two"
-                 name="address_line_two"
-                 value={formData.address_line_two}
-                 onChange={handleChange}
-                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                />
-              </div>
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="addressLine3" className="block">
-                  Address Line 2
-                </label>
-                <input
-                  type="text"
-                  id="address_line_three"
-                  name="address_line_three"
-                  value={formData.address_line_three}
-                  onChange={handleChange}
-                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                />
-              </div>
-            </div>
+                    <input
+                      type="text"
+                      name="fax_number"
+                      value={formData.fax_number}
+                      onChange={handleChange}
+                      className={inputClass}
+                    />
+                  </div>
 
-            {/* Fourth Row */}
-            <div className="flex flex-wrap -mx-2 mb-4">
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="city" className="block">
-                  City
-                </label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
-                />
-              </div>
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="state" className="block">
-                  State
-                </label>
-                <input
-                   type="text"
-                   id="state"
-                   name="state"
-                   value={formData.state}
-                   onChange={handleChange}
-                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
-                />
-              </div>
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="zipcode" className="block">
-                  Zipcode
-                </label>
-                <input
-                  type="text"
-                  id="zipcode"
-                  name="zipcode"
-                  value={formData.zipcode}
-                  onChange={handleChange}
-                  className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                  required
-                />
-              </div>
-            </div>
+                  <div>
+                    <label className={labelClass}>
+                      Phone Number
+                    </label>
 
-            {/* Fifth Row */}
-            <div className="flex flex-wrap -mx-2 mb-4">
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="faxNumber" className="block">
-                  Fax Number
-                </label>
-                <input
-               type="text"
-               id="fax_number"
-               name="fax_number"
-               value={formData.fax_number}
-               onChange={handleChange}
-               className="block w-full p-2 border-gray-300 rounded-md shadow-sm border"
-                />
-              </div>
+                    <div className="relative">
+                      <MdPhone className="absolute top-4 left-4 text-indigo-400 text-xl" />
 
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="phoneNumber" className="block">
-                  Phone Number
-                </label>
+                      <input
+                        type="text"
+                        name="phone_number"
+                        value={
+                          formData.phone_number
+                        }
+                        onChange={handleChange}
+                        className={`${inputClass} pl-12`}
+                        required
+                      />
+                    </div>
+                  </div>
 
-                <div className="flex flex-row gap-1">
-                {/* <select
-                  id="phoneCountryCode"
-                  name="phoneCountryCode"
-                  onChange={handlePhoneCountryCodeChange}
-                  value={phoneCountryCode}
-                  className="block w-full md:w-1/4 border-gray-300 rounded-md shadow-sm border"
-                >
-                  <option value="">Select country code</option>
-                  <option value="+1">+1</option>
-                  <option value="+12">+12</option>
-                  <option value="+91">+91</option>
-                </select> */}
-                  <input
-                     type="text"
-                     id="phone_number"
-                     name="phone_number"
-                     value={formData.phone_number}
-                     onChange={handleChange}
-                    className="block p-2 w-full border-gray-300 rounded-md shadow-sm border"
-                    required
-                  />
+                  <div>
+                    <label className={labelClass}>
+                      Cell Number
+                    </label>
+
+                    <div className="relative">
+                      <MdPhone className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                      <input
+                        type="text"
+                        name="cell_phone"
+                        value={
+                          formData.cell_phone
+                        }
+                        onChange={handleChange}
+                        className={`${inputClass} pl-12`}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="w-full md:w-1/3 px-2 mb-4">
-                <label htmlFor="cellNumber" className="block">
-                  Cell Number
-                </label>
-                <div className="flex flex-row gap-1">
-                {/* <select
-                  id="cellCountryCode"
-                  name="cellCountryCode"
-                  onChange={handleCellCountryCodeChange}
-                  value={cellCountryCode}
-                  className="block w-full md:w-1/4 border-gray-300 rounded-md shadow-sm border"
-                >
-                  <option value="">Select country code</option>
-                  <option value="+1">+1</option>
-                  <option value="+12">+12</option>
-                  <option value="+91">+91</option>
-               
-                </select> */}
-
-                  <input
-                    type="text"
-                    id="cell_phone"
-                    name="cell_phone"
-                    value={formData.cell_phone}
-                    onChange={handleChange}
-                    className="block p-2 w-full border-gray-300 rounded-md shadow-sm border"
-                  />
-                </div>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </>

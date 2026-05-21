@@ -1,345 +1,759 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+/** @format */
+
+import React, {
+  useState,
+  useEffect,
+} from "react";
+
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
+
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
+
 import {
   createServiceRequest,
   getServiceRequestInfo,
 } from "../../actions/serviceTicket";
-import { getClients } from "../../actions/clientActions";
-import { getLocationByClient } from "../../actions/locationActions";
-import { useNavigate } from "react-router-dom";
 
-const AddServiceRequest = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  //   const { clientId, locationId } = useParams();
-  //   const [searchParams] = useSearchParams();
+import {
+  getClients,
+} from "../../actions/clientActions";
 
-  // Fetch clients and client locations from Redux store
-  // const clients = useSelector((state) => state.client.clients);
-  const clientLocations = useSelector((state) => state.location.locations);
-  const user = useSelector((state) => state.user.user);
-  const { serviceReqInfo, loading, serviceRequestLoading } = useSelector(
-    (state) => state.serviceTicket
-  );
+import {
+  getLocationByClient,
+} from "../../actions/locationActions";
 
-  const { access } = useSelector((state) => state.user);
-  //   const [user, setUser] = useState(null);
-  const [serviceRequest, setServiceRequest] = useState({
-    client_id: "", //clientId && clientId !== "null" ? clientId : "",
-    client_name: "",
-    location_id: "", //locationId && locationId !== "null" ? locationId : "",
-    client_emp_user_id: user?.client_emp_id || "",
-    contact_person: `${user?.first_name} ${user?.first_name}` || "",
-    contact_phone_number: user?.contact_number || "",
-    contact_email: user?.email_id || "",
-    service_location: "",
-    local_onsite_contact: "",
-    local_onsite_contact_number: "",
-    service_ticket_details: "",
-  });
+import {
+  useNavigate,
+} from "react-router-dom";
 
-  const [selectedClientLocation, setSelectedClientLocation] = useState("");
+import {
+  MdBusiness,
+  MdLocationOn,
+  MdPerson,
+  MdPhone,
+  MdEmail,
+  MdAssignment,
+  MdAdd,
+  MdDescription,
+} from "react-icons/md";
 
-  // useEffect(() => {
-  //     let loggedInUsers = JSON.parse(localStorage.getItem("user"));
-  //     setUser(loggedInUsers);
-  //   }, [users]);
-  // Fetch clients when component mounts
-  useEffect(() => {
-    if ( !access.includes(user?.user_type)) { //user?.client_type !== "User" &&
-      dispatch(getServiceRequestInfo());
-    } else {
-      dispatch(getClients());
-    }
-  }, [user, dispatch, access]);
+const AddServiceRequest =
+  () => {
+    const dispatch =
+      useDispatch();
 
-  // Fetch locations based on client_id
-  useEffect(() => {
-    if (serviceRequest?.client_id) {
-      dispatch(getLocationByClient(serviceRequest?.client_id));
-    }
-  }, [dispatch, serviceRequest?.client_id]);
-  useEffect(() => {
-    if (serviceReqInfo && serviceReqInfo.client_info) {
-      const fullName = `${serviceReqInfo.first_name?.trim()} ${serviceReqInfo.last_name?.trim()}`;
+    const navigate =
+      useNavigate();
 
-      setServiceRequest((prev) => ({
-        ...prev,
-        client_id: serviceReqInfo.client_info.client_id,
-        client_name: serviceReqInfo.client_info.company_name,
-        location_id: serviceReqInfo.locations?.[0]?.location_id || "",
-        client_emp_user_id: serviceReqInfo.client_emp_id,
-        contact_person: fullName,
-        contact_phone_number: serviceReqInfo.contact_number,
-        contact_email: serviceReqInfo.email_id,
-      }));
+    // REDUX
+    const clientLocations =
+      useSelector(
+        (state) =>
+          state.location.locations,
+      );
 
-      if (serviceReqInfo.client_info.client_id) {
-        dispatch(getLocationByClient(serviceReqInfo.client_info.client_id));
-      }
-    }
-  }, [serviceReqInfo, dispatch]);
+    const user =
+      useSelector(
+        (state) =>
+          state.user.user,
+      );
 
-  // Set client_name if clientId is provided via URL params
-  //   useEffect(() => {
-  //     if (clientId && clients?.data?.length) {
-  //       const selectedClient = clients.data.find((client) => client.client_id === clientId);
-  //       if (selectedClient) {
-  //         setServiceRequest((prev) => ({
-  //           ...prev,
-  //           client_name: selectedClient.company_name,
-  //         }));
-  //         dispatch(getLocationByClient(clientId));
-  //       }
-  //     }
-  //   }, [clientId, clients, dispatch]);
+    const {
+      serviceReqInfo,
+      loading,
+      serviceRequestLoading,
+    } =
+      useSelector(
+        (state) =>
+          state.serviceTicket,
+      );
 
-  // Pre-select location if locationId is provided
-  //   useEffect(() => {
-  //     if (locationId && clientLocations?.length) {
-  //       const selectedLocation = clientLocations.find(
-  //         (location) => location.location_id === locationId
-  //       );
-  //       if (selectedLocation) {
-  //         setServiceRequest((prev) => ({
-  //           ...prev,
-  //           location_id: selectedLocation.location_id,
-  //           service_location: `${selectedLocation.address_line_one} ${selectedLocation.address_line_two}`
-  //         }));
-  //       }
-  //     }
-  //   }, [locationId, clientLocations]);
+    const {
+      access,
+    } =
+      useSelector(
+        (state) =>
+          state.user,
+      );
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "selected_client_location") {
-      setSelectedClientLocation(value);
-      setServiceRequest((prev) => ({
-        ...prev,
-        location_id: value,
-      }));
-    } else {
-      setServiceRequest((prev) => ({ ...prev, [name]: value }));
-    }
-  };
+    // STATE
+    const [
+      serviceRequest,
+      setServiceRequest,
+    ] = useState({
+      client_id: "",
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    delete serviceRequest?.selected_client_location;
-    dispatch(createServiceRequest(serviceRequest, navigate)).then((data) => {
-      if (data?.code == "SR201") {
-        setServiceRequest({
-          ...serviceRequest,
-          service_location: "",
-          local_onsite_contact: "",
-          local_onsite_contact_number: "",
-          service_ticket_details: "",
-        });
-      }
+      client_name:
+        "",
+
+      location_id:
+        "",
+
+      client_emp_user_id:
+        user?.client_emp_id ||
+        "",
+
+      contact_person:
+        `${user?.first_name} ${user?.first_name}` ||
+        "",
+
+      contact_phone_number:
+        user?.contact_number ||
+        "",
+
+      contact_email:
+        user?.email_id ||
+        "",
+
+      service_location:
+        "",
+
+      local_onsite_contact:
+        "",
+
+      local_onsite_contact_number:
+        "",
+
+      service_ticket_details:
+        "",
     });
-  };
 
-  // const handleBack = () => {
-  // const params = new URLSearchParams(searchParams);
+    const [
+      selectedClientLocation,
+      setSelectedClientLocation,
+    ] = useState(
+      "",
+    );
 
-  // if (clientId && clientId !== "null") {
-  //   params.set("client_id", clientId);
-  // }
-  // if (locationId && locationId !== "null") {
-  //   params.set("location_id", locationId);
-  // }
+    // FETCH DATA
+    useEffect(() => {
+      if (
+        !access.includes(
+          user?.user_type,
+        )
+      ) {
+        dispatch(
+          getServiceRequestInfo(),
+        );
+      } else {
+        dispatch(
+          getClients(),
+        );
+      }
+    }, [
+      user,
+      dispatch,
+      access,
+    ]);
 
-  //   navigate(`/service-requests`);
-  // };
+    // FETCH LOCATIONS
+    useEffect(() => {
+      if (
+        serviceRequest?.client_id
+      ) {
+        dispatch(
+          getLocationByClient(
+            serviceRequest?.client_id,
+          ),
+        );
+      }
+    }, [
+      dispatch,
+      serviceRequest?.client_id,
+    ]);
 
-  return (
-    <>
-      <Header />
-      <div className="flex">
-        <AdminSideNavbar />
-        <div className="container mx-auto p-4">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-2">
-              Create Customer Service Requests
-            </h2>
-            <form onSubmit={handleSave}>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col mb-4">
-                  <label htmlFor="client_name" className="mr-2">
-                    Client:
-                  </label>
-                  <input
-                    type="text"
-                    id="client_name"
-                    name="client_name"
-                    className="border border-gray-300 rounded px-3 py-1 w-full bg-gray-100 cursor-not-allowed"
-                    value={serviceReqInfo?.client_info?.company_name || ""}
-                    readOnly
-                  />
-                </div>
+    // PREFILL DATA
+    useEffect(() => {
+      if (
+        serviceReqInfo &&
+        serviceReqInfo.client_info
+      ) {
+        const fullName = `${serviceReqInfo.first_name?.trim()} ${serviceReqInfo.last_name?.trim()}`;
 
-                <div className="flex flex-col mb-4">
-                  <label htmlFor="selected_client_location" className="mr-2">
-                    Select Client Location*:
-                  </label>
-                  <select
-                    name="selected_client_location"
-                    className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={serviceRequest.location_id}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select location</option>
-                    {(serviceReqInfo?.locations?.length
-                      ? serviceReqInfo.locations
-                      : clientLocations
-                    ).map((loc) => (
-                      <option key={loc.location_id} value={loc.location_id}>
-                        {`${loc.address_line_one}, ${loc.city}`}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+        setServiceRequest(
+          (
+            prev,
+          ) => ({
+            ...prev,
+
+            client_id:
+              serviceReqInfo
+                .client_info
+                .client_id,
+
+            client_name:
+              serviceReqInfo
+                .client_info
+                .company_name,
+
+            location_id:
+              serviceReqInfo
+                ?.locations?.[0]
+                ?.location_id ||
+              "",
+
+            client_emp_user_id:
+              serviceReqInfo.client_emp_id,
+
+            contact_person:
+              fullName,
+
+            contact_phone_number:
+              serviceReqInfo.contact_number,
+
+            contact_email:
+              serviceReqInfo.email_id,
+          }),
+        );
+
+        if (
+          serviceReqInfo
+            .client_info
+            .client_id
+        ) {
+          dispatch(
+            getLocationByClient(
+              serviceReqInfo
+                .client_info
+                .client_id,
+            ),
+          );
+        }
+      }
+    }, [
+      serviceReqInfo,
+      dispatch,
+    ]);
+
+    // CHANGE HANDLER
+    const handleChange =
+      (e) => {
+        const {
+          name,
+          value,
+        } = e.target;
+
+        if (
+          name ===
+          "selected_client_location"
+        ) {
+          setSelectedClientLocation(
+            value,
+          );
+
+          setServiceRequest(
+            (
+              prev,
+            ) => ({
+              ...prev,
+              location_id:
+                value,
+            }),
+          );
+        } else {
+          setServiceRequest(
+            (
+              prev,
+            ) => ({
+              ...prev,
+              [name]:
+                value,
+            }),
+          );
+        }
+      };
+
+    // SAVE
+    const handleSave =
+      (e) => {
+        e.preventDefault();
+
+        delete serviceRequest?.selected_client_location;
+
+        dispatch(
+          createServiceRequest(
+            serviceRequest,
+            navigate,
+          ),
+        ).then(
+          (
+            data,
+          ) => {
+            if (
+              data?.code ===
+              "SR201"
+            ) {
+              setServiceRequest(
+                (
+                  prev,
+                ) => ({
+                  ...prev,
+                  service_location:
+                    "",
+
+                  local_onsite_contact:
+                    "",
+
+                  local_onsite_contact_number:
+                    "",
+
+                  service_ticket_details:
+                    "",
+                }),
+              );
+            }
+          },
+        );
+      };
+
+    // COMMON CLASSES
+    const inputClass =
+      "w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-300";
+
+    const labelClass =
+      "block text-sm font-semibold text-[#1E1B4B] mb-2";
+
+    return (
+      <>
+        <Header />
+
+        <div className="flex">
+          <AdminSideNavbar />
+
+          <div className="flex-1 bg-gradient-to-br from-[#FAFAFA] to-indigo-50 min-h-screen overflow-y-auto p-8">
+            {/* PAGE HEADER */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+              <div>
+                <h1 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">
+                  Create
+                  Customer
+                  Service
+                  Request
+                </h1>
+
+                <p className="text-gray-500 mt-1">
+                  Submit and
+                  manage
+                  customer
+                  service
+                  requests
+                </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col mb-4">
-                  <label htmlFor="contact_person" className="mr-2">
-                    Contact Person*:
-                  </label>
-                  <input
-                    type="text"
-                    id="contact_person"
-                    name="contact_person"
-                    className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={serviceRequest.contact_person}
-                    onChange={handleChange}
-                    required
-                    readOnly
-                  />
-                </div>
-                <div className="flex flex-col mb-4">
-                  <label htmlFor="contact_phone_number" className="mr-2">
-                    Contact Phone*:
-                  </label>
-                  <input
-                    type="tel"
-                    id="contact_phone_number"
-                    name="contact_phone_number"
-                    className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={serviceRequest.contact_phone_number}
-                    onChange={handleChange}
-                    required
-                    readOnly
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col mb-4">
-                  <label htmlFor="contact_email" className="mr-2">
-                    Contact Email:
-                  </label>
-                  <input
-                    type="email"
-                    id="contact_email"
-                    name="contact_email"
-                    className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={serviceRequest.contact_email}
-                    onChange={handleChange}
-                    required
-                    readOnly
-                  />
-                </div>
-                <div className="flex flex-col mb-4">
-                  <label htmlFor="service_location" className="mr-2">
-                    Service Location*:
-                  </label>
-                  <input
-                    type="text"
-                    id="service_location"
-                    name="service_location"
-                    className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={serviceRequest.service_location}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col mb-4">
-                  <label htmlFor="local_onsite_contact" className="mr-2">
-                    Onsite Contact (Optional):
-                  </label>
-                  <input
-                    type="text"
-                    id="local_onsite_contact"
-                    name="local_onsite_contact"
-                    className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={serviceRequest.local_onsite_contact}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex flex-col mb-4">
-                  <label htmlFor="local_onsite_contact_number" className="mr-2">
-                    Onsite Contact Number (Optional):
-                  </label>
-                  <input
-                    type="tel"
-                    id="local_onsite_contact_number"
-                    name="local_onsite_contact_number"
-                    className="border border-gray-300 rounded px-3 py-1 w-full"
-                    value={serviceRequest.local_onsite_contact_number}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label
-                    htmlFor="service_ticket_details"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Service Needed*
-                  </label>
-                  <textarea
-                    name="service_ticket_details"
-                    rows={5}
-                    className="w-full mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                    value={serviceRequest.service_ticket_details}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end mb-4">
+              {/* ACTION BUTTON */}
+              <div>
                 <button
                   type="submit"
-                  className="bg-indigo-700 text-white px-4 py-2 rounded m-2"
+                  form="addServiceRequestForm"
+                  disabled={
+                    serviceRequestLoading
+                  }
+                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 disabled:opacity-70"
                 >
+                  <MdAdd size={20} />
+
                   {serviceRequestLoading
                     ? "Saving..."
-                    : "Create Service Request"}
+                    : "Create Request"}
                 </button>
-                {/* <button
-                  type="button"
-                  onClick={handleBack}
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded m-2"
-                >
-                  Back
-                </button> */}
               </div>
-            </form>
+            </div>
+
+            {/* FORM CARD */}
+            <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
+              {/* TOP BAR */}
+              <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+              <form
+                id="addServiceRequestForm"
+                onSubmit={
+                  handleSave
+                }
+                className="p-8"
+              >
+                {/* TITLE */}
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
+                    <MdAssignment size={24} />
+                  </div>
+
+                  <div>
+                    <h2 className="text-2xl font-bold text-[#1E1B4B]">
+                      Service
+                      Request
+                      Details
+                    </h2>
+
+                    <p className="text-gray-500 text-sm">
+                      Fill in the
+                      details below
+                    </p>
+                  </div>
+                </div>
+
+                {/* CLIENT SECTION */}
+                <div className="mb-10">
+                  <div className="flex items-center gap-2 mb-5">
+                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+                    <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                      Client
+                      Information
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* CLIENT */}
+                    <div>
+                      <label
+                        htmlFor="client_name"
+                        className={
+                          labelClass
+                        }
+                      >
+                        Client
+                      </label>
+
+                      <div className="relative">
+                        <MdBusiness className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <input
+                          type="text"
+                          id="client_name"
+                          name="client_name"
+                          className={`${inputClass} pl-12 bg-gray-100 text-gray-500 cursor-not-allowed`}
+                          value={
+                            serviceReqInfo
+                              ?.client_info
+                              ?.company_name ||
+                            ""
+                          }
+                          readOnly
+                        />
+                      </div>
+                    </div>
+
+                    {/* LOCATION */}
+                    <div>
+                      <label
+                        htmlFor="selected_client_location"
+                        className={
+                          labelClass
+                        }
+                      >
+                        Select
+                        Client
+                        Location
+                        *
+                      </label>
+
+                      <div className="relative">
+                        <MdLocationOn className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <select
+                          name="selected_client_location"
+                          className={`${inputClass} pl-12`}
+                          value={
+                            serviceRequest.location_id
+                          }
+                          onChange={
+                            handleChange
+                          }
+                          required
+                        >
+                          <option value="">
+                            Select
+                            location
+                          </option>
+
+                          {(serviceReqInfo
+                            ?.locations
+                            ?.length
+                            ? serviceReqInfo.locations
+                            : clientLocations
+                          ).map(
+                            (
+                              loc,
+                            ) => (
+                              <option
+                                key={
+                                  loc.location_id
+                                }
+                                value={
+                                  loc.location_id
+                                }
+                              >
+                                {`${loc.address_line_one}, ${loc.city}`}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CONTACT SECTION */}
+                <div className="mb-10">
+                  <div className="flex items-center gap-2 mb-5">
+                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+                    <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                      Contact
+                      Information
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* CONTACT PERSON */}
+                    <div>
+                      <label
+                        htmlFor="contact_person"
+                        className={
+                          labelClass
+                        }
+                      >
+                        Contact
+                        Person
+                        *
+                      </label>
+
+                      <div className="relative">
+                        <MdPerson className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <input
+                          type="text"
+                          id="contact_person"
+                          name="contact_person"
+                          className={`${inputClass} pl-12 bg-gray-100 text-gray-500`}
+                          value={
+                            serviceRequest.contact_person
+                          }
+                          onChange={
+                            handleChange
+                          }
+                          required
+                          readOnly
+                        />
+                      </div>
+                    </div>
+
+                    {/* CONTACT PHONE */}
+                    <div>
+                      <label
+                        htmlFor="contact_phone_number"
+                        className={
+                          labelClass
+                        }
+                      >
+                        Contact
+                        Phone
+                        *
+                      </label>
+
+                      <div className="relative">
+                        <MdPhone className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <input
+                          type="tel"
+                          id="contact_phone_number"
+                          name="contact_phone_number"
+                          className={`${inputClass} pl-12 bg-gray-100 text-gray-500`}
+                          value={
+                            serviceRequest.contact_phone_number
+                          }
+                          onChange={
+                            handleChange
+                          }
+                          required
+                          readOnly
+                        />
+                      </div>
+                    </div>
+
+                    {/* CONTACT EMAIL */}
+                    <div>
+                      <label
+                        htmlFor="contact_email"
+                        className={
+                          labelClass
+                        }
+                      >
+                        Contact
+                        Email
+                      </label>
+
+                      <div className="relative">
+                        <MdEmail className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <input
+                          type="email"
+                          id="contact_email"
+                          name="contact_email"
+                          className={`${inputClass} pl-12 bg-gray-100 text-gray-500`}
+                          value={
+                            serviceRequest.contact_email
+                          }
+                          onChange={
+                            handleChange
+                          }
+                          required
+                          readOnly
+                        />
+                      </div>
+                    </div>
+
+                    {/* SERVICE LOCATION */}
+                    <div>
+                      <label
+                        htmlFor="service_location"
+                        className={
+                          labelClass
+                        }
+                      >
+                        Service
+                        Location
+                        *
+                      </label>
+
+                      <div className="relative">
+                        <MdLocationOn className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <input
+                          type="text"
+                          id="service_location"
+                          name="service_location"
+                          className={`${inputClass} pl-12`}
+                          value={
+                            serviceRequest.service_location
+                          }
+                          onChange={
+                            handleChange
+                          }
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* ONSITE CONTACT */}
+                    <div>
+                      <label
+                        htmlFor="local_onsite_contact"
+                        className={
+                          labelClass
+                        }
+                      >
+                        Onsite
+                        Contact
+                        (Optional)
+                      </label>
+
+                      <div className="relative">
+                        <MdPerson className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <input
+                          type="text"
+                          id="local_onsite_contact"
+                          name="local_onsite_contact"
+                          className={`${inputClass} pl-12`}
+                          value={
+                            serviceRequest.local_onsite_contact
+                          }
+                          onChange={
+                            handleChange
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    {/* ONSITE CONTACT NUMBER */}
+                    <div>
+                      <label
+                        htmlFor="local_onsite_contact_number"
+                        className={
+                          labelClass
+                        }
+                      >
+                        Onsite
+                        Contact
+                        Number
+                        (Optional)
+                      </label>
+
+                      <div className="relative">
+                        <MdPhone className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <input
+                          type="tel"
+                          id="local_onsite_contact_number"
+                          name="local_onsite_contact_number"
+                          className={`${inputClass} pl-12`}
+                          value={
+                            serviceRequest.local_onsite_contact_number
+                          }
+                          onChange={
+                            handleChange
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SERVICE DETAILS */}
+                <div>
+                  <div className="flex items-center gap-2 mb-5">
+                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+                    <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+                      Service
+                      Details
+                    </h3>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="service_ticket_details"
+                      className={
+                        labelClass
+                      }
+                    >
+                      Service
+                      Needed
+                      *
+                    </label>
+
+                    <div className="relative">
+                      <MdDescription className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                      <textarea
+                        name="service_ticket_details"
+                        rows={
+                          6
+                        }
+                        className={`${inputClass} pl-12 pt-4 resize-none`}
+                        value={
+                          serviceRequest.service_ticket_details
+                        }
+                        onChange={
+                          handleChange
+                        }
+                        required
+                        placeholder="Describe the service request in detail..."
+                      />
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
-    </>
-  );
-};
+      </>
+    );
+  };
 
 export default AddServiceRequest;

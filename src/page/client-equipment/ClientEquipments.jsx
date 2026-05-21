@@ -91,17 +91,15 @@ useEffect(() => {
 
 
 useEffect(() => {
-  if (user_type === "Client Employee" &&
-      !filters.model &&
-      !filters.device_type &&
-      !filters.status &&
-      !selectedClient &&
-      !selectedLocation &&
-      !sortConfig.key
-  ) {
+  if (user_type === "Client Employee") {
     fetchEquipments();
   }
-}, [filters, selectedClient, selectedLocation, sortConfig, user_type]);
+}, [
+  filters,
+  selectedLocation,
+  sortConfig,
+  user_type,
+]);
 
   const fetchEquipments = (sorting = {}) => {
     const { model, device_type, status } = filters;
@@ -126,36 +124,86 @@ useEffect(() => {
   };
   
 
-  const handleClientChange = (clientId) => {
-    setSelectedClient(clientId);
-    setSelectedLocation(null);
-  };
+const handleClientChange = (
+  clientId,
+) => {
+  setSelectedClient(clientId);
+  setSelectedLocation(null);
 
-  const handleLocationChange = (locationId) => {
-    setSelectedLocation(locationId);
-  };
+  dispatch(
+    clearClientEquipments(),
+  );
+};
+const handleLocationChange = (
+  locationId,
+) => {
+  setSelectedLocation(locationId);
 
+  dispatch(
+    clearClientEquipments(),
+  );
+};
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSearch = () => {
-    fetchEquipments();
+const handleSearch = () => {
+  fetchEquipments({
+    sort_by: sortConfig.key || "device_type",
+    order_by:
+      sortConfig.direction || "ASC",
+  });
+};
+
+const handleReset = () => {
+  // RESET FILTERS
+  const resetFilters = {
+    model: "",
+    device_type: "",
+    status: "",
   };
 
-  const handleReset = () => {
-    
-    setFilters({
-      model: "",
-      device_type: "",
-      status: "",
-    });
+  setFilters(resetFilters);
+
+  // RESET SORTING
+  const resetSort = {
+    key: "device_type",
+    direction: "ASC",
+  };
+
+  setSortConfig(resetSort);
+
+  // RESET CLIENT/LOCATION
+  if (user_type === "Client Employee") {
+    setSelectedLocation(null);
+  } else {
     setSelectedClient(null);
     setSelectedLocation(null);
-    setSortConfig({ key: "", direction: "ASC" });
-    setSearchParams({});
-  };
+  }
+
+  // CLEAR URL PARAMS
+  setSearchParams({});
+
+  // CLEAR EXISTING EQUIPMENTS
+  dispatch(clearClientEquipments());
+
+  // REFETCH FOR CLIENT EMPLOYEE
+  if (user_type === "Client Employee") {
+    dispatch(
+      getClientEquipments({
+        client_id: undefined,
+        location_id: undefined,
+        model: undefined,
+        device_type: undefined,
+        status: undefined,
+        user_type,
+        sort_by: "device_type",
+        order_by: "ASC",
+      }),
+    );
+  }
+};
 
   const handleEdit = (equipmentId) => {
     navigate(`/edit-client-equipment/${equipmentId}?${searchParams.toString()}`);
@@ -301,8 +349,17 @@ const getSortSymbol = (key) => {
               className="px-3 border border-gray-200 h-10 rounded"
             >
               {/* <option value="">All</option> */}
-              <option value="false">Active</option>
-              <option value="true">Retired</option>
+              <option value="">
+                  All
+                </option>
+
+                <option value="false">
+                  Active
+                </option>
+
+                <option value="true">
+                  Retired
+                </option>
             </select>
           </div>
           
@@ -377,247 +434,624 @@ const getSortSymbol = (key) => {
       <Header />
       <div className="flex">
         <AdminSideNavbar />
-        <div className="container mx-auto p-4 bg-gray-50 w-full h-screen overflow-y-scroll">
-          <div className="flex justify-between items-center">
-            <h1 className="font-bold text-lg">Client Equipment</h1>
-            <div className="flex gap-2">
-            {technicianAccess.includes(user_type) && (
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-                onClick={handleDownloadCSVTemplate}
-              >
-              CSV Template
-              </button>
+        {/* MAIN CONTAINER */}
+<div className="flex-1 bg-gradient-to-br from-[#FAFAFA] to-indigo-50 min-h-screen overflow-y-auto p-8">
+  {/* PAGE HEADER */}
+  <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 mb-8">
+    <div>
+      <h1 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">
+        Client Equipments
+      </h1>
+
+      <p className="text-gray-500 mt-1">
+        Manage, filter and monitor client devices
+      </p>
+    </div>
+
+    {/* ACTION BUTTONS */}
+    <div className="flex flex-wrap gap-3">
+      {technicianAccess.includes(user_type) && (
+        <button
+          className="px-5 py-3 rounded-2xl bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-all duration-300 shadow-sm"
+          onClick={handleDownloadCSVTemplate}
+        >
+          CSV Template
+        </button>
+      )}
+
+      {technicianAccess.includes(user_type) && (
+        <button
+          onClick={handleExportToExcel}
+          className="px-5 py-3 rounded-2xl bg-green-600 text-white font-semibold hover:bg-green-700 transition-all duration-300 shadow-md"
+        >
+          Export CSV
+        </button>
+      )}
+
+      {technicianAccess.includes(user_type) && (
+        <Link
+          to={`/add-client-equipment/${selectedClient}/${selectedLocation}?${searchParams.toString()}`}
+        >
+          <button className="px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+            Add Equipment
+          </button>
+        </Link>
+      )}
+    </div>
+  </div>
+
+  {/* CLIENT FILTERS */}
+  {technicianAccess.includes(user_type) && (
+    <div className="bg-white rounded-[28px] shadow-md border border-gray-100 p-6 mb-6">
+      <div className="flex items-center gap-2 mb-5">
+        <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+        <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+          Client & Location
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* CLIENT */}
+        <div>
+          <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+            Select Client
+          </label>
+
+          <select
+            id="client"
+            className="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
+            value={selectedClient || ""}
+            onChange={(e) =>
+              handleClientChange(
+                e.target.value,
+              )
+            }
+          >
+            <option value="">
+              Select a client
+            </option>
+
+            {loadingClients ? (
+              <option disabled>
+                Loading...
+              </option>
+            ) : (
+              [...(clients?.data || [])]
+                .sort((a, b) =>
+                  (
+                    a.company_name || ""
+                  ).localeCompare(
+                    b.company_name || "",
+                  ),
+                )
+                .map((client) => (
+                  <option
+                    key={
+                      client.client_id
+                    }
+                    value={
+                      client.client_id
+                    }
+                  >
+                    {
+                      client.company_name
+                    }
+                  </option>
+                ))
+            )}
+          </select>
+        </div>
+
+        {/* LOCATION */}
+        <div>
+          <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+            Select Location
+          </label>
+
+          <select
+            id="location"
+            className="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
+            value={
+              selectedLocation || ""
+            }
+            onChange={(e) =>
+              handleLocationChange(
+                e.target.value,
+              )
+            }
+            disabled={!selectedClient}
+          >
+            <option value="">
+              Select a location
+            </option>
+
+            {loadingLocations ? (
+              <option disabled>
+                Loading...
+              </option>
+            ) : (
+              [...(locations || [])]
+                .sort((a, b) => {
+                  const addressA =
+                    `${a.address_line_one || ""} ${a.address_line_two || ""}`.toLowerCase();
+
+                  const addressB =
+                    `${b.address_line_one || ""} ${b.address_line_two || ""}`.toLowerCase();
+
+                  return addressA.localeCompare(
+                    addressB,
+                  );
+                })
+                .map((location) => (
+                  <option
+                    key={
+                      location.location_id
+                    }
+                    value={
+                      location.location_id
+                    }
+                  >
+                    {
+                      location.address_line_one
+                    }{" "}
+                    {
+                      location.address_line_two
+                    }
+                  </option>
+                ))
+            )}
+          </select>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {/* SEARCH FILTER CARD */}
+  <div className="bg-white rounded-[28px] shadow-md border border-gray-100 p-6 mb-6">
+    <div className="flex items-center gap-2 mb-5">
+      <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+
+      <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
+        Equipment Filters
+      </h2>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
+      {/* LOCATION FOR CLIENT EMPLOYEE */}
+      {clientAccess?.includes(
+        client_type,
+      ) &&
+        userLocations?.length >
+          0 && (
+          <div>
+            <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+              Location
+            </label>
+
+            <select
+              id="location"
+              className="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
+              value={
+                selectedLocation ||
+                ""
+              }
+              onChange={(e) =>
+                handleLocationChange(
+                  e.target.value,
+                )
+              }
+            >
+              <option value="">
+                Select location
+              </option>
+
+              {loadingLocations ? (
+                <option disabled>
+                  Loading...
+                </option>
+              ) : (
+                [...userLocations]
+                  .sort((a, b) => {
+                    const addressA =
+                      `${a.address_line_one} ${a.address_line_two}`.toLowerCase();
+
+                    const addressB =
+                      `${b.address_line_one} ${b.address_line_two}`.toLowerCase();
+
+                    return addressA.localeCompare(
+                      addressB,
+                    );
+                  })
+                  .map((location) => (
+                    <option
+                      key={
+                        location.location_id
+                      }
+                      value={
+                        location.location_id
+                      }
+                    >
+                      {
+                        location.address_line_one
+                      }{" "}
+                      {
+                        location.address_line_two
+                      }
+                    </option>
+                  ))
               )}
-            {technicianAccess.includes(user_type) && (
-              <button
-                onClick={handleExportToExcel}
-                className="bg-green-600 text-white px-4 py-2 rounded"
-              >
-                Export to CSV
-              </button>
-              )}
-              {technicianAccess.includes(user_type) && (
-                <Link
-                  to={`/add-client-equipment/${selectedClient}/${selectedLocation}?${searchParams.toString()}`}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded flex-end"
-                  disabled={!selectedClient}
-                >
-                  Add New Equipment
-                </Link>
-              )}
-            </div>
+            </select>
           </div>
+        )}
 
-          {/* Client and Location Filters */}
-          {technicianAccess.includes(user_type) && (
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="flex flex-col">
-                <label htmlFor="client" className="text-sm font-medium">
-                  Select Client
-                </label>
-                <select
-                  id="client"
-                  className="border border-gray-300 rounded px-3 py-1 w-full"
-                  value={selectedClient || ""}
-                  onChange={(e) => handleClientChange(e.target.value)}
+      {/* DEVICE TYPE */}
+      <div>
+        <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+          Device Type
+        </label>
+
+        <input
+          type="text"
+          name="device_type"
+          value={
+            filters.device_type
+          }
+          onChange={
+            handleFilterChange
+          }
+          className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
+          placeholder="Enter device type"
+        />
+      </div>
+
+      {/* MODEL */}
+      <div>
+        <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+          Model
+        </label>
+
+        <input
+          type="text"
+          name="model"
+          value={filters.model}
+          onChange={
+            handleFilterChange
+          }
+          className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
+          placeholder="Enter model"
+        />
+      </div>
+
+      {/* STATUS */}
+      <div>
+        <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+          Status
+        </label>
+
+        <select
+          name="status"
+          value={filters.status}
+          onChange={
+            handleFilterChange
+          }
+          className="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
+        >
+          <option value="false">
+            Active
+          </option>
+
+          <option value="true">
+            Retired
+          </option>
+        </select>
+      </div>
+
+      {/* SEARCH */}
+      <div className="flex items-end">
+        <button
+          className="w-full px-4 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+          onClick={handleSearch}
+        >
+          Search
+        </button>
+      </div>
+
+      {/* RESET */}
+      <div className="flex items-end">
+        <button
+          className="w-full px-4 py-3 rounded-2xl bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-all duration-300"
+          onClick={handleReset}
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* TABLE CARD */}
+  {loadingEquipments ? (
+    <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 p-10 text-center text-gray-500">
+      Loading equipments...
+    </div>
+  ) : (
+    <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
+      {/* TOP BAR */}
+      <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+      {/* HEADER */}
+      <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <div>
+          <h2 className="text-2xl font-bold text-[#1E1B4B]">
+            Equipment List
+          </h2>
+
+          <p className="text-sm text-gray-500">
+            Total Equipments:{" "}
+            {equipments?.length || 0}
+          </p>
+        </div>
+      </div>
+
+      {/* TABLE */}
+      <div className="overflow-x-auto xl:overflow-x-hidden">
+        <table className="w-full table-auto">
+          <thead className="bg-indigo-50">
+            <tr>
+              {[
+                {
+                  key: "device_type",
+                  label:
+                    "Device Type",
+                },
+
+                {
+                  key: "device_id",
+                  label: "Device ID",
+                },
+
+                {
+                  key: "manufacturer",
+                  label: "Make",
+                },
+
+                {
+                  key: "model",
+                  label: "Model",
+                },
+
+                {
+                  key: "serial_number",
+                  label: "Serial",
+                },
+              ].map((column) => (
+                <th
+                  key={column.key}
+                  onClick={() =>
+                    handleSort(
+                      column.key,
+                    )
+                  }
+                  className="px-4 py-4 text-left text-xs uppercase tracking-wider font-bold text-indigo-600 cursor-pointer select-none"
                 >
-                  <option value="">Select a client</option>
-                  {loadingClients ? (
-                    <option value="" disabled>
-                      Loading...
-                    </option>
-                  ) : (
-                    // Sort clients alphabetically by company name
-                    [...(clients?.data || [])]
-                      .sort((a, b) => {
-                        const nameA = (a.company_name || '').toLowerCase();
-                        const nameB = (b.company_name || '').toLowerCase();
-                        return nameA.localeCompare(nameB);
-                      })
-                      .map((client) => (
-                        <option key={client.client_id} value={client.client_id}>
-                          {client.company_name}
-                        </option>
-                      ))
-                  )}
-                </select>
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="location" className="text-sm font-medium">
-                  Select Location
-                </label>
-                <select
-                  id="location"
-                  className="border border-gray-300 rounded px-3 py-1 w-full"
-                  value={selectedLocation || ""}
-                  onChange={(e) => handleLocationChange(e.target.value)}
-                  disabled={!selectedClient}
+                  <div className="flex items-center gap-1">
+                    {column.label}
+
+                    <span>
+                      {getSortSymbol(
+                        column.key,
+                      )}
+                    </span>
+                  </div>
+                </th>
+              ))}
+
+              <th className="w-[220px] px-4 py-4 text-center text-xs uppercase tracking-wider font-bold text-indigo-600">
+                Actions
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {equipments?.length ===
+            0 ? (
+              <tr>
+                <td
+                  colSpan="6"
+                  className="text-center py-14"
                 >
-                  <option value="">Select a location</option>
-                  {loadingLocations ? (
-                    <option value="" disabled>
-                      Loading...
-                    </option>
-                  ) : (
-                    // Sort locations alphabetically by address
-                    [...(locations || [])]
-                      .sort((a, b) => {
-                        const addressA = `${a.address_line_one || ''} ${a.address_line_two || ''}`.toLowerCase();
-                        const addressB = `${b.address_line_one || ''} ${b.address_line_two || ''}`.toLowerCase();
-                        return addressA.localeCompare(addressB);
-                      })
-                      .map((location) => (
-                        <option
-                          key={location.location_id}
-                          value={location.location_id}
-                        >
-                          {location.address_line_one} {location.address_line_two}
-                        </option>
-                      ))
-                  )}
-                </select>
-              </div>
-            </div>
-          )}
+                  <img
+                    src="not-found.png"
+                    alt="No Equipments"
+                    className="mx-auto w-40 h-40 opacity-70"
+                  />
 
-          {/* Filters */}
-          {newLocal}
-
-          {/* Equipment Table */}
-          {loadingEquipments ? (
-            <p>Loading equipments...</p>
-          ) : (
-            <table className="table-auto w-full border-collapse border border-gray-200">
-              <thead>
-                <tr className="bg-gray-100 text-left">
-                  <th className="border px-4 py-2" onClick={() => handleSort("device_type")}>Device Type
-                  <span className="ml-1">{getSortSymbol("device_type")}</span>
-                  </th>
-                  <th className="border px-4 py-2" onClick={() => handleSort("device_id")}>Device ID
-                  <span className="ml-1">{getSortSymbol("device_id")}</span>
-                  </th>
-                  <th className="border px-4 py-2" onClick={() => handleSort("manufacturer")}>Make
-                  <span className="ml-1">{getSortSymbol("manufacturer")}</span>
-                  </th>
-                  <th className="border px-4 py-2" onClick={() => handleSort("model")}>Model
-                  <span className="ml-1">{getSortSymbol("model")}</span>
-                  </th>
-                  <th className="border px-4 py-2" onClick={() => handleSort("serial_number")}>Serial
-                  <span className="ml-1">{getSortSymbol("serial_number")}</span>
-                  </th>
-                  <th className="border px-4 py-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {equipments?.length === 0 ? (
-                  <tr>
-                    <td colSpan="7" className="text-center">
-                      No Equipments Found
+                  <p className="text-gray-500 mt-4">
+                    No Equipments Found
+                  </p>
+                </td>
+              </tr>
+            ) : (
+              equipments?.map(
+                (equipment) => (
+                  <tr
+                    key={
+                      equipment.client_equipment_id
+                    }
+                    className="border-b border-gray-100 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    <td className="px-4 py-4 font-semibold text-[#1E1B4B]">
+                      {
+                        equipment.device_type
+                      }
                     </td>
-                  </tr>
-                ) : (
-                  equipments?.map((equipment) => (
-                    <tr key={equipment.client_equipment_id}>
-                      <td className="border px-4 py-2">
-                        {equipment.device_type}
-                      </td>
-                      <td className="border px-4 py-2">
-                        {equipment.device_id}
-                      </td>
-                      <td className="border px-4 py-2">
-                        {equipment.manufacturer}
-                      </td>
-                      <td className="border px-4 py-2">{equipment.model}</td>
-                      <td className="border px-4 py-2">
-                        {equipment.serial_number}
-                      </td>
-                      <td className="border px-4 py-2 flex gap-2">
+
+                    <td className="px-4 py-4 text-gray-600">
+                      {
+                        equipment.device_id
+                      }
+                    </td>
+
+                    <td className="px-4 py-4 text-gray-600">
+                      {
+                        equipment.manufacturer
+                      }
+                    </td>
+
+                    <td className="px-4 py-4 text-gray-600">
+                      {
+                        equipment.model
+                      }
+                    </td>
+
+                    <td className="px-4 py-4 text-gray-600">
+                      {
+                        equipment.serial_number
+                      }
+                    </td>
+
+                    {/* ACTIONS */}
+                    <td className="px-4 py-4 w-[220px]">
+                      <div className="flex items-center justify-center gap-2 flex-wrap">
+                        {/* EDIT */}
                         <button
                           onClick={() =>
-                            handleEdit(equipment.client_equipment_id)
+                            handleEdit(
+                              equipment.client_equipment_id,
+                            )
                           }
-                          className="p-2 bg-gray-100"
+                          className="w-10 h-10 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-all duration-300"
                         >
-                          <BiSolidEditAlt />
+                          <BiSolidEditAlt size={18} />
                         </button>
 
-                        {technicianAccess.includes(user_type) && (
-                     <>
-                     {equipment?.is_deleted === true ? (
-                       <div className="relative group">
-                         <button
-                           onClick={() => openDecommissionModal(equipment.client_equipment_id)}
-                           className="p-2 bg-gray-100"
-                         >
-                           <AiFillCheckCircle />
-                         </button>
-                         <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-700 text-white text-xs rounded py-1 px-2">
-                           Reactivate Equipment
-                         </span>
-                       </div>
-                     ) : (
-                       <div className="relative group">
-                         <button
-                           onClick={() => openDecommissionModal(equipment.client_equipment_id)}
-                           className="p-2 bg-gray-100"
-                         >
-                           <AiFillDelete />
-                         </button>
-                         <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-700 text-white text-xs rounded py-1 px-2">
-                           Decommission Equipment
-                         </span>
-                       </div>
-                     )}
-                   </>
-                   
+                        {/* DECOMMISSION / REACTIVATE */}
+                        {technicianAccess.includes(
+                          user_type,
+                        ) && (
+                          <>
+                            {equipment?.is_deleted ===
+                            true ? (
+                              <button
+                                onClick={() =>
+                                  openDecommissionModal(
+                                    equipment.client_equipment_id,
+                                  )
+                                }
+                                className="w-10 h-10 rounded-xl bg-green-50 hover:bg-green-100 text-green-600 flex items-center justify-center transition-all duration-300"
+                                title="Reactivate Equipment"
+                              >
+                                <AiFillCheckCircle size={18} />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() =>
+                                  openDecommissionModal(
+                                    equipment.client_equipment_id,
+                                  )
+                                }
+                                className="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-all duration-300"
+                                title="Decommission Equipment"
+                              >
+                                <AiFillDelete size={18} />
+                              </button>
+                            )}
+                          </>
                         )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          )}
 
-          {/* Decommission Modal */}
-          {decommissionModal.show && (
-            <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-              <div className="bg-white rounded p-6 w-1/3">
-                <h3 className="text-lg font-semibold mb-4">
-                {buttonText} Equipment
-                </h3>
-                <textarea
-                  name="reason"
-                  value={decommissionModal.reason}
-                  onChange={(e) =>
-                    setDecommissionModal((prev) => ({
-                      ...prev,
-                      reason: e.target.value,
-                    }))
-                  }
-                  className="border border-gray-300 rounded w-full p-2 mb-4"
-                  placeholder="Enter reason (optional)"
-                  rows={4}
-                ></textarea>
-                <div className="flex justify-end gap-4">
-                  <button
-                    onClick={closeDecommissionModal}
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleDecommission}
-                    className="bg-red-600 text-white px-4 py-2 rounded"
-                  >
-                    {buttonText}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+                        {/* RMA */}
+                        <button
+                          onClick={() =>
+                            navigate(
+                              `/add-device-rma/${equipment.client_equipment_id}`,
+                              {
+                                state:
+                                  {
+                                    clientId:
+                                      selectedClient,
+                                    locationId:
+                                      selectedLocation,
+                                    type: "decommission",
+                                  },
+                              },
+                            )
+                          }
+                          className="px-3 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-all duration-300"
+                        >
+                          RMA
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ),
+              )
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )}
+
+  {/* MODAL */}
+  {decommissionModal.show && (
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-[28px] shadow-2xl w-full max-w-lg overflow-hidden">
+        {/* TOP BAR */}
+        <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+        <div className="p-8">
+          <h3 className="text-2xl font-bold text-[#1E1B4B] mb-2">
+            {buttonText} Equipment
+          </h3>
+
+          <p className="text-gray-500 mb-6">
+            Add a reason for this
+            action (optional)
+          </p>
+
+          <textarea
+            name="reason"
+            value={
+              decommissionModal.reason
+            }
+            onChange={(e) =>
+              setDecommissionModal(
+                (prev) => ({
+                  ...prev,
+                  reason:
+                    e.target.value,
+                }),
+              )
+            }
+            className="w-full rounded-2xl border border-gray-200 p-4 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
+            placeholder="Enter reason..."
+            rows={5}
+          />
+
+          <div className="flex justify-end gap-3 mt-8">
+            <button
+              onClick={
+                closeDecommissionModal
+              }
+              className="px-5 py-3 rounded-2xl bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-all duration-300"
+            >
+              Cancel
+            </button>
+
+            <button
+              onClick={
+                handleDecommission
+              }
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              {buttonText}
+            </button>
+          </div>
         </div>
+      </div>
+    </div>
+  )}
+</div>
       </div>
     </>
   );
