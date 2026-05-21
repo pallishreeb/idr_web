@@ -16,6 +16,7 @@ const ServiceTicketAssigneePeopleCard = ({
   assignees,
   idrEmployees,
   serviceTicketId,
+  subcontractorAssignees,
 }) => {
   const dispatch = useDispatch();
   const { user_type } = useSelector((state) => state.user.user);
@@ -31,7 +32,7 @@ const ServiceTicketAssigneePeopleCard = ({
   };
 
   const handleAddAssignee = (newTechnician) => {
-    dispatch(assignPeopleToServiceTicket(newTechnician,null,true))
+    dispatch(assignPeopleToServiceTicket(newTechnician, null, true))
       .then((response) => {
         if (response.code === "ST201") {
           toast.success("People assigned to service ticket.");
@@ -50,22 +51,20 @@ const ServiceTicketAssigneePeopleCard = ({
 
   const handleDelete = (assigneeId) => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you really want to delete this assignee?',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "Do you really want to delete this assignee?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it',
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, keep it",
     }).then((result) => {
       if (result.isConfirmed) {
-         dispatch(deleteAssignee(assigneeId)).then((res) =>{
+        dispatch(deleteAssignee(assigneeId)).then((res) => {
           dispatch(getServiceTicketDetails(serviceTicketId));
           dispatch(getClients());
           dispatch(fetchIDREmployees());
-         });
-
+        });
       }
-  
     });
   };
   return (
@@ -88,14 +87,14 @@ const ServiceTicketAssigneePeopleCard = ({
           <div key={index} className="border border-gray-200 p-4">
             <div className="flex justify-end">
               {user_type === "Admin" && (
-               <button
-               className="p-[4px] bg-gray-100 cursor-pointer"
-               onClick={() => handleDelete(technician.assignee_id)}
-             >
-               <AiFillDelete/>
-             </button>
-                )}
-                </div>
+                <button
+                  className="p-[4px] bg-gray-100 cursor-pointer"
+                  onClick={() => handleDelete(technician.assignee_id)}
+                >
+                  <AiFillDelete />
+                </button>
+              )}
+            </div>
             <div className="grid grid-cols-2 gap-4">
               {/* Technician Name */}
               <div className="mb-4">
@@ -112,6 +111,37 @@ const ServiceTicketAssigneePeopleCard = ({
                   {technician.project_manager || "NA"}
                 </div>
               </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Subcontractor Assignees for clients */}
+      {/* {user_type === "Client Employee" && ()} */}
+      <div className="grid grid-cols-1 gap-6">
+        {subcontractorAssignees?.map((subcontractor) => (
+          <div
+            key={subcontractor.subcontractor_in_st_id}
+            className="border border-gray-200 p-4"
+          >
+            <div className="grid grid-cols-2 gap-4">
+              {/* Subcontractor Name */}
+              <div className="mb-4">
+                <label className="font-normal text-base">
+                  Technician Name
+                </label>
+                <div className="px-2 py-2 border border-gray-200 h-10 rounded text-sm w-full">
+                  {subcontractor.subcontractor_user_name || "NA"}
+                </div>
+              </div>
+
+              {/* Project Manager */}
+              {/* <div className="mb-4">
+                <label className="font-normal text-base">Project Manager</label>
+                <div className="px-2 py-2 border border-gray-200 h-10 rounded text-sm w-full">
+                  {subcontractor.project_manager || "NA"}
+                </div>
+              </div> */}
             </div>
           </div>
         ))}

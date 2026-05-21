@@ -1,47 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom'; 
-import { userLogin } from '../../actions/userActions';
-import { toast } from 'react-toastify';
+/** @format */
+
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { userLogin } from "../../actions/userActions";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const loginError = useSelector(state => state.user.error);
-  const loginLoading = useSelector(state => state.user.loading);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const loginError = useSelector((state) => state.user.error);
+  const loginLoading = useSelector((state) => state.user.loading);
 
-
-  // useEffect(()=>{
-  //   const token = localStorage.getItem("user");
-  //   if(token){
-  //     navigate('/admin/dashboard')
-  //   }
-  // })
   useEffect(() => {
-  const storedUser = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("user");
+    if (token) {
+      navigate("/admin/dashboard");
+    }
+  });
+  //   useEffect(() => {
+  //   const storedUser = JSON.parse(localStorage.getItem("user"));
 
-  if (!storedUser) return;
+  //   if (!storedUser) return;
 
-  const { user_type, subcontractor_id } = storedUser;
-  if (user_type === "Subcontractor") {
-    navigate(`/edit-subcontractor/${subcontractor_id}`, { replace: true });
-  } else {
-    navigate("/admin/dashboard", { replace: true });
-  }
-}, []);
+  //   const { user_type, subcontractor_id } = storedUser;
+  //   if (user_type === "Subcontractor") {
+  //     navigate(`/edit-subcontractor/${subcontractor_id}`, { replace: true });
+  //   } else {
+  //     navigate("/admin/dashboard", { replace: true });
+  //   }
+  // }, []);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error('Please provide your email and password to login!');
+      toast.error("Please provide your email and password to login!");
       return;
     }
     // Dispatch the loginUser action
-    dispatch(userLogin({ email_id: email, password },navigate));
+    dispatch(userLogin({ email_id: email, password }, navigate));
     // navigate('/admin/dashboard');
   };
-
 
   return (
     <div className="flex h-screen">
@@ -59,7 +59,7 @@ const Login = () => {
       {/* Right side with login form */}
       <div className="w-full lg:w-1/2 p-8 flex items-center justify-center">
         <div className="w-full md:w-96 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <div className="text-center mb-4">
+          <div className="text-center mb-4">
             <img
               src="idr-logo.png"
               alt="Logo"
@@ -71,7 +71,10 @@ const Login = () => {
           {/* {loginError && <div className="text-red-500 text-sm mb-4">{loginError}</div>} */}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="email"
+              >
                 Email
               </label>
               <input
@@ -84,7 +87,10 @@ const Login = () => {
               />
             </div>
             <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="password"
+              >
                 Password
               </label>
               <input
@@ -98,7 +104,8 @@ const Login = () => {
             </div>
             {/* Forgot Password link */}
             <div className="mb-6 text-right">
-              <Link to="/forgot-password"
+              <Link
+                to="/forgot-password"
                 className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
               >
                 Forgot password?
@@ -111,7 +118,7 @@ const Login = () => {
                 type="submit"
                 disabled={!email || !password}
               >
-                {loginLoading ? 'Submitting' : 'Sign In'}
+                {loginLoading ? "Submitting" : "Sign In"}
               </button>
             </div>
           </form>

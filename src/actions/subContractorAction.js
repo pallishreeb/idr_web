@@ -1,6 +1,7 @@
 /** @format */
 
 import axios from "../axios-config";
+import { fetchJson as fetchJsonGet } from "../fetch-configs";
 import { toast } from "react-toastify";
 import {
   subcontractorStart,

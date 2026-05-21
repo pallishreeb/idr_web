@@ -441,6 +441,9 @@ const EditServiceTicket = () => {
             handleAssigneeChange={handleAssigneeChange}
             loading={loading}
             serviceTicketId={serviceTicketId}
+            subcontractorAssignees={
+              serviceTicketDetails?.subcontractor_in_service_tickets
+            }
           />
           <ShowSubcontractorUsers
             subcontractorAssignees={
