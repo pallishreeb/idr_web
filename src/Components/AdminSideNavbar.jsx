@@ -495,7 +495,6 @@ const fullname = first_name + ' ' + last_name
           {[
             "Admin",
             "Subadmin",
-            "IDR Employee",
           ].includes(user_type) && (
             <>
               <SectionHeader

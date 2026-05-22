@@ -400,6 +400,7 @@ const NotesTable = ({
                         <h3 className="text-sm font-semibold text-[#1E1B4B]">
                           {note?.profile?.first_name} {note?.profile?.last_name}
                         </h3>
+                        {access.includes(user_type) && (<>
 
                         {/* ACCEPTED BADGE */}
                         {note.is_added_by_subcontractor &&
@@ -440,6 +441,7 @@ const NotesTable = ({
                               Rejected
                             </span>
                           )}
+                          </>)}
                       </div>
 
                       {/* DATE */}

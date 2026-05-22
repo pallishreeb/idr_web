@@ -71,7 +71,7 @@ const SetUserPasswordForm = () => {
         },
         navigate,
         location.state,
-        "/client-employees",
+        location?.state?.redirectPath || null
       ),
     );
   };

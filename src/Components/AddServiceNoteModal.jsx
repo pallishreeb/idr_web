@@ -127,7 +127,7 @@ const AddServiceNoteModal = ({ isOpen, onClose, onSave, serviceTicketId }) => {
                 </h2>
 
                 <p className="text-sm text-gray-500 mt-1">
-                  Add detailed notes and updates for this service ticket
+                  Add  notes and updates for this service ticket
                 </p>
               </div>
             </div>
@@ -194,7 +194,7 @@ const AddServiceNoteModal = ({ isOpen, onClose, onSave, serviceTicketId }) => {
                 transition-all
                 duration-300
               "
-              placeholder="Write detailed service notes, troubleshooting updates, resolutions, technician comments, or important observations..."
+              placeholder="Write detailed service notes..."
               name="comments"
               value={note.comments}
               onChange={handleInputChange}

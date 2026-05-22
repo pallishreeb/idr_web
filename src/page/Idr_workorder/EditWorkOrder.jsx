@@ -49,6 +49,7 @@ const EditWorkOrder = () => {
   const clientEmployees = useSelector(
     (state) => state.clientEmployee.clientEmployees,
   );
+  const { access } = useSelector((state) => state.user);
   const { user_type } = useSelector((state) => state.user.user);
   const idrEmployees = useSelector((state) => state.employee.idrEmployees);
   const [workOrder, setWorkOrder] = useState(null);
@@ -452,16 +453,18 @@ const EditWorkOrder = () => {
             workOrderId={workOrderId}
             subcontractorAssignees={subcontractorUsers}
           />
-          <ShowSubcontractorUsers
-            subcontractorAssignees={subcontractorUsers}
-            parentId={workOrderId}
-            assignAction={assignSubcontractorUsersToWorkOrder}
-            deleteAction={deleteSubcontractorUserFromWorkOrder}
-            refreshAction={getWorkOrderDetails}
-            parentKey="work_order_id"
-            idKey="subcontractor_in_wo_id" // 🔥 unique id key for WO
-            title="Subcontractor Users"
-          />
+          {access.includes(user_type) && (
+            <ShowSubcontractorUsers
+              subcontractorAssignees={subcontractorUsers}
+              parentId={workOrderId}
+              assignAction={assignSubcontractorUsersToWorkOrder}
+              deleteAction={deleteSubcontractorUserFromWorkOrder}
+              refreshAction={getWorkOrderDetails}
+              parentKey="work_order_id"
+              idKey="subcontractor_in_wo_id" // 🔥 unique id key for WO
+              title="Subcontractor Users"
+            />
+          )}
           {/* Show Images  */}
           <WorkOrderImages
             images={serviceTicketImages}

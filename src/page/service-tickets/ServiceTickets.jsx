@@ -607,6 +607,7 @@ const ServiceTickets = () => {
                                 </Link>
 
                                 {/* DUPLICATE */}
+                                {access.includes(user_type) && (
                                 <Link
                                   to="/add-service-ticket"
                                   state={{
@@ -630,7 +631,7 @@ const ServiceTickets = () => {
                                     <MdContentCopy className="text-lg" />
                                   </button>
                                 </Link>
-
+                                )}
                                 {/* DELETE */}
                                 {user_type === "Admin" && (
                                   <button

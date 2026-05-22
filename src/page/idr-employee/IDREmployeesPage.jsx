@@ -134,7 +134,11 @@ const IDREmployeesPage = () => {
       userId,
     ) => {
       navigate(
-        `/set-user-password/${userId}`,
+        `/set-user-password/${userId}`,{
+        state: {
+        redirectPath: "/idr-employees",
+      },
+        }
       );
     };
 

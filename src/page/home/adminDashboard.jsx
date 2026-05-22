@@ -21,9 +21,7 @@ import { fetchUsers } from "../../actions/userActions";
 
 import { getWorkOrderLists } from "../../actions/workOrderActions";
 
-import {
-  getServiceTicketLists,
-} from "../../actions/serviceTicket";
+import { getServiceTicketLists } from "../../actions/serviceTicket";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -34,17 +32,11 @@ const AdminDashboard = () => {
 
   const usersLoading = useSelector((state) => state.user.loading);
 
-  const { workOrders } = useSelector(
-    (state) => state.workOrder,
-  );
+  const { workOrders } = useSelector((state) => state.workOrder);
 
-  const { serviceTickets } = useSelector(
-    (state) => state.serviceTicket,
-  );
+  const { serviceTickets } = useSelector((state) => state.serviceTicket);
 
-  const { user_type } = useSelector(
-    (state) => state.user.user,
-  );
+  const { user_type } = useSelector((state) => state.user.user);
 
   const [user, setUser] = useState(null);
 
@@ -57,20 +49,12 @@ const AdminDashboard = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    let loggedInUsers = JSON.parse(
-      localStorage.getItem("user"),
-    );
+    let loggedInUsers = JSON.parse(localStorage.getItem("user"));
 
     setUser(loggedInUsers);
   }, [loggedInuser, users]);
 
-  const statuses = [
-    "Open",
-    "Design",
-    "In Progress",
-    "Reviewing",
-    "Closed",
-  ];
+  const statuses = ["Open", "Design", "In Progress", "Reviewing", "Closed"];
 
   const ticketStatuses = ["Open", "Closed"];
 
@@ -78,10 +62,9 @@ const AdminDashboard = () => {
     const statusCounts = {};
 
     statuses.forEach((status) => {
-      statusCounts[status] =
-        workOrders?.workOrder?.filter(
-          (order) => order.status === status,
-        ).length;
+      statusCounts[status] = workOrders?.workOrder?.filter(
+        (order) => order.status === status,
+      ).length;
     });
 
     return statusCounts;
@@ -91,10 +74,9 @@ const AdminDashboard = () => {
     const statusCounts = {};
 
     ticketStatuses.forEach((status) => {
-      statusCounts[status] =
-        serviceTickets?.filter(
-          (ticket) => ticket.status === status,
-        ).length;
+      statusCounts[status] = serviceTickets?.filter(
+        (ticket) => ticket.status === status,
+      ).length;
     });
 
     return statusCounts;
@@ -102,19 +84,13 @@ const AdminDashboard = () => {
 
   const statusCounts = getStatusCounts();
 
-  const ticketStatusCounts =
-    getTicketStatusCounts();
+  const ticketStatusCounts = getTicketStatusCounts();
 
-  const subcontractorsAccess = [
-    "Subcontractor",
-    "Subcontractor_User",
-  ];
+  const subcontractorsAccess = ["Subcontractor", "Subcontractor_User"];
 
-  const totalWorkOrders =
-    workOrders?.workOrder?.length || 0;
+  const totalWorkOrders = workOrders?.workOrder?.length || 0;
 
-  const totalServiceTickets =
-    serviceTickets?.length || 0;
+  const totalServiceTickets = serviceTickets?.length || 0;
 
   const totalUsers = users?.data?.length || 0;
 
@@ -122,13 +98,9 @@ const AdminDashboard = () => {
     <div className="bg-white rounded-[28px] p-6 shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-gray-500 text-sm font-medium">
-            {title}
-          </p>
+          <p className="text-gray-500 text-sm font-medium">{title}</p>
 
-          <h1 className="text-3xl font-bold text-[#1E1B4B] mt-2">
-            {count}
-          </h1>
+          <h1 className="text-3xl font-bold text-[#1E1B4B] mt-2">{count}</h1>
         </div>
 
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
@@ -138,10 +110,7 @@ const AdminDashboard = () => {
     </div>
   );
 
-  const renderStatusItem = (
-    status,
-    count,
-  ) => (
+  const renderStatusItem = (status, count) => (
     <div
       key={status}
       className="flex items-center gap-4 bg-gray-50 hover:bg-indigo-50 transition-all duration-300 rounded-2xl px-4 py-3 border border-gray-100"
@@ -151,13 +120,9 @@ const AdminDashboard = () => {
       </div>
 
       <div>
-        <h1 className="font-semibold text-[#1E1B4B]">
-          {status}
-        </h1>
+        <h1 className="font-semibold text-[#1E1B4B]">{status}</h1>
 
-        <span className="text-indigo-600 font-bold text-lg">
-          {count}
-        </span>
+        <span className="text-indigo-600 font-bold text-lg">{count}</span>
       </div>
     </div>
   );
@@ -198,8 +163,7 @@ const AdminDashboard = () => {
                   </h1>
 
                   <p className="text-gray-500 text-[15px]">
-                    Welcome to IDR Technology
-                    Solution Portal.
+                    Welcome to IDR Technology Solution Portal.
                   </p>
                 </div>
 
@@ -211,9 +175,7 @@ const AdminDashboard = () => {
                     </div>
 
                     <div>
-                      <p className="text-gray-500 text-sm">
-                        Phone
-                      </p>
+                      <p className="text-gray-500 text-sm">Phone</p>
 
                       <p className="font-semibold text-[#1E1B4B]">
                         {user?.contact_number !== null
@@ -230,9 +192,7 @@ const AdminDashboard = () => {
                     </div>
 
                     <div>
-                      <p className="text-gray-500 text-sm">
-                        Email
-                      </p>
+                      <p className="text-gray-500 text-sm">Email</p>
 
                       <p className="font-semibold text-[#1E1B4B]">
                         {user?.email_id}
@@ -253,11 +213,9 @@ const AdminDashboard = () => {
           </div>
 
           {/* STAT SUMMARY */}
-          {!subcontractorsAccess.includes(
-            user_type,
-          ) && (
+          {/* {!subcontractorsAccess.includes(user_type) && ( */}
             <>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
+              {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
                 {statusCard(
                   "Total Work Orders",
                   totalWorkOrders,
@@ -270,12 +228,8 @@ const AdminDashboard = () => {
                   <MdOutlineSupportAgent size={28} />,
                 )}
 
-                {statusCard(
-                  "Users",
-                  totalUsers,
-                  <MdPeople size={28} />,
-                )}
-              </div>
+                {user_type ==="Admin" && statusCard("Users", totalUsers, <MdPeople size={28} />)}
+              </div> */}
 
               {/* MAIN CONTENT */}
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
@@ -291,10 +245,7 @@ const AdminDashboard = () => {
 
                   <div className="flex flex-col gap-4">
                     {statuses.map((status) =>
-                      renderStatusItem(
-                        status,
-                        statusCounts[status],
-                      ),
+                      renderStatusItem(status, statusCounts[status]),
                     )}
                   </div>
                 </div>
@@ -311,10 +262,7 @@ const AdminDashboard = () => {
 
                   <div className="flex flex-col gap-4">
                     {ticketStatuses.map((status) =>
-                      renderStatusItem(
-                        status,
-                        ticketStatusCounts[status],
-                      ),
+                      renderStatusItem(status, ticketStatusCounts[status]),
                     )}
                   </div>
                 </div>
@@ -350,18 +298,14 @@ const AdminDashboard = () => {
                       <tbody>
                         {usersLoading ? (
                           <tr>
-                            <td
-                              colSpan="3"
-                              className="px-6 py-4"
-                            >
+                            <td colSpan="3" className="px-6 py-4">
                               Loading...
                             </td>
                           </tr>
                         ) : (
                           <tr className="hover:bg-gray-50 transition-all duration-200 border-b border-gray-100">
                             <td className="px-6 py-5 whitespace-nowrap font-medium text-[#1E1B4B]">
-                              {user?.first_name !==
-                              null
+                              {user?.first_name !== null
                                 ? `${user?.first_name} ${user?.last_name}`
                                 : "NA"}
                             </td>
@@ -383,7 +327,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </>
-          )}
+          {/* )} */}
         </div>
       </div>
     </>

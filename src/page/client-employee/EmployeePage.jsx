@@ -168,6 +168,7 @@ const EmployeePage = () => {
       {
         state: {
           selectedClient,
+          redirectPath: "/client-employees",
         },
       },
     );

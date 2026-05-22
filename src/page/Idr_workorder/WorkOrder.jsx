@@ -1,37 +1,23 @@
 /** @format */
 
-import React, {
-  useEffect,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 
-import {
-  useDispatch,
-  useSelector,
-} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Swal from "sweetalert2";
 
-import {
-  Link,
-  useLocation,
-  useNavigate
-} from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import {
-  BiSolidEditAlt,
-} from "react-icons/bi";
+import { BiSolidEditAlt } from "react-icons/bi";
 
-import {
-  AiFillDelete,
-} from "react-icons/ai";
+import { AiFillDelete } from "react-icons/ai";
 
 import {
   MdSearch,
   MdRefresh,
   MdAdd,
   MdAssignment,
-  MdContentCopy
+  MdContentCopy,
 } from "react-icons/md";
 
 import Header from "../../Components/Header";
@@ -42,374 +28,167 @@ import {
   deleteWorkOrder,
 } from "../../actions/workOrderActions";
 
-import {
-  getLocationByClient,
-} from "../../actions/locationActions";
+import { getLocationByClient } from "../../actions/locationActions";
 
-import {
-  getClients,
-} from "../../actions/clientActions";
+import { getClients } from "../../actions/clientActions";
 
-import {
-  fetchIDREmployees,
-} from "../../actions/employeeActions";
+import { fetchIDREmployees } from "../../actions/employeeActions";
 
-import {
-  toast,
-} from "react-toastify";
+import { toast } from "react-toastify";
 
 const WorkOrder = () => {
-  const dispatch =
-    useDispatch();
+  const dispatch = useDispatch();
 
-  const location =
-    useLocation();
-   
-   const navigate = useNavigate() 
+  const location = useLocation();
 
-  const [filters, setFilters] =
-    useState({
-      client_id: "",
-      status: "",
-      technician: "",
-      project_manager: "",
-      location_id: "",
-      is_billed: "",
-    });
+  const navigate = useNavigate();
 
-  const [
-    sortConfig,
-    setSortConfig,
-  ] = useState({
-    key: "",
-    direction:
-      "asc",
+  const [filters, setFilters] = useState({
+    client_id: "",
+    status: "",
+    technician: "",
+    project_manager: "",
+    location_id: "",
+    is_billed: "",
   });
 
-  const {
-    user_type,
-    client_type,
-    locations,
-  } =
-    useSelector(
-      (
-        state,
-      ) =>
-        state.user.user,
-    );
+  const [sortConfig, setSortConfig] = useState({
+    key: "",
+    direction: "asc",
+  });
 
-  const {
-    access,
-    clientAccess,
-    technicianAccess,
-  } =
-    useSelector(
-      (
-        state,
-      ) =>
-        state.user,
-    );
+  const { user_type, client_type, locations } = useSelector(
+    (state) => state.user.user,
+  );
 
-  const {
-    workOrders,
-    loading,
-  } =
-    useSelector(
-      (
-        state,
-      ) =>
-        state.workOrder,
-    );
+  const { access, clientAccess, technicianAccess } = useSelector(
+    (state) => state.user,
+  );
 
-  const {
-    clients,
-  } =
-    useSelector(
-      (
-        state,
-      ) =>
-        state.client,
-    );
+  const { workOrders, loading } = useSelector((state) => state.workOrder);
 
-  const {
-    idrEmployees,
-  } =
-    useSelector(
-      (
-        state,
-      ) =>
-        state.employee,
-    );
+  const { clients } = useSelector((state) => state.client);
 
-  const clientLocations =
-    useSelector(
-      (
-        state,
-      ) =>
-        state.location
-          .locations,
-    );
+  const { idrEmployees } = useSelector((state) => state.employee);
+
+  const clientLocations = useSelector((state) => state.location.locations);
 
   useEffect(() => {
-    const appliedFilters =
-      location.state
-        ?.filters || {};
+    const appliedFilters = location.state?.filters || {};
 
-    setFilters(
-      appliedFilters,
-    );
+    setFilters(appliedFilters);
 
-    dispatch(
-      getWorkOrderLists(
-        appliedFilters,
-      ),
-    );
+    dispatch(getWorkOrderLists(appliedFilters));
 
-    dispatch(
-      getClients(),
-    );
+    dispatch(getClients());
 
-    dispatch(
-      fetchIDREmployees(),
-    );
-  }, [
-    dispatch,
-    location,
-  ]);
+    dispatch(fetchIDREmployees());
+  }, [dispatch, location]);
 
   useEffect(() => {
-    if (
-      filters?.client_id
-    ) {
-      dispatch(
-        getLocationByClient(
-          filters.client_id,
-        ),
-      );
+    if (filters?.client_id) {
+      dispatch(getLocationByClient(filters.client_id));
     }
-  }, [
-    dispatch,
-    filters?.client_id,
-  ]);
+  }, [dispatch, filters?.client_id]);
 
-  const handleFilterChange =
-    (e) => {
-      const {
-        name,
-        value,
-      } = e.target;
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
 
-      setFilters({
-        ...filters,
-        [name]:
-          value,
-      });
-    };
+    setFilters({
+      ...filters,
+      [name]: value,
+    });
+  };
 
-  const handleDelete =
-    (
-      orderId,
-    ) => {
-      Swal.fire({
-        title:
-          "Are you sure?",
-        text: "Do you really want to delete this work order?",
-        icon:
-          "warning",
-        showCancelButton: true,
-        confirmButtonText:
-          "Yes, delete it!",
-      }).then(
-        (
-          result,
-        ) => {
-          if (
-            result.isConfirmed
-          ) {
-            dispatch(
-              deleteWorkOrder(
-                orderId,
-              ),
-            )
-              .then(
-                () => {
-                  dispatch(
-                    getWorkOrderLists(
-                      filters,
-                    ),
-                  );
-                },
-              )
-              .catch(
-                (
-                  error,
-                ) => {
-                  console.log(
-                    error,
-                  );
+  const handleDelete = (orderId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this work order?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteWorkOrder(orderId))
+          .then(() => {
+            dispatch(getWorkOrderLists(filters));
+          })
+          .catch((error) => {
+            console.log(error);
 
-                  toast.error(
-                    "Failed to delete work order",
-                  );
-                },
-              );
-          }
-        },
-      );
-    };
-
-  const handleSearch =
-    () => {
-      dispatch(
-        getWorkOrderLists(
-          filters,
-        ),
-      );
-    };
-
-  const handleReset =
-    () => {
-      const clearedFilters =
-        {
-          status:
-            "",
-          client_id:
-            "",
-          location_id:
-            "",
-          technician:
-            "",
-          project_manager:
-            "",
-          is_billed:
-            "",
-        };
-
-      setFilters(
-        clearedFilters,
-      );
-
-      dispatch(
-        getWorkOrderLists(
-          clearedFilters,
-        ),
-      );
-    };
-
-  const handleSort =
-    (key) => {
-      let direction =
-        "asc";
-
-      if (
-        sortConfig.key ===
-          key &&
-        sortConfig.direction ===
-          "asc"
-      ) {
-        direction =
-          "desc";
+            toast.error("Failed to delete work order");
+          });
       }
+    });
+  };
 
-      setSortConfig({
-        key,
-        direction,
-      });
+  const handleSearch = () => {
+    dispatch(getWorkOrderLists(filters));
+  };
+
+  const handleReset = () => {
+    const clearedFilters = {
+      status: "",
+      client_id: "",
+      location_id: "",
+      technician: "",
+      project_manager: "",
+      is_billed: "",
     };
 
-  const sortedWorkOrders =
-    React.useMemo(
-      () => {
-        if (
-          !workOrders
-        )
-          return [];
+    setFilters(clearedFilters);
 
-        const sorted =
-          [
-            ...(workOrders?.workOrder ||
-              []),
-          ];
+    dispatch(getWorkOrderLists(clearedFilters));
+  };
 
-        if (
-          sortConfig.key
-        ) {
-          sorted.sort(
-            (
-              a,
-              b,
-            ) => {
-              let aValue =
-                a[
-                  sortConfig.key
-                ];
+  const handleSort = (key) => {
+    let direction = "asc";
 
-              let bValue =
-                b[
-                  sortConfig.key
-                ];
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
 
-              if (
-                sortConfig.key ===
-                "client_name"
-              ) {
-                aValue =
-                  a.client_name ||
-                  "";
+    setSortConfig({
+      key,
+      direction,
+    });
+  };
 
-                bValue =
-                  b.client_name ||
-                  "";
-              }
+  const sortedWorkOrders = React.useMemo(() => {
+    if (!workOrders) return [];
 
-              if (
-                sortConfig.key ===
-                "service_date"
-              ) {
-                aValue =
-                  new Date(
-                    aValue,
-                  );
+    const sorted = [...(workOrders?.workOrder || [])];
 
-                bValue =
-                  new Date(
-                    bValue,
-                  );
-              }
+    if (sortConfig.key) {
+      sorted.sort((a, b) => {
+        let aValue = a[sortConfig.key];
 
-              if (
-                aValue <
-                bValue
-              )
-                return sortConfig.direction ===
-                  "asc"
-                  ? -1
-                  : 1;
+        let bValue = b[sortConfig.key];
 
-              if (
-                aValue >
-                bValue
-              )
-                return sortConfig.direction ===
-                  "asc"
-                  ? 1
-                  : -1;
+        if (sortConfig.key === "client_name") {
+          aValue = a.client_name || "";
 
-              return 0;
-            },
-          );
+          bValue = b.client_name || "";
         }
 
-        return sorted;
-      },
-      [
-        workOrders,
-        sortConfig,
-      ],
-    );
+        if (sortConfig.key === "service_date") {
+          aValue = new Date(aValue);
 
-  const filterInputClass =
-    `
+          bValue = new Date(bValue);
+        }
+
+        if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+
+        if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+
+        return 0;
+      });
+    }
+
+    return sorted;
+  }, [workOrders, sortConfig]);
+
+  const filterInputClass = `
       w-full
       h-11
       rounded-2xl
@@ -433,12 +212,9 @@ const WorkOrder = () => {
         <AdminSideNavbar />
 
         <div className="flex-1 p-4 md:p-6 overflow-x-hidden">
-
           {/* PAGE HEADER */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-6">
-
             <div className="flex items-center gap-4">
-              
               <div className="w-14 h-14 rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center shadow-lg">
                 <MdAssignment className="text-3xl" />
               </div>
@@ -454,9 +230,7 @@ const WorkOrder = () => {
               </div>
             </div>
 
-            {access.includes(
-              user_type,
-            ) && (
+            {access.includes(user_type) && (
               <Link
                 to="/add-work-order"
                 state={{
@@ -492,11 +266,9 @@ const WorkOrder = () => {
 
           {/* FILTER CARD */}
           <div className="bg-white rounded-[30px] border border-gray-100 shadow-sm overflow-hidden mb-6">
-
             <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
             <div className="p-5 md:p-7">
-
               <div className="flex items-center justify-between mb-7">
                 <div>
                   <h2 className="text-lg font-semibold text-[#1E1B4B]">
@@ -510,7 +282,6 @@ const WorkOrder = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-
                 {/* STATUS */}
                 <div>
                   <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
@@ -519,47 +290,26 @@ const WorkOrder = () => {
 
                   <select
                     name="status"
-                    value={
-                      filters.status
-                    }
-                    className={
-                      filterInputClass
-                    }
-                    onChange={
-                      handleFilterChange
-                    }
+                    value={filters.status}
+                    className={filterInputClass}
+                    onChange={handleFilterChange}
                   >
-                    <option value="">
-                      All
-                    </option>
+                    <option value="">All</option>
 
-                    <option value="Open">
-                      Open
-                    </option>
+                    <option value="Open">Open</option>
 
-                    <option value="Design">
-                      Design
-                    </option>
+                    <option value="Design">Design</option>
 
-                    <option value="In Progress">
-                      In
-                      Progress
-                    </option>
+                    <option value="In Progress">In Progress</option>
 
-                    <option value="Reviewing">
-                      Reviewing
-                    </option>
+                    <option value="Reviewing">Reviewing</option>
 
-                    <option value="Closed">
-                      Closed
-                    </option>
+                    <option value="Closed">Closed</option>
                   </select>
                 </div>
 
                 {/* CLIENT */}
-                {technicianAccess.includes(
-                  user_type,
-                ) && (
+                {technicianAccess.includes(user_type) && (
                   <div>
                     <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                       Client Name
@@ -567,55 +317,26 @@ const WorkOrder = () => {
 
                     <select
                       name="client_id"
-                      value={
-                        filters.client_id
-                      }
-                      className={
-                        filterInputClass
-                      }
-                      onChange={
-                        handleFilterChange
-                      }
+                      value={filters.client_id}
+                      className={filterInputClass}
+                      onChange={handleFilterChange}
                     >
-                      <option value="">
-                        All
-                      </option>
+                      <option value="">All</option>
 
-                      {[
-                        ...(clients?.data ||
-                          []),
-                      ]
-                        .sort(
-                          (
-                            a,
-                            b,
-                          ) =>
-                            (
-                              a.company_name ||
-                              ""
-                            ).localeCompare(
-                              b.company_name ||
-                                "",
-                            ),
-                        )
-                        .map(
-                          (
-                            client,
-                          ) => (
-                            <option
-                              key={
-                                client.client_id
-                              }
-                              value={
-                                client.client_id
-                              }
-                            >
-                              {
-                                client.company_name
-                              }
-                            </option>
+                      {[...(clients?.data || [])]
+                        .sort((a, b) =>
+                          (a.company_name || "").localeCompare(
+                            b.company_name || "",
                           ),
-                        )}
+                        )
+                        .map((client) => (
+                          <option
+                            key={client.client_id}
+                            value={client.client_id}
+                          >
+                            {client.company_name}
+                          </option>
+                        ))}
                     </select>
                   </div>
                 )}
@@ -628,48 +349,25 @@ const WorkOrder = () => {
 
                   <select
                     name="location_id"
-                    value={
-                      filters.location_id
-                    }
-                    className={
-                      filterInputClass
-                    }
-                    onChange={
-                      handleFilterChange
-                    }
+                    value={filters.location_id}
+                    className={filterInputClass}
+                    onChange={handleFilterChange}
                   >
-                    <option value="">
-                      All
-                    </option>
+                    <option value="">All</option>
 
-                    {[
-                      ...(clientLocations ||
-                        []),
-                    ].map(
-                      (
-                        location,
-                      ) => (
-                        <option
-                          key={
-                            location.location_id
-                          }
-                          value={
-                            location.location_id
-                          }
-                        >
-                          {
-                            location.address_line_one
-                          }
-                        </option>
-                      ),
-                    )}
+                    {[...(clientLocations || [])].map((location) => (
+                      <option
+                        key={location.location_id}
+                        value={location.location_id}
+                      >
+                        {location.address_line_one}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 {/* TECH */}
-                {access.includes(
-                  user_type,
-                ) && (
+                {access.includes(user_type) && (
                   <>
                     <div>
                       <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
@@ -678,42 +376,21 @@ const WorkOrder = () => {
 
                       <select
                         name="technician"
-                        value={
-                          filters.technician
-                        }
-                        className={
-                          filterInputClass
-                        }
-                        onChange={
-                          handleFilterChange
-                        }
+                        value={filters.technician}
+                        className={filterInputClass}
+                        onChange={handleFilterChange}
                       >
-                        <option value="">
-                          All
-                        </option>
+                        <option value="">All</option>
 
-                        {idrEmployees.map(
-                          (
-                            emp,
-                          ) => {
-                            const fullName = `${emp.first_name} ${emp.last_name}`;
+                        {idrEmployees.map((emp) => {
+                          const fullName = `${emp.first_name} ${emp.last_name}`;
 
-                            return (
-                              <option
-                                key={
-                                  emp.idr_emp_id
-                                }
-                                value={
-                                  fullName
-                                }
-                              >
-                                {
-                                  fullName
-                                }
-                              </option>
-                            );
-                          },
-                        )}
+                          return (
+                            <option key={emp.idr_emp_id} value={fullName}>
+                              {fullName}
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
 
@@ -724,42 +401,21 @@ const WorkOrder = () => {
 
                       <select
                         name="project_manager"
-                        value={
-                          filters.project_manager
-                        }
-                        className={
-                          filterInputClass
-                        }
-                        onChange={
-                          handleFilterChange
-                        }
+                        value={filters.project_manager}
+                        className={filterInputClass}
+                        onChange={handleFilterChange}
                       >
-                        <option value="">
-                          All
-                        </option>
+                        <option value="">All</option>
 
-                        {idrEmployees.map(
-                          (
-                            emp,
-                          ) => {
-                            const fullName = `${emp.first_name} ${emp.last_name}`;
+                        {idrEmployees.map((emp) => {
+                          const fullName = `${emp.first_name} ${emp.last_name}`;
 
-                            return (
-                              <option
-                                key={
-                                  emp.idr_emp_id
-                                }
-                                value={
-                                  fullName
-                                }
-                              >
-                                {
-                                  fullName
-                                }
-                              </option>
-                            );
-                          },
-                        )}
+                          return (
+                            <option key={emp.idr_emp_id} value={fullName}>
+                              {fullName}
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
 
@@ -771,32 +427,18 @@ const WorkOrder = () => {
 
                       <select
                         name="is_billed"
-                        value={
-                          filters.is_billed
-                        }
-                        className={
-                          filterInputClass
-                        }
-                        onChange={
-                          handleFilterChange
-                        }
+                        value={filters.is_billed}
+                        className={filterInputClass}
+                        onChange={handleFilterChange}
                       >
-                        <option value="">
-                          All
-                        </option>
+                        <option value="">All</option>
 
-                        <option value="Unbilled">
-                          Unbilled
-                        </option>
+                        <option value="Unbilled">Unbilled</option>
 
-                        <option value="Final Billed">
-                          Final
-                          Billed
-                        </option>
+                        <option value="Final Billed">Final Billed</option>
 
                         <option value="Retainage Billed">
-                          Retainage
-                          Billed
+                          Retainage Billed
                         </option>
                       </select>
                     </div>
@@ -806,11 +448,8 @@ const WorkOrder = () => {
 
               {/* ACTIONS */}
               <div className="flex flex-col sm:flex-row gap-4 mt-8">
-
                 <button
-                  onClick={
-                    handleSearch
-                  }
+                  onClick={handleSearch}
                   className="
                     flex
                     items-center
@@ -835,9 +474,7 @@ const WorkOrder = () => {
                 </button>
 
                 <button
-                  onClick={
-                    handleReset
-                  }
+                  onClick={handleReset}
                   className="
                     flex
                     items-center
@@ -864,43 +501,20 @@ const WorkOrder = () => {
 
           {/* TABLE */}
           <div className="bg-white rounded-[30px] border border-gray-100 shadow-sm overflow-hidden">
-
             <div className="overflow-x-auto">
-
               {!loading ? (
                 <table className="min-w-full">
-
                   <thead className="bg-gradient-to-r from-indigo-50 to-pink-50">
-
                     <tr>
-
                       {[
-                        [
-                          "ticket_number",
-                          "Ticket Number",
-                        ],
-                        [
-                          "client_name",
-                          "Client",
-                        ],
-                        [
-                          "service_date",
-                          "Service Date",
-                        ],
-                      ].map(
-                        (
-                          col,
-                        ) => (
-                          <th
-                            key={
-                              col[0]
-                            }
-                            onClick={() =>
-                              handleSort(
-                                col[0],
-                              )
-                            }
-                            className="
+                        ["ticket_number", "Ticket Number"],
+                        ["client_name", "Client"],
+                        ["service_date", "Service Date"],
+                      ].map((col) => (
+                        <th
+                          key={col[0]}
+                          onClick={() => handleSort(col[0])}
+                          className="
                               px-5
                               py-4
                               text-left
@@ -910,20 +524,15 @@ const WorkOrder = () => {
                               cursor-pointer
                               whitespace-nowrap
                             "
-                          >
-                            {
-                              col[1]
-                            }{" "}
-                            {sortConfig.key ===
-                            col[0]
-                              ? sortConfig.direction ===
-                                "asc"
-                                ? "▲"
-                                : "▼"
-                              : "↕"}
-                          </th>
-                        ),
-                      )}
+                        >
+                          {col[1]}{" "}
+                          {sortConfig.key === col[0]
+                            ? sortConfig.direction === "asc"
+                              ? "▲"
+                              : "▼"
+                            : "↕"}
+                        </th>
+                      ))}
 
                       <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B] whitespace-nowrap">
                         Contact
@@ -948,113 +557,86 @@ const WorkOrder = () => {
                   </thead>
 
                   <tbody>
+                    {sortedWorkOrders?.length > 0 ? (
+                      sortedWorkOrders.map((order) => (
+                        <tr
+                          key={order.work_order_id}
+                          className="border-t border-gray-100 hover:bg-gray-50 transition-all"
+                        >
+                          <td className="px-5 py-4 text-sm font-medium text-[#1E1B4B] whitespace-nowrap">
+                            {order.ticket_number || "NA"}
+                          </td>
 
-                    {sortedWorkOrders
-                      ?.length >
-                    0 ? (
-                      sortedWorkOrders.map(
-                        (
-                          order,
-                        ) => (
-                          <tr
-                            key={
-                              order.work_order_id
-                            }
-                            className="border-t border-gray-100 hover:bg-gray-50 transition-all"
-                          >
-                            <td className="px-5 py-4 text-sm font-medium text-[#1E1B4B] whitespace-nowrap">
-                              {order.ticket_number ||
-                                "NA"}
-                            </td>
+                          <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
+                            {order.client_name}
+                          </td>
 
-                            <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
-                              {
-                                order.client_name
-                              }
-                            </td>
+                          <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
+                            {order.service_date}
+                          </td>
 
-                            <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
-                              {
-                                order.service_date
-                              }
-                            </td>
+                          <td className="px-5 py-4 text-sm text-gray-700">
+                            <div>
+                              <p className="font-medium">
+                                {order.contact_person}
+                              </p>
 
-                            <td className="px-5 py-4 text-sm text-gray-700">
-                              <div>
-                                <p className="font-medium">
-                                  {
-                                    order.contact_person
-                                  }
-                                </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {order.contact_phone_number}
+                              </p>
+                            </div>
+                          </td>
 
-                                <p className="text-xs text-gray-500 mt-1">
-                                  {
-                                    order.contact_phone_number
-                                  }
-                                </p>
-                              </div>
-                            </td>
+                          <td className="px-5 py-4">
+                            <span className="inline-flex px-3 py-1 rounded-xl text-xs font-semibold bg-indigo-100 text-indigo-700 whitespace-nowrap">
+                              {order.status}
+                            </span>
+                          </td>
 
-                            <td className="px-5 py-4">
-                              <span className="inline-flex px-3 py-1 rounded-xl text-xs font-semibold bg-indigo-100 text-indigo-700 whitespace-nowrap">
-                                {
-                                  order.status
-                                }
-                              </span>
-                            </td>
+                          <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
+                            {order.is_billed || "NA"}
+                          </td>
 
-                            <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
-                              {order.is_billed ||
-                                "NA"}
-                            </td>
+                          <td className="px-5 py-4 text-sm text-gray-700 max-w-[320px]">
+                            <div className="line-clamp-2">{order.issue}</div>
+                          </td>
 
-                            <td className="px-5 py-4 text-sm text-gray-700 max-w-[320px]">
-                              <div className="line-clamp-2">
-                                {
-                                  order.issue
-                                }
-                              </div>
-                            </td>
+                          <td className="px-5 py-4">
+                            <div className="flex items-center justify-center gap-3">
+                              <Link
+                                to={`/edit-work-order/${order?.work_order_id}`}
+                                state={{
+                                  filters,
+                                }}
+                              >
+                                <button className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 transition-all">
+                                  <BiSolidEditAlt className="text-lg" />
+                                </button>
+                              </Link>
 
-                            <td className="px-5 py-4">
-                              <div className="flex items-center justify-center gap-3">
-
-                                <Link
-                                  to={`/edit-work-order/${order?.work_order_id}`}
-                                  state={{
-                                    filters,
-                                  }}
-                                >
-                                  <button className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 transition-all">
-                                    <BiSolidEditAlt className="text-lg" />
-                                  </button>
-                                </Link>
-
-                                {user_type ===
-                                  "Admin" && (
-                                  <button
-                                    onClick={() =>
-                                      handleDelete(
-                                        order.work_order_id,
-                                      )
-                                    }
-                                    className="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 transition-all"
-                                  >
-                                    <AiFillDelete className="text-lg" />
-                                  </button>
-                                )}
+                              {user_type === "Admin" && (
                                 <button
-  onClick={() =>
-    navigate(
-      `/duplicate-work-order/${order.work_order_id}`,
-      {
-        state: {
-          duplicate: true,
-        },
-      }
-    )
-  }
-  className="
+                                  onClick={() =>
+                                    handleDelete(order.work_order_id)
+                                  }
+                                  className="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 transition-all"
+                                >
+                                  <AiFillDelete className="text-lg" />
+                                </button>
+                              )}
+                              {access.includes(user_type) && (
+                              <button
+                                onClick={() =>
+                                  navigate(
+                                    `/duplicate-work-order/${order.work_order_id}`,
+                                    {
+                                      state: {
+                                        duplicate: true,
+                                      },
+                                    },
+                                  )
+                                }
+                                className="
     w-10
     h-10
     rounded-2xl
@@ -1066,38 +648,26 @@ const WorkOrder = () => {
     hover:bg-blue-100
     transition-all
   "
->
-  <MdContentCopy className="text-lg" />
-</button>
-                              </div>
-                            </td>
-                          </tr>
-                        ),
-                      )
+                              >
+                                <MdContentCopy className="text-lg" />
+                              </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
                     ) : (
                       <tr>
-                        <td
-                          colSpan="9"
-                          className="py-16 text-center"
-                        >
+                        <td colSpan="9" className="py-16 text-center">
                           <div className="flex flex-col items-center">
                             <MdAssignment className="text-6xl text-gray-300 mb-4" />
 
                             <h3 className="text-lg font-semibold text-[#1E1B4B]">
-                              No Work
-                              Orders
-                              Found
+                              No Work Orders Found
                             </h3>
 
                             <p className="text-sm text-gray-500 mt-2">
-                              Try
-                              changing
-                              filters
-                              or
-                              create
-                              a new
-                              work
-                              order.
+                              Try changing filters or create a new work order.
                             </p>
                           </div>
                         </td>

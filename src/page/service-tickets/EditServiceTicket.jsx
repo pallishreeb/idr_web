@@ -32,11 +32,7 @@ import ServiceTicketImages from "../../Components/ServiceTicketImages";
 import SignatureModal from "../../Components/SignatureModal";
 import ShowSubcontractorUsers from "../../Components/subcontractor/ShowSubcontractorUsers";
 import { toast } from "react-toastify";
-import { 
-  MdDraw ,  
-  MdDevices,
-  MdClose,
-  MdAdd,} from "react-icons/md";
+import { MdDraw, MdDevices, MdClose, MdAdd } from "react-icons/md";
 
 const EditServiceTicket = () => {
   const { serviceTicketId } = useParams();
@@ -73,7 +69,7 @@ const EditServiceTicket = () => {
   const [serviceTicketAgreement, setServiceTicketAgreement] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const { user_type, client_type } = useSelector((state) => state.user.user);
-  const { technicianAccess } = useSelector((state) => state.user);
+  const { technicianAccess, access } = useSelector((state) => state.user);
   const [isDownloading, setIsDownloading] = useState(false); // Loading state
   // Track which row is being processed
   const [processingId, setProcessingId] = useState(null);
@@ -602,18 +598,20 @@ const EditServiceTicket = () => {
               serviceTicketDetails?.subcontractor_in_service_tickets
             }
           />
-          <ShowSubcontractorUsers
-            subcontractorAssignees={
-              serviceTicketDetails?.subcontractor_in_service_tickets
-            }
-            parentId={serviceTicketId}
-            assignAction={assignSubcontractorUsersToServiceTicket}
-            deleteAction={deleteSubcontractorUserFromServiceTicket}
-            refreshAction={getServiceTicketDetails}
-            parentKey="service_ticket_id"
-            idKey="subcontractor_in_st_id" // 🔥 unique id key for ST
-            title="Subcontractor Users"
-          />
+          {access.includes(user_type) && (
+            <ShowSubcontractorUsers
+              subcontractorAssignees={
+                serviceTicketDetails?.subcontractor_in_service_tickets
+              }
+              parentId={serviceTicketId}
+              assignAction={assignSubcontractorUsersToServiceTicket}
+              deleteAction={deleteSubcontractorUserFromServiceTicket}
+              refreshAction={getServiceTicketDetails}
+              parentKey="service_ticket_id"
+              idKey="subcontractor_in_st_id" // 🔥 unique id key for ST
+              title="Subcontractor Users"
+            />
+          )}
           {/* show ClientEquipmentTable */}
           <ClientEquipmentTable
             equipments={serviceTicketEquipments}

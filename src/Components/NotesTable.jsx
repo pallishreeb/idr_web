@@ -1,40 +1,20 @@
 /** @format */
 
-import React, {
-  useState,
-} from "react";
+import React, { useState } from "react";
 
-import {
-  useDispatch,
-  useSelector,
-} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Swal from "sweetalert2";
 
-import {
-  toast,
-} from "react-toastify";
+import { toast } from "react-toastify";
 
-import {
-  AiFillDelete,
-} from "react-icons/ai";
+import { AiFillDelete } from "react-icons/ai";
 
-import {
-  BiSolidEditAlt,
-} from "react-icons/bi";
+import { BiSolidEditAlt } from "react-icons/bi";
 
-import {
-  FaCheck,
-  FaTimes,
-} from "react-icons/fa";
+import { FaCheck, FaTimes } from "react-icons/fa";
 
-import {
-  MdNotes,
-  MdAdd,
-  MdSave,
-  MdClose,
-  MdVerified,
-} from "react-icons/md";
+import { MdNotes, MdAdd, MdSave, MdClose, MdVerified } from "react-icons/md";
 
 import AddNoteModal from "./AddNoteModal";
 
@@ -46,267 +26,132 @@ import {
   deleteNote,
 } from "../actions/workOrderActions";
 
-import {
-  updateWOSubcontractorNoteStatus,
-} from "../actions/serviceTicket";
+import { updateWOSubcontractorNoteStatus } from "../actions/serviceTicket";
 
-import {
-  getClients,
-} from "../actions/clientActions";
+import { getClients } from "../actions/clientActions";
 
-import {
-  fetchIDREmployees,
-} from "../actions/employeeActions";
+import { fetchIDREmployees } from "../actions/employeeActions";
 
-const NotesTable =
-  ({
-    notes,
-    handleSaveNote,
-    handleNoteChange,
-    workOrderId,
-  }) => {
-    const dispatch =
-      useDispatch();
+const NotesTable = ({
+  notes,
+  handleSaveNote,
+  handleNoteChange,
+  workOrderId,
+}) => {
+  const dispatch = useDispatch();
 
-    const [
-      isModalOpen,
-      setIsModalOpen,
-    ] =
-      useState(
-        false,
-      );
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [
-      editingIndex,
-      setEditingIndex,
-    ] =
-      useState(
-        null,
-      );
+  const [editingIndex, setEditingIndex] = useState(null);
 
-    const {
-      user_type,
-      user_id,
-    } =
-      useSelector(
-        (
-          state,
-        ) =>
-          state.user.user,
-      );
+  const { user_type, user_id } = useSelector((state) => state.user.user);
 
-    const {
-      access,
-      technicianAccess,
-    } =
-      useSelector(
-        (
-          state,
-        ) =>
-          state.user,
-      );
+  const { access, technicianAccess } = useSelector((state) => state.user);
 
-    const handleEditToggle =
-      (
-        index,
-      ) => {
-        setEditingIndex(
-          index ===
-            editingIndex
-            ? null
-            : index,
-        );
-      };
+  const handleEditToggle = (index) => {
+    setEditingIndex(index === editingIndex ? null : index);
+  };
 
-    const handleOpenModal =
-      () => {
-        setIsModalOpen(
-          true,
-        );
-      };
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
 
-    const handleCloseModal =
-      () => {
-        setIsModalOpen(
-          false,
-        );
-      };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
-    const handleAddNote =
-      (
-        newNote,
-      ) => {
-        dispatch(
-          addNotesToTicket(
-            newNote,
-          ),
-        )
-          .then(
-            (
-              response,
-            ) => {
-              if (
-                response.code ===
-                "WO201"
-              ) {
-                handleCloseModal();
+  const handleAddNote = (newNote) => {
+    dispatch(addNotesToTicket(newNote))
+      .then((response) => {
+        if (response.code === "WO201") {
+          handleCloseModal();
 
-                dispatch(
-                  getWorkOrderDetails(
-                    workOrderId,
-                  ),
-                );
+          dispatch(getWorkOrderDetails(workOrderId));
 
-                dispatch(
-                  getClients(),
-                );
+          dispatch(getClients());
 
-                dispatch(
-                  fetchIDREmployees(),
-                );
-              } else {
-                console.error(
-                  "Error adding notes:",
-                  response.error,
-                );
-              }
-            },
-          )
-          .catch(
-            (
-              error,
-            ) => {
-              console.error(
-                "API call error:",
-                error,
-              );
-            },
-          );
-      };
+          dispatch(fetchIDREmployees());
+        } else {
+          console.error("Error adding notes:", response.error);
+        }
+      })
+      .catch((error) => {
+        console.error("API call error:", error);
+      });
+  };
 
-    const handleDelete =
-      (
-        noteId,
-      ) => {
-        Swal.fire({
-          title:
-            "Are you sure?",
+  const handleDelete = (noteId) => {
+    Swal.fire({
+      title: "Are you sure?",
 
-          text: "Do you really want to delete this comment?",
+      text: "Do you really want to delete this comment?",
 
-          icon: "warning",
+      icon: "warning",
 
-          showCancelButton:
-            true,
+      showCancelButton: true,
 
-          confirmButtonText:
-            "Yes, delete it!",
+      confirmButtonText: "Yes, delete it!",
 
-          cancelButtonText:
-            "No, keep it",
-        }).then(
-          (
-            result,
-          ) => {
-            if (
-              result.isConfirmed
-            ) {
-              dispatch(
-                deleteNote(
-                  noteId,
-                ),
-              );
+      cancelButtonText: "No, keep it",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteNote(noteId));
 
-              dispatch(
-                getWorkOrderDetails(
-                  workOrderId,
-                ),
-              );
+        dispatch(getWorkOrderDetails(workOrderId));
 
-              dispatch(
-                getClients(),
-              );
+        dispatch(getClients());
 
-              dispatch(
-                fetchIDREmployees(),
-              );
-            }
-          },
-        );
-      };
+        dispatch(fetchIDREmployees());
+      }
+    });
+  };
 
-    const handleApproveReject =
-      (
-        noteId,
-        status,
-      ) => {
-        dispatch(
-          updateWOSubcontractorNoteStatus(
-            noteId,
-            status,
-          ),
-        )
-          .then(
-            () => {
-              dispatch(
-                getWorkOrderDetails(
-                  workOrderId,
-                ),
-              );
-            },
-          )
-          .catch(
-            () => {
-              console.error(
-                "Failed to update note status",
-              );
-            },
-          );
-      };
+  const handleApproveReject = (noteId, status) => {
+    dispatch(updateWOSubcontractorNoteStatus(noteId, status))
+      .then(() => {
+        dispatch(getWorkOrderDetails(workOrderId));
+      })
+      .catch(() => {
+        console.error("Failed to update note status");
+      });
+  };
 
-    const newAccess =
-      [
-        ...technicianAccess,
-        "Subcontractor_User",
-        "Subcontractor",
-      ];
+  const newAccess = [
+    ...technicianAccess,
+    "Subcontractor_User",
+    "Subcontractor",
+  ];
 
-    return (
-      <div className="mt-4 bg-white border border-gray-100 rounded-[30px] shadow-sm overflow-hidden">
-        {/* TOP BAR */}
-        <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+  return (
+    <div className="mt-4 bg-white border border-gray-100 rounded-[30px] shadow-sm overflow-hidden">
+      {/* TOP BAR */}
+      <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
-        <div className="p-5 md:p-7">
-          {/* HEADER */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
-            <div className="flex items-center gap-4">
-              {/* ICON */}
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
-                <MdNotes className="text-2xl" />
-              </div>
-
-              {/* TITLE */}
-              <div>
-                <h1 className="text-lg md:text-xl font-semibold text-[#1E1B4B]">
-                  Work Order
-                  Notes
-                </h1>
-
-                <p className="text-sm text-gray-500 mt-1">
-                  Manage notes,
-                  comments &
-                  subcontractor
-                  approvals
-                </p>
-              </div>
+      <div className="p-5 md:p-7">
+        {/* HEADER */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+          <div className="flex items-center gap-4">
+            {/* ICON */}
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+              <MdNotes className="text-2xl" />
             </div>
 
-            {/* ADD BUTTON */}
-            {newAccess.includes(
-              user_type,
-            ) && (
-              <button
-                className="
+            {/* TITLE */}
+            <div>
+              <h1 className="text-lg md:text-xl font-semibold text-[#1E1B4B]">
+                Work Order Notes
+              </h1>
+
+              <p className="text-sm text-gray-500 mt-1">
+                Manage notes, comments & subcontractor approvals
+              </p>
+            </div>
+          </div>
+
+          {/* ADD BUTTON */}
+          {newAccess.includes(user_type) && (
+            <button
+              className="
                   flex
                   items-center
                   gap-2
@@ -326,403 +171,304 @@ const NotesTable =
                   transition-all
                   duration-300
                 "
-                onClick={
-                  handleOpenModal
-                }
-              >
-                <MdAdd className="text-lg" />
-                Add Note
-              </button>
-            )}
-          </div>
-
-          {/* EMPTY STATE */}
-          {notes?.length ===
-            0 && (
-            <div className="bg-gray-50 border border-gray-100 rounded-[24px] p-10 text-center">
-              <MdNotes className="mx-auto text-5xl text-gray-300 mb-4" />
-
-              <h3 className="text-lg font-semibold text-[#1E1B4B]">
-                No Notes
-                Added
-              </h3>
-
-              <p className="text-sm text-gray-500 mt-2">
-                Work order
-                notes and
-                comments will
-                appear here.
-              </p>
-            </div>
+              onClick={handleOpenModal}
+            >
+              <MdAdd className="text-lg" />
+              Add Note
+            </button>
           )}
-
-          {/* TABLE */}
-          {notes?.length >
-            0 && (
-            <div className="overflow-x-auto rounded-2xl border border-gray-100">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="bg-gradient-to-r from-indigo-50 to-pink-50">
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B] min-w-[420px]">
-                      Comments
-                    </th>
-
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B]">
-                      User
-                    </th>
-
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B]">
-                      Date & Time
-                    </th>
-
-                    {(access.includes(
-                      user_type,
-                    ) ||
-                      newAccess.includes(
-                        user_type,
-                      )) && (
-                      <th className="px-5 py-4 text-center text-sm font-semibold text-[#1E1B4B] w-[180px]">
-                        Actions
-                      </th>
-                    )}
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {notes?.map(
-                    (
-                      note,
-                      index,
-                    ) => (
-                      <tr
-                        key={
-                          note.note_id
-                        }
-                        className="border-t border-gray-100 hover:bg-gray-50 transition-all duration-200 align-top"
-                      >
-                        {/* COMMENTS */}
-                        <td className="px-5 py-4">
-                          <div className="space-y-3">
-                            {/* NOTE BOX */}
-                            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4">
-                              <NoteTextarea
-                                note={
-                                  note
-                                }
-                                index={
-                                  index
-                                }
-                                handleNoteChange={
-                                  handleNoteChange
-                                }
-                                editingIndex={
-                                  editingIndex
-                                }
-                              />
-                            </div>
-
-                            {/* BADGES */}
-                            <div className="flex flex-wrap gap-2">
-                              {note.is_added_by_subcontractor && (
-                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-semibold bg-orange-100 text-orange-700">
-                                  Subcontractor
-                                  Note
-                                </span>
-                              )}
-
-                              {note.is_added_by_subcontractor &&
-                                note.is_accepted_subcontractor_note && (
-                                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-semibold bg-green-100 text-green-700">
-                                    <MdVerified className="text-sm" />
-                                    Approved
-                                  </span>
-                                )}
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* USER */}
-                        <td className="px-5 py-4">
-                          <div className="flex flex-col">
-                            <p className="text-sm font-semibold text-[#1E1B4B]">
-                              {
-                                note
-                                  ?.profile
-                                  ?.first_name
-                              }{" "}
-                              {
-                                note
-                                  ?.profile
-                                  ?.last_name
-                              }
-                            </p>
-
-                            <p className="text-xs text-gray-500 mt-1">
-                              Note
-                              author
-                            </p>
-                          </div>
-                        </td>
-
-                        {/* DATE */}
-                        <td className="px-5 py-4">
-                          <div className="flex flex-col">
-                            <p className="text-sm font-medium text-[#1E1B4B]">
-                              {new Date(
-                                note.created_at,
-                              ).toLocaleDateString(
-                                "en-US",
-                                {
-                                  timeZone:
-                                    "America/New_York",
-                                },
-                              )}
-                            </p>
-
-                            <p className="text-xs text-gray-500 mt-1">
-                              {new Date(
-                                note.created_at,
-                              ).toLocaleTimeString(
-                                "en-US",
-                                {
-                                  timeZone:
-                                    "America/New_York",
-
-                                  hour:
-                                    "2-digit",
-
-                                  minute:
-                                    "2-digit",
-
-                                  second:
-                                    "2-digit",
-
-                                  hour12:
-                                    true,
-                                },
-                              )}
-                            </p>
-                          </div>
-                        </td>
-
-                        {/* ACTIONS */}
-                        {(access.includes(
-                          user_type,
-                        ) ||
-                          note
-                            .profile
-                            ?.user_id ===
-                            user_id) && (
-                          <td className="px-5 py-4">
-                            <div className="flex flex-wrap items-center justify-center gap-2">
-                              {/* SAVE/CANCEL */}
-                              {editingIndex ===
-                              index ? (
-                                <>
-                                  <button
-                                    className="
-                                      flex
-                                      items-center
-                                      gap-1
-                                      px-4
-                                      py-2
-                                      rounded-xl
-                                      bg-indigo-600
-                                      text-white
-                                      text-xs
-                                      font-semibold
-                                      hover:bg-indigo-700
-                                      transition-all
-                                      duration-300
-                                    "
-                                    onClick={() => {
-                                      handleSaveNote(
-                                        index,
-                                      );
-
-                                      handleEditToggle(
-                                        index,
-                                      );
-                                    }}
-                                  >
-                                    <MdSave />
-                                    Save
-                                  </button>
-
-                                  <button
-                                    className="
-                                      flex
-                                      items-center
-                                      gap-1
-                                      px-4
-                                      py-2
-                                      rounded-xl
-                                      bg-gray-200
-                                      text-gray-700
-                                      text-xs
-                                      font-semibold
-                                      hover:bg-gray-300
-                                      transition-all
-                                      duration-300
-                                    "
-                                    onClick={() =>
-                                      handleEditToggle(
-                                        index,
-                                      )
-                                    }
-                                  >
-                                    <MdClose />
-                                    Cancel
-                                  </button>
-                                </>
-                              ) : (
-                                <>
-                                  {/* EDIT */}
-                                  <button
-                                    className="
-                                      w-10
-                                      h-10
-                                      rounded-xl
-                                      bg-indigo-50
-                                      border
-                                      border-indigo-100
-                                      text-indigo-600
-                                      hover:bg-indigo-100
-                                      flex
-                                      items-center
-                                      justify-center
-                                      transition-all
-                                      duration-300
-                                    "
-                                    onClick={() =>
-                                      handleEditToggle(
-                                        index,
-                                      )
-                                    }
-                                  >
-                                    <BiSolidEditAlt />
-                                  </button>
-
-                                  {/* DELETE */}
-                                  {user_type ===
-                                    "Admin" && (
-                                    <button
-                                      className="
-                                        w-10
-                                        h-10
-                                        rounded-xl
-                                        bg-red-50
-                                        border
-                                        border-red-100
-                                        text-red-500
-                                        hover:bg-red-100
-                                        flex
-                                        items-center
-                                        justify-center
-                                        transition-all
-                                        duration-300
-                                      "
-                                      onClick={() =>
-                                        handleDelete(
-                                          note.note_id,
-                                        )
-                                      }
-                                    >
-                                      <AiFillDelete />
-                                    </button>
-                                  )}
-
-                                  {/* APPROVE */}
-                                  {note.is_added_by_subcontractor &&
-                                    !note.is_accepted_subcontractor_note &&
-                                    access.includes(
-                                      user_type,
-                                    ) && (
-                                      <>
-                                        <button
-                                          className="
-                                            w-10
-                                            h-10
-                                            rounded-xl
-                                            bg-green-50
-                                            border
-                                            border-green-100
-                                            text-green-600
-                                            hover:bg-green-100
-                                            flex
-                                            items-center
-                                            justify-center
-                                            transition-all
-                                            duration-300
-                                          "
-                                          onClick={() =>
-                                            handleApproveReject(
-                                              note.note_id,
-                                              true,
-                                            )
-                                          }
-                                        >
-                                          <FaCheck />
-                                        </button>
-
-                                        <button
-                                          className="
-                                            w-10
-                                            h-10
-                                            rounded-xl
-                                            bg-red-50
-                                            border
-                                            border-red-100
-                                            text-red-500
-                                            hover:bg-red-100
-                                            flex
-                                            items-center
-                                            justify-center
-                                            transition-all
-                                            duration-300
-                                          "
-                                          onClick={() =>
-                                            handleApproveReject(
-                                              note.note_id,
-                                              false,
-                                            )
-                                          }
-                                        >
-                                          <FaTimes />
-                                        </button>
-                                      </>
-                                    )}
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        )}
-                      </tr>
-                    ),
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* MODAL */}
-          <AddNoteModal
-            isOpen={
-              isModalOpen
-            }
-            onClose={
-              handleCloseModal
-            }
-            onSave={
-              handleAddNote
-            }
-            workOrderId={
-              workOrderId
-            }
-          />
         </div>
+
+        {/* NOTES LIST */}
+        {notes?.length > 0 && (
+          <div className="space-y-5">
+            {notes?.map((note, index) => (
+              <div
+                key={note.note_id}
+                className="
+          border
+          border-gray-100
+          rounded-[24px]
+          overflow-hidden
+          bg-white
+          shadow-sm
+          hover:shadow-md
+          transition-all
+        "
+              >
+                {/* TOP */}
+                <div
+                  className="
+            px-5
+            py-4
+            border-b
+            border-gray-100
+            bg-gradient-to-r
+            from-gray-50
+            to-white
+            flex
+            flex-col
+            xl:flex-row
+            xl:items-start
+            xl:justify-between
+            gap-4
+          "
+                >
+                  {/* LEFT */}
+                  <div className="flex items-start gap-4">
+                    <div
+                      className="
+                w-12
+                h-12
+                rounded-2xl
+                bg-indigo-100
+                text-indigo-600
+                flex
+                items-center
+                justify-center
+              "
+                    >
+                      <MdNotes className="text-2xl" />
+                    </div>
+
+                    <div>
+                      {/* USER */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-sm font-semibold text-[#1E1B4B]">
+                          {note?.profile?.first_name} {note?.profile?.last_name}
+                        </h3>
+                         {access.includes(user_type) && (<>
+
+                        {/* ACCEPTED BADGE */}
+                        {note.is_added_by_subcontractor &&
+                          note.is_accepted_subcontractor_note && (
+                            <span
+                              className="
+                                  inline-flex
+                                  items-center
+                                  px-3
+                                  py-1
+                                  rounded-full
+                                  bg-green-100
+                                  text-green-700
+                                  text-xs
+                                  font-semibold
+                                "
+                            >
+                              Accepted
+                            </span>
+                          )}
+
+                        {/* REJECTED BADGE */}
+                        {note.is_added_by_subcontractor &&
+                          note.is_accepted_subcontractor_note === false && (
+                            <span
+                              className="
+                                  inline-flex
+                                  items-center
+                                  px-3
+                                  py-1
+                                  rounded-full
+                                  bg-red-100
+                                  text-red-700
+                                  text-xs
+                                  font-semibold
+                                "
+                            >
+                              Rejected
+                            </span>
+                          )}
+                          </>)}
+                      </div>
+
+                      {/* DATE */}
+                      <p className="text-xs text-gray-500 mt-2">
+                        {new Date(note.created_at).toLocaleString("en-US", {
+                          timeZone: "America/New_York",
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: true,
+                        })}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* ACTIONS */}
+                  {(access.includes(user_type) ||
+                    note.profile?.user_id === user_id) && (
+                    <div className="flex flex-wrap gap-2">
+                      {/* SAVE/CANCEL */}
+                      {editingIndex === index ? (
+                        <>
+                          <button
+                            className="
+                      flex
+                      items-center
+                      gap-2
+                      px-4
+                      py-2.5
+                      rounded-2xl
+                      bg-gradient-to-r
+                      from-indigo-500
+                      via-purple-500
+                      to-pink-500
+                      text-white
+                      text-sm
+                      font-semibold
+                    "
+                            onClick={() => {
+                              handleSaveNote(index);
+                              handleEditToggle(index);
+                            }}
+                          >
+                            <MdSave className="text-lg" />
+                            Save
+                          </button>
+
+                          <button
+                            className="
+                      flex
+                      items-center
+                      gap-2
+                      px-4
+                      py-2.5
+                      rounded-2xl
+                      border
+                      border-gray-200
+                      bg-gray-100
+                      text-gray-700
+                      text-sm
+                      font-semibold
+                    "
+                            onClick={() => handleEditToggle(index)}
+                          >
+                            <MdClose className="text-lg" />
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          {/* EDIT */}
+                          <button
+                            className="
+                      w-11
+                      h-11
+                      rounded-2xl
+                      bg-blue-50
+                      text-blue-600
+                      flex
+                      items-center
+                      justify-center
+                      hover:bg-blue-100
+                      transition-all
+                    "
+                            onClick={() => handleEditToggle(index)}
+                          >
+                            <BiSolidEditAlt className="text-xl" />
+                          </button>
+
+                          {/* DELETE */}
+                          {user_type === "Admin" && (
+                            <button
+                              className="
+                        w-11
+                        h-11
+                        rounded-2xl
+                        bg-red-50
+                        text-red-600
+                        flex
+                        items-center
+                        justify-center
+                        hover:bg-red-100
+                        transition-all
+                      "
+                              onClick={() => handleDelete(note.note_id)}
+                            >
+                              <AiFillDelete className="text-xl" />
+                            </button>
+                          )}
+
+                          {/* APPROVE */}
+                          {note.is_added_by_subcontractor &&
+                            !note.is_accepted_subcontractor_note &&
+                            access.includes(user_type) && (
+                              <>
+                                <button
+                                  className="
+                            flex
+                            items-center
+                            gap-2
+                            px-4
+                            py-2.5
+                            rounded-2xl
+                            bg-green-100
+                            text-green-700
+                            text-sm
+                            font-semibold
+                          "
+                                  onClick={() =>
+                                    handleApproveReject(note.note_id, true)
+                                  }
+                                >
+                                  <FaCheck />
+                                  Accept
+                                </button>
+
+                                <button
+                                  className="
+                            flex
+                            items-center
+                            gap-2
+                            px-4
+                            py-2.5
+                            rounded-2xl
+                            bg-red-100
+                            text-red-700
+                            text-sm
+                            font-semibold
+                          "
+                                  onClick={() =>
+                                    handleApproveReject(note.note_id, false)
+                                  }
+                                >
+                                  <FaTimes />
+                                  Reject
+                                </button>
+                              </>
+                            )}
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* NOTE CONTENT */}
+                <div className="p-5">
+                  <NoteTextarea
+                    note={note}
+                    index={index}
+                    handleNoteChange={handleNoteChange}
+                    editingIndex={editingIndex}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {/* MODAL */}
+        <AddNoteModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onSave={handleAddNote}
+          workOrderId={workOrderId}
+        />
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 export default NotesTable;

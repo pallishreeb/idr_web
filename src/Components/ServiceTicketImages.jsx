@@ -31,31 +31,20 @@ import { S3_BASE_URL } from "../config";
 
 import ImageModal from "./ImageModal";
 
-const ServiceTicketImages = ({
-  images,
-  serviceTicketId,
-}) => {
+const ServiceTicketImages = ({ images, serviceTicketId }) => {
   const dispatch = useDispatch();
 
-  const { user_type, user_id } =
-    useSelector((state) => state.user.user);
+  const { user_type, user_id } = useSelector((state) => state.user.user);
 
-  const { technicianAccess } =
-    useSelector((state) => state.user);
+  const { technicianAccess } = useSelector((state) => state.user);
 
-  const { loadingAssignImage } =
-    useSelector(
-      (state) => state.serviceTicket
-    );
+  const { loadingAssignImage } = useSelector((state) => state.serviceTicket);
 
-  const [isModalOpen, setIsModalOpen] =
-    useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [selectedFiles, setSelectedFiles] =
-    useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
-  const [selectedImageUrl, setSelectedImageUrl] =
-    useState(null);
+  const [selectedImageUrl, setSelectedImageUrl] = useState(null);
 
   // =========================
   // ACCESS
@@ -67,15 +56,13 @@ const ServiceTicketImages = ({
     "Subcontractor",
   ];
 
-  const canManageImages =
-    newAccess.includes(user_type);
+  const canManageImages = newAccess.includes(user_type);
 
   // =========================
   // MODAL
   // =========================
 
-  const handleOpenModal = () =>
-    setIsModalOpen(true);
+  const handleOpenModal = () => setIsModalOpen(true);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -87,19 +74,14 @@ const ServiceTicketImages = ({
   // =========================
 
   const handleFileChange = (e) => {
-    setSelectedFiles(
-      Array.from(e.target.files)
-    );
+    setSelectedFiles(Array.from(e.target.files));
   };
 
   // =========================
   // FILE TYPE
   // =========================
 
-  const isVideo = (fileName) =>
-    /\.(mp4|mov|avi|webm|mkv)$/i.test(
-      fileName
-    );
+  const isVideo = (fileName) => /\.(mp4|mov|avi|webm|mkv)$/i.test(fileName);
 
   // =========================
   // UPLOAD
@@ -107,80 +89,53 @@ const ServiceTicketImages = ({
 
   const handleUpload = () => {
     if (selectedFiles.length === 0) {
-      toast.error(
-        "Please select at least one file."
-      );
+      toast.error("Please select at least one file.");
 
       return;
     }
 
-    const maxFileSize =
-      150 * 1024 * 1024;
+    const maxFileSize = 150 * 1024 * 1024;
 
-    const oversizedFiles =
-      selectedFiles.filter(
-        (file) => file.size > maxFileSize
-      );
+    const oversizedFiles = selectedFiles.filter(
+      (file) => file.size > maxFileSize,
+    );
 
     if (oversizedFiles.length > 0) {
-      toast.warning(
-        "One or more files exceed the 150 MB limit."
-      );
+      toast.warning("One or more files exceed the 150 MB limit.");
 
       return;
     }
 
-    const isVideoFile =
-      selectedFiles.some((file) =>
-        file.type.startsWith("video/")
-      );
+    const isVideoFile = selectedFiles.some((file) =>
+      file.type.startsWith("video/"),
+    );
 
-    const isImage =
-      selectedFiles.some((file) =>
-        file.type.startsWith("image/")
-      );
+    const isImage = selectedFiles.some((file) =>
+      file.type.startsWith("image/"),
+    );
 
-    dispatch(
-      uploadServiceTicketImages(
-        serviceTicketId,
-        selectedFiles
-      )
-    )
+    dispatch(uploadServiceTicketImages(serviceTicketId, selectedFiles))
       .then((data) => {
         if (data?.code === "ST201") {
           if (isVideoFile) {
-            toast.success(
-              "Video uploaded successfully."
-            );
+            toast.success("Video uploaded successfully.");
           } else if (isImage) {
-            toast.success(
-              "Image uploaded successfully."
-            );
+            toast.success("Image uploaded successfully.");
           } else {
-            toast.success(
-              "Files uploaded successfully."
-            );
+            toast.success("Files uploaded successfully.");
           }
 
-          dispatch(
-            getServiceTicketDetails(
-              serviceTicketId
-            )
-          );
+          dispatch(getServiceTicketDetails(serviceTicketId));
 
           handleCloseModal();
         } else {
-          toast.error(
-            "Upload failed. Please try again."
-          );
+          toast.error("Upload failed. Please try again.");
         }
       })
       .catch((error) => {
         console.error(error);
 
-        toast.error(
-          "Failed to upload files."
-        );
+        toast.error("Failed to upload files.");
       });
   };
 
@@ -202,27 +157,17 @@ const ServiceTicketImages = ({
         dispatch(deleteServiceFiles(fileId))
           .then((res) => {
             if (res?.code === "ST203") {
-              toast.success(
-                "File deleted successfully."
-              );
+              toast.success("File deleted successfully.");
 
-              dispatch(
-                getServiceTicketDetails(
-                  serviceTicketId
-                )
-              );
+              dispatch(getServiceTicketDetails(serviceTicketId));
             } else {
-              toast.error(
-                "Failed to delete file."
-              );
+              toast.error("Failed to delete file.");
             }
           })
           .catch((err) => {
             console.error(err);
 
-            toast.error(
-              "Something went wrong."
-            );
+            toast.error("Something went wrong.");
           });
       }
     });
@@ -232,17 +177,12 @@ const ServiceTicketImages = ({
   // DOWNLOAD
   // =========================
 
-  const handleDownload = (
-    url,
-    filename
-  ) => {
-    const link =
-      document.createElement("a");
+  const handleDownload = (url, filename) => {
+    const link = document.createElement("a");
 
     link.href = url;
 
-    link.download =
-      filename || "attachment";
+    link.download = filename || "attachment";
 
     link.click();
   };
@@ -276,12 +216,9 @@ const ServiceTicketImages = ({
         <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
         <div className="p-5">
-
           {/* HEADER */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-
             <div className="flex items-center gap-3">
-
               <div
                 className="
                   w-12
@@ -341,18 +278,17 @@ const ServiceTicketImages = ({
           {/* EMPTY STATE */}
           {images?.length === 0 ? (
             <div className="py-14 flex flex-col items-center justify-center text-center">
-
               <div
                 className="
-                  w-20
-                  h-20
-                  rounded-full
-                  bg-gray-100
-                  flex
-                  items-center
-                  justify-center
-                  mb-4
-                "
+        w-20
+        h-20
+        rounded-full
+        bg-gray-100
+        flex
+        items-center
+        justify-center
+        mb-4
+      "
               >
                 <MdImage className="text-4xl text-gray-400" />
               </div>
@@ -366,173 +302,241 @@ const ServiceTicketImages = ({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-
-              {images?.map((image, index) => {
-                const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
-
-                const isVideoFile =
-                  isVideo(
-                    image?.attachment_url
-                  );
-
-                return (
-                  <div
-                    key={index}
-                    className="
-                      border
-                      border-gray-100
-                      rounded-2xl
-                      overflow-hidden
-                      bg-white
-                      shadow-sm
-                      hover:shadow-md
-                      transition-all
-                    "
-                  >
-                    {/* MEDIA */}
-                    <div
+            <div
+              className="
+      overflow-x-auto
+      border
+      border-gray-100
+      rounded-2xl
+    "
+            >
+              <table className="w-full min-w-[900px]">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-100">
+                    <th
                       className="
-                        relative
-                        h-56
-                        bg-gray-100
-                        overflow-hidden
-                        cursor-pointer
-                      "
-                      onClick={() =>
-                        handleImageClick(fileUrl)
-                      }
+              px-4
+              py-3
+              text-left
+              text-xs
+              font-bold
+              text-gray-600
+              uppercase
+              whitespace-nowrap
+            "
                     >
-                      {isVideoFile ? (
-                        <>
-                          <video
-                            src={fileUrl}
-                            className="w-full h-full object-cover"
-                            controls
-                          />
+                      Preview
+                    </th>
 
+                    <th
+                      className="
+              px-4
+              py-3
+              text-left
+              text-xs
+              font-bold
+              text-gray-600
+              uppercase
+              whitespace-nowrap
+            "
+                    >
+                      File Type
+                    </th>
+
+                    <th
+                      className="
+              px-4
+              py-3
+              text-left
+              text-xs
+              font-bold
+              text-gray-600
+              uppercase
+              whitespace-nowrap
+            "
+                    >
+                      Uploaded By
+                    </th>
+
+                    <th
+                      className="
+              px-4
+              py-3
+              text-left
+              text-xs
+              font-bold
+              text-gray-600
+              uppercase
+              whitespace-nowrap
+            "
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {images?.map((image, index) => {
+                    const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
+
+                    const isVideoFile = isVideo(image?.attachment_url);
+
+                    return (
+                      <tr
+                        key={index}
+                        className="
+                border-b
+                border-gray-100
+                hover:bg-gray-50
+                transition-all
+              "
+                      >
+                        {/* PREVIEW */}
+                        <td className="px-4 py-3">
                           <div
                             className="
-                              absolute
-                              top-3
-                              right-3
-                              bg-black/70
-                              text-white
-                              p-2
-                              rounded-full
-                            "
+                    w-24
+                    h-20
+                    rounded-xl
+                    overflow-hidden
+                    bg-gray-100
+                    border
+                    border-gray-200
+                    cursor-pointer
+                  "
+                            onClick={() => handleImageClick(fileUrl)}
                           >
-                            <MdVideoLibrary className="text-lg" />
+                            {isVideoFile ? (
+                              <video
+                                src={fileUrl}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <img
+                                src={fileUrl}
+                                alt={`Attachment ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            )}
                           </div>
-                        </>
-                      ) : (
-                        <img
-                          src={fileUrl}
-                          alt={`Attachment ${index + 1}`}
-                          className="
-                            w-full
-                            h-full
-                            object-cover
-                          "
-                        />
-                      )}
-                    </div>
+                        </td>
 
-                    {/* CONTENT */}
-                    <div className="p-4">
+                        {/* TYPE */}
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div
+                            className={`
+                    inline-flex
+                    items-center
+                    gap-2
+                    px-3
+                    py-1.5
+                    rounded-full
+                    text-xs
+                    font-semibold
+                    ${
+                      isVideoFile
+                        ? "bg-purple-100 text-purple-700"
+                        : "bg-indigo-100 text-indigo-700"
+                    }
+                  `}
+                          >
+                            {isVideoFile ? (
+                              <>
+                                <MdVideoLibrary className="text-sm" />
+                                Video
+                              </>
+                            ) : (
+                              <>
+                                <MdImage className="text-sm" />
+                                Image
+                              </>
+                            )}
+                          </div>
+                        </td>
 
-                      {/* USER */}
-                      <div className="flex items-center gap-3 mb-4">
+                        {/* USER */}
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="
+                      w-10
+                      h-10
+                      rounded-xl
+                      bg-indigo-100
+                      text-indigo-600
+                      flex
+                      items-center
+                      justify-center
+                    "
+                            >
+                              <MdPerson className="text-lg" />
+                            </div>
 
-                        <div
-                          className="
-                            w-10
-                            h-10
-                            rounded-xl
-                            bg-indigo-100
-                            text-indigo-600
-                            flex
-                            items-center
-                            justify-center
-                          "
-                        >
-                          <MdPerson className="text-lg" />
-                        </div>
+                            <div>
+                              <p className="text-sm font-semibold text-[#1E1B4B]">
+                                {image?.user_name || "NA"}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
 
-                        <div>
-                          <p className="text-xs text-gray-500">
-                            Uploaded By
-                          </p>
-
-                          <p className="text-sm font-semibold text-[#1E1B4B]">
-                            {image?.user_name || "NA"}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* ACTIONS */}
-                      <div className="flex gap-3">
-
-                        {/* DOWNLOAD */}
-                        <button
-                          onClick={() =>
-                            handleDownload(
-                              fileUrl,
-                              `attachment-${index + 1}`
-                            )
-                          }
-                          className="
-                            flex-1
-                            flex
-                            items-center
-                            justify-center
-                            gap-2
-                            px-4
-                            py-2.5
-                            rounded-xl
-                            bg-blue-50
-                            text-blue-600
-                            text-sm
-                            font-semibold
-                            hover:bg-blue-100
-                            transition-all
-                          "
-                        >
-                          <MdDownload className="text-lg" />
-                          Download
-                        </button>
-
-                        {/* DELETE */}
-                        {canManageImages &&
-                          image?.by_user_id ===
-                            user_id && (
+                        {/* ACTIONS */}
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            {/* DOWNLOAD */}
                             <button
                               onClick={() =>
-                                handleDelete(
-                                  image?.attachment_id
+                                handleDownload(
+                                  fileUrl,
+                                  `attachment-${index + 1}`,
                                 )
                               }
                               className="
-                                w-11
-                                h-11
-                                rounded-xl
-                                bg-red-50
-                                text-red-600
-                                flex
-                                items-center
-                                justify-center
-                                hover:bg-red-100
-                                transition-all
-                              "
+                      w-10
+                      h-10
+                      rounded-xl
+                      bg-blue-50
+                      text-blue-600
+                      flex
+                      items-center
+                      justify-center
+                      hover:bg-blue-100
+                      transition-all
+                    "
                             >
-                              <MdDelete className="text-lg" />
+                              <MdDownload className="text-lg" />
                             </button>
-                          )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+
+                            {/* DELETE */}
+                            {canManageImages &&
+                              image?.by_user_id === user_id && (
+                                <button
+                                  onClick={() =>
+                                    handleDelete(image?.attachment_id)
+                                  }
+                                  className="
+                          w-10
+                          h-10
+                          rounded-xl
+                          bg-red-50
+                          text-red-600
+                          flex
+                          items-center
+                          justify-center
+                          hover:bg-red-100
+                          transition-all
+                        "
+                                >
+                                  <MdDelete className="text-lg" />
+                                </button>
+                              )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
@@ -566,12 +570,9 @@ const ServiceTicketImages = ({
             <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
             <div className="p-6">
-
               {/* HEADER */}
               <div className="flex items-start justify-between mb-6">
-
                 <div className="flex items-center gap-3">
-
                   <div
                     className="
                       w-12
@@ -670,13 +671,11 @@ const ServiceTicketImages = ({
               {/* FILES */}
               {selectedFiles.length > 0 && (
                 <div className="mt-5">
-
                   <h4 className="text-sm font-semibold text-[#1E1B4B] mb-3">
                     Selected Files ({selectedFiles.length})
                   </h4>
 
                   <div className="space-y-2 max-h-48 overflow-y-auto">
-
                     {selectedFiles.map((file, index) => (
                       <div
                         key={index}
@@ -693,7 +692,6 @@ const ServiceTicketImages = ({
                         "
                       >
                         <div className="flex items-center gap-3">
-
                           <div
                             className="
                               w-10
@@ -706,9 +704,7 @@ const ServiceTicketImages = ({
                               justify-center
                             "
                           >
-                            {file.type.startsWith(
-                              "video/"
-                            ) ? (
+                            {file.type.startsWith("video/") ? (
                               <MdVideoLibrary className="text-lg" />
                             ) : (
                               <MdImage className="text-lg" />
@@ -721,12 +717,7 @@ const ServiceTicketImages = ({
                             </p>
 
                             <p className="text-xs text-gray-500">
-                              {(
-                                file.size /
-                                1024 /
-                                1024
-                              ).toFixed(2)}{" "}
-                              MB
+                              {(file.size / 1024 / 1024).toFixed(2)} MB
                             </p>
                           </div>
                         </div>
@@ -738,7 +729,6 @@ const ServiceTicketImages = ({
 
               {/* ACTIONS */}
               <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">
-
                 <button
                   className="
                     flex
@@ -806,10 +796,7 @@ const ServiceTicketImages = ({
 
       {/* IMAGE PREVIEW */}
       {selectedImageUrl && (
-        <ImageModal
-          imageUrl={selectedImageUrl}
-          onClose={closeImageModal}
-        />
+        <ImageModal imageUrl={selectedImageUrl} onClose={closeImageModal} />
       )}
     </>
   );
