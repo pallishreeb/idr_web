@@ -32,6 +32,11 @@ import ServiceTicketImages from "../../Components/ServiceTicketImages";
 import SignatureModal from "../../Components/SignatureModal";
 import ShowSubcontractorUsers from "../../Components/subcontractor/ShowSubcontractorUsers";
 import { toast } from "react-toastify";
+import { 
+  MdDraw ,  
+  MdDevices,
+  MdClose,
+  MdAdd,} from "react-icons/md";
 
 const EditServiceTicket = () => {
   const { serviceTicketId } = useParams();
@@ -345,80 +350,232 @@ const EditServiceTicket = () => {
       <div className="flex">
         <SideNavbar />
         <div className="py-12 px-8 bg-gray-50 w-full h-screen overflow-y-scroll">
-          <div className="flex justify-between">
-            <h1 className="font-bold text-lg">Edit Service Ticket</h1>
-            <div className="flex gap-3">
-              <Link to="/service-tickets" state={location.state}>
-                <button className="border border-gray-400 text-gray-400 px-6 py-2 rounded">
-                  Back
-                </button>
-              </Link>
-              {client_type !== "User" && !newAccess.includes(user_type) && (
-                <>
-                  {serviceTicketAgreement?.agreement_id && (
-                    <Link
-                      to={`/edit-service-agreement/${serviceTicketAgreement?.agreement_id}`}
-                    >
-                      <button className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center">
-                        Service Agreement
-                      </button>
-                    </Link>
-                  )}
-                </>
-              )}
-              {newAccess.includes(user_type) &&
-                serviceTicket?.status?.toLowerCase() !== "closed" && (
-                  <button
-                    onClick={openDeviceModal}
-                    className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
+          {/* PAGE HEADER */}
+          <div
+            className="
+    bg-white
+    rounded-[28px]
+    border
+    border-gray-100
+    shadow-sm
+    overflow-hidden
+    mb-5
+  "
+          >
+            {/* TOP BORDER */}
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+            <div className="px-6 py-5">
+              <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
+                {/* LEFT SECTION */}
+                <div className="flex items-center gap-4">
+                  <div
+                    className="
+            w-16
+            h-16
+            rounded-2xl
+            bg-gradient-to-r
+            from-indigo-500
+            to-pink-500
+            text-white
+            flex
+            items-center
+            justify-center
+            shadow-md
+          "
                   >
-                    Add Device To Ticket
-                  </button>
-                )}
-              {technicianAccess.includes(user_type) && (
-                <button
-                  onClick={openDeviceModal}
-                  className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
-                >
-                  Add Device To Ticket
-                </button>
-              )}
-              {/* Download PDF Button */}
-              {technicianAccess.includes(user_type) && (
-                <button
-                  onClick={handleDownloadPdf}
-                  className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded flex items-center"
-                  disabled={isDownloading}
-                >
-                  {isDownloading ? (
-                    // Display loading spinner while downloading
-                    <svg
-                      className="animate-spin h-5 w-5 mr-2 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
+                    <MdDevices className="text-3xl" />
+                  </div>
+
+                  <div>
+                    <h1 className="text-2xl font-bold text-[#1E1B4B]">
+                      Edit Service Ticket
+                    </h1>
+
+                    <div className="flex flex-wrap items-center gap-3 mt-2">
+                      <span
+                        className="
+                inline-flex
+                items-center
+                px-3
+                py-1
+                rounded-full
+                bg-indigo-50
+                text-indigo-700
+                text-xs
+                font-semibold
+              "
+                      >
+                        Ticket # {serviceTicket?.service_ticket_number}
+                      </span>
+
+                      <span
+                        className={`
+                inline-flex
+                items-center
+                px-3
+                py-1
+                rounded-full
+                text-xs
+                font-semibold
+                ${
+                  serviceTicket?.status?.toLowerCase() === "closed"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-green-100 text-green-700"
+                }
+              `}
+                      >
+                        {serviceTicket?.status || "Open"}
+                      </span>
+
+                      {serviceTicket?.service_date && (
+                        <span className="text-sm text-gray-500">
+                          Service Date: {serviceTicket?.service_date}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* RIGHT ACTIONS */}
+                <div className="flex flex-wrap gap-3">
+                  {/* BACK */}
+                  <Link to="/service-tickets" state={location.state}>
+                    <button
+                      className="
+              flex
+              items-center
+              justify-center
+              gap-2
+              px-5
+              py-3
+              rounded-2xl
+              border
+              border-gray-200
+              bg-white
+              text-gray-700
+              text-sm
+              font-semibold
+              hover:bg-gray-50
+              transition-all
+            "
                     >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      ></path>
-                    </svg>
-                  ) : (
-                    <>
-                      Download Ticket PDF <FaDownload className="ml-1" />
-                    </>
+                      <MdClose className="text-lg" />
+                      Back
+                    </button>
+                  </Link>
+
+                  {/* SERVICE AGREEMENT */}
+                  {client_type !== "User" &&
+                    !newAccess.includes(user_type) &&
+                    serviceTicketAgreement?.agreement_id && (
+                      <Link
+                        to={`/edit-service-agreement/${serviceTicketAgreement?.agreement_id}`}
+                      >
+                        <button
+                          className="
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  px-5
+                  py-3
+                  rounded-2xl
+                  bg-blue-500
+                  text-white
+                  text-sm
+                  font-semibold
+                  shadow-sm
+                  hover:bg-blue-600
+                  hover:shadow-md
+                  transition-all
+                "
+                        >
+                          Service Agreement
+                        </button>
+                      </Link>
+                    )}
+
+                  {/* ADD DEVICE */}
+                  {((newAccess.includes(user_type) &&
+                    serviceTicket?.status?.toLowerCase() !== "closed") ||
+                    technicianAccess.includes(user_type)) && (
+                    <button
+                      onClick={openDeviceModal}
+                      className="
+              flex
+              items-center
+              justify-center
+              gap-2
+              px-5
+              py-3
+              rounded-2xl
+              bg-gradient-to-r
+              from-indigo-500
+              via-purple-500
+              to-pink-500
+              text-white
+              text-sm
+              font-semibold
+              shadow-sm
+              hover:shadow-md
+              transition-all
+            "
+                    >
+                      <MdAdd className="text-lg" />
+                      Add Device
+                    </button>
                   )}
-                </button>
-              )}
+
+                  {/* DOWNLOAD PDF */}
+                  {technicianAccess.includes(user_type) && (
+                    <button
+                      onClick={handleDownloadPdf}
+                      disabled={isDownloading}
+                      className={`
+              flex
+              items-center
+              justify-center
+              gap-2
+              px-5
+              py-3
+              rounded-2xl
+              text-sm
+              font-semibold
+              shadow-sm
+              transition-all
+              ${
+                isDownloading
+                  ? "bg-gray-300 text-white cursor-not-allowed"
+                  : "bg-green-500 text-white hover:bg-green-600 hover:shadow-md"
+              }
+            `}
+                    >
+                      {isDownloading ? (
+                        <>
+                          <div
+                            className="
+                    w-4
+                    h-4
+                    border-2
+                    border-white
+                    border-t-transparent
+                    rounded-full
+                    animate-spin
+                  "
+                          />
+                          Downloading...
+                        </>
+                      ) : (
+                        <>
+                          Download PDF
+                          <FaDownload className="text-sm" />
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
           {/* update Work order ticket details */}
@@ -484,138 +641,618 @@ const EditServiceTicket = () => {
             handleNoteChange={handleNoteChange}
           />
           {showDeviceModal && (
-            <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-              <div className="bg-white rounded p-6 w-3/4 h-3/4 overflow-y-auto">
-                <h3 className="text-lg font-semibold mb-4">Select Device</h3>
-                <div className="flex justify-end mb-2">
+            <div
+              className="
+      fixed
+      inset-0
+      bg-black/50
+      flex
+      items-center
+      justify-center
+      z-50
+      p-4
+    "
+            >
+              <div
+                className="
+        bg-white
+        rounded-[28px]
+        shadow-2xl
+        w-full
+        max-w-7xl
+        max-h-[92vh]
+        overflow-hidden
+        flex
+        flex-col
+      "
+              >
+                {/* TOP BORDER */}
+                <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+                {/* HEADER */}
+                <div
+                  className="
+          px-6
+          py-5
+          border-b
+          border-gray-100
+          flex
+          flex-col
+          md:flex-row
+          md:items-center
+          md:justify-between
+          gap-4
+        "
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="
+              w-14
+              h-14
+              rounded-2xl
+              bg-indigo-100
+              text-indigo-600
+              flex
+              items-center
+              justify-center
+            "
+                    >
+                      <MdDevices className="text-3xl" />
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-bold text-[#1E1B4B]">
+                        Select Device
+                      </h3>
+
+                      <p className="text-sm text-gray-500 mt-1">
+                        Choose a device to add to the service ticket
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* CLOSE BUTTON */}
                   <button
                     onClick={closeDeviceModal}
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                    className="
+            flex
+            items-center
+            justify-center
+            gap-2
+            px-5
+            py-3
+            rounded-2xl
+            border
+            border-gray-200
+            bg-white
+            text-gray-700
+            text-sm
+            font-semibold
+            hover:bg-gray-50
+            transition-all
+          "
                   >
+                    <MdClose className="text-lg" />
                     Close
                   </button>
                 </div>
-                <table className="table-auto w-full border-collapse border border-gray-200">
-                  <thead>
-                    <tr className="bg-gray-100 text-left">
-                      <th className="border px-4 py-2">Serial Number</th>
-                      <th className="border px-4 py-2">Device ID</th>
-                      <th className="border px-4 py-2">MAC Address</th>
-                      <th className="border px-4 py-2">Model</th>
-                      <th className="border px-4 py-2">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {equipments?.length === 0 ? (
+
+                {/* TABLE */}
+                <div className="flex-1 overflow-auto">
+                  <table className="w-full text-left">
+                    <thead className="sticky top-0 bg-gray-50 z-10">
                       <tr>
-                        <td colSpan="5" className="text-center">
-                          No Equipments Found
-                        </td>
+                        <th
+                          className="
+                  px-4
+                  py-4
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-wide
+                  text-gray-500
+                  border-b
+                  whitespace-nowrap
+                "
+                        >
+                          Serial Number
+                        </th>
+
+                        <th
+                          className="
+                  px-4
+                  py-4
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-wide
+                  text-gray-500
+                  border-b
+                  whitespace-nowrap
+                "
+                        >
+                          Device ID
+                        </th>
+
+                        <th
+                          className="
+                  px-4
+                  py-4
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-wide
+                  text-gray-500
+                  border-b
+                  whitespace-nowrap
+                "
+                        >
+                          MAC Address
+                        </th>
+
+                        <th
+                          className="
+                  px-4
+                  py-4
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-wide
+                  text-gray-500
+                  border-b
+                  whitespace-nowrap
+                "
+                        >
+                          Model
+                        </th>
+
+                        <th
+                          className="
+                  px-4
+                  py-4
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-wide
+                  text-gray-500
+                  border-b
+                  text-center
+                  whitespace-nowrap
+                "
+                        >
+                          Action
+                        </th>
                       </tr>
-                    ) : (
-                      equipments?.map((equipment) => (
-                        <tr key={equipment.client_equipment_id}>
-                          <td className="border px-4 py-2">
-                            {equipment.serial_number}
-                          </td>
-                          <td className="border px-4 py-2">
-                            {equipment.device_id}
-                          </td>
-                          <td className="border px-4 py-2">
-                            {equipment.mac_address}
-                          </td>
-                          <td className="border px-4 py-2">
-                            {equipment.model}
-                          </td>
-                          <td className="border px-4 py-2">
-                            <button
-                              onClick={() =>
-                                handleAddDeviceToTicket(
-                                  equipment.client_equipment_id,
-                                )
-                              }
-                              className="bg-blue-500 text-white px-4 py-2 rounded"
-                              disabled={
-                                processingId &&
-                                processingId !== equipment.client_equipment_id
-                              } //disable other rows
-                            >
-                              {processingId === equipment.client_equipment_id &&
-                              loadingAssign
-                                ? "Saving"
-                                : "Add"}
-                            </button>
+                    </thead>
+
+                    <tbody>
+                      {equipments?.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="py-20">
+                            <div className="flex flex-col items-center justify-center text-center">
+                              <div
+                                className="
+                        w-20
+                        h-20
+                        rounded-full
+                        bg-gray-100
+                        flex
+                        items-center
+                        justify-center
+                        mb-4
+                      "
+                              >
+                                <MdDevices className="text-4xl text-gray-400" />
+                              </div>
+
+                              <h3 className="text-base font-semibold text-[#1E1B4B]">
+                                No Devices Found
+                              </h3>
+
+                              <p className="text-sm text-gray-500 mt-2">
+                                No available equipment found for this location.
+                              </p>
+                            </div>
                           </td>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                      ) : (
+                        equipments?.map((equipment, index) => (
+                          <tr
+                            key={equipment.client_equipment_id}
+                            className="
+                      border-b
+                      border-gray-100
+                      hover:bg-indigo-50/40
+                      transition-all
+                    "
+                          >
+                            {/* SERIAL */}
+                            <td className="px-4 py-4">
+                              <div>
+                                <p className="text-sm font-semibold text-[#1E1B4B]">
+                                  {equipment.serial_number || "NA"}
+                                </p>
+
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Device Serial
+                                </p>
+                              </div>
+                            </td>
+
+                            {/* DEVICE ID */}
+                            <td className="px-4 py-4">
+                              <div>
+                                <p className="text-sm font-medium text-gray-700">
+                                  {equipment.device_id || "NA"}
+                                </p>
+
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Device Identifier
+                                </p>
+                              </div>
+                            </td>
+
+                            {/* MAC */}
+                            <td className="px-4 py-4">
+                              <div>
+                                <p className="text-sm font-medium text-gray-700 break-all">
+                                  {equipment.mac_address || "NA"}
+                                </p>
+
+                                <p className="text-xs text-gray-500 mt-1">
+                                  MAC Address
+                                </p>
+                              </div>
+                            </td>
+
+                            {/* MODEL */}
+                            <td className="px-4 py-4">
+                              <div>
+                                <p className="text-sm font-medium text-gray-700">
+                                  {equipment.model || "NA"}
+                                </p>
+
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Device Model
+                                </p>
+                              </div>
+                            </td>
+
+                            {/* ACTION */}
+                            <td className="px-4 py-4">
+                              <div className="flex justify-center">
+                                <button
+                                  onClick={() =>
+                                    handleAddDeviceToTicket(
+                                      equipment.client_equipment_id,
+                                    )
+                                  }
+                                  disabled={
+                                    processingId &&
+                                    processingId !==
+                                      equipment.client_equipment_id
+                                  }
+                                  className={`
+                            flex
+                            items-center
+                            justify-center
+                            gap-2
+                            px-5
+                            py-2.5
+                            rounded-xl
+                            text-sm
+                            font-semibold
+                            transition-all
+                            ${
+                              processingId === equipment.client_equipment_id &&
+                              loadingAssign
+                                ? "bg-gray-300 text-white cursor-not-allowed"
+                                : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-sm hover:shadow-md"
+                            }
+                          `}
+                                >
+                                  {processingId ===
+                                    equipment.client_equipment_id &&
+                                  loadingAssign ? (
+                                    <>
+                                      <div
+                                        className="
+                                  w-4
+                                  h-4
+                                  border-2
+                                  border-white
+                                  border-t-transparent
+                                  rounded-full
+                                  animate-spin
+                                "
+                                      />
+                                      Saving...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <MdAdd className="text-lg" />
+                                      Add Device
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Segnature modal */}
+          {/* Signature Section */}
+          <div
+            className="
+    bg-white
+    rounded-[24px]
+    border
+    border-gray-100
+    shadow-sm
+    overflow-hidden
+    mt-5
+  "
+          >
+            {/* TOP BORDER */}
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
-          <div className="p-6">
-              {/* Agreement Text - Always Visible */}
-       {user_type === "Client Employee" && (       
-  <div className="max-w-xl mt-5 mb-4 text-sm text-gray-600 leading-relaxed">
-    <p>
-      By signing below, the client confirms that the services outlined
-      in this ticket have been completed satisfactorily in accordance
-      with the notes, updates, and supporting photos provided.
-    </p>
-  </div>)}
+            <div className="p-6">
+              {/* HEADER */}
+              <div className="flex items-center gap-3 mb-5">
+                <div
+                  className="
+          w-12
+          h-12
+          rounded-2xl
+          bg-indigo-100
+          text-indigo-600
+          flex
+          items-center
+          justify-center
+        "
+                >
+                  <MdDraw className="text-2xl" />
+                </div>
 
-            {signatureImage ? (
-              <div className="flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg bg-gray-100 max-w-sm text-center mt-5">
-                <h2 className="text-lg font-semibold text-gray-700">
-                  Signature:
-                </h2>
+                <div>
+                  <h2 className="text-lg font-semibold text-[#1E1B4B]">
+                    Client Signature
+                  </h2>
 
-                {/* Signature Image */}
-                <img
-                  src={`${S3_BASE_URL}/${signatureImage}`}
-                  alt="Signature"
-                  className="w-full max-w-xs h-auto border border-gray-400 rounded-md p-2 bg-white"
-                />
-
-                {/* Signature Name & Date */}
-                <div className="flex flex-col w-full text-gray-700">
-                  <p className="text-sm font-medium">
-                    Signed by:{" "}
-                    <span className="font-semibold">
-                      {serviceTicket ? serviceTicket.signature_name : ""}
-                    </span>
-                  </p>
-                  <p className="text-sm font-medium">
-                    Date:{" "}
-                    <span className="font-semibold">
-                      {serviceTicket
-                        ? formatDateToMDY(serviceTicket.signature_date)
-                        : ""}
-                    </span>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Signature confirmation for completed work
                   </p>
                 </div>
               </div>
-            ) : (
-              <>
-                {user_type === "Client Employee" && (
-                  <button
-                    onClick={openModal}
-                    className="bg-indigo-600 text-white px-4 py-2 rounded"
+
+              {/* AGREEMENT TEXT */}
+              {user_type === "Client Employee" && (
+                <div
+                  className="
+          bg-indigo-50
+          border
+          border-indigo-100
+          rounded-2xl
+          p-4
+          mb-5
+        "
+                >
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    By signing below, the client confirms that the services
+                    outlined in this ticket have been completed satisfactorily
+                    in accordance with the notes, updates, and supporting photos
+                    provided.
+                  </p>
+                </div>
+              )}
+
+              {/* SIGNATURE EXISTS */}
+              {signatureImage ? (
+                <div
+                  className="
+          max-w-2xl
+          border
+          border-gray-100
+          rounded-2xl
+          overflow-hidden
+          bg-gray-50
+        "
+                >
+                  {/* SIGNATURE HEADER */}
+                  <div
+                    className="
+            px-5
+            py-4
+            border-b
+            border-gray-100
+            bg-white
+            flex
+            items-center
+            justify-between
+          "
                   >
-                    Add Signature
-                  </button>
-                )}
-              </>
-            )}
-            <SignatureModal
-              isOpen={isModalOpen}
-              onClose={closeModal}
-              serviceTicketId={serviceTicketId}
-            />
+                    <div>
+                      <h3 className="text-base font-semibold text-[#1E1B4B]">
+                        Signed Confirmation
+                      </h3>
+
+                      <p className="text-sm text-gray-500 mt-1">
+                        Client acknowledgment signature
+                      </p>
+                    </div>
+
+                    <div
+                      className="
+              px-3
+              py-1
+              rounded-full
+              bg-green-100
+              text-green-700
+              text-xs
+              font-semibold
+            "
+                    >
+                      Signed
+                    </div>
+                  </div>
+
+                  {/* SIGNATURE BODY */}
+                  <div className="p-5">
+                    {/* IMAGE */}
+                    <div
+                      className="
+              bg-white
+              border
+              border-gray-200
+              rounded-2xl
+              p-4
+              flex
+              items-center
+              justify-center
+            "
+                    >
+                      <img
+                        src={`${S3_BASE_URL}/${signatureImage}`}
+                        alt="Signature"
+                        className="
+                max-h-52
+                object-contain
+              "
+                      />
+                    </div>
+
+                    {/* DETAILS */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                      <div
+                        className="
+                bg-white
+                border
+                border-gray-100
+                rounded-2xl
+                px-4
+                py-3
+              "
+                      >
+                        <p className="text-xs text-gray-500 mb-1">Signed By</p>
+
+                        <p className="text-sm font-semibold text-[#1E1B4B]">
+                          {serviceTicket ? serviceTicket.signature_name : ""}
+                        </p>
+                      </div>
+
+                      <div
+                        className="
+                bg-white
+                border
+                border-gray-100
+                rounded-2xl
+                px-4
+                py-3
+              "
+                      >
+                        <p className="text-xs text-gray-500 mb-1">
+                          Signature Date
+                        </p>
+
+                        <p className="text-sm font-semibold text-[#1E1B4B]">
+                          {serviceTicket
+                            ? formatDateToMDY(serviceTicket.signature_date)
+                            : ""}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* EMPTY STATE */}
+                  <div
+                    className="
+            border-2
+            border-dashed
+            border-gray-200
+            rounded-2xl
+            bg-gray-50
+            py-12
+            px-6
+            flex
+            flex-col
+            items-center
+            justify-center
+            text-center
+          "
+                  >
+                    <div
+                      className="
+              w-20
+              h-20
+              rounded-full
+              bg-white
+              shadow-sm
+              flex
+              items-center
+              justify-center
+              mb-4
+            "
+                    >
+                      <MdDraw className="text-4xl text-gray-400" />
+                    </div>
+
+                    <h3 className="text-base font-semibold text-[#1E1B4B]">
+                      No Signature Added
+                    </h3>
+
+                    <p className="text-sm text-gray-500 mt-2 max-w-md">
+                      Client signature has not been added yet for this service
+                      ticket.
+                    </p>
+
+                    {/* ADD BUTTON */}
+                    {user_type === "Client Employee" && (
+                      <button
+                        onClick={openModal}
+                        className="
+                mt-6
+                flex
+                items-center
+                justify-center
+                gap-2
+                px-6
+                py-3
+                rounded-2xl
+                bg-gradient-to-r
+                from-indigo-500
+                via-purple-500
+                to-pink-500
+                text-white
+                text-sm
+                font-semibold
+                shadow-sm
+                hover:shadow-md
+                transition-all
+              "
+                      >
+                        <MdDraw className="text-lg" />
+                        Add Signature
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* MODAL */}
+              <SignatureModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                serviceTicketId={serviceTicketId}
+              />
+            </div>
           </div>
         </div>
       </div>

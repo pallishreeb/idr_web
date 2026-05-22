@@ -2,26 +2,44 @@
 
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import { AiFillDelete } from "react-icons/ai";
-// import Swal from "sweetalert2";
-import { FaDownload } from "react-icons/fa";
+
+import {
+  MdAddPhotoAlternate,
+  MdDownload,
+  MdImage,
+  MdVideoLibrary,
+  MdCloudUpload,
+  MdClose,
+} from "react-icons/md";
+
 import { getRMADetails, uploadRmaImages } from "../actions/rmaActions";
+
 import { toast } from "react-toastify";
+
 import { S3_BASE_URL } from "../config";
+
 import ImageModal from "./ImageModal";
 
 const RmaImages = ({ images, rmaId }) => {
   const dispatch = useDispatch();
+
   const { user_type } = useSelector((state) => state.user.user);
+
   const { technicianAccess } = useSelector((state) => state.user);
+
   const { loadingAssignImage } = useSelector((state) => state.rma);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [selectedFiles, setSelectedFiles] = useState([]);
+
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+
   const handleOpenModal = () => setIsModalOpen(true);
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
+
     setSelectedFiles([]);
   };
 
@@ -32,6 +50,7 @@ const RmaImages = ({ images, rmaId }) => {
   const handleUpload = () => {
     if (selectedFiles.length === 0) {
       toast.error("Please select at least one image.");
+
       return;
     }
 
@@ -39,166 +58,486 @@ const RmaImages = ({ images, rmaId }) => {
       .then((data) => {
         if (data.code === "RMA201") {
           toast.success("Images uploaded successfully.");
+
           dispatch(getRMADetails(rmaId));
+
           window.location.reload();
+
           handleCloseModal();
         }
       })
       .catch((error) => {
         console.error("Error uploading images:", error);
+
         toast.error("Failed to upload images.");
       });
   };
 
-  // const handleDelete = (imageId) => {
-  //   Swal.fire({
-  //     title: "Are you sure?",
-  //     text: "Do you really want to delete this image?",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Yes, delete it!",
-  //     cancelButtonText: "No, keep it",
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       console.log("Image is removed")
-  //       // dispatch(deleteImage(imageId)).then(() => {
-  //       //   toast.success("Image deleted successfully.");
-  //       //   dispatch(getServiceTicketDetails(serviceTicketId));
-  //       // });
-  //     }
-  //   });
-  // };
   const handleDownload = (url, filename) => {
     const link = document.createElement("a");
+
     link.href = url;
-    link.download = filename || "image.jpg";
+
+    link.download = filename || "attachment";
+
     link.click();
   };
 
   const handleImageClick = (imageUrl) => {
-    setSelectedImageUrl(imageUrl); // Set the image URL for the modal
+    setSelectedImageUrl(imageUrl);
   };
 
-  // const handleMediaClick = (mediaUrl) => {
-  //   setSelectedMediaUrl(mediaUrl);
-  // };
   const closeImageModal = () => {
-    setSelectedImageUrl(null); // Close the image modal
+    setSelectedImageUrl(null);
   };
+
   const isVideo = (fileName) => /\.(mp4|mov|avi|webm|mkv)$/i.test(fileName);
+
   const newAccess = [
     ...technicianAccess,
     "Subcontractor_User",
     "Subcontractor",
   ];
+
   return (
-    <div className="flex flex-col mt-2 border py-7 px-5 bg-white gap-6">
-      <div className="mb-2 flex justify-between">
-        <h1 className="font-normal text-xl mb-2">Service Ticket Images</h1>
-        {newAccess.includes(user_type) && (
-          <button
-            className="bg-indigo-600 text-white px-6 py-2 rounded"
-            onClick={handleOpenModal}
-          >
-            Add Images/Videos
-          </button>
-        )}
-      </div>
+    <>
+      <div
+        className="
+          bg-white
+          rounded-[24px]
+          border
+          border-gray-100
+          shadow-sm
+          overflow-hidden
+        "
+      >
+        {/* TOP BORDER */}
+        <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
-      {/* Image table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-gray-200 border rounded">
-          <thead>
-            <tr className="bg-gray-300 text-left">
-              <th className="border px-4 py-2">Photos</th>
-              <th className="border px-4 py-2">User Name</th>
-              <th className="border px-4 py-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {images?.map((image, index) => {
-              const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
-              return (
-                <tr key={index} className="bg-white text-sm">
-                  <td className="border px-4 py-2">
-                    {isVideo(image?.attachment_url) ? (
-                      <video
-                        src={fileUrl}
-                        className="w-20 h-20 object-cover rounded"
-                        controls
-                        onClick={() => handleImageClick(fileUrl)}
-                      />
-                    ) : (
-                      <img
-                        src={fileUrl}
-                        alt={`Attachment ${index + 1}`}
-                        className="w-20 h-20 object-cover rounded"
-                        onClick={() => handleImageClick(fileUrl)}
-                      />
-                    )}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {image?.user_name || "NA"}
-                  </td>
-                  <td className="border px-4 py-2">
-                    <button
-                      onClick={() =>
-                        handleDownload(fileUrl, `attachment-${index + 1}`)
-                      }
-                      className="bg-blue-500 text-white px-3 py-3 rounded"
-                    >
-                      <FaDownload />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+        <div className="p-5">
+          {/* HEADER */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div
+                className="
+                  w-12
+                  h-12
+                  rounded-2xl
+                  bg-indigo-100
+                  text-indigo-600
+                  flex
+                  items-center
+                  justify-center
+                "
+              >
+                <MdImage className="text-2xl" />
+              </div>
 
-      {/* Add Image Modal */}
-      {isModalOpen && (
-        <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-4 my-8 max-h-[95vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4 text-center">
-              Add Images/Videos
-            </h2>
-            <div className="mb-4">
-              <label className="block font-normal text-base mb-2">
-                Select File
-              </label>
-              <input
-                type="file"
-                // accept="image/*"
-                multiple
-                onChange={handleFileChange}
-                className="block w-full text-sm text-gray-500 border border-gray-300 rounded cursor-pointer"
-              />
+              <div>
+                <h2 className="text-lg font-semibold text-[#1E1B4B]">
+                  RMA Images & Videos
+                </h2>
+
+                <p className="text-sm text-gray-500 mt-1">
+                  Upload and manage RMA attachments
+                </p>
+              </div>
             </div>
-            <div className="flex justify-end">
+
+            {newAccess.includes(user_type) && (
               <button
-                className="bg-indigo-600 text-white px-4 py-2 rounded"
-                onClick={handleUpload}
+                className="
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  px-5
+                  py-3
+                  rounded-2xl
+                  bg-gradient-to-r
+                  from-indigo-500
+                  via-purple-500
+                  to-pink-500
+                  text-white
+                  text-sm
+                  font-semibold
+                  shadow-sm
+                  hover:shadow-md
+                  transition-all
+                "
+                onClick={handleOpenModal}
               >
-                {loadingAssignImage ? "Uploading" : "Upload"}
+                <MdAddPhotoAlternate className="text-lg" />
+                Add Images/Videos
               </button>
-              <button
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"
-                onClick={handleCloseModal}
+            )}
+          </div>
+
+          {/* EMPTY STATE */}
+          {images?.length === 0 ? (
+            <div className="py-14 flex flex-col items-center justify-center text-center">
+              <div
+                className="
+                  w-20
+                  h-20
+                  rounded-full
+                  bg-gray-100
+                  flex
+                  items-center
+                  justify-center
+                  mb-4
+                "
               >
-                Cancel
-              </button>
+                <MdImage className="text-4xl text-gray-400" />
+              </div>
+
+              <h3 className="text-base font-semibold text-[#1E1B4B]">
+                No Attachments Added
+              </h3>
+
+              <p className="text-sm text-gray-500 mt-2">
+                Uploaded RMA images and videos will appear here
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+              {images?.map((image, index) => {
+                const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
+
+                return (
+                  <div
+                    key={index}
+                    className="
+                        border
+                        border-gray-100
+                        rounded-2xl
+                        overflow-hidden
+                        bg-white
+                        shadow-sm
+                        hover:shadow-md
+                        transition-all
+                      "
+                  >
+                    {/* MEDIA */}
+                    <div
+                      className="
+                          h-52
+                          bg-gray-100
+                          flex
+                          items-center
+                          justify-center
+                          overflow-hidden
+                          cursor-pointer
+                          relative
+                        "
+                      onClick={() => handleImageClick(fileUrl)}
+                    >
+                      {isVideo(image?.attachment_url) ? (
+                        <>
+                          <video
+                            src={fileUrl}
+                            className="w-full h-full object-cover"
+                            controls
+                          />
+
+                          <div
+                            className="
+                                absolute
+                                top-3
+                                right-3
+                                bg-black/70
+                                text-white
+                                p-2
+                                rounded-full
+                              "
+                          >
+                            <MdVideoLibrary className="text-lg" />
+                          </div>
+                        </>
+                      ) : (
+                        <img
+                          src={fileUrl}
+                          alt={`Attachment ${index + 1}`}
+                          className="
+                              w-full
+                              h-full
+                              object-cover
+                            "
+                        />
+                      )}
+                    </div>
+
+                    {/* CONTENT */}
+                    <div className="p-4">
+                      <div className="mb-4">
+                        <p className="text-xs text-gray-500 mb-1">
+                          Uploaded By
+                        </p>
+
+                        <p className="text-sm font-semibold text-[#1E1B4B] break-words">
+                          {image?.user_name || "NA"}
+                        </p>
+                      </div>
+
+                      {/* ACTIONS */}
+                      <button
+                        onClick={() =>
+                          handleDownload(fileUrl, `attachment-${index + 1}`)
+                        }
+                        className="
+                            w-full
+                            flex
+                            items-center
+                            justify-center
+                            gap-2
+                            px-4
+                            py-2.5
+                            rounded-xl
+                            bg-blue-50
+                            text-blue-600
+                            text-sm
+                            font-semibold
+                            hover:bg-blue-100
+                            transition-all
+                          "
+                      >
+                        <MdDownload className="text-lg" />
+                        Download
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* UPLOAD MODAL */}
+      {isModalOpen && (
+        <div
+          className="
+            fixed
+            inset-0
+            bg-black/50
+            flex
+            items-center
+            justify-center
+            z-50
+            p-4
+          "
+        >
+          <div
+            className="
+              bg-white
+              rounded-[24px]
+              shadow-xl
+              w-full
+              max-w-2xl
+              overflow-hidden
+            "
+          >
+            {/* TOP BORDER */}
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+            <div className="p-6">
+              {/* HEADER */}
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-[#1E1B4B]">
+                    Upload Images/Videos
+                  </h2>
+
+                  <p className="text-sm text-gray-500 mt-1">
+                    Select multiple files to upload
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleCloseModal}
+                  className="
+                    w-10
+                    h-10
+                    rounded-xl
+                    bg-gray-100
+                    text-gray-500
+                    flex
+                    items-center
+                    justify-center
+                    hover:bg-gray-200
+                    transition-all
+                  "
+                >
+                  <MdClose className="text-xl" />
+                </button>
+              </div>
+
+              {/* FILE UPLOAD */}
+              <label
+                className="
+                  border-2
+                  border-dashed
+                  border-indigo-200
+                  rounded-2xl
+                  bg-indigo-50/40
+                  hover:bg-indigo-50
+                  transition-all
+                  p-8
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  cursor-pointer
+                "
+              >
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+
+                <div
+                  className="
+                    w-16
+                    h-16
+                    rounded-2xl
+                    bg-white
+                    shadow-sm
+                    flex
+                    items-center
+                    justify-center
+                    mb-4
+                  "
+                >
+                  <MdCloudUpload className="text-4xl text-indigo-600" />
+                </div>
+
+                <h3 className="text-base font-semibold text-[#1E1B4B]">
+                  Click to Upload Files
+                </h3>
+
+                <p className="text-sm text-gray-500 mt-2 text-center">
+                  Upload images or videos for this RMA
+                </p>
+              </label>
+
+              {/* SELECTED FILES */}
+              {selectedFiles.length > 0 && (
+                <div className="mt-5">
+                  <h4 className="text-sm font-semibold text-[#1E1B4B] mb-3">
+                    Selected Files ({selectedFiles.length})
+                  </h4>
+
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {selectedFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className="
+                            flex
+                            items-center
+                            justify-between
+                            bg-gray-50
+                            border
+                            border-gray-100
+                            rounded-xl
+                            px-4
+                            py-3
+                          "
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="
+                                w-10
+                                h-10
+                                rounded-xl
+                                bg-indigo-100
+                                text-indigo-600
+                                flex
+                                items-center
+                                justify-center
+                              "
+                          >
+                            {isVideo(file.name) ? (
+                              <MdVideoLibrary className="text-lg" />
+                            ) : (
+                              <MdImage className="text-lg" />
+                            )}
+                          </div>
+
+                          <div>
+                            <p className="text-sm font-medium text-[#1E1B4B] break-all">
+                              {file.name}
+                            </p>
+
+                            <p className="text-xs text-gray-500">
+                              {(file.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ACTIONS */}
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  className="
+                    px-5
+                    py-3
+                    rounded-2xl
+                    border
+                    border-gray-200
+                    bg-white
+                    text-gray-700
+                    text-sm
+                    font-semibold
+                    hover:bg-gray-50
+                    transition-all
+                  "
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    px-5
+                    py-3
+                    rounded-2xl
+                    bg-gradient-to-r
+                    from-indigo-500
+                    via-purple-500
+                    to-pink-500
+                    text-white
+                    text-sm
+                    font-semibold
+                    shadow-sm
+                    hover:shadow-md
+                    transition-all
+                  "
+                  onClick={handleUpload}
+                >
+                  <MdCloudUpload className="text-lg" />
+
+                  {loadingAssignImage ? "Uploading..." : "Upload Files"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Image Modal */}
+      {/* IMAGE MODAL */}
       {selectedImageUrl && (
         <ImageModal imageUrl={selectedImageUrl} onClose={closeImageModal} />
       )}
-    </div>
+    </>
   );
 };
 

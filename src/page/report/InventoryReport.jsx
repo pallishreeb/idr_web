@@ -1,216 +1,430 @@
-import { useEffect, useState } from "react";
-import { useNavigate , useLocation, Link} from "react-router-dom";
-import { BiSolidShow } from "react-icons/bi";
+import { useEffect } from "react";
+
+import {
+  useNavigate,
+  Link,
+} from "react-router-dom";
+
+import {
+  BiSolidShow,
+} from "react-icons/bi";
+
+import {
+  MdInventory2,
+  MdSearch,
+} from "react-icons/md";
+
 import Header from "../../Components/Header";
+
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { getInventoryReportList } from "../../actions/reportActions";
-import { useDispatch, useSelector } from "react-redux";
+
+import {
+  getInventoryReportList,
+} from "../../actions/reportActions";
+
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
 
 const InventoryReport = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  // const location = useLocation();
-  // const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
+  const navigate =
+    useNavigate();
 
-  const { inventories, loading } = useSelector((state) => state.report);
-  // const { access } = useSelector((state) => state.user);
-  // const { user_type } = useSelector((state) => state.user.user);
+  const dispatch =
+    useDispatch();
 
-  // const [selectedOption, setSelectedOption] = useState("");
+  const {
+    inventories,
+    loading,
+  } =
+    useSelector(
+      (state) =>
+        state.report,
+    );
 
-
-  // const handleSelectChange = (e) => {
-  //   const selectedValue = e.target.value;
-  //   setSelectedOption(selectedValue);
-
-  //   const param =
-  //     selectedValue === "equipmentReport"
-  //       ? "/equipment-report"
-  //       : "/inventory-report";
-  //   navigate(param);
-  // };
-
-  // // Update the selected option based on the current route
-  // useEffect(() => {
-  //   if (location.pathname === "/equipment-report") {
-  //     setSelectedOption("equipmentReport");
-  //   } else if (location.pathname === "/inventory-report") {
-  //     setSelectedOption("inventoryReport");
-  //   } else {
-  //     setSelectedOption("");
-  //   }
-  // }, [location.pathname]);
   useEffect(() => {
-    dispatch(getInventoryReportList());
+    dispatch(
+      getInventoryReportList(),
+    );
   }, [dispatch]);
-
-  // console.log(inventories,"inventories-------inventories")
-  // const handleSort = (key) => {
-  //   let direction = "ASC";
-  //   if (sortConfig.key === key && sortConfig.direction === "ASC") {
-  //     direction = "DESC";
-  //   }
-  //   setSortConfig({ key, direction });
-  //   dispatch(getInventoryReportList({  sortBy: key, orderBy: direction }));
-  // };
-
-  // const getSortSymbol = (key) => {
-  //   if (sortConfig.key === key) {
-  //     return sortConfig.direction === "ASC" ? "▲" : "▼";
-  //   }
-  //   return "↕";
-  // };
 
   return (
     <>
       <Header />
-      <div className="flex">
+
+      <div className="flex bg-gray-50 min-h-screen">
         <AdminSideNavbar />
-        <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
-          <div className="flex gap-6 items-center">
-            <h1 className="font-bold text-lg">Inventory Reports</h1>
-            <Link to="/equipment-report">
-                <button className="bg-indigo-600 text-white px-6 py-2 rounded">
-                 Equipment Reports
-                </button>
-              </Link>
-            {/* {access.includes(user_type) && (
-              <div className="flex gap-2">
-                <div className="flex flex-col gap-2">
-                  <select
-                    name="equipmentFilters"
-                    className="px-3 border border-gray-200 h-10 rounded w-50"
-                    value={selectedOption}
-                    onChange={handleSelectChange}
-                  >
-                    <option value="">Filter Reports</option>
-                    <option value="equipmentReport">Equipment Reports</option>
-                    <option value="inventoryReport">Inventory Reports</option>
-                  </select>
+
+        <div
+          className="
+            flex-1
+            p-4
+            md:p-5
+            overflow-x-hidden
+          "
+        >
+          {/* PAGE HEADER */}
+          <div
+            className="
+              bg-white
+              rounded-[24px]
+              shadow-sm
+              border
+              border-gray-100
+              overflow-hidden
+              mb-5
+            "
+          >
+            {/* TOP BAR */}
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+            <div className="p-4 md:p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+
+              {/* LEFT */}
+              <div className="flex items-center gap-3">
+
+                <div
+                  className="
+                    w-12
+                    h-12
+                    rounded-2xl
+                    bg-gradient-to-r
+                    from-indigo-500
+                    to-pink-500
+                    text-white
+                    flex
+                    items-center
+                    justify-center
+                    shadow-md
+                  "
+                >
+                  <MdInventory2 className="text-2xl" />
+                </div>
+
+                <div>
+                  <h1 className="text-lg md:text-xl font-bold text-[#1E1B4B]">
+                    Inventory Reports
+                  </h1>
+
+                  <p className="text-xs text-gray-500 mt-1">
+                    View inventory usage and activity reports
+                  </p>
                 </div>
               </div>
-            )} */}
+
+              {/* RIGHT */}
+              <div className="flex gap-3">
+
+                <Link to="/equipment-report">
+                  <button
+                    className="
+                      px-4
+                      py-2.5
+                      rounded-2xl
+                      bg-gradient-to-r
+                      from-indigo-500
+                      via-purple-500
+                      to-pink-500
+                      text-white
+                      font-semibold
+                      text-sm
+                      shadow-sm
+                      hover:shadow-md
+                      transition-all
+                    "
+                  >
+                    Equipment Reports
+                  </button>
+                </Link>
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
-            <table className="mt-2 w-full overflow-x-scroll">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Color{" "}
-                  </th>
 
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Size
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Device Type{" "}
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Make
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Model
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Quantity
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Performed By
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Created Date
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Performed Action
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* show no data if length is 0 */}
-                {loading ? (
-                  <tr>
-                    <td colSpan="6" className="text-center">
-                      <p className="text-center">Loading Inventory Report...</p>
-                    </td>
-                  </tr>
-                ) : (
-                  <>
-                    {inventories?.data?.length === 0 ? (
-                      <tr>
-                        <td colSpan="6" className="text-center">
-                          <p className="text-center">No Record Found</p>
-                        </td>
-                      </tr>
-                    ) : (
-                      <>
-                        {inventories?.data?.map((inventory, index) => (
-                          <tr key={index} className="text-left">
-                            <td className="border text-sm px-1 py-3">
-                              {inventory?.inventories?.color}
-                            </td>
+          {/* TABLE CARD */}
+          <div
+            className="
+              bg-white
+              rounded-[24px]
+              shadow-sm
+              border
+              border-gray-100
+              overflow-hidden
+            "
+          >
+            {/* TOP BAR */}
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
-                            <td className="border text-sm px-1 py-3">
-                              {inventory?.inventories?.size}
-                            </td>
-                            <td className="border text-sm px-1 py-3">
-                              {inventory?.inventories?.device_type}
-                            </td>
-                            <td className="border text-sm px-1 py-3">
-                              {inventory?.inventories?.make}
-                            </td>
-                            <td className="border text-sm px-1 py-3">
-                              {inventory?.inventories?.model}
-                            </td>
-                            <td className="border text-sm px-1 py-3">
-                              {" "}
-                              {inventory?.inventories?.quantity}
-                            </td>
-                            <td className="border text-sm px-1 py-3">
-                              {" "}
-                              {inventory?.performed_by}
-                            </td>
-                            <td className="border text-sm px-1 py-3">
-                              {" "}
-                              {new Date(inventory?.created_at).toLocaleString('en-US', {
-                                timeZone: 'America/New_York',
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit',
-                                hour12: true,
-                              })}
-                              
-                            </td>
-                            <td className="border text-sm px-1 py-3">
-                              {" "}
-                              {inventory?.performed_action}
-                            </td>
-                            <td className="border text-sm px-1 py-3">
-                              <div className="flex gap-2">
-                                <div className="p-[4px] bg-gray-100 cursor-pointer">
-                                  <BiSolidShow
-                                    onClick={() =>
-                                      navigate(
-                                        `/inventory-report/${inventory?.inventory_report_id}`
-                                      )
-                                    }
-                                  />
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </>
+            {/* TABLE */}
+            <div className="overflow-x-auto max-w-full">
+
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-gray-50">
+
+                    {[
+                      "Color",
+                      "Size",
+                      "Device Type",
+                      "Make",
+                      "Model",
+                      "Qty",
+                      "Performed By",
+                      "Created Date",
+                      "Action Type",
+                      "Action",
+                    ].map(
+                      (
+                        heading,
+                        index,
+                      ) => (
+                        <th
+                          key={index}
+                          className="
+                            px-3
+                            py-3
+                            text-left
+                            text-[11px]
+                            font-semibold
+                            uppercase
+                            tracking-wider
+                            text-gray-500
+                            border-b
+                          "
+                        >
+                          {heading}
+                        </th>
+                      ),
                     )}
-                  </>
-                )}
-              </tbody>
-            </table>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td
+                        colSpan="10"
+                        className="py-16 text-center"
+                      >
+                        <div className="flex flex-col items-center">
+
+                          <div
+                            className="
+                              w-12
+                              h-12
+                              border-4
+                              border-indigo-200
+                              border-t-indigo-600
+                              rounded-full
+                              animate-spin
+                              mb-4
+                            "
+                          />
+
+                          <p className="text-sm text-gray-500 font-medium">
+                            Loading Inventory Reports...
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : inventories?.data
+                      ?.length ===
+                    0 ? (
+                    <tr>
+                      <td
+                        colSpan="10"
+                        className="py-16 text-center"
+                      >
+                        <div className="flex flex-col items-center">
+
+                          <div
+                            className="
+                              w-20
+                              h-20
+                              rounded-full
+                              bg-gray-100
+                              flex
+                              items-center
+                              justify-center
+                              mb-4
+                            "
+                          >
+                            <MdSearch className="text-4xl text-gray-400" />
+                          </div>
+
+                          <h3 className="text-base font-semibold text-[#1E1B4B]">
+                            No Reports Found
+                          </h3>
+
+                          <p className="text-sm text-gray-500 mt-2">
+                            Inventory reports will appear here
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    inventories?.data?.map(
+                      (
+                        inventory,
+                        index,
+                      ) => (
+                        <tr
+                          key={index}
+                          className="
+                            hover:bg-indigo-50/40
+                            transition-all
+                          "
+                        >
+                          {/* COLOR */}
+                          <td className="px-3 py-3 border-b text-[13px] text-gray-700">
+                            {inventory
+                              ?.inventories
+                              ?.color ||
+                              "NA"}
+                          </td>
+
+                          {/* SIZE */}
+                          <td className="px-3 py-3 border-b text-[13px] text-gray-700">
+                            {inventory
+                              ?.inventories
+                              ?.size ||
+                              "NA"}
+                          </td>
+
+                          {/* DEVICE TYPE */}
+                          <td className="px-3 py-3 border-b text-[13px] text-gray-700">
+                            {inventory
+                              ?.inventories
+                              ?.device_type ||
+                              "NA"}
+                          </td>
+
+                          {/* MAKE */}
+                          <td className="px-3 py-3 border-b text-[13px] text-gray-700">
+                            {inventory
+                              ?.inventories
+                              ?.make ||
+                              "NA"}
+                          </td>
+
+                          {/* MODEL */}
+                          <td className="px-3 py-3 border-b text-[13px] text-gray-700">
+                            {inventory
+                              ?.inventories
+                              ?.model ||
+                              "NA"}
+                          </td>
+
+                          {/* QUANTITY */}
+                          <td className="px-3 py-3 border-b">
+                            <span
+                              className="
+                                inline-flex
+                                items-center
+                                px-2.5
+                                py-1
+                                rounded-full
+                                bg-indigo-50
+                                text-indigo-700
+                                text-[11px]
+                                font-semibold
+                              "
+                            >
+                              {inventory
+                                ?.inventories
+                                ?.quantity ||
+                                0}
+                            </span>
+                          </td>
+
+                          {/* PERFORMED BY */}
+                          <td className="px-3 py-3 border-b text-[13px] text-gray-700">
+                            {inventory?.performed_by ||
+                              "NA"}
+                          </td>
+
+                          {/* DATE */}
+                          <td className="px-3 py-3 border-b text-[13px] text-gray-700">
+                            {new Date(
+                              inventory?.created_at,
+                            ).toLocaleString(
+                              "en-US",
+                              {
+                                timeZone:
+                                  "America/New_York",
+
+                                year:
+                                  "numeric",
+
+                                month:
+                                  "2-digit",
+
+                                day:
+                                  "2-digit",
+
+                                hour:
+                                  "2-digit",
+
+                                minute:
+                                  "2-digit",
+
+                                hour12: true,
+                              },
+                            )}
+                          </td>
+
+                          {/* ACTION TYPE */}
+                          <td className="px-3 py-3 border-b">
+                            <span
+                              className="
+                                inline-flex
+                                items-center
+                                px-2.5
+                                py-1
+                                rounded-full
+                                bg-green-50
+                                text-green-700
+                                text-[11px]
+                                font-semibold
+                                capitalize
+                              "
+                            >
+                              {inventory?.performed_action ||
+                                "NA"}
+                            </span>
+                          </td>
+
+                          {/* ACTION */}
+                          <td className="px-3 py-3 border-b">
+                            <button
+                              onClick={() =>
+                                navigate(
+                                  `/inventory-report/${inventory?.inventory_report_id}`,
+                                )
+                              }
+                              className="
+                                w-8
+                                h-8
+                                rounded-xl
+                                bg-blue-50
+                                text-blue-600
+                                flex
+                                items-center
+                                justify-center
+                                hover:bg-blue-100
+                                transition-all
+                              "
+                            >
+                              <BiSolidShow className="text-base" />
+                            </button>
+                          </td>
+                        </tr>
+                      ),
+                    )
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

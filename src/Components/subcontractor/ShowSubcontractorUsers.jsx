@@ -16,14 +16,7 @@ import {
 } from "react-toastify";
 
 import {
-  AiFillDelete,
-} from "react-icons/ai";
-
-import {
   MdGroups,
-  MdPerson,
-  MdPhone,
-  MdBusiness,
   MdAdd,
   MdDelete,
   MdAssignmentInd,
@@ -57,7 +50,6 @@ const ShowSubcontractorUsers =
 
     const {
       access,
-      technicianAccess,
     } =
       useSelector(
         (
@@ -156,43 +148,58 @@ const ShowSubcontractorUsers =
       };
 
     return (
-      <div className="bg-white rounded-[30px] shadow-lg border border-gray-100 overflow-hidden mt-6">
+      <div className="bg-white rounded-[28px] shadow-sm border border-gray-100 overflow-hidden mt-6">
         {/* TOP BAR */}
-        <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
-        <div className="p-6 md:p-7">
+        <div className="p-5 md:p-6">
           {/* HEADER */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
-            {user_type !==
-              "Client Employee" && (
-              <div className="flex items-center gap-3">
-                {/* ICON */}
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
-                  <MdGroups className="text-2xl" />
-                </div>
-
-                <div>
-                  {/* SMALL TITLE */}
-                  <h2 className="text-lg md:text-xl font-semibold text-[#1E1B4B]">
-                    {title}
-                  </h2>
-
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Manage
-                    assigned
-                    subcontractor
-                    users
-                  </p>
-                </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+                <MdGroups className="text-2xl" />
               </div>
-            )}
+
+              <div>
+                <h2 className="text-lg font-semibold text-[#1E1B4B]">
+                  {title}
+                </h2>
+
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Manage
+                  assigned
+                  subcontractor
+                  users
+                </p>
+              </div>
+            </div>
 
             {/* ADD BUTTON */}
             {access.includes(
               user_type,
             ) && (
               <button
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+                className="
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  px-5
+                  py-2.5
+                  rounded-2xl
+                  bg-gradient-to-r
+                  from-indigo-500
+                  via-purple-500
+                  to-pink-500
+                  text-white
+                  text-sm
+                  font-semibold
+                  shadow-md
+                  hover:shadow-lg
+                  hover:scale-[1.02]
+                  transition-all
+                  duration-300
+                "
                 onClick={() =>
                   setIsModalOpen(
                     true,
@@ -201,16 +208,15 @@ const ShowSubcontractorUsers =
               >
                 <MdAdd className="text-lg" />
                 Add
-                Subcontractor
                 User
               </button>
             )}
           </div>
 
-          {/* EMPTY */}
+          {/* EMPTY STATE */}
           {subcontractorAssignees?.length ===
             0 && (
-            <div className="bg-gray-50 border border-gray-100 rounded-[28px] p-10 text-center">
+            <div className="bg-gray-50 border border-gray-100 rounded-[24px] p-10 text-center">
               <MdAssignmentInd className="mx-auto text-5xl text-gray-300 mb-4" />
 
               <h3 className="text-lg font-semibold text-[#1E1B4B]">
@@ -227,128 +233,118 @@ const ShowSubcontractorUsers =
             </div>
           )}
 
-          {/* CARDS */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-            {subcontractorAssignees?.map(
-              (
-                user,
-              ) => {
-                const assignmentId =
-                  user[
-                    idKey
-                  ];
+          {/* TABLE */}
+          {subcontractorAssignees?.length >
+            0 && (
+            <div className="overflow-x-auto rounded-2xl border border-gray-100">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-gradient-to-r from-indigo-50 to-pink-50">
+                    <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B]">
+                      Subcontractor
+                    </th>
 
-                return (
-                  <div
-                    key={
-                      assignmentId
-                    }
-                    className="bg-white border border-gray-100 rounded-[28px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
-                  >
-                    {/* TOP */}
-                    <div className="px-5 py-4 bg-gradient-to-r from-indigo-50 to-pink-50 border-b border-gray-100 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 rounded-2xl bg-white border border-gray-200 flex items-center justify-center">
-                          <MdPerson className="text-indigo-500 text-xl" />
-                        </div>
+                    <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B]">
+                      User Name
+                    </th>
 
-                        <div>
-                          <p className="text-sm font-semibold text-[#1E1B4B]">
-                            {
-                              user.subcontractor_user_name
-                            }
-                          </p>
+                    <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B]">
+                      Contact
+                    </th>
 
-                          <p className="text-xs text-gray-500">
-                            Assigned
-                            User
-                          </p>
-                        </div>
-                      </div>
+                    {user_type ===
+                      "Admin" && (
+                      <th className="px-5 py-4 text-center text-sm font-semibold text-[#1E1B4B] w-[100px]">
+                        Actions
+                      </th>
+                    )}
+                  </tr>
+                </thead>
 
-                      {/* DELETE */}
-                      {user_type ===
-                        "Admin" && (
-                        <button
-                          className="w-10 h-10 rounded-xl bg-red-50 border border-red-100 text-red-500 hover:bg-red-100 flex items-center justify-center transition-all duration-300"
-                          onClick={() =>
-                            handleDelete(
-                              assignmentId,
-                            )
+                <tbody>
+                  {subcontractorAssignees?.map(
+                    (
+                      user,
+                      index,
+                    ) => {
+                      const assignmentId =
+                        user[
+                          idKey
+                        ];
+
+                      return (
+                        <tr
+                          key={
+                            assignmentId
                           }
+                          className="border-t border-gray-100 hover:bg-gray-50 transition-all duration-200"
                         >
-                          <MdDelete className="text-lg" />
-                        </button>
-                      )}
-                    </div>
-
-                    {/* CONTENT */}
-                    <div className="p-5 space-y-4">
-                      {/* COMPANY */}
-                      {technicianAccess.includes(
-                        user_type,
-                      ) && (
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center">
-                            <MdBusiness className="text-indigo-500 text-lg" />
-                          </div>
-
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">
-                              Subcontractor
-                            </p>
-
-                            <p className="text-sm font-medium text-[#1E1B4B]">
+                          {/* COMPANY */}
+                          <td className="px-5 py-4">
+                            <span className="inline-flex px-3 py-1 rounded-xl text-xs font-semibold bg-indigo-100 text-indigo-700">
                               {user.subcontractor_company ||
                                 "NA"}
+                            </span>
+                          </td>
+
+                          {/* USER */}
+                          <td className="px-5 py-4">
+                            <p className="text-sm font-semibold text-[#1E1B4B]">
+                              {
+                                user.subcontractor_user_name
+                              }
                             </p>
-                          </div>
-                        </div>
-                      )}
+                          </td>
 
-                      {/* NAME */}
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center">
-                          <MdPerson className="text-indigo-500 text-lg" />
-                        </div>
+                          {/* CONTACT */}
+                          <td className="px-5 py-4">
+                            <p className="text-sm text-gray-700">
+                              {
+                                user.subcontractor_user_contact
+                              }
+                            </p>
+                          </td>
 
-                        <div>
-                          <p className="text-xs text-gray-500 mb-1">
-                            Name
-                          </p>
-
-                          <p className="text-sm font-medium text-[#1E1B4B]">
-                            {
-                              user.subcontractor_user_name
-                            }
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* CONTACT */}
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center">
-                          <MdPhone className="text-indigo-500 text-lg" />
-                        </div>
-
-                        <div>
-                          <p className="text-xs text-gray-500 mb-1">
-                            Contact
-                          </p>
-
-                          <p className="text-sm font-medium text-[#1E1B4B]">
-                            {
-                              user.subcontractor_user_contact
-                            }
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              },
-            )}
-          </div>
+                          {/* ACTION */}
+                          {user_type ===
+                            "Admin" && (
+                            <td className="px-5 py-4">
+                              <div className="flex justify-center">
+                                <button
+                                  className="
+                                    w-9
+                                    h-9
+                                    rounded-xl
+                                    bg-red-50
+                                    border
+                                    border-red-100
+                                    text-red-500
+                                    hover:bg-red-100
+                                    flex
+                                    items-center
+                                    justify-center
+                                    transition-all
+                                    duration-300
+                                  "
+                                  onClick={() =>
+                                    handleDelete(
+                                      assignmentId,
+                                    )
+                                  }
+                                >
+                                  <MdDelete className="text-lg" />
+                                </button>
+                              </div>
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    },
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* MODAL */}
           <AddSubcontractorUserModal

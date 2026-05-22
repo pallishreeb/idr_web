@@ -135,6 +135,7 @@ function App() {
           <Route path="/users/update/:userId" element={<UpdateUser />}></Route>
           <Route path="/workorder" element={<WorkOrder />}></Route>
           <Route path="/add-work-order" element={<AddWorkOrder />}></Route>
+          <Route path="/duplicate-work-order/:id" element={<AddWorkOrder />} />
           <Route
             path="/edit-work-order/:workOrderId"
             element={<EditWorkOrder />}

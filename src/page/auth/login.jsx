@@ -1,127 +1,315 @@
 /** @format */
 
 import React, { useEffect, useState } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
+
 import { Link, useNavigate } from "react-router-dom";
-import { userLogin } from "../../actions/userActions";
+
 import { toast } from "react-toastify";
+
+import { userLogin } from "../../actions/userActions";
+
+import { MdEmail, MdLock, MdArrowForward } from "react-icons/md";
 
 const Login = () => {
   const dispatch = useDispatch();
+
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
+
   const [password, setPassword] = useState("");
+
   const loginError = useSelector((state) => state.user.error);
+
   const loginLoading = useSelector((state) => state.user.loading);
+
+  // =========================
+  // REDIRECT IF LOGGED IN
+  // =========================
 
   useEffect(() => {
     const token = localStorage.getItem("user");
+
     if (token) {
       navigate("/admin/dashboard");
     }
-  });
-  //   useEffect(() => {
-  //   const storedUser = JSON.parse(localStorage.getItem("user"));
+  }, [navigate]);
 
-  //   if (!storedUser) return;
+  // =========================
+  // SUBMIT
+  // =========================
 
-  //   const { user_type, subcontractor_id } = storedUser;
-  //   if (user_type === "Subcontractor") {
-  //     navigate(`/edit-subcontractor/${subcontractor_id}`, { replace: true });
-  //   } else {
-  //     navigate("/admin/dashboard", { replace: true });
-  //   }
-  // }, []);
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       toast.error("Please provide your email and password to login!");
+
       return;
     }
-    // Dispatch the loginUser action
-    dispatch(userLogin({ email_id: email, password }, navigate));
-    // navigate('/admin/dashboard');
+
+    dispatch(
+      userLogin(
+        {
+          email_id: email,
+          password,
+        },
+        navigate,
+      ),
+    );
   };
 
   return (
-    <div className="flex h-screen">
-      {/* Left side with image */}
-      <div className="hidden lg:block lg:w-1/2 bg-indigo-500 relative">
-        {/* Overlay blue color */}
-        <div className="absolute inset-0 bg-indigo-500 opacity-75"></div>
+    <div className="min-h-screen flex bg-[#F8FAFC]">
+      {/* LEFT SIDE WITH IMAGE */}
+      <div className="hidden lg:block lg:w-1/2 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 relative">
         <img
           src="login.png"
           alt="Login background"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover opacity-90"
         />
       </div>
+      {/* RIGHT SIDE */}
+      <div
+        className="
+          flex-1
+          flex
+          items-center
+          justify-center
+          px-5
+          py-10
+        "
+      >
+        <div className="w-full max-w-md">
+          {/* LOGIN CARD */}
+          <div
+            className="
+              bg-white
+              rounded-[32px]
+              border
+              border-gray-100
+              shadow-xl
+              overflow-hidden
+            "
+          >
+            {/* TOP BAR */}
+            <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
-      {/* Right side with login form */}
-      <div className="w-full lg:w-1/2 p-8 flex items-center justify-center">
-        <div className="w-full md:w-96 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-          <div className="text-center mb-4">
-            <img
-              src="idr-logo.png"
-              alt="Logo"
-              className="mx-auto h-14 w-96 ml-4"
-            />
+            <div className="px-7 py-8">
+              {/* MOBILE LOGO */}
+              <div className="flex justify-center lg:hidden mb-6">
+                <img
+                  src="idr-logo.png"
+                  alt="Logo"
+                  className="h-16 object-contain"
+                />
+              </div>
+
+              {/* HEADER */}
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-[#1E1B4B]">Sign In</h1>
+
+                <p className="text-sm text-gray-500 mt-2">
+                  Login to continue to your dashboard
+                </p>
+              </div>
+
+              {/* ERROR */}
+              {loginError && (
+                <div
+                  className="
+                    mb-5
+                    px-4
+                    py-3
+                    rounded-2xl
+                    bg-red-50
+                    border
+                    border-red-100
+                    text-sm
+                    text-red-600
+                  "
+                >
+                  {loginError}
+                </div>
+              )}
+
+              {/* FORM */}
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* EMAIL */}
+                <div>
+                  <label
+                    className="
+                      text-sm
+                      font-semibold
+                      text-[#1E1B4B]
+                      mb-2
+                      block
+                    "
+                  >
+                    Email Address
+                  </label>
+
+                  <div className="relative">
+                    <MdEmail
+                      className="
+                        absolute
+                        left-4
+                        top-1/2
+                        -translate-y-1/2
+                        text-gray-400
+                        text-xl
+                      "
+                    />
+
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="
+                        w-full
+                        h-14
+                        rounded-2xl
+                        border
+                        border-gray-200
+                        bg-gray-50
+                        pl-12
+                        pr-4
+                        text-sm
+                        text-gray-700
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-indigo-500
+                        focus:border-transparent
+                        transition-all
+                      "
+                    />
+                  </div>
+                </div>
+
+                {/* PASSWORD */}
+                <div>
+                  <label
+                    className="
+                      text-sm
+                      font-semibold
+                      text-[#1E1B4B]
+                      mb-2
+                      block
+                    "
+                  >
+                    Password
+                  </label>
+
+                  <div className="relative">
+                    <MdLock
+                      className="
+                        absolute
+                        left-4
+                        top-1/2
+                        -translate-y-1/2
+                        text-gray-400
+                        text-xl
+                      "
+                    />
+
+                    <input
+                      type="password"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="
+                        w-full
+                        h-14
+                        rounded-2xl
+                        border
+                        border-gray-200
+                        bg-gray-50
+                        pl-12
+                        pr-4
+                        text-sm
+                        text-gray-700
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-indigo-500
+                        focus:border-transparent
+                        transition-all
+                      "
+                    />
+                  </div>
+                </div>
+
+                {/* FORGOT PASSWORD */}
+                <div className="flex justify-end">
+                  <Link
+                    to="/forgot-password"
+                    className="
+                      text-sm
+                      font-medium
+                      text-indigo-600
+                      hover:text-indigo-700
+                      transition-all
+                    "
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
+                {/* BUTTON */}
+                <button
+                  type="submit"
+                  disabled={!email || !password || loginLoading}
+                  className={`
+                    w-full
+                    h-14
+                    rounded-2xl
+                    text-white
+                    text-sm
+                    font-semibold
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                    transition-all
+                    ${
+                      !email || !password || loginLoading
+                        ? "bg-gray-300 cursor-not-allowed"
+                        : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:shadow-lg hover:scale-[1.01]"
+                    }
+                  `}
+                >
+                  {loginLoading ? (
+                    <>
+                      <div
+                        className="
+                          w-5
+                          h-5
+                          border-2
+                          border-white
+                          border-t-transparent
+                          rounded-full
+                          animate-spin
+                        "
+                      />
+                      Signing In...
+                    </>
+                  ) : (
+                    <>
+                      Sign In
+                      <MdArrowForward className="text-lg" />
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
           </div>
 
-          <h1 className="text-2xl text-center mb-2">Login</h1>
-          {/* {loginError && <div className="text-red-500 text-sm mb-4">{loginError}</div>} */}
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="email"
-              >
-                Email
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="mb-6">
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="password"
-              >
-                Password
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            {/* Forgot Password link */}
-            <div className="mb-6 text-right">
-              <Link
-                to="/forgot-password"
-                className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-              >
-                Forgot password?
-              </Link>
-            </div>
-            {/* Submit button */}
-            <div className="flex items-center justify-between">
-              <button
-                className="bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded-md w-full focus:outline-none focus:shadow-outline"
-                type="submit"
-                disabled={!email || !password}
-              >
-                {loginLoading ? "Submitting" : "Sign In"}
-              </button>
-            </div>
-          </form>
+          {/* FOOTER */}
+          <p className="text-center text-xs text-gray-400 mt-5">
+            © {new Date().getFullYear()} IDR. All rights reserved.
+          </p>
         </div>
       </div>
     </div>

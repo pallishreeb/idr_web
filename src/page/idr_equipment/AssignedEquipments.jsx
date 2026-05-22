@@ -1,338 +1,649 @@
+/** @format */
+
 import { useEffect, useState } from "react";
-import { Link, useNavigate , useLocation} from "react-router-dom";
+
+import { Link, useNavigate, useLocation } from "react-router-dom";
+
 import { BiSolidShow } from "react-icons/bi";
+
 import { BsCheckCircle } from "react-icons/bs";
-// import { AiFillDelete } from "react-icons/ai";
+
+import {
+  MdDevices,
+  MdArrowBack,
+  MdRefresh,
+  MdAssignment,
+  MdKeyboardReturn,
+} from "react-icons/md";
+
 import Header from "../../Components/Header";
+
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-// import { BiTransferAlt } from "react-icons/bi";
+
 import {
   getAssignedEquipments,
   getReturnedRequestEquipments,
-  confirmReturnedEquipment
+  confirmReturnedEquipment,
 } from "../../actions/idrEquipmentAction";
+
 import { useDispatch, useSelector } from "react-redux";
+
 import Swal from "sweetalert2";
+
 import { toast } from "react-toastify";
 
 const AssignedEquipments = () => {
   const navigate = useNavigate();
+
   const dispatch = useDispatch();
+
   const location = useLocation();
-  // State for filters and search
+
+  /* FILTERS */
   const [filters, setFilters] = useState({
     signout: "",
   });
+
   const [selectedOption, setSelectedOption] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: "", direction: "ASC" });
+
+  const [sortConfig, setSortConfig] = useState({
+    key: "",
+    direction: "ASC",
+  });
+
   const { access } = useSelector((state) => state.user);
+
   const { user_type } = useSelector((state) => state.user.user);
+
   const loading = useSelector((state) => state.idrequipment.loading);
+
   const equipmentData = useSelector((state) => state.idrequipment.equipments);
 
+  const isReturnPage = location.search.includes("returns");
 
-  // useEffect(() => {
-  //   if (selectedOption === "returnRequestEquipments") {
-  //     dispatch(getReturnedRequestEquipments());
-  //   }else{
-  //     dispatch(getAssignedEquipments(filters));
-  //   }
-  // }, [dispatch, selectedOption, filters]);
-
-  
-  const handleSelectChange = (e) => {
-    const selectedValue = e.target.value;
-    setSelectedOption(selectedValue);
-
-    // Navigate to the AssignedEquipments page with the appropriate param
-    const param = selectedValue === 'assignedEquipments' ? 'assignment' : 'returns';
-    navigate(`/assigned-equipment?type=${param}`);
-  };
+  /* FETCH DATA */
   useEffect(() => {
-    // Retrieve the 'type' parameter from the URL
     const params = new URLSearchParams(location.search);
-    const type = params.get('type');
 
-    // Call the appropriate function based on the 'type' param
-    if (type === 'assignment') {
+    const type = params.get("type");
+
+    if (type === "assignment") {
       dispatch(getAssignedEquipments(filters));
-    } else if (type === 'returns') {
+    } else if (type === "returns") {
       dispatch(getReturnedRequestEquipments(filters));
     }
-  }, [location.search, dispatch,filters]);
+  }, [location.search, dispatch, filters]);
 
+  /* SELECT FILTER */
+  const handleSelectChange = (e) => {
+    const selectedValue = e.target.value;
 
+    setSelectedOption(selectedValue);
+
+    const param =
+      selectedValue === "assignedEquipments" ? "assignment" : "returns";
+
+    navigate(`/assigned-equipment?type=${param}`);
+  };
+
+  /* RESET */
   const handleReset = () => {
     const resetFilters = {
       signout: "",
     };
+
     setFilters(resetFilters);
+
     dispatch(getAssignedEquipments(resetFilters));
   };
+
+  /* CONFIRM */
   const handleConfirm = (equipmentId) => {
     Swal.fire({
       title: "Are you sure?",
-      text: "Do you really want to Confirm this return request?",
+      text: "Do you really want to confirm this return request?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, confirm it!",
-      cancelButtonText: "No, keep it",
+      cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(confirmReturnedEquipment(equipmentId))
           .then(() => {
-            dispatch(getReturnedRequestEquipments(filters)); // Refresh the list after deletion
+            dispatch(getReturnedRequestEquipments(filters));
           })
           .catch((error) => {
             console.log(error);
-            toast.error("Failed to Confirm the Equipment.");
+
+            toast.error("Failed to confirm equipment.");
           });
       }
     });
   };
 
+  /* SORT */
   const handleSort = (key) => {
     let direction = "ASC";
+
     if (sortConfig.key === key && sortConfig.direction === "ASC") {
       direction = "DESC";
     }
-    setSortConfig({ key, direction });
- // Use type parameter to determine which function to call
- const params = new URLSearchParams(location.search);
- const type = params.get('type');
- 
- if (type === 'returns') {
-   dispatch(getReturnedRequestEquipments({ ...filters, sortBy: key, orderBy: direction }));
- } else {
-   dispatch(getAssignedEquipments({ ...filters, sortBy: key, orderBy: direction }));
- }
+
+    setSortConfig({
+      key,
+      direction,
+    });
+
+    const params = new URLSearchParams(location.search);
+
+    const type = params.get("type");
+
+    if (type === "returns") {
+      dispatch(
+        getReturnedRequestEquipments({
+          ...filters,
+          sortBy: key,
+          orderBy: direction,
+        }),
+      );
+    } else {
+      dispatch(
+        getAssignedEquipments({
+          ...filters,
+          sortBy: key,
+          orderBy: direction,
+        }),
+      );
+    }
   };
 
   const getSortSymbol = (key) => {
     if (sortConfig.key === key) {
       return sortConfig.direction === "ASC" ? "▲" : "▼";
     }
+
     return "↕";
   };
 
   const truncateText = (text, maxLength) => {
     if (text?.length <= maxLength) return text;
+
     return text?.slice(0, maxLength) + "...";
   };
- 
+
   return (
     <>
       <Header />
-      <div className="flex">
+
+      <div className="flex bg-gray-50 min-h-screen">
         <AdminSideNavbar />
-        <div className="py-12 px-2 bg-gray-50 w-full h-screen overflow-y-scroll">
-          <div className="flex justify-between items-center">
-            <h1 className="font-bold text-lg"> {location.search.includes("returns") ? "Return Equipment Requests" : "Assigned IDR Equipments"} </h1>
-            <div className="flex gap-2">
-            <div className="flex flex-col gap-2">
-                  {/* <label className="font-normal text-sm">
-                    Filter by location
-                  </label> */}
-                  <select
-                    name="equipmentFilters"
-                    className="px-3 border border-gray-200 h-10 rounded w-50"
-                    value={selectedOption}
-                    onChange={handleSelectChange}
-                  >
-                    {location.search.includes("returns") ? 
-                  <>
-                   <option value="returnRequestEquipments">Return Requests</option>
-                   <option value="assignedEquipments" >Assigned Equipment</option>      
-                  </>
-                  : 
-                  <>
-                   <option value="assignedEquipments" >Assigned Equipment</option>
-                   <option value="returnRequestEquipments">Return Requests</option>
-                  </>
-                  }
-                   
-                  
-                  </select>
+
+        <div
+          className="
+              flex-1
+              p-4
+              md:p-5
+              overflow-x-hidden
+            "
+        >
+          {/* PAGE HEADER */}
+          <div
+            className="
+                bg-white
+                rounded-[24px]
+                shadow-sm
+                border
+                border-gray-100
+                overflow-hidden
+                mb-5
+              "
+          >
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+            <div className="p-4 md:p-5 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+              {/* LEFT */}
+              <div className="flex items-center gap-3">
+                <div
+                  className="
+                      w-12
+                      h-12
+                      rounded-2xl
+                      bg-gradient-to-r
+                      from-indigo-500
+                      to-pink-500
+                      text-white
+                      flex
+                      items-center
+                      justify-center
+                      shadow-md
+                    "
+                >
+                  {isReturnPage ? (
+                    <MdKeyboardReturn className="text-2xl" />
+                  ) : (
+                    <MdAssignment className="text-2xl" />
+                  )}
                 </div>
-              <Link to="/idr-equipment"   state={location.state}>
-                <button className="bg-indigo-600 text-white px-6 py-2 rounded">
-                 Back to Equipments
-                </button>
-              </Link>
+
+                <div>
+                  <h1 className="text-lg md:text-xl font-bold text-[#1E1B4B]">
+                    {isReturnPage
+                      ? "Return Equipment Requests"
+                      : "Assigned IDR Equipments"}
+                  </h1>
+
+                  <p className="text-xs text-gray-500 mt-1">
+                    {isReturnPage
+                      ? "Manage and confirm equipment return requests"
+                      : "View all assigned company equipments"}
+                  </p>
+                </div>
+              </div>
+
+              {/* RIGHT */}
+              <div className="flex flex-wrap gap-3">
+                {/* TYPE FILTER */}
+                <select
+                  name="equipmentFilters"
+                  value={selectedOption}
+                  onChange={handleSelectChange}
+                  className="
+                      rounded-2xl
+                      border
+                      border-gray-200
+                      px-4
+                      py-2.5
+                      text-sm
+                      bg-white
+                      focus:outline-none
+                      focus:ring-2
+                      focus:ring-indigo-500
+                    "
+                >
+                  {isReturnPage ? (
+                    <>
+                      <option value="returnRequestEquipments">
+                        Return Requests
+                      </option>
+
+                      <option value="assignedEquipments">
+                        Assigned Equipment
+                      </option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="assignedEquipments">
+                        Assigned Equipment
+                      </option>
+
+                      <option value="returnRequestEquipments">
+                        Return Requests
+                      </option>
+                    </>
+                  )}
+                </select>
+
+                {/* BACK */}
+                <Link to="/idr-equipment" state={location.state}>
+                  <button
+                    className="
+                        flex
+                        items-center
+                        gap-2
+                        px-4
+                        py-2.5
+                        rounded-2xl
+                        border
+                        border-gray-200
+                        bg-white
+                        text-gray-700
+                        text-sm
+                        font-medium
+                        hover:bg-gray-50
+                        transition-all
+                      "
+                  >
+                    <MdArrowBack className="text-lg" />
+                    Back to Equipments
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
-          <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
-          <div className="flex justify-between items-center">
-              <div className="flex gap-4 w-[70%]">
-               
-                <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">
-                    Filter by Signed Out
+
+          {/* FILTER CARD */}
+          <div
+            className="
+                bg-white
+                rounded-[24px]
+                shadow-sm
+                border
+                border-gray-100
+                overflow-hidden
+                mb-5
+              "
+          >
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+            <div className="p-5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* DATE FILTER */}
+                <div>
+                  <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                    Filter by Signed Out Date
                   </label>
+
                   <input
                     type="date"
-                    name="signedOutFilter"
                     value={filters.signout}
                     onChange={(e) =>
-                      setFilters({ ...filters, signout: e.target.value})
+                      setFilters({
+                        ...filters,
+                        signout: e.target.value,
+                      })
                     }
-                    className="px-3 border border-gray-200 h-10 rounded w-40"
+                    className="
+                        w-full
+                        rounded-2xl
+                        border
+                        border-gray-200
+                        px-4
+                        py-3
+                        text-sm
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-indigo-500
+                      "
                   />
                 </div>
-               
-                <div className="flex flex-col gap-2">
-                  <label className="font-normal text-sm">&nbsp;</label>
+
+                {/* RESET */}
+                <div className="flex items-end">
                   <button
                     onClick={handleReset}
-                    className="border-none text-xs font-normal px-4 py-3 bg-gray-200 rounded"
+                    className="
+                        w-full
+                        rounded-2xl
+                        border
+                        border-gray-200
+                        bg-white
+                        text-gray-700
+                        py-3
+                        text-sm
+                        font-semibold
+                        hover:bg-gray-50
+                        transition-all
+                        flex
+                        items-center
+                        justify-center
+                        gap-2
+                      "
                   >
+                    <MdRefresh className="text-lg" />
                     Reset
                   </button>
                 </div>
               </div>
             </div>
-            <table className="mt-2 w-full overflow-x-scroll">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("location_name")}
-                  >
-                    Location{" "}
-                    <span className="ml-2">{getSortSymbol("location")}</span>
-                  </th>
-                  <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("assigned_to")}
-                  >
-                    Assigned To{" "}
-                    <span className="ml-2">{getSortSymbol("assigned_to")}</span>
-                  </th>
-                  <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("serial_number")}
-                  >
-                    Serial Number{" "}
-                    <span className="ml-2">
-                      {getSortSymbol("serial_number")}
-                    </span>
-                  </th>
-                  <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("device_type")}
-                  >
-                    Device Type{" "}
-                    <span className="ml-2">{getSortSymbol("device_type")}</span>
-                  </th>
-                  <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("make")}
-                  >
-                    Make <span className="ml-2">{getSortSymbol("make")}</span>
-                  </th>
-                  <th
-                    className="px-1 py-1 text-left text-sm font-semibold tracking-wider border"
-                    onClick={() => handleSort("model")}
-                  >
-                    Model <span className="ml-2">{getSortSymbol("model")}</span>
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Description
-                  </th>
-                  <th className="px-1 py-1 text-left text-sm font-semibold tracking-wider border">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
+          </div>
 
-            {/* show no data if length is 0 */}
-            {loading ? (
-                  <tr>
-                  <td colSpan="5" className="text-center">
-                  <p className="text-center">Loading Equipments...</p>
-                  </td>
+          {/* TABLE CARD */}
+          <div
+            className="
+                bg-white
+                rounded-[24px]
+                shadow-sm
+                border
+                border-gray-100
+                overflow-hidden
+              "
+          >
+            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-gray-50">
+                    {[
+                      {
+                        label: "Location",
+                        key: "location_name",
+                      },
+
+                      {
+                        label: "Assigned To",
+                        key: "assigned_to",
+                      },
+
+                      {
+                        label: "Serial Number",
+                        key: "serial_number",
+                      },
+
+                      {
+                        label: "Device Type",
+                        key: "device_type",
+                      },
+
+                      {
+                        label: "Make",
+                        key: "make",
+                      },
+
+                      {
+                        label: "Model",
+                        key: "model",
+                      },
+                    ].map((item) => (
+                      <th
+                        key={item.key}
+                        onClick={() => handleSort(item.key)}
+                        className="
+                              px-4
+                              py-3
+                              text-left
+                              text-[11px]
+                              font-semibold
+                              uppercase
+                              tracking-wider
+                              text-gray-500
+                              border-b
+                              cursor-pointer
+                              whitespace-nowrap
+                            "
+                      >
+                        {item.label}
+
+                        <span className="ml-2">{getSortSymbol(item.key)}</span>
+                      </th>
+                    ))}
+
+                    <th
+                      className="
+                          px-4
+                          py-3
+                          text-left
+                          text-[11px]
+                          font-semibold
+                          uppercase
+                          tracking-wider
+                          text-gray-500
+                          border-b
+                        "
+                    >
+                      Description
+                    </th>
+
+                    <th
+                      className="
+                          px-4
+                          py-3
+                          text-left
+                          text-[11px]
+                          font-semibold
+                          uppercase
+                          tracking-wider
+                          text-gray-500
+                          border-b
+                        "
+                    >
+                      Action
+                    </th>
                   </tr>
-              ) : (
-                <>
+                </thead>
 
-                {equipmentData?.data?.length === 0 ? (
-                 <tr>
-                 <td colSpan="6" className="text-center">
-                 <p className="text-center">No Record Found</p>
-                 </td>
-              </tr>
-                ) : (
-                  <>
-                    {equipmentData?.data?.map((equipment, index) => (
-                      <tr key={index} className="text-left">
-                        <td className="border text-sm px-1 py-3">
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="8" className="py-16 text-center">
+                        <div className="flex flex-col items-center">
+                          <div
+                            className="
+                                w-12
+                                h-12
+                                border-4
+                                border-indigo-200
+                                border-t-indigo-600
+                                rounded-full
+                                animate-spin
+                              "
+                          />
+
+                          <p className="text-sm text-gray-500 mt-4">
+                            Loading equipments...
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : equipmentData?.data?.length === 0 ? (
+                    <tr>
+                      <td colSpan="8" className="py-16 text-center">
+                        <div className="flex flex-col items-center">
+                          <div
+                            className="
+                                w-20
+                                h-20
+                                rounded-full
+                                bg-gray-100
+                                flex
+                                items-center
+                                justify-center
+                                mb-4
+                              "
+                          >
+                            <MdDevices className="text-4xl text-gray-400" />
+                          </div>
+
+                          <h3 className="text-base font-semibold text-[#1E1B4B]">
+                            No Records Found
+                          </h3>
+
+                          <p className="text-sm text-gray-500 mt-2">
+                            Assigned equipment data will appear here
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    equipmentData?.data?.map((equipment, index) => (
+                      <tr
+                        key={index}
+                        className="
+                              hover:bg-indigo-50/40
+                              transition-all
+                            "
+                      >
+                        <td className="px-4 py-3 border-b text-[13px] text-gray-700 whitespace-nowrap">
                           {equipment.equipments?.location_name}
                         </td>
-                        <td className="border text-sm px-1 py-3">
-                          {equipment.equipments?.assigned_to ? equipment.equipments.assigned_to : "NA"}
+
+                        <td className="px-4 py-3 border-b text-[13px] text-gray-700 whitespace-nowrap">
+                          {equipment.equipments?.assigned_to
+                            ? equipment.equipments.assigned_to
+                            : "NA"}
                         </td>
-                        <td className="border text-sm px-1 py-3">
+
+                        <td className="px-4 py-3 border-b text-[13px] text-gray-700 whitespace-nowrap">
                           {equipment.equipments?.serial_number}
                         </td>
-                        <td className="border text-sm px-1 py-3">
+
+                        <td className="px-4 py-3 border-b text-[13px] text-gray-700 whitespace-nowrap">
                           {equipment.equipments?.device_type}
                         </td>
-                        <td className="border text-sm px-1 py-3">
+
+                        <td className="px-4 py-3 border-b text-[13px] text-gray-700 whitespace-nowrap">
                           {equipment.equipments?.make}
                         </td>
-                        <td className="border text-sm px-1 py-3">
+
+                        <td className="px-4 py-3 border-b text-[13px] text-gray-700 whitespace-nowrap">
                           {equipment.equipments?.model}
                         </td>
-                        <td className="border text-sm px-1 py-3">
-                          {" "}
+
+                        <td className="px-4 py-3 border-b text-[13px] text-gray-700 max-w-[220px]">
                           {truncateText(equipment.equipments?.description, 30)}
                         </td>
-                        <td className="border text-sm px-1 py-3">
+
+                        {/* ACTIONS */}
+                        <td className="px-4 py-3 border-b">
                           <div className="flex gap-2">
-                          <div className="p-[4px] bg-gray-100 cursor-pointer">
-                          <BiSolidShow
-                            onClick={() =>
-                              navigate(`/edit-company-equipment/${equipment.equipments?.equipment_id}?type=assign`)
-                            }
-                          />
-                        </div>
-                            
-                            {(access.includes(user_type) && location.search.includes("returns") ) && (
-                              <div className="p-[4px] bg-gray-100 cursor-pointer">
-                                <BsCheckCircle
-                                  onClick={() =>
-                                    handleConfirm(equipment?.assign_equip_id)
-                                  }
-                                />
-                              </div>
+                            {/* VIEW */}
+                            <button
+                              onClick={() =>
+                                navigate(
+                                  `/edit-company-equipment/${equipment.equipments?.equipment_id}?type=assign`,
+                                )
+                              }
+                              className="
+                                    w-8
+                                    h-8
+                                    rounded-xl
+                                    bg-blue-50
+                                    text-blue-600
+                                    flex
+                                    items-center
+                                    justify-center
+                                    hover:bg-blue-100
+                                    transition-all
+                                  "
+                            >
+                              <BiSolidShow className="text-base" />
+                            </button>
+
+                            {/* CONFIRM */}
+                            {access.includes(user_type) && isReturnPage && (
+                              <button
+                                onClick={() =>
+                                  handleConfirm(equipment?.assign_equip_id)
+                                }
+                                className="
+                                      w-8
+                                      h-8
+                                      rounded-xl
+                                      bg-green-50
+                                      text-green-600
+                                      flex
+                                      items-center
+                                      justify-center
+                                      hover:bg-green-100
+                                      transition-all
+                                    "
+                              >
+                                <BsCheckCircle className="text-base" />
+                              </button>
                             )}
-                            {/* {user_type === "Admin" && (
-                              <div className="p-[4px] bg-gray-100 cursor-pointer">
-                                <AiFillDelete
-                                  onClick={() =>
-                                    handleDelete(equipment.equipments.equipment_id)
-                                  }
-                                />
-                              </div>
-                            )} */}
                           </div>
                         </td>
                       </tr>
-                    ))}
-                  </>
-                )}
-                </> )}
-              </tbody>
-            </table>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </>
   );
 };
-
-
-
 
 export default AssignedEquipments;

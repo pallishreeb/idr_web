@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 
+import {
+  MdEngineering,
+  MdOutlineBadge,
+  MdClose,
+  MdGroups,
+} from "react-icons/md";
 
 const AddTechnicianToServiceTicket = ({
   isOpen,
@@ -10,135 +16,364 @@ const AddTechnicianToServiceTicket = ({
 }) => {
   const [assigns, setAssigns] = useState({
     service_ticket_id: serviceTicketId,
-    technician_user_id: "",
-    technician_name: "",
-    pm_user_id: "",
-    project_manager: "",
-    technician_contact:"",
-    project_manager_contact:""
+    technicians: [],
+    managers: [],
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setAssigns((prev) => ({ ...prev, [name]: value }));
+  // Handle Technicians Multiple Select
+  const handleTechnicianChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions);
 
-    // Set technician user id
-    if (name === "technician_name") {
-      const selectedTechnician = idrEmployees?.find(
-        (employee) => employee.first_name + ' ' + employee.last_name === value
+    const technicians = selectedOptions.map((option) => {
+      const selectedEmployee = idrEmployees.find(
+        (employee) => employee.user_id === option.value,
       );
 
-      if (selectedTechnician) {
-        setAssigns((prev) => ({
-          ...prev,
-          technician_user_id: selectedTechnician.user_id,
-          technician_contact: selectedTechnician.contact_number,
-        }));
-      }
-    }
-    // Set project manager user id
-    if (name === "project_manager") {
-      const selectedTechnician = idrEmployees?.find(
-        (employee) => employee.first_name + ' ' + employee.last_name === value
+      return {
+        technician_user_id: selectedEmployee?.user_id || "",
+
+        technician_name: `${selectedEmployee?.first_name || ""} ${
+          selectedEmployee?.last_name || ""
+        }`,
+
+        technician_contact: selectedEmployee?.contact_number || "",
+      };
+    });
+
+    setAssigns((prev) => ({
+      ...prev,
+      technicians,
+    }));
+  };
+
+  // Handle Managers Multiple Select
+  const handleManagerChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions);
+
+    const managers = selectedOptions.map((option) => {
+      const selectedEmployee = idrEmployees.find(
+        (employee) => employee.user_id === option.value,
       );
-      if (selectedTechnician) {
-        setAssigns((prev) => ({
-          ...prev,
-          pm_user_id: selectedTechnician.user_id,
-          project_manager_contact: selectedTechnician.contact_number,
-        }));
-      }
-    }
+
+      return {
+        pm_user_id: selectedEmployee?.user_id || "",
+
+        project_manager: `${selectedEmployee?.first_name || ""} ${
+          selectedEmployee?.last_name || ""
+        }`,
+
+        project_manager_contact: selectedEmployee?.contact_number || "",
+      };
+    });
+
+    setAssigns((prev) => ({
+      ...prev,
+      managers,
+    }));
   };
 
   const handleSave = () => {
     if (!validateStep()) {
       return;
     }
-    // Filter out keys with empty values
-    let filteredAssigns = Object.fromEntries(
-      Object.entries(assigns).filter(([key, value]) => value !== "")
-    );
-    onSave(filteredAssigns);
+
+    onSave(assigns);
+
     setAssigns({
-      technician_name: "",
-      project_manager: "",
-      pm_user_id: "",
-      technician_user_id: "",
+      service_ticket_id: serviceTicketId,
+
+      technicians: [],
+
+      managers: [],
     });
+
     onClose();
   };
 
   const validateStep = () => {
-    // Example validation, adjust as per your field requirements
-    return (
-      assigns.technician_name !== "" ||
-      assigns.project_manager !== ""
-    );
+    return assigns.technicians.length > 0 || assigns.managers.length > 0;
   };
+
+  if (!isOpen) return null;
+
   return (
-    <div
-      className={`fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center ${
-        isOpen ? "" : "hidden"
-      }`}
-    >
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-4 my-8 max-h-[95vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4 text-center">
-          Add Technician and Manager
-        </h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="mb-4">
-            <label className="font-normal text-base">Technician Name</label>
-            <select
-              className="px-2 border border-gray-200 h-10 rounded text-sm w-full"
-              name="technician_name"
-              value={assigns.technician_name}
-              onChange={handleChange}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4 py-6">
+      <div className="w-full max-w-4xl bg-white rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+        {/* TOP GRADIENT */}
+        <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+        <div className="p-5 md:p-7">
+          {/* HEADER */}
+          <div className="flex items-start justify-between gap-4 mb-7">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+                <MdGroups className="text-2xl" />
+              </div>
+
+              <div>
+                <h2 className="text-xl font-semibold text-[#1E1B4B]">
+                  Assign Technicians & Managers
+                </h2>
+
+                <p className="text-sm text-gray-500 mt-1">
+                  Select employees to assign to this service ticket
+                </p>
+              </div>
+            </div>
+
+            {/* CLOSE BUTTON */}
+            <button
+              onClick={onClose}
+              className="
+                w-10
+                h-10
+                rounded-2xl
+                border
+                border-gray-200
+                bg-gray-50
+                flex
+                items-center
+                justify-center
+                text-gray-500
+                hover:bg-red-50
+                hover:text-red-500
+                hover:border-red-100
+                transition-all
+                duration-300
+              "
             >
-              <option value="">Choose technician</option>
-              {idrEmployees.map((employee) => (
-                <option
-                  key={employee.idr_emp_id}
-                  value={employee.first_name +' '+ employee.last_name}
-                >
-                  {employee.first_name} {employee.last_name}
-                </option>
-              ))}
-            </select>
+              <MdClose className="text-xl" />
+            </button>
           </div>
-          <div className="mb-4">
-            <label className="font-normal text-base">Project Manager</label>
-            <select
-              className="px-2 border border-gray-200 h-10 rounded text-sm w-full"
-              name="project_manager"
-              value={assigns.project_manager}
-              onChange={handleChange}
+
+          {/* CONTENT */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* TECHNICIANS */}
+            <div className="border border-gray-100 rounded-3xl p-5 bg-gradient-to-br from-indigo-50/60 to-white">
+              {/* TITLE */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                  <MdEngineering className="text-xl" />
+                </div>
+
+                <div>
+                  <h3 className="text-base font-semibold text-[#1E1B4B]">
+                    Technicians
+                  </h3>
+
+                  <p className="text-xs text-gray-500">Select technicians</p>
+                </div>
+              </div>
+
+              {/* CHECKBOX LIST */}
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {idrEmployees.map((employee) => {
+                  const checked = assigns.technicians.some(
+                    (tech) => tech.technician_user_id === employee.user_id,
+                  );
+
+                  return (
+                    <label
+                      key={employee.idr_emp_id}
+                      className={`
+            flex
+            items-center
+            gap-3
+            p-3
+            rounded-2xl
+            border
+            cursor-pointer
+            transition-all
+            duration-200
+            
+            ${
+              checked
+                ? "border-indigo-400 bg-indigo-50"
+                : "border-gray-200 bg-white hover:border-indigo-200 hover:bg-indigo-50/40"
+            }
+          `}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAssigns((prev) => ({
+                              ...prev,
+                              technicians: [
+                                ...prev.technicians,
+                                {
+                                  technician_user_id: employee.user_id,
+
+                                  technician_name: `${employee.first_name} ${employee.last_name}`,
+
+                                  technician_contact:
+                                    employee.contact_number || "",
+                                },
+                              ],
+                            }));
+                          } else {
+                            setAssigns((prev) => ({
+                              ...prev,
+                              technicians: prev.technicians.filter(
+                                (tech) =>
+                                  tech.technician_user_id !== employee.user_id,
+                              ),
+                            }));
+                          }
+                        }}
+                        className="w-4 h-4 accent-indigo-600"
+                      />
+
+                      <div>
+                        <p className="text-sm font-medium text-[#1E1B4B]">
+                          {employee.first_name} {employee.last_name}
+                        </p>
+
+                        <p className="text-xs text-gray-500">Technician</p>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* MANAGERS */}
+            <div className="border border-gray-100 rounded-3xl p-5 bg-gradient-to-br from-purple-50/60 to-white">
+              {/* TITLE */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center">
+                  <MdOutlineBadge className="text-xl" />
+                </div>
+
+                <div>
+                  <h3 className="text-base font-semibold text-[#1E1B4B]">
+                    Project Managers
+                  </h3>
+
+                  <p className="text-xs text-gray-500">Select managers</p>
+                </div>
+              </div>
+
+              {/* CHECKBOX LIST */}
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {idrEmployees.map((employee) => {
+                  const checked = assigns.managers.some(
+                    (manager) => manager.pm_user_id === employee.user_id,
+                  );
+
+                  return (
+                    <label
+                      key={employee.idr_emp_id}
+                      className={`
+            flex
+            items-center
+            gap-3
+            p-3
+            rounded-2xl
+            border
+            cursor-pointer
+            transition-all
+            duration-200
+            
+            ${
+              checked
+                ? "border-purple-400 bg-purple-50"
+                : "border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/40"
+            }
+          `}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAssigns((prev) => ({
+                              ...prev,
+                              managers: [
+                                ...prev.managers,
+                                {
+                                  pm_user_id: employee.user_id,
+
+                                  project_manager: `${employee.first_name} ${employee.last_name}`,
+
+                                  project_manager_contact:
+                                    employee.contact_number || "",
+                                },
+                              ],
+                            }));
+                          } else {
+                            setAssigns((prev) => ({
+                              ...prev,
+                              managers: prev.managers.filter(
+                                (manager) =>
+                                  manager.pm_user_id !== employee.user_id,
+                              ),
+                            }));
+                          }
+                        }}
+                        className="w-4 h-4 accent-purple-600"
+                      />
+
+                      <div>
+                        <p className="text-sm font-medium text-[#1E1B4B]">
+                          {employee.first_name} {employee.last_name}
+                        </p>
+
+                        <p className="text-xs text-gray-500">Project Manager</p>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* FOOTER BUTTONS */}
+          <div className="flex flex-col sm:flex-row justify-end gap-3 mt-8">
+            <button
+              className="
+                px-5
+                py-3
+                rounded-2xl
+                border
+                border-gray-200
+                bg-gray-100
+                text-gray-700
+                text-sm
+                font-semibold
+                hover:bg-gray-200
+                transition-all
+                duration-300
+              "
+              onClick={onClose}
             >
-              <option value="">Choose project manager</option>
-              {idrEmployees.map((employee) => (
-                <option
-                  key={employee.idr_emp_id}
-                  value={employee.first_name +' '+ employee.last_name}
-                >
-                  {employee.first_name} {employee.last_name}
-                </option>
-              ))}
-            </select>
+              Cancel
+            </button>
+
+            <button
+              className="
+                px-6
+                py-3
+                rounded-2xl
+                bg-gradient-to-r
+                from-indigo-500
+                via-purple-500
+                to-pink-500
+                text-white
+                text-sm
+                font-semibold
+                shadow-md
+                hover:shadow-lg
+                hover:scale-[1.02]
+                transition-all
+                duration-300
+              "
+              onClick={handleSave}
+            >
+              Save Assignments
+            </button>
           </div>
-        </div>
-        <div className="flex justify-end">
-          <button
-            className="bg-indigo-600 text-white px-4 py-2 rounded"
-            onClick={handleSave}
-          >
-            Save
-          </button>
-          <button
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
         </div>
       </div>
     </div>
