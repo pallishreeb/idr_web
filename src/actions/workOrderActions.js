@@ -241,7 +241,7 @@ export const assignPeopleToWorkOrder = (technicians) => {
   return async (dispatch) => {
     dispatch(assignPeopleToWorkOrderStart());
     try {
-      const response = await axios.post(`${apiConfig.assignPeople}`, technicians);
+      const response = await axios.post(`${apiConfig.multipleAssigneeToWO}`, technicians);
       dispatch(assignPeopleToWorkOrderSuccess(response?.data));
       // toast.success("People assigned to work order successfully");
       return response?.data;

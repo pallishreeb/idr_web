@@ -148,6 +148,8 @@ const apiConfig = {
  deleteSubcontractorUserFromWO: "/work_order/delete_subcontractor_user",
  assignSubcontractorUserToST: "/service_ticket/assign_subcontractor_user",
  deleteSubcontractorUserFromST: "/service_ticket/delete_subcontractor_user",
+ multipleAssigneeToTicket:"/service_ticket/v2/assignee",
+ multipleAssigneeToWO:"/work_order/v2/assignee",
 };
 
 export { API_BASE_URL, apiConfig,S3_BASE_URL };

@@ -162,7 +162,7 @@ export const assignPeopleToServiceTicket = (technicians,navigate,isEditing,navSt
   return async (dispatch) => {
     dispatch(assignPeopleToServiceTicketStart());
     try {
-      const response = await axios.post(`${apiConfig.assignPeopleToServiceTicket}`, technicians);
+      const response = await axios.post(`${apiConfig.multipleAssigneeToTicket}`, technicians);
       dispatch(assignPeopleToServiceTicketSuccess(response?.data));
       if(isEditing){
         return response?.data;
