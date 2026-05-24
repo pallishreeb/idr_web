@@ -2,7 +2,7 @@
 
 import { useNavigate } from "react-router-dom";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 
 import {
   MdCloudUpload,
@@ -10,7 +10,7 @@ import {
   MdArrowBack,
   MdQrCode2,
 } from "react-icons/md";
-
+import QRCode from "qrcode";
 import Header from "../../Components/Header";
 
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
@@ -27,7 +27,9 @@ const AddInventory = () => {
   const navigate = useNavigate();
 
   const [selectedImage, setSelectedImage] = useState(null);
+const [qrPreview, setQrPreview] = useState("");
 
+const debounceRef = useRef(null);
   const locationsInventory = useSelector(
     (state) => state.locationInventory.locations,
   );
@@ -44,33 +46,70 @@ const AddInventory = () => {
     location_id: "",
     size: "",
     description: "",
-    image: null,
+    // image: null,
   });
 
   useEffect(() => {
     dispatch(getLocationInventory());
   }, [dispatch]);
+useEffect(() => {
+  // Clear previous timer
+  if (debounceRef.current) {
+    clearTimeout(debounceRef.current);
+  }
 
-  const handleInputChange = (e) => {
-    const { name, value, files } = e.target;
+  // If model empty remove QR
+  if (!formData.model?.trim()) {
+    setQrPreview("");
+    return;
+  }
 
-    if (files) {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: files[0],
-      }));
+  // Debounce QR generation
+  debounceRef.current = setTimeout(async () => {
+    try {
+      const qrUrl = await QRCode.toDataURL(
+        formData.model,
+        {
+          width: 300,
+          margin: 2,
+        },
+      );
 
-      const file = e.target.files[0];
-
-      setSelectedImage(file);
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
+      setQrPreview(qrUrl);
+    } catch (error) {
+      console.error("QR generation failed:", error);
     }
-  };
+  }, 500);
 
+  return () => clearTimeout(debounceRef.current);
+}, [formData.model]);
+  // const handleInputChange = (e) => {
+  //   const { name, value, files } = e.target;
+
+  //   if (files) {
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       [name]: files[0],
+  //     }));
+
+  //     const file = e.target.files[0];
+
+  //     setSelectedImage(file);
+  //   } else {
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       [name]: value,
+  //     }));
+  //   }
+  // };
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+
+  setFormData((prevData) => ({
+    ...prevData,
+    [name]: value,
+  }));
+};
   const handleLocationChange = (e) => {
     const selectedLocation = locationsInventory.find(
       (loc) => loc.location === e.target.value,
@@ -83,8 +122,37 @@ const AddInventory = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+
+  //   const data = new FormData();
+
+  //   Object.keys(formData).forEach((key) => {
+  //     data.append(key, formData[key]);
+  //   });
+
+  //   dispatch(addInventory(data, navigate));
+  // };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    let qrFile = null;
+
+    // Convert generated QR to file
+    if (qrPreview) {
+      const response = await fetch(qrPreview);
+
+      const blob = await response.blob();
+
+      qrFile = new File(
+        [blob],
+        `${formData.model}-qr.png`,
+        {
+          type: "image/png",
+        },
+      );
+    }
 
     const data = new FormData();
 
@@ -92,9 +160,16 @@ const AddInventory = () => {
       data.append(key, formData[key]);
     });
 
-    dispatch(addInventory(data, navigate));
-  };
+    // Append generated QR image
+    if (qrFile) {
+      data.append("image", qrFile);
+    }
 
+    dispatch(addInventory(data, navigate));
+  } catch (error) {
+    console.error("Error creating inventory:", error);
+  }
+};
   return (
     <>
       <Header />
@@ -315,7 +390,7 @@ const AddInventory = () => {
                 </div>
 
                 {/* QR IMAGE */}
-                <div>
+                {/* <div>
                   <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                     QR Code Image
                   </label>
@@ -361,10 +436,10 @@ const AddInventory = () => {
                       required
                     />
                   </label>
-                </div>
+                </div> */}
 
                 {/* PREVIEW */}
-                {selectedImage && (
+                {/* {selectedImage && (
                   <div>
                     <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                       QR Preview
@@ -412,7 +487,91 @@ const AddInventory = () => {
                       </p>
                     </div>
                   </div>
-                )}
+                )} */}
+
+                {/* AUTO GENERATED QR */}
+<div className="xl:col-span-2">
+  <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+    Auto Generated QR Code
+  </label>
+
+  <div
+    className="
+      border-2
+      border-dashed
+      border-indigo-200
+      rounded-2xl
+      p-6
+      bg-indigo-50/40
+      min-h-[220px]
+      flex
+      flex-col
+      items-center
+      justify-center
+    "
+  >
+    {qrPreview ? (
+      <>
+        <div
+          className="
+            w-14
+            h-14
+            rounded-2xl
+            bg-white
+            shadow-sm
+            flex
+            items-center
+            justify-center
+            mb-4
+          "
+        >
+          <MdQrCode2 className="text-3xl text-indigo-600" />
+        </div>
+
+        <img
+          src={qrPreview}
+          alt="Generated QR"
+          className="
+            w-44
+            h-44
+            object-contain
+            rounded-2xl
+            border
+            border-gray-200
+            bg-white
+            p-3
+          "
+        />
+
+        <p className="text-sm text-gray-600 mt-4 font-medium">
+          QR generated automatically from model
+        </p>
+      </>
+    ) : (
+      <>
+        <div
+          className="
+            w-14
+            h-14
+            rounded-2xl
+            bg-white
+            shadow-sm
+            flex
+            items-center
+            justify-center
+            mb-3
+          "
+        >
+          <MdQrCode2 className="text-3xl text-indigo-400" />
+        </div>
+
+        <p className="text-sm font-medium text-gray-500">
+          Enter model to generate QR code
+        </p>
+      </>
+    )}
+  </div>
+</div>
               </div>
 
               {/* DESCRIPTION */}
