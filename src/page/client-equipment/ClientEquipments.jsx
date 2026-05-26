@@ -856,23 +856,36 @@ const ClientEquipments = () => {
                               {technicianAccess.includes(user_type) && (
                                 <>
                                   {/* RMA */}
-                                  <button
-                                    onClick={() =>
-                                      navigate(
-                                        `/add-device-rma/${equipment.client_equipment_id}`,
-                                        {
-                                          state: {
-                                            clientId: selectedClient,
-                                            locationId: selectedLocation,
-                                            type: "decommission",
-                                          },
-                                        },
-                                      )
-                                    }
-                                    className="px-3 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-all duration-300"
-                                  >
-                                    RMA
-                                  </button>
+                        <button
+                            onClick={() => {
+                              Swal.fire({
+                                title: "Create RMA",
+                                text: "Opens RMA creation with this equipment (same as from a service ticket). The device must stay active to submit RMA. Decommission afterward only if your process requires it.",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonText: "CONTINUE",
+                                cancelButtonText: "CANCEL",
+                                confirmButtonColor: "#0F766E",
+                                cancelButtonColor: "#6B7280",
+                              }).then((result) => {
+                                if (result.isConfirmed) {
+                                  navigate(
+                                    `/add-device-rma/${equipment.client_equipment_id}`,
+                                    {
+                                      state: {
+                                        clientId: selectedClient,
+                                        locationId: selectedLocation,
+                                        type: "decommission",
+                                      },
+                                    },
+                                  );
+                                }
+                              });
+                            }}
+                            className="px-3 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-all duration-300"
+                          >
+                            RMA
+                          </button>
                                 </>
                               )}
                             </div>

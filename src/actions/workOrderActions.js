@@ -268,6 +268,33 @@ export const deleteAssignee = (assigneeId) => {
     }
   };
 };
+export const bulkDeleteAssignee = (payload) => {
+  return async (dispatch) => {
+    dispatch(deleteWorkOrderStart());
+
+    try {
+      const res = await axios.delete(
+        apiConfig.bulkDeleteAssigneeWO,
+        {
+          data: payload,
+        }
+      );
+
+      dispatch(deleteAssigneeSuccess(payload.ids));
+
+      // toast.success("Assignees deleted successfully");
+
+      return res.data;
+    } catch (error) {
+      dispatch(deleteWorkOrderFailure(error.message));
+
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to delete Assignees"
+      );
+    }
+  };
+};
 
 export const deleteNote = (noteId) => {
   return async (dispatch) => {

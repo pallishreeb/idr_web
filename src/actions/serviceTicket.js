@@ -195,6 +195,33 @@ export const deleteAssignee = (assigneeId) => {
     }
   };
 };
+export const bulkDeleteAssignee = (payload) => {
+  return async (dispatch) => {
+    dispatch(deleteServiceTicketStart());
+
+    try {
+      const res = await axios.delete(
+        apiConfig.bulkDeleteAssigneeFromServiceTicket,
+        {
+          data: payload,
+        }
+      );
+
+      dispatch(deleteAssigneeSuccess(payload.ids));
+
+      // toast.success("Assignee deleted successfully");
+
+      return res.data;
+    } catch (error) {
+      dispatch(deleteServiceTicketFailure(error.message));
+
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to delete assignee"
+      );
+    }
+  };
+};
 
 // Get service ticket lists by client ID
 export const getServiceTicketListsByClientId = (client_id) => {

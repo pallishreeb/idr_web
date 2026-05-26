@@ -21,6 +21,7 @@ import {
   getWorkOrderDetails,
   assignPeopleToWorkOrder,
   deleteAssignee,
+  bulkDeleteAssignee
 } from "../actions/workOrderActions";
 
 import { getClients } from "../actions/clientActions";
@@ -37,7 +38,7 @@ const ShowTechnicians = ({
 }) => {
   const dispatch =
     useDispatch();
-
+const [selectedAssignees, setSelectedAssignees] = useState([]);
   const {
     user_type,
   } =
@@ -188,7 +189,46 @@ const ShowTechnicians = ({
         },
       );
     };
+const handleSelectAssignee = (assigneeId) => {
+  setSelectedAssignees((prev) => {
+    if (prev.includes(assigneeId)) {
+      return prev.filter((id) => id !== assigneeId);
+    }
 
+    return [...prev, assigneeId];
+  });
+};
+const handleBulkDelete = () => {
+  if (selectedAssignees.length === 0) {
+    toast.error("Please select at least one assignee.");
+    return;
+  }
+
+  Swal.fire({
+    title: "Are you sure?",
+    text: `Delete ${selectedAssignees.length} selected assignees?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete",
+    cancelButtonText: "Cancel",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      dispatch(bulkDeleteAssignee({ ids: selectedAssignees }))
+        .then((res) => {
+          toast.success("Deleted successfully");
+
+          setSelectedAssignees([]);
+
+          dispatch(getWorkOrderDetails(workOrderId));
+          dispatch(getClients());
+          dispatch(fetchIDREmployees());
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  });
+};
   /* =========================================
      COMBINED DATA
   ========================================= */
@@ -268,39 +308,67 @@ const ShowTechnicians = ({
             </div>
           </div>
 
-          {access.includes(
-            user_type,
-          ) && (
-            <button
-              className="
-                flex
-                items-center
-                justify-center
-                gap-2
-                px-5
-                py-2.5
-                rounded-2xl
-                bg-gradient-to-r
-                from-indigo-500
-                via-purple-500
-                to-pink-500
-                text-white
-                text-sm
-                font-semibold
-                shadow-md
-                hover:shadow-lg
-                hover:scale-[1.02]
-                transition-all
-                duration-300
-              "
-              onClick={
-                handleOpenModal
-              }
-            >
-              <MdEngineering className="text-lg" />
-              Add Person
-            </button>
-          )}
+{access.includes(
+  user_type,
+) && (
+  <div className="flex items-center gap-3">
+    {selectedAssignees.length > 0 && (
+      <button
+        className="
+          flex
+          items-center
+          justify-center
+          gap-2
+          px-4
+          py-2.5
+          rounded-2xl
+          bg-red-500
+          text-white
+          text-sm
+          font-semibold
+          shadow-md
+          hover:bg-red-600
+          transition-all
+          duration-300
+        "
+        onClick={handleBulkDelete}
+      >
+        <AiFillDelete className="text-lg" />
+        Delete Selected (
+        {selectedAssignees.length}
+        )
+      </button>
+    )}
+
+    <button
+      className="
+        flex
+        items-center
+        justify-center
+        gap-2
+        px-5
+        py-2.5
+        rounded-2xl
+        bg-gradient-to-r
+        from-indigo-500
+        via-purple-500
+        to-pink-500
+        text-white
+        text-sm
+        font-semibold
+        shadow-md
+        hover:shadow-lg
+        hover:scale-[1.02]
+        transition-all
+        duration-300
+      "
+      onClick={handleOpenModal}
+    >
+      <MdEngineering className="text-lg" />
+      Add Person
+    </button>
+  </div>
+)}
         </div>
 
         {/* TABLE */}
@@ -308,6 +376,40 @@ const ShowTechnicians = ({
           <table className="min-w-full">
             <thead>
               <tr className="bg-gradient-to-r from-indigo-50 to-pink-50">
+            <th className="px-5 py-4 w-[60px]">
+  <input
+    type="checkbox"
+    checked={
+      allAssignees.filter(
+        (person) => !person.isSubcontractor
+      ).length > 0 &&
+      selectedAssignees.length ===
+        allAssignees.filter(
+          (person) => !person.isSubcontractor
+        ).length
+    }
+    onClick={() => {
+      const selectableIds = allAssignees
+        .filter(
+          (person) => !person.isSubcontractor
+        )
+        .map((person) =>
+          String(person.id)
+        );
+
+      const isAllSelected =
+        selectedAssignees.length ===
+        selectableIds.length;
+
+      if (isAllSelected) {
+        setSelectedAssignees([]);
+      } else {
+        setSelectedAssignees(selectableIds);
+      }
+    }}
+    className="w-4 h-4 cursor-pointer"
+  />
+</th>
                 <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B]">
                   Name
                 </th>
@@ -333,8 +435,8 @@ const ShowTechnicians = ({
                     colSpan={
                       user_type ===
                       "Admin"
-                        ? 3
-                        : 2
+                        ? 4
+                        : 3
                     }
                     className="py-14 text-center"
                   >
@@ -367,6 +469,22 @@ const ShowTechnicians = ({
                       }
                       className="border-t border-gray-100 hover:bg-gray-50 transition-all duration-200"
                     >
+                      <td className="px-5 py-4">
+                            {!person.isSubcontractor && (
+                              <input
+                                type="checkbox"
+                                checked={selectedAssignees.includes(
+                                  person.id,
+                                )}
+                                onChange={() =>
+                                  handleSelectAssignee(
+                                    person.id,
+                                  )
+                                }
+                                className="w-4 h-4"
+                              />
+                            )}
+                          </td>
                       {/* NAME */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">

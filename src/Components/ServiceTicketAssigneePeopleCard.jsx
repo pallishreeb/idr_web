@@ -19,6 +19,7 @@ import {
   getServiceTicketDetails,
   assignPeopleToServiceTicket,
   deleteAssignee,
+  bulkDeleteAssignee,
 } from "../actions/serviceTicket";
 
 import { getClients } from "../actions/clientActions";
@@ -34,7 +35,7 @@ const ServiceTicketAssigneePeopleCard = ({
   subcontractorAssignees,
 }) => {
   const dispatch = useDispatch();
-
+  const [selectedAssignees, setSelectedAssignees] = useState([]);
   const { user_type } = useSelector((state) => state.user.user);
 
   const { access } = useSelector((state) => state.user);
@@ -48,7 +49,15 @@ const ServiceTicketAssigneePeopleCard = ({
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+  const handleSelectAssignee = (assigneeId) => {
+    setSelectedAssignees((prev) => {
+      if (prev.includes(assigneeId)) {
+        return prev.filter((id) => id !== assigneeId);
+      }
 
+      return [...prev, assigneeId];
+    });
+  };
   const handleAddAssignee = (newTechnician) => {
     dispatch(assignPeopleToServiceTicket(newTechnician, null, true))
       .then((response) => {
@@ -96,7 +105,39 @@ const ServiceTicketAssigneePeopleCard = ({
       }
     });
   };
+  const handleBulkDelete = () => {
+    if (selectedAssignees.length === 0) {
+      toast.error("Please select at least one assignee.");
+      return;
+    }
 
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Delete ${selectedAssignees.length} selected assignees?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(
+          bulkDeleteAssignee({
+            ids: selectedAssignees,
+          }),
+        ).then(() => {
+          toast.success("Deleted successfully");
+
+          setSelectedAssignees([]);
+
+          dispatch(getServiceTicketDetails(serviceTicketId));
+
+          dispatch(getClients());
+
+          dispatch(fetchIDREmployees());
+        });
+      }
+    });
+  };
   /* =========================================
        COMBINED DATA FOR CLIENT EMPLOYEES ONLY
     ========================================= */
@@ -154,33 +195,61 @@ const ServiceTicketAssigneePeopleCard = ({
           </div>
 
           {access.includes(user_type) && (
-            <button
-              className="
-                  flex
-                  items-center
-                  justify-center
-                  gap-2
-                  px-5
-                  py-2.5
-                  rounded-2xl
-                  bg-gradient-to-r
-                  from-indigo-500
-                  via-purple-500
-                  to-pink-500
-                  text-white
-                  text-sm
-                  font-semibold
-                  shadow-md
-                  hover:shadow-lg
-                  hover:scale-[1.02]
-                  transition-all
-                  duration-300
-                "
-              onClick={handleOpenModal}
-            >
-              <MdEngineering className="text-lg" />
-              Add Person
-            </button>
+            <div className="flex items-center gap-3">
+              {selectedAssignees.length > 0 && (
+                <button
+                  className="
+          flex
+          items-center
+          justify-center
+          gap-2
+          px-4
+          py-2.5
+          rounded-2xl
+          bg-red-500
+          text-white
+          text-sm
+          font-semibold
+          shadow-md
+          hover:bg-red-600
+          transition-all
+          duration-300
+        "
+                  onClick={handleBulkDelete}
+                >
+                  <AiFillDelete className="text-lg" />
+                  Delete Selected ({selectedAssignees.length})
+                </button>
+              )}
+
+              <button
+                className="
+        flex
+        items-center
+        justify-center
+        gap-2
+        px-5
+        py-2.5
+        rounded-2xl
+        bg-gradient-to-r
+        from-indigo-500
+        via-purple-500
+        to-pink-500
+        text-white
+        text-sm
+        font-semibold
+        shadow-md
+        hover:shadow-lg
+        hover:scale-[1.02]
+        transition-all
+        duration-300
+      "
+                onClick={handleOpenModal}
+              >
+                <MdEngineering className="text-lg" />
+                Add Person
+              </button>
+            </div>
           )}
         </div>
 
@@ -189,6 +258,30 @@ const ServiceTicketAssigneePeopleCard = ({
           <table className="min-w-full">
             <thead>
               <tr className="bg-gradient-to-r from-indigo-50 to-pink-50">
+                <th className="px-5 py-4 w-[60px]">
+                  <input
+                    type="checkbox"
+                    checked={
+                      allAssignees.filter((person) => !person.isSubcontractor)
+                        .length > 0 &&
+                      selectedAssignees.length ===
+                        allAssignees.filter((person) => !person.isSubcontractor)
+                          .length
+                    }
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedAssignees(
+                          allAssignees
+                            .filter((person) => !person.isSubcontractor)
+                            .map((person) => person.id),
+                        );
+                      } else {
+                        setSelectedAssignees([]);
+                      }
+                    }}
+                    className="w-4 h-4"
+                  />
+                </th>
                 <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B]">
                   Name
                 </th>
@@ -213,7 +306,7 @@ const ServiceTicketAssigneePeopleCard = ({
               {allAssignees?.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={user_type === "Admin" ? 4 : 3}
+                    colSpan={user_type === "Admin" ? 5 : 4}
                     className="py-14 text-center"
                   >
                     <div className="flex flex-col items-center justify-center">
@@ -235,6 +328,16 @@ const ServiceTicketAssigneePeopleCard = ({
                     key={index}
                     className="border-t border-gray-100 hover:bg-gray-50 transition-all duration-200"
                   >
+                    <td className="px-5 py-4">
+                      {!person.isSubcontractor && (
+                        <input
+                          type="checkbox"
+                          checked={selectedAssignees.includes(person.id)}
+                          onChange={() => handleSelectAssignee(person.id)}
+                          className="w-4 h-4"
+                        />
+                      )}
+                    </td>
                     {/* NAME */}
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">

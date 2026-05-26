@@ -604,6 +604,18 @@ const EditEquipment = () => {
                       alt="QR Code"
                       className="w-28 h-28 object-contain rounded-xl bg-white p-2 border"
                     />
+                          <p
+                          className="
+                            mt-3
+                            text-sm
+                            font-semibold
+                            text-[#1E1B4B]
+                            text-center
+                            break-all
+                          "
+                        >
+                          Serial : {readOnlyFields.serial_number}
+                        </p>
                   </div>
                 </div>
 

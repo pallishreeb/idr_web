@@ -139,6 +139,10 @@ export default function AddRma() {
 
       aprooved_date: formatDateToDDMMYYYY(formData.aprooved_date),
     };
+// Remove service_ticket_id if not available
+  if (!formattedData.service_ticket_id) {
+    delete formattedData.service_ticket_id;
+  }
 
     try {
       dispatch(generateRMA(formattedData, navigate));
