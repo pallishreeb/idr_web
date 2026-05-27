@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -47,12 +47,13 @@ const Inventory = () => {
   const [showModal, setShowModal] = useState(false);
 
   const [location, setLocation] = useState("");
-
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState({
-    search: "",
-    location: "",
-    model: "",
-    device_type: "",
+    search: searchParams.get("search") || "",
+    location: searchParams.get("location") || "",
+    model: searchParams.get("model") || "",
+    device_type:
+      searchParams.get("device_type") || "",
   });
 
   const [editRowId, setEditRowId] = useState(null);
@@ -64,11 +65,17 @@ const Inventory = () => {
     direction: "ASC",
   });
 
-  const [searchTerm, setSearchTerm] = useState("");
+const [searchTerm, setSearchTerm] = useState(
+  searchParams.get("search") || ""
+);
 
-  const [deviceType, setDeviceType] = useState("");
+const [deviceType, setDeviceType] = useState(
+  searchParams.get("device_type") || ""
+);
 
-  const [model, setModel] = useState("");
+const [model, setModel] = useState(
+  searchParams.get("model") || ""
+);
 
   const dispatch = useDispatch();
 
@@ -92,39 +99,48 @@ const Inventory = () => {
     (state) => state.locationInventory.loading,
   );
 
-  const [filtersReady, setFiltersReady] = useState(false);
+  // // const [filtersReady, setFiltersReady] = useState(false);
 
-  useEffect(() => {
-    if (locationState.state) {
-      const restoredFilters = {
-        location: locationState.state.filters?.location || "",
+  // useEffect(() => {
+  //   if (locationState.state) {
+  //     const restoredFilters = {
+  //       location: locationState.state.filters?.location || "",
 
-        search: locationState.state.searchTerm || "",
+  //       search: locationState.state.searchTerm || "",
 
-        device_type: locationState.state.deviceType || "",
+  //       device_type: locationState.state.deviceType || "",
 
-        model: locationState.state.model || "",
-      };
+  //       model: locationState.state.model || "",
+  //     };
 
-      setFilters(restoredFilters);
+  //     setFilters(restoredFilters);
 
-      setSearchTerm(restoredFilters.search);
+  //     setSearchTerm(restoredFilters.search);
 
-      setDeviceType(restoredFilters.device_type);
+  //     setDeviceType(restoredFilters.device_type);
 
-      setModel(restoredFilters.model);
+  //     setModel(restoredFilters.model);
+  //   }
+
+  //   setFiltersReady(true);
+  // }, []);
+
+useEffect(() => {
+  dispatch(getLocationInventory());
+
+  dispatch(getInventories(filters));
+}, [dispatch, filters]);
+useEffect(() => {
+  const params = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value) {
+      params.set(key, value);
     }
+  });
 
-    setFiltersReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!filtersReady) return;
-
-    dispatch(getLocationInventory());
-
-    dispatch(getInventories(filters));
-  }, [dispatch, filters, filtersReady]);
+  setSearchParams(params);
+}, [filters, setSearchParams]);
 
   const handleSearch = () => {
     const newFilters = {
@@ -410,7 +426,7 @@ const Inventory = () => {
                   </button>
                 )}
 
-                <Link to="/addinventory">
+               <Link to={`/addinventory?${searchParams.toString()}`} >
                   <button
                     className="
                       flex
@@ -867,16 +883,8 @@ const Inventory = () => {
                                     "
                                   onClick={() =>
                                     navigate(
-                                      `/edit_inventory/${item.inventory_id}`,
-                                      {
-                                        state: {
-                                          filters,
-                                          searchTerm,
-                                          deviceType,
-                                          model,
-                                        },
-                                      },
-                                    )
+                                        `/edit_inventory/${item.inventory_id}?${searchParams.toString()}`
+                                      )
                                   }
                                 >
                                   <BiSolidEditAlt className="text-base" />
@@ -897,16 +905,8 @@ const Inventory = () => {
                                     "
                                   onClick={() =>
                                     navigate(
-                                      `/transfer-inventory/${item.inventory_id}`,
-                                      {
-                                        state: {
-                                          filters,
-                                          searchTerm,
-                                          deviceType,
-                                          model,
-                                        },
-                                      },
-                                    )
+                                        `/transfer-inventory/${item.inventory_id}?${searchParams.toString()}`
+                                      )
                                   }
                                 >
                                   <BiTransferAlt className="text-base" />

@@ -15,7 +15,7 @@ import {
   updateInventory,
 } from "../../actions/inventoryAction";
 
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation,useSearchParams } from "react-router-dom";
 
 import Loader from "../../Images/ZZ5H.gif";
 
@@ -31,10 +31,10 @@ const EditInventory = () => {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // const location = useLocation();
 
-  const location = useLocation();
-
-  const previousFilters = location.state;
+  // const previousFilters = location.state;
 
   const { inventory_id } = useParams();
 
@@ -143,7 +143,13 @@ const EditInventory = () => {
 
     editableFields.inventory_id = inventory_id;
 
-    dispatch(updateInventory(editableFields, navigate, location?.state));
+    dispatch(
+  updateInventory(
+    editableFields,
+    navigate,
+    searchParams.toString(),
+  ),
+);
   };
 
   if (loading) {
@@ -253,9 +259,7 @@ const EditInventory = () => {
                 <button
                   type="button"
                   onClick={() =>
-                    navigate("/inventory", {
-                      state: previousFilters,
-                    })
+                    navigate(`/inventory?${searchParams.toString()}`)
                   }
                   className="
                     flex

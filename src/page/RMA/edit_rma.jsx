@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,useSearchParams } from "react-router-dom";
 
 import {
   MdEdit,
@@ -36,7 +36,7 @@ export default function EditRma() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+const [searchParams] = useSearchParams();
   const { user_type } = useSelector((state) => state.user.user);
 
   const { technicianAccess } = useSelector((state) => state.user);
@@ -255,6 +255,7 @@ export default function EditRma() {
     setIsEditing(false);
 
     dispatch(getRMADetails(rmaId));
+    
   };
 
   const newAccess = [
@@ -368,7 +369,7 @@ export default function EditRma() {
 
               <div className="flex flex-wrap gap-3">
                 <button
-                  onClick={() => navigate(-1)}
+                  onClick={() => navigate(`/device-rma?${searchParams.toString()}`)}
                   className="
                     flex
                     items-center

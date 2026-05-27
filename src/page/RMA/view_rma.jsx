@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useSearchParams } from "react-router-dom";
 
 import { BiSolidEditAlt } from "react-icons/bi";
 
@@ -38,7 +38,7 @@ const RmaViewList = () => {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
-
+  const [searchParams, setSearchParams] = useSearchParams();
   const { clients } = useSelector((state) => state.client);
 
   const { locations } = useSelector((state) => state.location);
@@ -46,12 +46,11 @@ const RmaViewList = () => {
   const { rmaList, loading } = useSelector((state) => state.rma);
 
   const { user_type, client_type } = useSelector((state) => state.user.user);
-
   const [filters, setFilters] = useState({
-    client_id: "",
-    location_id: "",
-    manufacturer: "",
-    status: "",
+    client_id: searchParams.get("client_id") || "",
+    location_id: searchParams.get("location_id") || "",
+    manufacturer: searchParams.get("manufacturer") || "",
+    status: searchParams.get("status") || "",
   });
 
   const [sortConfig, setSortConfig] = useState({
@@ -60,13 +59,23 @@ const RmaViewList = () => {
   });
 
   useEffect(() => {
-    dispatch(getRmaLists({}));
+    dispatch(getRmaLists(filters));
 
     if (user_type !== "Client Employee") {
       dispatch(getClients());
     }
-  }, [dispatch, user_type]);
+  }, [dispatch, user_type,filters]);
+useEffect(() => {
+  const params = new URLSearchParams();
 
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value) {
+      params.set(key, value);
+    }
+  });
+
+  setSearchParams(params);
+}, [filters, setSearchParams]);
   /* CLIENT CHANGE */
   const handleClientChange = (e) => {
     const { value } = e.target;
@@ -174,7 +183,9 @@ const RmaViewList = () => {
 
   /* EDIT */
   const handleEdit = (rmaId) => {
-    navigate(`/edit-device-rma/${rmaId}`);
+    navigate(
+  `/edit-device-rma/${rmaId}?${searchParams.toString()}`
+);
   };
 
   /* DATE */

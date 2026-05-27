@@ -1,6 +1,6 @@
 /** @format */
 
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation,useSearchParams } from "react-router-dom";
 
 import { useState, useEffect } from "react";
 
@@ -38,10 +38,10 @@ const TransferInventory = () => {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  // const location = useLocation();
 
-  const location = useLocation();
-
-  const previousFilters = location.state;
+  // const previousFilters = location.state;
 
   const { inventory_id } = useParams();
 
@@ -142,7 +142,7 @@ const TransferInventory = () => {
           quantity: quantityAssigned,
         },
         navigate,
-        previousFilters,
+        searchParams.toString()
       ),
     );
 
@@ -162,7 +162,7 @@ const TransferInventory = () => {
           quantity: quantityAssignedToTicket,
         },
         navigate,
-        previousFilters,
+        searchParams.toString()
       ),
     );
 
@@ -182,7 +182,7 @@ const TransferInventory = () => {
           quantity: quantityTransferred,
         },
         navigate,
-        previousFilters,
+        searchParams.toString()
       ),
     );
 
@@ -257,9 +257,7 @@ const TransferInventory = () => {
               {/* BACK BUTTON */}
               <button
                 onClick={() =>
-                  navigate("/inventory", {
-                    state: previousFilters,
-                  })
+                  navigate(`/inventory?${searchParams.toString()}`)
                 }
                 className="
                     flex

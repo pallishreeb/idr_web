@@ -1,6 +1,6 @@
 /** @format */
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useSearchParams } from "react-router-dom";
 
 import { useEffect, useState,useRef } from "react";
 
@@ -25,7 +25,7 @@ const AddInventory = () => {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
-
+const [searchParams] = useSearchParams();
   const [selectedImage, setSelectedImage] = useState(null);
 const [qrPreview, setQrPreview] = useState("");
 
@@ -234,7 +234,7 @@ const handleSubmit = async (e) => {
               {/* BACK BUTTON */}
               <button
                 type="button"
-                onClick={() => navigate("/inventory")}
+                onClick={() => navigate(`/inventory?${searchParams.toString()}`)}
                 className="
                   flex
                   items-center
@@ -607,7 +607,7 @@ const handleSubmit = async (e) => {
               <div className="flex flex-col sm:flex-row justify-end gap-4 mt-8">
                 <button
                   type="button"
-                  onClick={() => navigate("/inventory")}
+                  onClick={() => navigate(`/inventory?${searchParams.toString()}`)}
                   className="
                     px-6
                     py-3
