@@ -598,7 +598,7 @@ const EditServiceTicket = () => {
               serviceTicketDetails?.subcontractor_in_service_tickets
             }
           />
-          {access.includes(user_type) && (
+          {user_type !== "Client Employee" && (
             <ShowSubcontractorUsers
               subcontractorAssignees={
                 serviceTicketDetails?.subcontractor_in_service_tickets

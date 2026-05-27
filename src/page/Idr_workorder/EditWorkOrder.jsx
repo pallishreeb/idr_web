@@ -453,7 +453,7 @@ const EditWorkOrder = () => {
             workOrderId={workOrderId}
             subcontractorAssignees={subcontractorUsers}
           />
-          {access.includes(user_type) && (
+          {user_type === "Client Employee" && (
             <ShowSubcontractorUsers
               subcontractorAssignees={subcontractorUsers}
               parentId={workOrderId}

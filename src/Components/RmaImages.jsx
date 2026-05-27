@@ -200,114 +200,130 @@ const RmaImages = ({ images, rmaId }) => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-              {images?.map((image, index) => {
-                const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
+            <div className="overflow-x-auto rounded-2xl border border-gray-100">
+              <table className="min-w-full divide-y divide-gray-100">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                      Preview
+                    </th>
 
-                return (
-                  <div
-                    key={index}
-                    className="
-                        border
-                        border-gray-100
-                        rounded-2xl
-                        overflow-hidden
-                        bg-white
-                        shadow-sm
-                        hover:shadow-md
-                        transition-all
-                      "
-                  >
-                    {/* MEDIA */}
-                    <div
-                      className="
-                          h-52
-                          bg-gray-100
-                          flex
-                          items-center
-                          justify-center
-                          overflow-hidden
-                          cursor-pointer
-                          relative
-                        "
-                      onClick={() => handleImageClick(fileUrl)}
-                    >
-                      {isVideo(image?.attachment_url) ? (
-                        <>
-                          <video
-                            src={fileUrl}
-                            className="w-full h-full object-cover"
-                            controls
-                          />
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                      File Type
+                    </th>
 
-                          <div
-                            className="
-                                absolute
-                                top-3
-                                right-3
-                                bg-black/70
-                                text-white
-                                p-2
-                                rounded-full
-                              "
-                          >
-                            <MdVideoLibrary className="text-lg" />
-                          </div>
-                        </>
-                      ) : (
-                        <img
-                          src={fileUrl}
-                          alt={`Attachment ${index + 1}`}
-                          className="
-                              w-full
-                              h-full
-                              object-cover
-                            "
-                        />
-                      )}
-                    </div>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                      Uploaded By
+                    </th>
 
-                    {/* CONTENT */}
-                    <div className="p-4">
-                      <div className="mb-4">
-                        <p className="text-xs text-gray-500 mb-1">
-                          Uploaded By
-                        </p>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
 
-                        <p className="text-sm font-semibold text-[#1E1B4B] break-words">
-                          {image?.user_name || "NA"}
-                        </p>
-                      </div>
+                <tbody className="divide-y divide-gray-100 bg-white">
+                  {images?.map((image, index) => {
+                    const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
 
-                      {/* ACTIONS */}
-                      <button
-                        onClick={() =>
-                          handleDownload(fileUrl, `attachment-${index + 1}`)
-                        }
-                        className="
-                            w-full
-                            flex
-                            items-center
-                            justify-center
-                            gap-2
-                            px-4
-                            py-2.5
-                            rounded-xl
-                            bg-blue-50
-                            text-blue-600
-                            text-sm
-                            font-semibold
-                            hover:bg-blue-100
-                            transition-all
-                          "
+                    return (
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-50 transition-all"
                       >
-                        <MdDownload className="text-lg" />
-                        Download
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                        {/* IMAGE / VIDEO */}
+                        <td className="px-4 py-4">
+                          <div
+                            onClick={() => handleImageClick(fileUrl)}
+                            className="
+                  w-20
+                  h-20
+                  rounded-xl
+                  overflow-hidden
+                  bg-gray-100
+                  cursor-pointer
+                  border
+                  border-gray-200
+                "
+                          >
+                            {isVideo(image?.attachment_url) ? (
+                              <video
+                                src={fileUrl}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <img
+                                src={fileUrl}
+                                alt={`Attachment ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                        </td>
+
+                        {/* FILE TYPE */}
+                        <td className="px-4 py-4">
+                          <div className="flex items-center gap-2">
+                            {isVideo(image?.attachment_url) ? (
+                              <>
+                                <MdVideoLibrary className="text-xl text-purple-500" />
+                                <span className="text-sm font-medium text-gray-700">
+                                  Video
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <MdImage className="text-xl text-indigo-500" />
+                                <span className="text-sm font-medium text-gray-700">
+                                  Image
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* UPLOADED BY */}
+                        <td className="px-4 py-4">
+                          <p className="text-sm font-semibold text-[#1E1B4B]">
+                            {image?.user_name || "NA"}
+                          </p>
+                        </td>
+
+                        {/* ACTIONS */}
+                        <td className="px-4 py-4">
+                          <div className="flex items-center justify-center">
+                            <button
+                              onClick={() =>
+                                handleDownload(
+                                  fileUrl,
+                                  `attachment-${index + 1}`,
+                                )
+                              }
+                              className="
+                    flex
+                    items-center
+                    gap-2
+                    px-4
+                    py-2
+                    rounded-xl
+                    bg-blue-50
+                    text-blue-600
+                    text-sm
+                    font-semibold
+                    hover:bg-blue-100
+                    transition-all
+                  "
+                            >
+                              <MdDownload className="text-lg" />
+                              Download
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </div>

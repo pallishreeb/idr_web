@@ -21,7 +21,7 @@ import {
   getWorkOrderDetails,
   assignPeopleToWorkOrder,
   deleteAssignee,
-  bulkDeleteAssignee
+  bulkDeleteAssignee,
 } from "../actions/workOrderActions";
 
 import { getClients } from "../actions/clientActions";
@@ -36,251 +36,136 @@ const ShowTechnicians = ({
   idrEmployees,
   workOrderId,
 }) => {
-  const dispatch =
-    useDispatch();
-const [selectedAssignees, setSelectedAssignees] = useState([]);
-  const {
-    user_type,
-  } =
-    useSelector(
-      (
-        state,
-      ) =>
-        state.user.user,
-    );
+  const dispatch = useDispatch();
+  const [selectedAssignees, setSelectedAssignees] = useState([]);
+  const { user_type } = useSelector((state) => state.user.user);
 
-  const {
-    access,
-  } =
-    useSelector(
-      (
-        state,
-      ) =>
-        state.user,
-      );
+  const { access } = useSelector((state) => state.user);
 
-  const [
-    isModalOpen,
-    setIsModalOpen,
-  ] =
-    useState(
-      false,
-    );
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleOpenModal =
-    () => {
-      setIsModalOpen(
-        true,
-      );
-    };
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
 
-  const handleCloseModal =
-    () => {
-      setIsModalOpen(
-        false,
-      );
-    };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
-  const handleAddAssignee =
-    (
-      newTechnician,
-    ) => {
-      dispatch(
-        assignPeopleToWorkOrder(
-          newTechnician,
-        ),
-      )
-        .then(
-          (
-            response,
-          ) => {
-            if (
-              response.code ===
-              "WO201"
-            ) {
-              toast.success(
-                "People assigned to work order.",
-              );
+  const handleAddAssignee = (newTechnician) => {
+    dispatch(assignPeopleToWorkOrder(newTechnician))
+      .then((response) => {
+        if (response.code === "WO201") {
+          toast.success("People assigned to work order.");
 
-              handleCloseModal();
-
-              dispatch(
-                getWorkOrderDetails(
-                  workOrderId,
-                ),
-              );
-
-              dispatch(
-                getClients(),
-              );
-
-              dispatch(
-                fetchIDREmployees(),
-              );
-            } else {
-              console.error(
-                "Error adding new technician:",
-                response.error,
-              );
-            }
-          },
-        )
-        .catch(
-          (
-            error,
-          ) => {
-            console.error(
-              "API call error:",
-              error,
-            );
-          },
-        );
-    };
-
-  const handleDelete =
-    (
-      assigneeId,
-    ) => {
-      Swal.fire({
-        title:
-          "Are you sure?",
-
-        text: "Do you really want to delete this assignee?",
-
-        icon: "warning",
-
-        showCancelButton:
-          true,
-
-        confirmButtonText:
-          "Yes, delete it!",
-
-        cancelButtonText:
-          "No, keep it",
-      }).then(
-        (
-          result,
-        ) => {
-          if (
-            result.isConfirmed
-          ) {
-            dispatch(
-              deleteAssignee(
-                assigneeId,
-              ),
-            ).then(
-              () => {
-                dispatch(
-                  getWorkOrderDetails(
-                    workOrderId,
-                  ),
-                );
-
-                dispatch(
-                  getClients(),
-                );
-
-                dispatch(
-                  fetchIDREmployees(),
-                );
-              },
-            );
-          }
-        },
-      );
-    };
-const handleSelectAssignee = (assigneeId) => {
-  setSelectedAssignees((prev) => {
-    if (prev.includes(assigneeId)) {
-      return prev.filter((id) => id !== assigneeId);
-    }
-
-    return [...prev, assigneeId];
-  });
-};
-const handleBulkDelete = () => {
-  if (selectedAssignees.length === 0) {
-    toast.error("Please select at least one assignee.");
-    return;
-  }
-
-  Swal.fire({
-    title: "Are you sure?",
-    text: `Delete ${selectedAssignees.length} selected assignees?`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, delete",
-    cancelButtonText: "Cancel",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      dispatch(bulkDeleteAssignee({ ids: selectedAssignees }))
-        .then((res) => {
-          toast.success("Deleted successfully");
-
-          setSelectedAssignees([]);
+          handleCloseModal();
 
           dispatch(getWorkOrderDetails(workOrderId));
+
           dispatch(getClients());
+
           dispatch(fetchIDREmployees());
-        })
-        .catch((err) => {
-          console.error(err);
+        } else {
+          console.error("Error adding new technician:", response.error);
+        }
+      })
+      .catch((error) => {
+        console.error("API call error:", error);
+      });
+  };
+
+  const handleDelete = (assigneeId) => {
+    Swal.fire({
+      title: "Are you sure?",
+
+      text: "Do you really want to delete this assignee?",
+
+      icon: "warning",
+
+      showCancelButton: true,
+
+      confirmButtonText: "Yes, delete it!",
+
+      cancelButtonText: "No, keep it",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteAssignee(assigneeId)).then(() => {
+          dispatch(getWorkOrderDetails(workOrderId));
+
+          dispatch(getClients());
+
+          dispatch(fetchIDREmployees());
         });
+      }
+    });
+  };
+  const handleSelectAssignee = (assigneeId) => {
+    setSelectedAssignees((prev) => {
+      if (prev.includes(assigneeId)) {
+        return prev.filter((id) => id !== assigneeId);
+      }
+
+      return [...prev, assigneeId];
+    });
+  };
+  const handleBulkDelete = () => {
+    if (selectedAssignees.length === 0) {
+      toast.error("Please select at least one assignee.");
+      return;
     }
-  });
-};
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Delete ${selectedAssignees.length} selected assignees?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(bulkDeleteAssignee({ ids: selectedAssignees }))
+          .then((res) => {
+            toast.success("Deleted successfully");
+
+            setSelectedAssignees([]);
+
+            dispatch(getWorkOrderDetails(workOrderId));
+            dispatch(getClients());
+            dispatch(fetchIDREmployees());
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    });
+  };
   /* =========================================
      COMBINED DATA
   ========================================= */
 
-  const allAssignees =
-    [
-      ...(assignees?.map(
-        (
-          technician,
-        ) => ({
-          id:
-            technician.assignee_id,
+  const allAssignees = [
+    ...(assignees?.map((technician) => ({
+      id: technician.assignee_id,
 
-          name:
-            technician.technician_name ||
-            technician.project_manager ||
-            "NA",
+      name: technician.technician_name || technician.project_manager || "NA",
 
-          role:
-            technician.project_manager
-              ? "Project Manager"
-              : "Technician",
+      role: technician.project_manager ? "Project Manager" : "Technician",
 
-          isSubcontractor:
-            false,
-        }),
-      ) ||
-        []),
+      isSubcontractor: false,
+    })) || []),
 
-      ...(user_type?.includes(
-        "Client",
-      )
-        ? subcontractorAssignees?.map(
-            (
-              subcontractor,
-            ) => ({
-              id:
-                subcontractor.subcontractor_in_wo_id,
+    ...(user_type?.includes("Client")
+      ? subcontractorAssignees?.map((subcontractor) => ({
+          id: subcontractor.subcontractor_in_wo_id,
 
-              name:
-                subcontractor.subcontractor_user_name ||
-                "NA",
+          name: subcontractor.subcontractor_user_name || "NA",
 
-              role:
-                "Technician",
+          role: "Technician",
 
-              isSubcontractor:
-                true,
-            }),
-          ) || []
-        : []),
-    ];
+          isSubcontractor: true,
+        })) || []
+      : []),
+  ];
 
   return (
     <div className="flex flex-col mt-4 bg-white border border-gray-100 rounded-[28px] shadow-sm overflow-hidden">
@@ -297,24 +182,20 @@ const handleBulkDelete = () => {
 
             <div>
               <h2 className="text-lg font-semibold text-[#1E1B4B]">
-                Technicians &
-                Managers
+                Technicians & Managers
               </h2>
 
               <p className="text-xs text-gray-500 mt-0.5">
-                Assigned work
-                order people
+                Assigned work order people
               </p>
             </div>
           </div>
 
-{access.includes(
-  user_type,
-) && (
-  <div className="flex items-center gap-3">
-    {selectedAssignees.length > 0 && (
-      <button
-        className="
+          {user_type === "Admin" && (
+            <div className="flex items-center gap-3">
+              {selectedAssignees.length > 0 && (
+                <button
+                  className="
           flex
           items-center
           justify-center
@@ -331,17 +212,15 @@ const handleBulkDelete = () => {
           transition-all
           duration-300
         "
-        onClick={handleBulkDelete}
-      >
-        <AiFillDelete className="text-lg" />
-        Delete Selected (
-        {selectedAssignees.length}
-        )
-      </button>
-    )}
+                  onClick={handleBulkDelete}
+                >
+                  <AiFillDelete className="text-lg" />
+                  Delete Selected ({selectedAssignees.length})
+                </button>
+              )}
 
-    <button
-      className="
+              <button
+                className="
         flex
         items-center
         justify-center
@@ -362,13 +241,13 @@ const handleBulkDelete = () => {
         transition-all
         duration-300
       "
-      onClick={handleOpenModal}
-    >
-      <MdEngineering className="text-lg" />
-      Add Person
-    </button>
-  </div>
-)}
+                onClick={handleOpenModal}
+              >
+                <MdEngineering className="text-lg" />
+                Add Person
+              </button>
+            </div>
+          )}
         </div>
 
         {/* TABLE */}
@@ -376,40 +255,36 @@ const handleBulkDelete = () => {
           <table className="min-w-full">
             <thead>
               <tr className="bg-gradient-to-r from-indigo-50 to-pink-50">
-            <th className="px-5 py-4 w-[60px]">
-  <input
-    type="checkbox"
-    checked={
-      allAssignees.filter(
-        (person) => !person.isSubcontractor
-      ).length > 0 &&
-      selectedAssignees.length ===
-        allAssignees.filter(
-          (person) => !person.isSubcontractor
-        ).length
-    }
-    onClick={() => {
-      const selectableIds = allAssignees
-        .filter(
-          (person) => !person.isSubcontractor
-        )
-        .map((person) =>
-          String(person.id)
-        );
+                {user_type === "Admin" && (
+                  <th className="px-5 py-4 w-[60px]">
+                    <input
+                      type="checkbox"
+                      checked={
+                        allAssignees.filter((person) => !person.isSubcontractor)
+                          .length > 0 &&
+                        selectedAssignees.length ===
+                          allAssignees.filter(
+                            (person) => !person.isSubcontractor,
+                          ).length
+                      }
+                      onClick={() => {
+                        const selectableIds = allAssignees
+                          .filter((person) => !person.isSubcontractor)
+                          .map((person) => String(person.id));
 
-      const isAllSelected =
-        selectedAssignees.length ===
-        selectableIds.length;
+                        const isAllSelected =
+                          selectedAssignees.length === selectableIds.length;
 
-      if (isAllSelected) {
-        setSelectedAssignees([]);
-      } else {
-        setSelectedAssignees(selectableIds);
-      }
-    }}
-    className="w-4 h-4 cursor-pointer"
-  />
-</th>
+                        if (isAllSelected) {
+                          setSelectedAssignees([]);
+                        } else {
+                          setSelectedAssignees(selectableIds);
+                        }
+                      }}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                  </th>
+                )}
                 <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B]">
                   Name
                 </th>
@@ -418,8 +293,7 @@ const handleBulkDelete = () => {
                   Role
                 </th>
 
-                {user_type ===
-                  "Admin" && (
+                {user_type === "Admin" && (
                   <th className="px-5 py-4 text-center text-sm font-semibold text-[#1E1B4B] w-[100px]">
                     Actions
                   </th>
@@ -428,68 +302,48 @@ const handleBulkDelete = () => {
             </thead>
 
             <tbody>
-              {allAssignees?.length ===
-              0 ? (
+              {allAssignees?.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={
-                      user_type ===
-                      "Admin"
-                        ? 4
-                        : 3
-                    }
+                    colSpan={user_type === "Admin" ? 4 : 3}
                     className="py-14 text-center"
                   >
                     <div className="flex flex-col items-center justify-center">
                       <MdGroups className="text-5xl text-gray-300 mb-4" />
 
                       <h3 className="text-lg font-semibold text-[#1E1B4B]">
-                        No
-                        Assignees
-                        Found
+                        No Assignees Found
                       </h3>
 
                       <p className="text-sm text-gray-500 mt-1">
-                        No people
-                        assigned
-                        yet.
+                        No people assigned yet.
                       </p>
                     </div>
                   </td>
                 </tr>
               ) : (
-                allAssignees.map(
-                  (
-                    person,
-                    index,
-                  ) => (
-                    <tr
-                      key={
-                        index
-                      }
-                      className="border-t border-gray-100 hover:bg-gray-50 transition-all duration-200"
-                    >
+                allAssignees.map((person, index) => (
+                  <tr
+                    key={index}
+                    className="border-t border-gray-100 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    {user_type === "Admin" && (
                       <td className="px-5 py-4">
-                            {!person.isSubcontractor && (
-                              <input
-                                type="checkbox"
-                                checked={selectedAssignees.includes(
-                                  person.id,
-                                )}
-                                onChange={() =>
-                                  handleSelectAssignee(
-                                    person.id,
-                                  )
-                                }
-                                className="w-4 h-4"
-                              />
-                            )}
-                          </td>
-                      {/* NAME */}
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`
+                        {!person.isSubcontractor && (
+                          <input
+                            type="checkbox"
+                            checked={selectedAssignees.includes(person.id)}
+                            onChange={() => handleSelectAssignee(person.id)}
+                            className="w-4 h-4"
+                          />
+                        )}
+                      </td>
+                    )}
+                    {/* NAME */}
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`
                               w-10
                               h-10
                               rounded-xl
@@ -501,37 +355,33 @@ const handleBulkDelete = () => {
                               ${
                                 person.isSubcontractor
                                   ? "bg-orange-50 border-orange-100 text-indigo-500"
-                                  : person.role ===
-                                    "Project Manager"
-                                  ? "bg-purple-50 border-purple-100 text-purple-500"
-                                  : "bg-indigo-50 border-indigo-100 text-indigo-500"
+                                  : person.role === "Project Manager"
+                                    ? "bg-purple-50 border-purple-100 text-purple-500"
+                                    : "bg-indigo-50 border-indigo-100 text-indigo-500"
                               }
                             `}
-                          >
-                            {person.isSubcontractor ? (
-                               <MdEngineering className="text-lg" />
-                            ) : person.role ===
-                              "Project Manager" ? (
-                              <MdOutlineBadge className="text-lg" />
-                            ) : (
-                              <MdEngineering className="text-lg" />
-                            )}
-                          </div>
-
-                          <div>
-                            <p className="text-sm font-semibold text-[#1E1B4B]">
-                              {
-                                person.name
-                              }
-                            </p>
-                          </div>
+                        >
+                          {person.isSubcontractor ? (
+                            <MdEngineering className="text-lg" />
+                          ) : person.role === "Project Manager" ? (
+                            <MdOutlineBadge className="text-lg" />
+                          ) : (
+                            <MdEngineering className="text-lg" />
+                          )}
                         </div>
-                      </td>
 
-                      {/* ROLE */}
-                      <td className="px-5 py-4">
-                        <span
-                          className={`
+                        <div>
+                          <p className="text-sm font-semibold text-[#1E1B4B]">
+                            {person.name}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* ROLE */}
+                    <td className="px-5 py-4">
+                      <span
+                        className={`
                             inline-flex
                             px-3
                             py-1
@@ -540,30 +390,25 @@ const handleBulkDelete = () => {
                             font-semibold
                             
                             ${
-                              person.role ===
-                              "Project Manager"
+                              person.role === "Project Manager"
                                 ? "bg-purple-100 text-purple-700"
-                                : person.role ===
-                                  "Subcontractor"
-                                ? "bg-orange-100 text-indigo-700"
-                                : "bg-indigo-100 text-indigo-700"
+                                : person.role === "Subcontractor"
+                                  ? "bg-orange-100 text-indigo-700"
+                                  : "bg-indigo-100 text-indigo-700"
                             }
                           `}
-                        >
-                          {
-                            person.role
-                          }
-                        </span>
-                      </td>
+                      >
+                        {person.role}
+                      </span>
+                    </td>
 
-                      {/* ACTION */}
-                      {user_type ===
-                        "Admin" && (
-                        <td className="px-5 py-4">
-                          <div className="flex justify-center">
-                            {!person.isSubcontractor && (
-                              <button
-                                className="
+                    {/* ACTION */}
+                    {user_type === "Admin" && (
+                      <td className="px-5 py-4">
+                        <div className="flex justify-center">
+                          {!person.isSubcontractor && (
+                            <button
+                              className="
                                   w-9
                                   h-9
                                   rounded-xl
@@ -578,21 +423,16 @@ const handleBulkDelete = () => {
                                   transition-all
                                   duration-300
                                 "
-                                onClick={() =>
-                                  handleDelete(
-                                    person.id,
-                                  )
-                                }
-                              >
-                                <AiFillDelete className="text-lg" />
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      )}
-                    </tr>
-                  ),
-                )
+                              onClick={() => handleDelete(person.id)}
+                            >
+                              <AiFillDelete className="text-lg" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
@@ -600,21 +440,11 @@ const handleBulkDelete = () => {
 
         {/* MODAL */}
         <AddTechnicianModal
-          isOpen={
-            isModalOpen
-          }
-          onClose={
-            handleCloseModal
-          }
-          onSave={
-            handleAddAssignee
-          }
-          workOrderId={
-            workOrderId
-          }
-          idrEmployees={
-            idrEmployees
-          }
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onSave={handleAddAssignee}
+          workOrderId={workOrderId}
+          idrEmployees={idrEmployees}
         />
       </div>
     </div>

@@ -194,7 +194,7 @@ const ServiceTicketAssigneePeopleCard = ({
             </div>
           </div>
 
-          {access.includes(user_type) && (
+          {user_type === "Admin" && (
             <div className="flex items-center gap-3">
               {selectedAssignees.length > 0 && (
                 <button
@@ -258,6 +258,7 @@ const ServiceTicketAssigneePeopleCard = ({
           <table className="min-w-full">
             <thead>
               <tr className="bg-gradient-to-r from-indigo-50 to-pink-50">
+                {user_type === "Admin" && (
                 <th className="px-5 py-4 w-[60px]">
                   <input
                     type="checkbox"
@@ -281,7 +282,7 @@ const ServiceTicketAssigneePeopleCard = ({
                     }}
                     className="w-4 h-4"
                   />
-                </th>
+                </th>)}
                 <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B]">
                   Name
                 </th>
@@ -328,6 +329,7 @@ const ServiceTicketAssigneePeopleCard = ({
                     key={index}
                     className="border-t border-gray-100 hover:bg-gray-50 transition-all duration-200"
                   >
+                    {user_type === "Admin" && (
                     <td className="px-5 py-4">
                       {!person.isSubcontractor && (
                         <input
@@ -337,7 +339,7 @@ const ServiceTicketAssigneePeopleCard = ({
                           className="w-4 h-4"
                         />
                       )}
-                    </td>
+                    </td>)}
                     {/* NAME */}
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
