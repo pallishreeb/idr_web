@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate,useSearchParams } from "react-router-dom";
 
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
@@ -41,11 +41,13 @@ function AddServiceTicket() {
 
   const navigate = useNavigate();
 
-  const location = useLocation();
+  // const location = useLocation();
+const [searchParams] = useSearchParams();
+const routeState = window.history.state?.usr || {};
 
-  const duplicateData = location.state?.duplicateData;
+const duplicateData = routeState?.duplicateData;
 
-  const isDuplicate = location.state?.isDuplicate;
+const isDuplicate = routeState?.isDuplicate;
 
   // =========================
   // STEP
@@ -316,7 +318,7 @@ function AddServiceTicket() {
   const handleAssign = async () => {
     try {
       dispatch(
-        assignPeopleToServiceTicket(assigns, navigate, false, location.state),
+        assignPeopleToServiceTicket(assigns, navigate, false),
       );
     } catch (error) {
       console.error(error);
@@ -418,9 +420,7 @@ function AddServiceTicket() {
 
               <button
                 onClick={() =>
-                  navigate("/service-tickets", {
-                    state: location.state,
-                  })
+                  navigate(`/service-tickets?${searchParams.toString()}`)
                 }
                 className="
                   flex

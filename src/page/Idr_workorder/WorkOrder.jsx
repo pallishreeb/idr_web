@@ -6,7 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Swal from "sweetalert2";
 
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 
 import { BiSolidEditAlt } from "react-icons/bi";
 
@@ -39,17 +43,17 @@ import { toast } from "react-toastify";
 const WorkOrder = () => {
   const dispatch = useDispatch();
 
-  const location = useLocation();
-
+  // const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const [filters, setFilters] = useState({
-    client_id: "",
-    status: "",
-    technician: "",
-    project_manager: "",
-    location_id: "",
-    is_billed: "",
+    client_id: searchParams.get("client_id") || "",
+    status: searchParams.get("status") || "",
+    technician: searchParams.get("technician") || "",
+    project_manager: searchParams.get("project_manager") || "",
+    location_id: searchParams.get("location_id") || "",
+    is_billed: searchParams.get("is_billed") || "",
   });
 
   const [sortConfig, setSortConfig] = useState({
@@ -74,16 +78,23 @@ const WorkOrder = () => {
   const clientLocations = useSelector((state) => state.location.locations);
 
   useEffect(() => {
-    const appliedFilters = location.state?.filters || {};
-
-    setFilters(appliedFilters);
-
-    dispatch(getWorkOrderLists(appliedFilters));
+    dispatch(getWorkOrderLists(filters));
 
     dispatch(getClients());
 
     dispatch(fetchIDREmployees());
-  }, [dispatch, location]);
+  }, [dispatch]);
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, value);
+      }
+    });
+
+    setSearchParams(params);
+  }, [filters, setSearchParams]);
 
   useEffect(() => {
     if (filters?.client_id) {
@@ -232,7 +243,7 @@ const WorkOrder = () => {
 
             {access.includes(user_type) && (
               <Link
-                to="/add-work-order"
+                to={`/add-work-order?${searchParams.toString()}`}
                 state={{
                   filters,
                 }}
@@ -604,7 +615,7 @@ const WorkOrder = () => {
                           <td className="px-5 py-4">
                             <div className="flex items-center justify-center gap-3">
                               <Link
-                                to={`/edit-work-order/${order?.work_order_id}`}
+                                to={`/edit-work-order/${order?.work_order_id}?${searchParams.toString()}`}
                                 state={{
                                   filters,
                                 }}
@@ -625,18 +636,13 @@ const WorkOrder = () => {
                                 </button>
                               )}
                               {access.includes(user_type) && (
-                              <button
-                                onClick={() =>
-                                  navigate(
-                                    `/duplicate-work-order/${order.work_order_id}`,
-                                    {
-                                      state: {
-                                        duplicate: true,
-                                      },
-                                    },
-                                  )
-                                }
-                                className="
+                                <button
+                                  onClick={() =>
+                                    navigate(
+                                      `/duplicate-work-order/${order.work_order_id}?duplicate=true&${searchParams.toString()}`,
+                                    )
+                                  }
+                                  className="
     w-10
     h-10
     rounded-2xl
@@ -648,9 +654,9 @@ const WorkOrder = () => {
     hover:bg-blue-100
     transition-all
   "
-                              >
-                                <MdContentCopy className="text-lg" />
-                              </button>
+                                >
+                                  <MdContentCopy className="text-lg" />
+                                </button>
                               )}
                             </div>
                           </td>

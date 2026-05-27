@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useSearchParams, } from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
@@ -19,16 +19,17 @@ import { toast } from "react-toastify";
 import { MdAssignmentInd, MdAdd, MdContentCopy } from "react-icons/md";
 const ServiceTickets = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
+  // const location = useLocation();
   // const navigate = useNavigate();
-  const [filters, setFilters] = useState({
-    client_id: "",
-    status: "",
-    technician: "",
-    project_manager: "",
-    location_id: "",
-    is_billed: "",
-  });
+  const [searchParams, setSearchParams] = useSearchParams();
+const [filters, setFilters] = useState({
+  client_id: searchParams.get("client_id") || "",
+  status: searchParams.get("status") || "",
+  technician: searchParams.get("technician") || "",
+  project_manager: searchParams.get("project_manager") || "",
+  location_id: searchParams.get("location_id") || "",
+  is_billed: searchParams.get("is_billed") || "",
+});
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
   const { user_type, client_type, locations } = useSelector(
@@ -46,12 +47,26 @@ const ServiceTickets = () => {
   const loadingLocations = useSelector((state) => state.location.loading);
   const clientLocations = useSelector((state) => state.location.locations);
   useEffect(() => {
-    const appliedFilters = location.state?.filters || {};
-    setFilters(appliedFilters);
-    dispatch(getServiceTicketLists(appliedFilters));
-    dispatch(getClients());
-    dispatch(fetchIDREmployees());
-  }, [dispatch, location]);
+  const params = new URLSearchParams();
+
+  if (filters.client_id) params.set("client_id", filters.client_id);
+  if (filters.status) params.set("status", filters.status);
+  if (filters.technician)
+    params.set("technician", filters.technician);
+  if (filters.project_manager)
+    params.set("project_manager", filters.project_manager);
+  if (filters.location_id)
+    params.set("location_id", filters.location_id);
+  if (filters.is_billed)
+    params.set("is_billed", filters.is_billed);
+
+  setSearchParams(params);
+}, [filters, setSearchParams]);
+useEffect(() => {
+  dispatch(getServiceTicketLists(filters));
+  dispatch(getClients());
+  dispatch(fetchIDREmployees());
+}, [dispatch]);
   useEffect(() => {
     if (filters?.client_id) {
       dispatch(getLocationByClient(filters.client_id));
@@ -91,18 +106,20 @@ const ServiceTickets = () => {
   const handleSearch = () => {
     dispatch(getServiceTicketLists(filters));
   };
-  const handleReset = () => {
-    const clearedFilters = {
-      status: "",
-      client_id: "",
-      location_id: "",
-      technician: "",
-      project_manager: "",
-      is_billed: "",
-    };
-    setFilters(clearedFilters);
-    dispatch(getServiceTicketLists(clearedFilters));
+const handleReset = () => {
+  const clearedFilters = {
+    status: "",
+    client_id: "",
+    location_id: "",
+    technician: "",
+    project_manager: "",
+    is_billed: "",
   };
+
+  setFilters(clearedFilters);
+  setSearchParams({});
+  dispatch(getServiceTicketLists(clearedFilters));
+};
   function formatDate(date) {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, "0");
@@ -210,7 +227,7 @@ const ServiceTickets = () => {
                 </div>
 
                 {access.includes(user_type) && (
-                  <Link to="/add-service-ticket" state={{ filters }}>
+                  <Link to={`/add-service-ticket?${searchParams.toString()}`}>
                     <button
                       className="
               flex
@@ -586,9 +603,8 @@ const ServiceTickets = () => {
                             <td className="px-3 py-3 whitespace-nowrap">
                               <div className="flex items-center gap-2">
                                 {/* EDIT */}
-                                <Link
-                                  to={`/edit-service-ticket/${order?.service_ticket_id}`}
-                                  state={{ filters }}
+                               <Link
+                                  to={`/edit-service-ticket/${order?.service_ticket_id}?${searchParams.toString()}`}
                                 >
                                   <button
                                     className="
@@ -609,11 +625,10 @@ const ServiceTickets = () => {
                                 {/* DUPLICATE */}
                                 {access.includes(user_type) && (
                                 <Link
-                                  to="/add-service-ticket"
+                                  to={`/add-service-ticket?${searchParams.toString()}`}
                                   state={{
                                     duplicateData: order,
                                     isDuplicate: true,
-                                    filters,
                                   }}
                                 >
                                   <button

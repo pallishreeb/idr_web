@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "../../axios-config";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useParams,useSearchParams } from "react-router-dom";
 import { S3_BASE_URL } from "../../config";
 import { FaDownload } from "react-icons/fa";
 import Header from "../../Components/Header";
@@ -37,7 +37,8 @@ import { MdDraw, MdDevices, MdClose, MdAdd } from "react-icons/md";
 const EditServiceTicket = () => {
   const { serviceTicketId } = useParams();
   const dispatch = useDispatch();
-  const location = useLocation();
+  // const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [signatureImage, setSignatureImage] = useState(null);
 
@@ -436,7 +437,7 @@ const EditServiceTicket = () => {
                 {/* RIGHT ACTIONS */}
                 <div className="flex flex-wrap gap-3">
                   {/* BACK */}
-                  <Link to="/service-tickets" state={location.state}>
+                  <Link to={`/service-tickets?${searchParams.toString()}`}>
                     <button
                       className="
               flex

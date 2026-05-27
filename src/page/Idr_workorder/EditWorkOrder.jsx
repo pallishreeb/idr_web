@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { FaDownload } from "react-icons/fa";
 import axios from "../../axios-config";
 import { S3_BASE_URL } from "../../config";
@@ -33,8 +33,9 @@ import ShowSubcontractorUsers from "../../Components/subcontractor/ShowSubcontra
 const EditWorkOrder = () => {
   const { workOrderId } = useParams();
   const dispatch = useDispatch();
-  const location = useLocation();
+  // const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [signatureImage, setSignatureImage] = useState(null);
 
@@ -354,7 +355,7 @@ const EditWorkOrder = () => {
           <div className="flex justify-between">
             <h1 className="font-bold text-lg">Edit Work Order</h1>
             <div className="flex gap-3">
-              <Link to="/workorder" state={location.state}>
+              <Link to={`/workorder?${searchParams.toString()}`}>
                 <button className="border border-gray-400 text-gray-400 px-6 py-2 rounded">
                   Back
                 </button>

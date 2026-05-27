@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import {
   MdAssignment,
@@ -43,11 +43,12 @@ function AddWorkOrder() {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
-
-  const location = useLocation();
+const [searchParams] = useSearchParams();
+  // const location = useLocation();
   const { id } = useParams();
 
-  const isDuplicate = location.state?.duplicate;
+  const isDuplicate =
+  searchParams.get("duplicate") === "true";
 
   const clients = useSelector((state) => state.client.clients);
   const { workOrderDetails } = useSelector((state) => state.workOrder);
@@ -383,10 +384,7 @@ useEffect(() => {
       .then((response) => {
         if (response.code === "WO201") {
           toast.success("Work Order Created.");
-
-          navigate("/workorder", {
-            state: location.state,
-          });
+          navigate(`/workorder?${searchParams.toString()}`);
         }
       })
       .catch((error) => {
@@ -463,9 +461,7 @@ useEffect(() => {
 
             <button
               onClick={() =>
-                navigate("/workorder", {
-                  state: location.state,
-                })
+                navigate(`/workorder?${searchParams.toString()}`)
               }
               className="
                 px-5
