@@ -79,10 +79,10 @@ const WorkOrder = () => {
 
   useEffect(() => {
     dispatch(getWorkOrderLists(filters));
-
+  if (technicianAccess.includes(user_type)) {
     dispatch(getClients());
-
     dispatch(fetchIDREmployees());
+  }
   }, [dispatch]);
   useEffect(() => {
     const params = new URLSearchParams();
@@ -214,7 +214,10 @@ const WorkOrder = () => {
       focus:ring-indigo-500
       transition-all
     `;
-
+  const locationAccess = [
+    ...technicianAccess,
+    "Client Employee"
+  ];
   return (
     <>
       <Header />
@@ -351,8 +354,8 @@ const WorkOrder = () => {
                     </select>
                   </div>
                 )}
-
-                {/* LOCATION */}
+                {/* Location filters */}
+               {locationAccess.includes(user_type) && (
                 <div>
                   <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                     Location
@@ -376,7 +379,7 @@ const WorkOrder = () => {
                     ))}
                   </select>
                 </div>
-
+                )}
                 {/* TECH */}
                 {access.includes(user_type) && (
                   <>

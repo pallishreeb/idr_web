@@ -64,8 +64,10 @@ const [filters, setFilters] = useState({
 }, [filters, setSearchParams]);
 useEffect(() => {
   dispatch(getServiceTicketLists(filters));
+  if (technicianAccess.includes(user_type)) {
   dispatch(getClients());
   dispatch(fetchIDREmployees());
+  }
 }, [dispatch]);
   useEffect(() => {
     if (filters?.client_id) {
@@ -175,7 +177,10 @@ const handleReset = () => {
       return 0;
     });
   }, [serviceTickets, sortConfig]);
-
+  const locationAccess = [
+    ...technicianAccess,
+    "Client Employee"
+  ];
   return (
     <>
       <Header />
@@ -318,6 +323,7 @@ const handleReset = () => {
                 )}
 
                 {/* LOCATION */}
+                {locationAccess.includes(user_type) && (
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-semibold text-gray-600">
                     Location
@@ -348,7 +354,7 @@ const handleReset = () => {
                       ))}
                   </select>
                 </div>
-
+                )}
                 {/* BILLED */}
                 {access.includes(user_type) && (
                   <div className="flex flex-col gap-1">

@@ -29,7 +29,7 @@ const AdminDashboard = () => {
   const loggedInuser = useSelector((state) => state.user.user);
 
   const users = useSelector((state) => state.user.users);
-
+  const { access} = useSelector((state) => state.user);
   const usersLoading = useSelector((state) => state.user.loading);
 
   const { workOrders } = useSelector((state) => state.workOrder);
@@ -41,8 +41,9 @@ const AdminDashboard = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    if (access.includes(user_type)) {
     dispatch(fetchUsers());
-
+    }
     dispatch(getWorkOrderLists());
 
     dispatch(getServiceTicketLists({}));
