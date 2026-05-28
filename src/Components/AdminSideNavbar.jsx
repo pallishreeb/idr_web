@@ -387,14 +387,14 @@ const fullname = first_name + ' ' + last_name
   );
 
   return (
-    <div className="flex h-screen">
-      <aside className="w-[290px] bg-[#FAFAFA] border-r border-gray-200 overflow-y-auto shadow-sm">
-              {/* Header */}
-     {/* Top Accent */}
-<div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+    <div className="flex h-screen ">
+      <aside className="w-[290px] bg-[#FAFAFA] border-r border-gray-200 overflow-y-auto hide-scrollbar shadow-sm">
+        {/* Header */}
+        {/* Top Accent */}
+        <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
-      {/* Profile Card */}
-<div className="px-4 py-4">
+        {/* Profile Card */}
+        <div className="px-4 pt-4 pb-0">
           <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-4">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500 flex items-center justify-center text-white text-lg font-bold shadow-md">
@@ -416,9 +416,7 @@ const fullname = first_name + ' ' + last_name
 
         <nav className="px-4 py-5">
           {/* CLIENT SECTION */}
-          {["Admin", "Subadmin"].includes(
-            user_type,
-          ) && (
+          {["Admin", "Subadmin"].includes(user_type) && (
             <>
               <SectionHeader
                 title="CLIENT"
@@ -435,8 +433,7 @@ const fullname = first_name + ' ' + last_name
                           key={item.title}
                           item={item}
                           badge={
-                            item.title ===
-                              "Service Requests" &&
+                            item.title === "Service Requests" &&
                             serviceRequests?.length > 0
                               ? serviceRequests.length
                               : null
@@ -458,9 +455,7 @@ const fullname = first_name + ' ' + last_name
 
           {isSubMenuOpen && (
             <div className="flex flex-col gap-3">
-              {!["Admin", "Subadmin"].includes(
-                user_type,
-              ) && (
+              {!["Admin", "Subadmin"].includes(user_type) && (
                 <MenuItem
                   item={{
                     title: "Dashboard",
@@ -472,8 +467,7 @@ const fullname = first_name + ' ' + last_name
 
               {idrMenuItems.map((item) => {
                 const finalPath =
-                  item.title ===
-                    "Business Information" &&
+                  item.title === "Business Information" &&
                   user_type === "Subcontractor"
                     ? `/edit-subcontractor/${subcontractor_id}`
                     : item.path;
@@ -492,10 +486,7 @@ const fullname = first_name + ' ' + last_name
           )}
 
           {/* SUBCONTRACTOR SECTION */}
-          {[
-            "Admin",
-            "Subadmin",
-          ].includes(user_type) && (
+          {["Admin", "Subadmin"].includes(user_type) && (
             <>
               <SectionHeader
                 title="SUBCONTRACTORS"
@@ -508,10 +499,7 @@ const fullname = first_name + ' ' + last_name
                   {subcontractorMenuItems.map(
                     (item) =>
                       item.roles.includes(user_type) && (
-                        <MenuItem
-                          key={item.title}
-                          item={item}
-                        />
+                        <MenuItem key={item.title} item={item} />
                       ),
                   )}
                 </div>

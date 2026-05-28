@@ -132,89 +132,99 @@ const AdminDashboard = () => {
     <>
       <Header />
 
-      <div className="flex">
+      <div className="flex h-screen min-h-screen  ">
         <AdminSideNavbar />
 
-        <div className="flex-1 py-8 px-8 bg-gradient-to-br from-[#FAFAFA] to-indigo-50 min-h-screen overflow-y-auto">
-          {/* PAGE HEADER */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">
-              Dashboard
-            </h1>
+        {/* <div className="flex-1 py-8 px-8 bg-gradient-to-br from-[#FAFAFA] to-indigo-50 min-h-screen overflow-y-auto"> */}
+        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-[#FAFAFA] to-indigo-50">
+          <div className="max-w-[1920px] mx-auto  px-4 sm:px-6 lg:px-8 2xl:px-10 py-6 ">
+            {/* PAGE HEADER */}
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-[#1E1B4B] tracking-tight">
+                Dashboard
+              </h1>
 
-            <p className="text-gray-500 mt-1">
-              Welcome back to IDR Technology Portal
-            </p>
-          </div>
-
-          {/* WELCOME CARD */}
-          <div className="relative overflow-hidden flex items-center justify-between bg-white rounded-[32px] shadow-lg border border-indigo-50 px-8 py-8">
-            <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-indigo-200 to-pink-200 opacity-30 blur-3xl rounded-full" />
-
-            {usersLoading ? (
-              <p>Loading user data...</p>
-            ) : (
-              <div className="relative z-10 flex flex-col gap-8">
-                <div className="flex flex-col gap-2">
-                  <h1 className="font-bold text-3xl text-[#1E1B4B] tracking-tight">
-                    Hello,{" "}
-                    {user?.first_name !== null
-                      ? `${user?.first_name} ${user?.last_name}`
-                      : "User"}
-                  </h1>
-
-                  <p className="text-gray-500 text-[15px]">
-                    Welcome to IDR Technology Solution Portal.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-5">
-                  {/* PHONE */}
-                  <div className="flex items-center gap-4 bg-indigo-50 px-5 py-4 rounded-2xl border border-indigo-100">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-md">
-                      <MdPhone size={22} />
-                    </div>
-
-                    <div>
-                      <p className="text-gray-500 text-sm">Phone</p>
-
-                      <p className="font-semibold text-[#1E1B4B]">
-                        {user?.contact_number !== null
-                          ? user?.contact_number
-                          : "NA"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* EMAIL */}
-                  <div className="flex items-center gap-4 bg-indigo-50 px-5 py-4 rounded-2xl border border-indigo-100">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-md">
-                      <IoMail size={22} />
-                    </div>
-
-                    <div>
-                      <p className="text-gray-500 text-sm">Email</p>
-
-                      <p className="font-semibold text-[#1E1B4B]">
-                        {user?.email_id}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="hidden lg:flex w-[35%] justify-end relative z-10">
-              <img
-                src={circle}
-                alt="banner"
-                className="w-[320px] object-contain"
-              />
+              <p className="text-gray-500 mt-1">
+                Welcome back to IDR Technology Portal
+              </p>
             </div>
-          </div>
 
-          {/* STAT SUMMARY */}
-          {/* {!subcontractorsAccess.includes(user_type) && ( */}
+            {/* WELCOME CARD */}
+            {/* <div className="relative overflow-hidden flex items-center justify-between bg-white rounded-[32px] shadow-lg border border-indigo-50 px-8 py-8"> */}
+            <div className="relative overflow-hidden flex flex-col lg:flex-row items-center gap-10 bg-white rounded-[32px] shadow-lg border border-indigo-50 px-6 sm:px-8 lg:px-10 py-8 lg:py-10">
+              <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-indigo-200 to-pink-200 opacity-30 blur-3xl rounded-full" />
+
+              {usersLoading ? (
+                <p>Loading user data...</p>
+              ) : (
+                <div className="relative z-10 flex flex-col gap-8">
+                  <div className="flex flex-col gap-2">
+                    <h1 className="font-bold text-3xl text-[#1E1B4B] tracking-tight">
+                      Hello,{" "}
+                      {user?.first_name !== null
+                        ? `${user?.first_name} ${user?.last_name}`
+                        : "User"}
+                    </h1>
+
+                    <p className="text-gray-500 text-[15px]">
+                      Welcome to IDR Technology Solution Portal.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-5">
+                    {/* PHONE */}
+                    <div className="flex items-center gap-4 bg-indigo-50 px-5 py-4 rounded-2xl border border-indigo-100">
+                      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-md">
+                        <MdPhone size={22} />
+                      </div>
+
+                      <div>
+                        <p className="text-gray-500 text-sm">Phone</p>
+
+                        <p className="font-semibold text-[#1E1B4B]">
+                          {user?.contact_number !== null
+                            ? user?.contact_number
+                            : "NA"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* EMAIL */}
+                    <div className="flex items-center gap-4 bg-indigo-50 px-5 py-4 rounded-2xl border border-indigo-100">
+                      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-md">
+                        <IoMail size={22} />
+                      </div>
+
+                      <div>
+                        <p className="text-gray-500 text-sm">Email</p>
+
+                        <p className="font-semibold text-[#1E1B4B]">
+                          {user?.email_id}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* <div className="hidden lg:flex w-[35%] justify-end relative z-10">
+                <img
+                  src={circle}
+                  alt="banner"
+                  className="w-[320px] object-contain"
+                />
+              </div> */}
+              <div className="hidden lg:flex flex-1 justify-center xl:justify-end relative z-10">
+                <img
+                  src={circle}
+                  alt="banner"
+                  className="w-[320px] xl:w-[420px] 2xl:w-[920px]  object-contain"
+                />
+              </div>
+            </div>
+
+            {/* STAT SUMMARY */}
+            {/* {!subcontractorsAccess.includes(user_type) && ( */}
             <>
               {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
                 {statusCard(
@@ -244,7 +254,8 @@ const AdminDashboard = () => {
                     <div className="h-2 w-20 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500" />
                   </div>
 
-                  <div className="flex flex-col gap-4">
+                  {/* <div className="flex flex-col gap-4"> */}
+                  <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4">
                     {statuses.map((status) =>
                       renderStatusItem(status, statusCounts[status]),
                     )}
@@ -252,7 +263,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* SERVICE TICKETS */}
-                <div className="bg-white rounded-[28px] shadow-md border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
+                <div className="bg-white rounded-[28px] shadow-md border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 h-full">
                   <div className="flex items-center justify-between mb-6">
                     <h1 className="text-xl font-bold text-[#1E1B4B]">
                       Service Tickets
@@ -318,6 +329,7 @@ const AdminDashboard = () => {
                             </td>
 
                             <td className="px-6 py-5 whitespace-nowrap text-gray-600">
+                              {/* <td className="px-6 py-5 text-gray-600 break-all"> */}
                               {user?.email_id}
                             </td>
                           </tr>
@@ -328,7 +340,8 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </>
-          {/* )} */}
+            {/* )} */}
+          </div>
         </div>
       </div>
     </>

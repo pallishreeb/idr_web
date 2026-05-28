@@ -12,6 +12,7 @@ const Dashboard = () => {
       <div className="flex">
         <SideNavbar />
         <div className="py-12 px-8 bg-gray-50">
+          
           <h1 className="font-bold text-lg">Dashboard</h1>
           <div className="flex mt-4 border py-7 px-5 bg-white">
             <div className="flex flex-col gap-8">
