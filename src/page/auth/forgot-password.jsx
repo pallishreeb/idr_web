@@ -56,9 +56,9 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen flex bg-[#F8FAFC]">
       {/* LEFT SIDE WITH IMAGE */}
-      <div className="hidden lg:block lg:w-1/2 bg-gradient-to-br from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA] relative">
+      <div className="hidden lg:block lg:w-1/2 bg-gradient-to-br from-[#312E81]
+via-[#4338CA]
+to-[#6366F1] relative">
         <img
           src="login.png"
           alt="Login background"
