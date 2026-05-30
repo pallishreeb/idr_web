@@ -104,7 +104,9 @@ const AdminDashboard = () => {
           <h1 className="text-3xl font-bold text-[#1E1B4B] mt-2">{count}</h1>
         </div>
 
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] flex items-center justify-center text-white shadow-lg">
           {icon}
         </div>
       </div>
@@ -116,7 +118,9 @@ const AdminDashboard = () => {
       key={status}
       className="flex items-center gap-4 bg-gray-50 hover:bg-indigo-50 transition-all duration-300 rounded-2xl px-4 py-3 border border-gray-100"
     >
-      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-md">
+      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] text-white shadow-md">
         <MdTaskAlt size={22} />
       </div>
 
@@ -174,7 +178,9 @@ const AdminDashboard = () => {
                   <div className="flex flex-wrap gap-5">
                     {/* PHONE */}
                     <div className="flex items-center gap-4 bg-indigo-50 px-5 py-4 rounded-2xl border border-indigo-100">
-                      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-md">
+                      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] text-white shadow-md">
                         <MdPhone size={22} />
                       </div>
 
@@ -191,7 +197,9 @@ const AdminDashboard = () => {
 
                     {/* EMAIL */}
                     <div className="flex items-center gap-4 bg-indigo-50 px-5 py-4 rounded-2xl border border-indigo-100">
-                      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-md">
+                      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] text-white shadow-md">
                         <IoMail size={22} />
                       </div>
 
@@ -251,7 +259,9 @@ const AdminDashboard = () => {
                       Work Order Assignments
                     </h1>
 
-                    <div className="h-2 w-20 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500" />
+                    <div className="h-2 w-20 rounded-full bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
                   </div>
 
                   {/* <div className="flex flex-col gap-4"> */}
@@ -269,7 +279,9 @@ const AdminDashboard = () => {
                       Service Tickets
                     </h1>
 
-                    <div className="h-2 w-20 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500" />
+                    <div className="h-2 w-20 rounded-full bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
                   </div>
 
                   <div className="flex flex-col gap-4">
@@ -286,7 +298,9 @@ const AdminDashboard = () => {
                       User Details
                     </h1>
 
-                    <div className="h-2 w-20 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500" />
+                    <div className="h-2 w-20 rounded-full bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
                   </div>
 
                   <div className="overflow-x-auto">

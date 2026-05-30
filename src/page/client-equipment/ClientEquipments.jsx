@@ -471,7 +471,7 @@ const ClientEquipments = () => {
                 <Link
                   to={`/add-client-equipment/${selectedClient}/${selectedLocation}?${searchParams.toString()}`}
                 >
-                  <button className="px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                  <button className="px-6 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
                     Add Equipment
                   </button>
                 </Link>
@@ -483,7 +483,9 @@ const ClientEquipments = () => {
           {technicianAccess.includes(user_type) && (
             <div className="bg-white rounded-[28px] shadow-md border border-gray-100 p-6 mb-6">
               <div className="flex items-center gap-2 mb-5">
-                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
                 <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                   Client & Location
@@ -573,7 +575,9 @@ const ClientEquipments = () => {
           {/* SEARCH FILTER CARD */}
           <div className="bg-white rounded-[28px] shadow-md border border-gray-100 p-6 mb-6">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+              <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
               <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                 Equipment Filters
@@ -677,7 +681,9 @@ const ClientEquipments = () => {
               {/* SEARCH */}
               <div className="flex items-end">
                 <button
-                  className="w-full px-4 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                  className="w-full px-4 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                   onClick={handleSearch}
                 >
                   Search
@@ -704,7 +710,7 @@ const ClientEquipments = () => {
           ) : (
             <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
               {/* TOP BAR */}
-              <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+              <div className="h-2 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
               {/* HEADER */}
               <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
@@ -904,7 +910,7 @@ const ClientEquipments = () => {
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
               <div className="bg-white rounded-[28px] shadow-2xl w-full max-w-lg overflow-hidden">
                 {/* TOP BAR */}
-                <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+                <div className="h-2 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
                 <div className="p-8">
                   <h3 className="text-2xl font-bold text-[#1E1B4B] mb-2">

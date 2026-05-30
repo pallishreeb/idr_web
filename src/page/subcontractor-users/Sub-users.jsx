@@ -257,13 +257,13 @@ const SubcontractorUsersPage =
             {/* MAIN CARD */}
             <div className="bg-white rounded-[28px] shadow-lg border border-gray-100 overflow-hidden">
               {/* TOP BAR */}
-              <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+              <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
               <div className="p-5 md:p-7">
                 {/* HEADER */}
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-7">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+                    <div className="w-11 h-11 rounded-2xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-md">
                       <MdGroups className="text-2xl" />
                     </div>
 
@@ -289,7 +289,7 @@ const SubcontractorUsersPage =
                         selectedSubcontractor,
                       }}
                     >
-                      <button className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white text-sm font-semibold shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+                      <button className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white text-sm font-semibold shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
                         <MdPersonAdd className="text-lg" />
                         Add User
                       </button>

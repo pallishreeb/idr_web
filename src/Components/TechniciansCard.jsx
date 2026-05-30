@@ -77,14 +77,14 @@ const TechniciansCards =
     return (
       <div className="mt-4 bg-white border border-gray-100 rounded-[30px] shadow-sm overflow-hidden">
         {/* TOP BAR */}
-        <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
         <div className="p-5 md:p-7">
           {/* HEADER */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
             <div className="flex items-center gap-4">
               {/* ICON */}
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+              <div className="w-12 h-12 rounded-2xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-md">
                 <MdBuild className="text-2xl" />
               </div>
 
@@ -182,9 +182,9 @@ const TechniciansCards =
                       py-2.5
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       text-sm
                       font-semibold

@@ -94,7 +94,7 @@ const MultiSelectDropdown = ({
         `}
       >
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-md flex-shrink-0">
+          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#EEF2FF] text-[#312E81] shadow-md flex-shrink-0">
             <MdLocationOn size={20} />
           </div>
 
@@ -192,16 +192,13 @@ const MultiSelectDropdown = ({
                   >
                     <div className="flex items-center gap-3 overflow-hidden">
                       {/* CUSTOM CHECKBOX */}
-                      <div
-                        className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200
-                          
-                          ${
-                            isSelected
-                              ? "bg-gradient-to-r from-indigo-500 to-pink-500 border-transparent text-white"
-                              : "border-gray-300 bg-white"
-                          }
-                        `}
-                      >
+                          <div
+                            className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200 ${
+                              isSelected
+                            ? "bg-[#312E81] border-[#312E81] text-white"
+                            : "border-gray-300 bg-white"
+                            }`}
+                          >
                         {isSelected && (
                           <MdCheck size={14} />
                         )}
@@ -263,7 +260,7 @@ const MultiSelectDropdown = ({
               onClick={() =>
                 setIsOpen(false)
               }
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+              className="px-4 py-2 rounded-xl bg-[#EEF2FF] text-[#312E81] text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300"
             >
               Done
             </button>

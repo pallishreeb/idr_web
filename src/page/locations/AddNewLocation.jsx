@@ -280,7 +280,7 @@ const AddLocationPage =
                   onClick={
                     handleSave
                   }
-                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
                 >
                   <MdSave size={20} />
                   Save
@@ -292,7 +292,9 @@ const AddLocationPage =
             {/* CLIENT SELECT CARD */}
             <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 p-6 mb-8">
               <div className="flex items-center gap-2 mb-5">
-                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
                 <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                   Client
@@ -372,13 +374,15 @@ const AddLocationPage =
                     className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden"
                   >
                     {/* TOP BAR */}
-                    <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+                    <div className="h-2 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
                     <div className="p-6 md:p-8">
                       {/* CARD HEADER */}
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
+                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] flex items-center justify-center text-white shadow-lg">
                             <MdHomeWork size={24} />
                           </div>
 
@@ -417,7 +421,9 @@ const AddLocationPage =
                       {/* ADDRESS SECTION */}
                       <div className="mb-10">
                         <div className="flex items-center gap-2 mb-5">
-                          <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+                          <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
                           <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                             Address
@@ -616,7 +622,9 @@ const AddLocationPage =
                       {/* CONTACT SECTION */}
                       <div>
                         <div className="flex items-center gap-2 mb-5">
-                          <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+                          <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
                           <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                             Contact

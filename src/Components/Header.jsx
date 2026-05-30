@@ -29,7 +29,7 @@ const Header = () => {
   return (
     <div className="w-full bg-white border-b border-gray-200 shadow-sm">
       {/* TOP GRADIENT */}
-      <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+      <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
       {/* HEADER CONTENT */}
       <div className="h-[72px] px-4 md:px-6 flex items-center justify-between">
@@ -92,9 +92,9 @@ const Header = () => {
               py-2.5
               rounded-2xl
               bg-gradient-to-r
-              from-indigo-500
-              via-purple-500
-              to-pink-500
+             from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
               text-white
               font-semibold
               text-sm

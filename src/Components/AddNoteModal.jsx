@@ -82,7 +82,7 @@ const AddNoteModal = ({ isOpen, onClose, onSave, workOrderId }) => {
         "
       >
         {/* TOP BAR */}
-        <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
         <div className="p-6 md:p-7">
           {/* HEADER */}

@@ -229,7 +229,7 @@ const WorkOrder = () => {
           {/* PAGE HEADER */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-6">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 rounded-3xl bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white flex items-center justify-center shadow-lg">
                 <MdAssignment className="text-3xl" />
               </div>
 
@@ -260,9 +260,9 @@ const WorkOrder = () => {
                     py-3
                     rounded-2xl
                     bg-gradient-to-r
-                    from-indigo-500
-                    via-purple-500
-                    to-pink-500
+                    from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                     text-white
                     font-semibold
                     shadow-md
@@ -280,7 +280,7 @@ const WorkOrder = () => {
 
           {/* FILTER CARD */}
           <div className="bg-white rounded-[30px] border border-gray-100 shadow-sm overflow-hidden mb-6">
-            <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-5 md:p-7">
               <div className="flex items-center justify-between mb-7">
@@ -473,9 +473,9 @@ const WorkOrder = () => {
                     py-3
                     rounded-2xl
                     bg-gradient-to-r
-                    from-indigo-500
-                    via-purple-500
-                    to-pink-500
+                    from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                     text-white
                     font-semibold
                     shadow-md

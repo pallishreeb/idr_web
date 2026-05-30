@@ -319,7 +319,7 @@ const fullname = first_name + ' ' + last_name
           
           ${
             isActive
-              ? "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg scale-[1.02]"
+              ? "bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white shadow-lg scale-[1.02]"
               : "bg-white text-gray-700 border border-gray-100 hover:border-indigo-100 hover:shadow-md hover:translate-x-1"
           }`}
         >
@@ -366,7 +366,9 @@ const fullname = first_name + ' ' + last_name
   }) => (
     <div className="flex items-center justify-between mt-8 mb-3">
       <div className="flex items-center gap-2">
-        <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+        <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
         <span className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
           {title}
@@ -391,13 +393,15 @@ const fullname = first_name + ' ' + last_name
       <aside className="w-[290px] bg-[#FAFAFA] border-r border-gray-200 overflow-y-auto hide-scrollbar shadow-sm">
         {/* Header */}
         {/* Top Accent */}
-        <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="h-2 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
         {/* Profile Card */}
         <div className="px-4 pt-4 pb-0">
           <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-4">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500 flex items-center justify-center text-white text-lg font-bold shadow-md">
+              <div className="h-12 w-12 rounded-full bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] flex items-center justify-center text-white text-lg font-bold shadow-md">
                 {getInitials(fullname)}
               </div>
 

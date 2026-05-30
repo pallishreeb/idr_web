@@ -21,7 +21,7 @@ const AccordionSection = ({
       className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden transition-all duration-300"
     >
       {/* TOP GRADIENT BAR */}
-      <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+      <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
       {/* HEADER */}
       <button
@@ -33,7 +33,7 @@ const AccordionSection = ({
         {/* LEFT */}
         <div className="flex items-center gap-3">
           {/* ICON */}
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-sm transition-all duration-300">
+          <div className="w-9 h-9 rounded-xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-sm transition-all duration-300">
             {open ? (
               <MdKeyboardArrowUp className="text-xl" />
             ) : (

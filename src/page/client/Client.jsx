@@ -130,7 +130,7 @@ const Client = () => {
             </div>
 
             <Link to={`/add-client?${searchParams.toString()}`}>
-              <button className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+              <button className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
                 <MdAdd size={22} />
                 Add New Client
               </button>
@@ -140,7 +140,9 @@ const Client = () => {
           {/* SEARCH CARD */}
           <div className="bg-white rounded-[28px] shadow-md border border-gray-100 p-6 mb-6">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+              <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
               <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                 Search & Filters
@@ -192,7 +194,9 @@ const Client = () => {
               {/* SEARCH BUTTON */}
               <button
                 onClick={handleSearch}
-                className="rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+                className="rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
               >
                 Search
               </button>
@@ -210,12 +214,14 @@ const Client = () => {
           {/* TABLE CARD */}
           <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
             {/* TOP GRADIENT */}
-            <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-2 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             {/* TABLE HEADER */}
             <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] flex items-center justify-center text-white shadow-lg">
                   <MdBusiness size={24} />
                 </div>
 

@@ -360,7 +360,7 @@ const EditServiceTicket = () => {
   "
           >
             {/* TOP BORDER */}
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="px-6 py-5">
               <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
@@ -372,8 +372,9 @@ const EditServiceTicket = () => {
             h-16
             rounded-2xl
             bg-gradient-to-r
-            from-indigo-500
-            to-pink-500
+          from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
             text-white
             flex
             items-center
@@ -508,9 +509,9 @@ const EditServiceTicket = () => {
               py-3
               rounded-2xl
               bg-gradient-to-r
-              from-indigo-500
-              via-purple-500
-              to-pink-500
+             from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
               text-white
               text-sm
               font-semibold
@@ -666,7 +667,7 @@ const EditServiceTicket = () => {
       "
               >
                 {/* TOP BORDER */}
-                <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+                <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
                 {/* HEADER */}
                 <div
@@ -946,7 +947,7 @@ const EditServiceTicket = () => {
                               processingId === equipment.client_equipment_id &&
                               loadingAssign
                                 ? "bg-gray-300 text-white cursor-not-allowed"
-                                : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-sm hover:shadow-md"
+                                : "bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white shadow-sm hover:shadow-md"
                             }
                           `}
                                 >
@@ -999,7 +1000,7 @@ const EditServiceTicket = () => {
   "
           >
             {/* TOP BORDER */}
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-6">
               {/* HEADER */}

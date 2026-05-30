@@ -346,7 +346,7 @@ useEffect(() => {
               mb-5
             "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-4 md:p-5 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
               {/* LEFT */}
@@ -357,8 +357,9 @@ useEffect(() => {
                     h-12
                     rounded-2xl
                     bg-gradient-to-r
-                    from-indigo-500
-                    to-pink-500
+                   from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                     text-white
                     flex
                     items-center
@@ -436,9 +437,9 @@ useEffect(() => {
                       py-2.5
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       text-sm
                       font-semibold
@@ -467,7 +468,7 @@ useEffect(() => {
               mb-5
             "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-4 md:p-5">
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
@@ -663,7 +664,7 @@ useEffect(() => {
               overflow-hidden
             "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="overflow-x-auto max-w-full">
               <table className="min-w-full">
@@ -1001,7 +1002,7 @@ useEffect(() => {
               overflow-hidden
             "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-6">
               <div className="flex items-center gap-3 mb-5">
@@ -1011,8 +1012,9 @@ useEffect(() => {
                     h-12
                     rounded-2xl
                     bg-gradient-to-r
-                    from-indigo-500
-                    to-pink-500
+                   from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                     text-white
                     flex
                     items-center
@@ -1087,9 +1089,9 @@ useEffect(() => {
                     py-2.5
                     rounded-2xl
                     bg-gradient-to-r
-                    from-indigo-500
-                    via-purple-500
-                    to-pink-500
+                    from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                     text-white
                     text-sm
                     font-semibold

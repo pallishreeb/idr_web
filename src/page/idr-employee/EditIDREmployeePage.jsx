@@ -196,7 +196,7 @@ const EditIDREmployeePage = () => {
             "
           >
             {/* TOP BAR */}
-            <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-5 md:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
 
@@ -209,8 +209,9 @@ const EditIDREmployeePage = () => {
                     h-14
                     rounded-3xl
                     bg-gradient-to-r
-                    from-indigo-500
-                    to-pink-500
+                   from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                     text-white
                     flex
                     items-center
@@ -274,7 +275,7 @@ const EditIDREmployeePage = () => {
             "
           >
             {/* TOP BAR */}
-            <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             {/* LOADING */}
             {loading ? (
@@ -550,9 +551,9 @@ const EditIDREmployeePage = () => {
                       py-3
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       font-semibold
                       shadow-md

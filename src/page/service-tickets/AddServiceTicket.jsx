@@ -361,7 +361,7 @@ const isDuplicate = routeState?.isDuplicate;
               mb-6
             "
           >
-            <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-6 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
               <div className="flex items-center gap-4">
@@ -371,8 +371,9 @@ const isDuplicate = routeState?.isDuplicate;
                     h-16
                     rounded-2xl
                     bg-gradient-to-r
-                    from-indigo-500
-                    to-pink-500
+                   from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                     text-white
                     flex
                     items-center
@@ -463,7 +464,7 @@ const isDuplicate = routeState?.isDuplicate;
                           font-bold
                           ${
                             step >= index + 1
-                              ? "bg-gradient-to-r from-indigo-500 to-pink-500 text-white"
+                              ? "bg-[#EEF2FF] text-[#312E81]"
                               : "bg-gray-200 text-gray-500"
                           }
                         `}
@@ -507,7 +508,7 @@ const isDuplicate = routeState?.isDuplicate;
                 overflow-hidden
               "
             >
-              <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+              <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
               <div className="p-6 md:p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -755,9 +756,9 @@ const isDuplicate = routeState?.isDuplicate;
                       py-3
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       text-sm
                       font-semibold
@@ -785,7 +786,7 @@ const isDuplicate = routeState?.isDuplicate;
                 overflow-hidden
               "
             >
-              <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+              <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
               <div className="p-6 md:p-8">
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -898,9 +899,9 @@ const isDuplicate = routeState?.isDuplicate;
                       py-3
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       text-sm
                       font-semibold

@@ -402,7 +402,7 @@ const ClientLicenseList = () => {
                   <button
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-semibold shadow-lg transition-all duration-300
                       
-                       bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white hover:shadow-xl hover:scale-[1.02]
+                       bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white hover:shadow-xl hover:scale-[1.02]
                       
                     `}
                   >
@@ -417,7 +417,9 @@ const ClientLicenseList = () => {
           {/* FILTER CARD */}
           <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 p-6 mb-6">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+              <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
               <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                 Filters
@@ -540,7 +542,9 @@ const ClientLicenseList = () => {
               <div className="flex items-end">
                 <button
                   onClick={handleSearch}
-                  className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                  className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                 >
                   <MdSearch size={20} />
                   Search
@@ -586,7 +590,7 @@ const ClientLicenseList = () => {
           {/* TABLE */}
           <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
             {/* TOP BAR */}
-            <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-2 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             {/* HEADER */}
             <div className="px-6 py-5 border-b border-gray-100">

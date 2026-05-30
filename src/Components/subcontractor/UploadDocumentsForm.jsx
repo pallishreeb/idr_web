@@ -231,12 +231,12 @@ const UploadDocumentsForm =
     return (
       <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
         {/* TOP BAR */}
-        <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="h-2 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
         <div className="p-6 md:p-8">
           {/* HEADER */}
           {/* <div className="flex items-center gap-4 mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-lg">
+            <div className="w-14 h-14 rounded-2xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-lg">
               <MdUploadFile className="text-2xl" />
             </div>
 
@@ -269,7 +269,9 @@ const UploadDocumentsForm =
                     "Form W9",
                   )
                 }
-                className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+                className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] text-white font-medium shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
               >
                 <FaDownload />
                 Download
@@ -283,7 +285,9 @@ const UploadDocumentsForm =
                     "Sample COI",
                   )
                 }
-                className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-gradient-to-r from-pink-500 to-indigo-500 text-white font-medium shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+                className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] text-white font-medium shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
               >
                 <FaDownload />
                 Download
@@ -442,7 +446,7 @@ const UploadDocumentsForm =
                                     doc.document_name,
                                   )
                                 }
-                                className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
+                                className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-[#EEF2FF] text-[#312E81] shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
                               >
                                 <FaDownload />
                               </button>
@@ -569,7 +573,7 @@ const UploadDocumentsForm =
                   className={`flex items-center gap-3 px-8 py-3 rounded-2xl text-white font-semibold shadow-lg transition-all duration-300 ${
                     loading
                       ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:shadow-xl hover:scale-[1.02]"
+                      : "bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] hover:shadow-xl hover:scale-[1.02]"
                   }`}
                 >
                   <MdCloudUpload className="text-xl" />

@@ -220,7 +220,7 @@ const TransferInventory = () => {
                 mb-5
               "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-4 md:p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               {/* LEFT */}
@@ -231,8 +231,9 @@ const TransferInventory = () => {
                       h-12
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       flex
                       items-center
@@ -294,7 +295,7 @@ const TransferInventory = () => {
                 mb-5
               "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-5">
               <div className="flex items-center gap-3 mb-5">
@@ -387,7 +388,7 @@ const TransferInventory = () => {
                 mb-5
               "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-5">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
@@ -426,9 +427,9 @@ const TransferInventory = () => {
                       py-3
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       text-sm
                       font-semibold
@@ -550,7 +551,7 @@ const TransferInventory = () => {
                 mb-5
               "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-5">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
@@ -589,9 +590,9 @@ const TransferInventory = () => {
                       py-3
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       text-sm
                       font-semibold
@@ -719,7 +720,7 @@ const TransferInventory = () => {
                 overflow-hidden
               "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-5">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
@@ -758,9 +759,9 @@ const TransferInventory = () => {
                       py-3
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       text-sm
                       font-semibold

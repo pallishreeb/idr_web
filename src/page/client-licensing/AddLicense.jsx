@@ -448,7 +448,7 @@ const CreateLicense = () => {
                 disabled={
                   loading
                 }
-                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 disabled:opacity-70"
+                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 disabled:opacity-70"
               >
                 <MdAdd size={20} />
 
@@ -473,7 +473,7 @@ const CreateLicense = () => {
           {/* FORM CARD */}
           <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
             {/* TOP BAR */}
-            <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-2 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <form
               id="createLicenseForm"
@@ -484,7 +484,9 @@ const CreateLicense = () => {
             >
               {/* SECTION TITLE */}
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-lg">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] flex items-center justify-center text-white shadow-lg">
                   <MdVpnKey size={24} />
                 </div>
 
@@ -506,7 +508,9 @@ const CreateLicense = () => {
                 "Client Employee" && (
                 <div className="mb-10">
                   <div className="flex items-center gap-2 mb-5">
-                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
                     <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                       Client
@@ -645,7 +649,9 @@ const CreateLicense = () => {
               {/* LICENSE DETAILS */}
               <div>
                 <div className="flex items-center gap-2 mb-5">
-                  <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+                  <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
                   <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                     License Details

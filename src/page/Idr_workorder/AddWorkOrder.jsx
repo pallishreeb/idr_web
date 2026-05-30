@@ -513,7 +513,7 @@ useEffect(() => {
                       
                       ${
                         step >= item.id
-                          ? "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-transparent shadow-md"
+                          ? "bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white border-transparent shadow-md"
                           : "bg-gray-50 border-gray-200 text-gray-500"
                       }
                     `}
@@ -533,11 +533,11 @@ useEffect(() => {
           {/* STEP 1 */}
           {step === 1 && (
             <div className="bg-white rounded-[30px] border border-gray-100 shadow-sm overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+              <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
               <div className="p-5 md:p-7">
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+                  <div className="w-12 h-12 rounded-2xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-md">
                     <MdAssignment className="text-2xl" />
                   </div>
 
@@ -727,9 +727,9 @@ useEffect(() => {
                       py-3
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       font-semibold
                       shadow-md
@@ -750,11 +750,11 @@ useEffect(() => {
           {/* STEP 2 */}
           {step === 2 && (
             <div className="bg-white rounded-[30px] border border-gray-100 shadow-sm overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+              <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
               <div className="p-5 md:p-7">
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+                  <div className="w-12 h-12 rounded-2xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-md">
                     <MdBuild className="text-2xl" />
                   </div>
 
@@ -860,9 +860,9 @@ useEffect(() => {
                       py-3
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       font-semibold
                       shadow-md
@@ -883,11 +883,11 @@ useEffect(() => {
           {/* STEP 3 */}
           {step === 3 && (
             <div className="bg-white rounded-[30px] border border-gray-100 shadow-sm overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+              <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
               <div className="p-5 md:p-7">
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+                  <div className="w-12 h-12 rounded-2xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-md">
                     <MdPeople className="text-2xl" />
                   </div>
 
@@ -1082,9 +1082,9 @@ useEffect(() => {
                       py-3
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       font-semibold
                       shadow-md

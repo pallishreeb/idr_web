@@ -172,14 +172,14 @@ const AddSubcontractorUserModal =
         {/* MODAL */}
         <div className="w-full max-w-xl bg-white rounded-[30px] shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-300">
           {/* TOP BAR */}
-          <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+          <div className="h-2 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
           <div className="p-6 md:p-7">
             {/* HEADER */}
             <div className="flex items-start justify-between gap-4 mb-7">
               <div className="flex items-center gap-3">
                 {/* ICON */}
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+                <div className="w-11 h-11 rounded-2xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-md">
                   <MdAssignmentInd className="text-2xl" />
                 </div>
 
@@ -372,7 +372,7 @@ const AddSubcontractorUserModal =
                 </button>
 
                 <button
-                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
                   onClick={
                     handleSave
                   }

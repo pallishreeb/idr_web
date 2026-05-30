@@ -177,12 +177,12 @@ const AddSubcontractorPage =
             {/* MAIN FORM CARD */}
             <div className="max-w-3xl mx-auto bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
               {/* TOP BAR */}
-              <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+              <div className="h-2 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
               <div className="p-6 md:p-10">
                 {/* FORM HEADER */}
                 <div className="flex items-center gap-4 mb-10">
-                  <div className="w-16 h-16 rounded-3xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-lg">
+                  <div className="w-16 h-16 rounded-3xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-lg">
                     <MdHandshake className="text-3xl" />
                   </div>
 
@@ -212,7 +212,9 @@ const AddSubcontractorPage =
                   {/* PERSONAL DETAILS */}
                   <div>
                     <div className="flex items-center gap-2 mb-5">
-                      <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+                      <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
                       <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                         Personal
@@ -290,7 +292,9 @@ const AddSubcontractorPage =
                   {/* EMAIL SECTION */}
                   <div>
                     <div className="flex items-center gap-2 mb-5">
-                      <div className="w-1 h-6 rounded-full bg-gradient-to-b from-pink-500 to-indigo-500" />
+                      <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]" />
 
                       <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                         Account
@@ -399,7 +403,7 @@ const AddSubcontractorPage =
                       className={`flex items-center justify-center gap-2 px-8 py-3 rounded-2xl text-white font-semibold shadow-lg transition-all duration-300 ${
                         loading
                           ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:shadow-xl hover:scale-[1.02]"
+                          : "bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] hover:shadow-xl hover:scale-[1.02]"
                       }`}
                     >
                       <MdSave size={20} />

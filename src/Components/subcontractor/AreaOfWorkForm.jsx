@@ -476,7 +476,7 @@ const AreaOfWorkForm =
         <div className="bg-white rounded-[28px] border border-gray-100 shadow-sm overflow-hidden">
           <div className="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-pink-50">
             <div className="flex items-center gap-2">
-              <div className="w-1 h-10 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+              <div className="w-1 h-10 rounded-2xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-md">
                 {icon}
               </div>
 
@@ -497,12 +497,12 @@ const AreaOfWorkForm =
     return (
       <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden">
         {/* TOP BAR */}
-        <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="h-2 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
         <div className="p-6 md:p-8">
           {/* HEADER */}
           {/* <div className="flex items-center gap-4 mb-10">
-            <div className="w-14 h-14 rounded-3xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-lg">
+            <div className="w-14 h-14 rounded-3xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-lg">
               <MdBuild className="text-3xl" />
             </div>
 
@@ -621,7 +621,7 @@ const AreaOfWorkForm =
             {/* SUBMIT */}
             {isEditable && (
               <div className="flex justify-end pt-2">
-                <button className="flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                <button className="flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
                   <MdSave size={20} />
                   Update
                   Services

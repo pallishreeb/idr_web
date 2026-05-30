@@ -83,7 +83,7 @@ const AddRmaNoteModal = ({ isOpen, onClose, onSave, rmaId }) => {
         "
       >
         {/* TOP BORDER */}
-        <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
         <div className="p-6">
           {/* HEADER */}

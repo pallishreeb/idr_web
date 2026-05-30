@@ -306,7 +306,7 @@ const EditSubContractor =
                         {/* LEFT */}
                         <div className="flex items-start gap-5">
                         
-                         <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-lg">
+                         <div className="w-10 h-10 rounded-xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-lg">
                             <MdBusiness className="text-3xl" />
                           </div>
                           <div>

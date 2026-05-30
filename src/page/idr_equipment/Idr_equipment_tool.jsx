@@ -253,7 +253,7 @@ const IdrEquipment = () => {
                 mb-5
               "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-4 md:p-5 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
               {/* LEFT */}
@@ -264,8 +264,9 @@ const IdrEquipment = () => {
                       h-12
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       flex
                       items-center
@@ -358,9 +359,9 @@ const IdrEquipment = () => {
                           py-2.5
                           rounded-2xl
                           bg-gradient-to-r
-                          from-indigo-500
-                          via-purple-500
-                          to-pink-500
+                         from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                           text-white
                           text-sm
                           font-semibold
@@ -390,7 +391,7 @@ const IdrEquipment = () => {
                 mb-5
               "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-5">
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
@@ -587,7 +588,7 @@ const IdrEquipment = () => {
                 overflow-hidden
               "
           >
-            <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="overflow-x-auto">
               <table className="min-w-full">

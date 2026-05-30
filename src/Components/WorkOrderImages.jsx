@@ -382,14 +382,14 @@ const WorkOrderImages =
     return (
       <div className="mt-4 bg-white border border-gray-100 rounded-[30px] shadow-sm overflow-hidden">
         {/* TOP BAR */}
-        <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
         <div className="p-5 md:p-7">
           {/* HEADER */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
             <div className="flex items-center gap-4">
               {/* ICON */}
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+              <div className="w-12 h-12 rounded-2xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-md">
                 <MdPermMedia className="text-2xl" />
               </div>
 
@@ -645,13 +645,13 @@ const WorkOrderImages =
           <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 py-6">
             <div className="w-full max-w-2xl bg-white rounded-[30px] shadow-2xl overflow-hidden">
               {/* TOP BAR */}
-              <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+              <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
               <div className="p-6 md:p-7">
                 {/* HEADER */}
                 <div className="flex items-start justify-between gap-4 mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-500 to-pink-500 text-white flex items-center justify-center shadow-md">
+                    <div className="w-12 h-12 rounded-2xl bg-[#EEF2FF] text-[#312E81] flex items-center justify-center shadow-md">
                       <MdCloudUpload className="text-2xl" />
                     </div>
 
@@ -780,9 +780,9 @@ const WorkOrderImages =
                       py-3
                       rounded-2xl
                       bg-gradient-to-r
-                      from-indigo-500
-                      via-purple-500
-                      to-pink-500
+                      from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                       text-white
                       text-sm
                       font-semibold

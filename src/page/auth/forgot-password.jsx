@@ -88,7 +88,7 @@ const ForgotPassword = () => {
             "
           >
             {/* TOP BAR */}
-            <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="px-7 py-8">
               {/* MOBILE LOGO */}
@@ -108,9 +108,9 @@ const ForgotPassword = () => {
                     h-20
                     rounded-3xl
                     bg-gradient-to-r
-                    from-indigo-500
-                    via-purple-500
-                    to-pink-500
+                    from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA]
                     text-white
                     flex
                     items-center
@@ -232,7 +232,7 @@ const ForgotPassword = () => {
                     ${
                       loading
                         ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:shadow-lg hover:scale-[1.01]"
+                        : "bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] hover:shadow-lg hover:scale-[1.01]"
                     }
                   `}
                 >
