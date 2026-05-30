@@ -64,7 +64,9 @@ const Login = () => {
   return (
     <div className="min-h-screen flex bg-[#F8FAFC]">
       {/* LEFT SIDE WITH IMAGE */}
-      <div className="hidden lg:block lg:w-1/2 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 relative">
+      <div className="hidden lg:block lg:w-1/2 bg-gradient-to-br from-[#1E1B4B]
+via-[#312E81]
+to-[#4338CA] relative">
         <img
           src="login.png"
           alt="Login background"
