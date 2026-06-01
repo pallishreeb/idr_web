@@ -364,13 +364,14 @@ const WorkOrderImages =
         );
       };
 
-    const isVideo =
-      (
-        fileName,
-      ) =>
-        /\.(mp4|mov|avi|webm|mkv)$/i.test(
-          fileName,
-        );
+const isVideo = (fileName = "") =>
+  /\.(mp4|mov|avi|webm|mkv)$/i.test(fileName);
+
+const isPdf = (fileName = "") =>
+  /\.pdf$/i.test(fileName);
+
+const isImage = (fileName = "") =>
+  /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(fileName);
 
     const newAccess =
       [
@@ -426,9 +427,9 @@ const WorkOrderImages =
                   py-2.5
                   rounded-2xl
                   bg-gradient-to-r
-                  from-indigo-500
-                  via-purple-500
-                  to-pink-500
+                 from-[#312E81]
+via-[#4338CA]
+to-[#6366F1]
                   text-white
                   text-sm
                   font-semibold
@@ -507,21 +508,12 @@ const WorkOrderImages =
                         >
                           {/* PREVIEW */}
                           <td className="px-5 py-4">
-                            {isVideo(
-                              image?.attachment_url,
-                            ) ? (
+                           {isVideo(image?.attachment_url) ? (
                               <div className="flex items-center gap-4">
                                 <video
-                                  src={
-                                    fileUrl
-                                  }
+                                  src={fileUrl}
                                   className="w-20 h-20 rounded-2xl object-cover border border-gray-200 cursor-pointer"
                                   controls
-                                  onClick={() =>
-                                    handleImageClick(
-                                      fileUrl,
-                                    )
-                                  }
                                 />
 
                                 <div className="flex items-center gap-2 text-sm font-medium text-purple-600">
@@ -529,24 +521,48 @@ const WorkOrderImages =
                                   Video
                                 </div>
                               </div>
-                            ) : (
+                            ) : isPdf(image?.attachment_url) ? (
+                              <div className="flex items-center gap-4">
+                                <div
+                                  className="w-20 h-20 rounded-2xl border border-gray-200 bg-red-50 flex items-center justify-center cursor-pointer"
+                                  onClick={() => window.open(fileUrl, "_blank")}
+                                >
+                                  <span className="font-bold text-red-600">
+                                    PDF
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center gap-2 text-sm font-medium text-red-600">
+                                  PDF
+                                </div>
+                              </div>
+                            ) : isImage(image?.attachment_url) ? (
                               <div className="flex items-center gap-4">
                                 <img
-                                  src={
-                                    fileUrl
-                                  }
+                                  src={fileUrl}
                                   alt={`Attachment ${index + 1}`}
                                   className="w-20 h-20 rounded-2xl object-cover border border-gray-200 cursor-pointer hover:scale-[1.02] transition-all duration-300"
-                                  onClick={() =>
-                                    handleImageClick(
-                                      fileUrl,
-                                    )
-                                  }
+                                  onClick={() => handleImageClick(fileUrl)}
                                 />
 
                                 <div className="flex items-center gap-2 text-sm font-medium text-indigo-600">
                                   <MdImage className="text-lg" />
                                   Image
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-4">
+                                <div
+                                  className="w-20 h-20 rounded-2xl border border-gray-200 bg-gray-50 flex items-center justify-center cursor-pointer"
+                                  onClick={() => window.open(fileUrl, "_blank")}
+                                >
+                                  <span className="font-bold text-gray-600">
+                                    FILE
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
+                                  Attachment
                                 </div>
                               </div>
                             )}
@@ -657,9 +673,7 @@ const WorkOrderImages =
 
                     <div>
                       <h2 className="text-xl font-semibold text-[#1E1B4B]">
-                        Upload
-                        Images /
-                        Videos
+                        Upload Files
                       </h2>
 
                       <p className="text-sm text-gray-500 mt-1">

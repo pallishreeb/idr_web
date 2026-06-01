@@ -424,9 +424,9 @@ const AddTechnicianModal = ({
                 py-3
                 rounded-2xl
                 bg-gradient-to-r
-                from-indigo-500
-                via-purple-500
-                to-pink-500
+               from-[#312E81]
+via-[#4338CA]
+to-[#6366F1]
                 text-white
                 text-sm
                 font-semibold

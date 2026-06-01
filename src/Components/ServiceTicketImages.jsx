@@ -198,7 +198,23 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
   const closeImageModal = () => {
     setSelectedImageUrl(null);
   };
+const getFileType = (fileName = "") => {
+  const lower = fileName.toLowerCase();
 
+  if (/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(lower)) {
+    return "image";
+  }
+
+  if (/\.(mp4|mov|avi|webm|mkv)$/i.test(lower)) {
+    return "video";
+  }
+
+  if (/\.pdf$/i.test(lower)) {
+    return "pdf";
+  }
+
+  return "attachment";
+};
   return (
     <>
       <div
@@ -236,11 +252,11 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
 
               <div>
                 <h2 className="text-lg font-semibold text-[#1E1B4B]">
-                  Service Ticket Images
+                  Service Ticket Attachments
                 </h2>
 
                 <p className="text-sm text-gray-500 mt-1">
-                  Manage ticket images and videos
+                  Manage ticket images, videos, PDFs and attachments
                 </p>
               </div>
             </div>
@@ -257,9 +273,9 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                   py-3
                   rounded-2xl
                   bg-gradient-to-r
-                  from-indigo-500
-                  via-purple-500
-                  to-pink-500
+                 from-[#312E81]
+via-[#4338CA]
+to-[#6366F1]
                   text-white
                   text-sm
                   font-semibold
@@ -379,7 +395,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                   {images?.map((image, index) => {
                     const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
 
-                    const isVideoFile = isVideo(image?.attachment_url);
+                    const fileType = getFileType(image?.attachment_url);
 
                     return (
                       <tr
@@ -392,34 +408,57 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
               "
                       >
                         {/* PREVIEW */}
-                        <td className="px-4 py-3">
-                          <div
-                            className="
-                    w-24
-                    h-20
-                    rounded-xl
-                    overflow-hidden
-                    bg-gray-100
-                    border
-                    border-gray-200
-                    cursor-pointer
-                  "
-                            onClick={() => handleImageClick(fileUrl)}
-                          >
-                            {isVideoFile ? (
-                              <video
-                                src={fileUrl}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <img
-                                src={fileUrl}
-                                alt={`Attachment ${index + 1}`}
-                                className="w-full h-full object-cover"
-                              />
-                            )}
-                          </div>
-                        </td>
+<td className="px-4 py-3">
+  <div
+    className="
+      w-24
+      h-20
+      rounded-xl
+      overflow-hidden
+      bg-gray-100
+      border
+      border-gray-200
+      cursor-pointer
+      flex
+      items-center
+      justify-center
+    "
+    onClick={() => {
+      if (fileType === "image") {
+        handleImageClick(fileUrl);
+      } else {
+        window.open(fileUrl, "_blank");
+      }
+    }}
+  >
+    {fileType === "image" && (
+      <img
+        src={fileUrl}
+        alt={`Attachment ${index + 1}`}
+        className="w-full h-full object-cover"
+      />
+    )}
+
+    {fileType === "video" && (
+      <video
+        src={fileUrl}
+        className="w-full h-full object-cover"
+      />
+    )}
+
+    {fileType === "pdf" && (
+      <div className="text-center">
+        <div className="text-red-600 font-bold text-lg">PDF</div>
+      </div>
+    )}
+
+    {fileType === "attachment" && (
+      <div className="text-center text-xs font-medium text-gray-600">
+        FILE
+      </div>
+    )}
+  </div>
+</td>
 
                         {/* TYPE */}
                         <td className="px-4 py-3 whitespace-nowrap">
@@ -434,23 +473,45 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                     text-xs
                     font-semibold
                     ${
-                      isVideoFile
-                        ? "bg-purple-100 text-purple-700"
-                        : "bg-indigo-100 text-indigo-700"
+                      fileType === "video"
+                      ? "bg-purple-100 text-purple-700"
+                      : fileType === "pdf"
+                      ? "bg-red-100 text-red-700"
+                      : fileType === "attachment"
+                      ? "bg-gray-100 text-gray-700"
+                      : "bg-indigo-100 text-indigo-700"
                     }
                   `}
                           >
-                            {isVideoFile ? (
+                            <>
+                          {fileType === "image" && (
+                            <>
+                              <MdImage className="text-sm" />
+                              Image
+                            </>
+                          )}
+
+                            {fileType === "video" && (
                               <>
                                 <MdVideoLibrary className="text-sm" />
                                 Video
                               </>
-                            ) : (
+                            )}
+
+                            {fileType === "pdf" && (
                               <>
-                                <MdImage className="text-sm" />
-                                Image
+                                <MdCloudUpload className="text-sm" />
+                                PDF
                               </>
                             )}
+
+                            {fileType === "attachment" && (
+                              <>
+                                <MdCloudUpload className="text-sm" />
+                                Attachment
+                              </>
+                            )}
+                          </>
                           </div>
                         </td>
 
@@ -705,10 +766,14 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
                             "
                           >
                             {file.type.startsWith("video/") ? (
-                              <MdVideoLibrary className="text-lg" />
-                            ) : (
-                              <MdImage className="text-lg" />
-                            )}
+                                  <MdVideoLibrary className="text-lg" />
+                                ) : file.type === "application/pdf" ? (
+                                  <span className="text-sm font-bold">PDF</span>
+                                ) : file.type.startsWith("image/") ? (
+                                  <MdImage className="text-lg" />
+                                ) : (
+                                  <MdCloudUpload className="text-lg" />
+                                )}
                           </div>
 
                           <div>
