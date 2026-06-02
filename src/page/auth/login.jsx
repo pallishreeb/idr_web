@@ -74,16 +74,25 @@ to-[#6366F1] relative">
         />
       </div>
       {/* RIGHT SIDE */}
-      <div
-        className="
-          flex-1
-          flex
-          items-center
-          justify-center
-          px-5
-          py-10
-        "
-      >
+        <div
+          className="
+            flex-1
+            flex
+            flex-col
+            items-center
+            justify-center
+            px-5
+            py-10
+          "
+        >
+                  {/* LOGO OUTSIDE CARD */}
+          <div className="mb-8">
+            <img
+              src="idr_logo.png"
+              alt="IDR Logo"
+              className="h-28 object-contain"
+            />
+          </div>
         <div className="w-full max-w-md">
           {/* LOGIN CARD */}
           <div
@@ -100,15 +109,6 @@ to-[#6366F1] relative">
             <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="px-7 py-8">
-              {/* MOBILE LOGO */}
-              <div className="flex justify-center lg:hidden mb-6">
-                <img
-                  src="idr-logo.png"
-                  alt="Logo"
-                  className="h-16 object-contain"
-                />
-              </div>
-
               {/* HEADER */}
               <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold text-[#1E1B4B]">Sign In</h1>

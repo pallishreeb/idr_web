@@ -84,7 +84,25 @@ const ServiceTicketCard = ({
 
     return !isEditing || !access.includes(user_type);
   };
-
+const ReadOnlyContent = ({ value }) => (
+  <div
+    className="
+      w-full
+      rounded-[24px]
+      border
+      border-gray-200
+      bg-gray-50
+      px-5
+      py-4
+      text-sm
+      text-gray-700
+      whitespace-pre-wrap
+      break-words
+    "
+  >
+    {value || "N/A"}
+  </div>
+);
   return (
     <div
       className="
@@ -551,7 +569,6 @@ to-[#4338CA]
               "
             />
           </div>
-
           {/* SERVICE DATE */}
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-semibold text-[#1E1B4B]">
@@ -651,7 +668,44 @@ to-[#4338CA]
             </select>
           </div>
         </div>
+      {/* FULL WIDTH SECTION */}
+            <div className="mt-8">
+              <label className="flex items-center gap-2 text-sm font-semibold text-[#1E1B4B] mb-3">
+                <MdDescription className="text-indigo-600 text-lg" />
+                Service Request
+              </label>
 
+            {isEditing ? (
+                <textarea
+                  rows={10}
+                  name="service_request"
+                  value={serviceTicket.service_request || ""}
+                  onChange={handleServiceTicketChange}
+                  className="
+                    w-full
+                    min-h-[220px]
+                    rounded-[24px]
+                    border
+                    border-gray-200
+                    bg-gray-50
+                    px-5
+                    py-4
+                    text-sm
+                    text-gray-700
+                    resize-y
+                    focus:outline-none
+                    focus:ring-2
+                    focus:ring-indigo-500
+                    transition-all
+                  "
+                  placeholder="Enter detailed  service request information..."
+                />
+              ) : (
+                <ReadOnlyContent
+                  value={serviceTicket.service_request}
+                />
+              )}
+            </div>
         {/* FULL WIDTH SECTION */}
         <div className="mt-8">
           <label className="flex items-center gap-2 text-sm font-semibold text-[#1E1B4B] mb-3">
@@ -659,31 +713,36 @@ to-[#4338CA]
             Service Ticket Details
           </label>
 
-          <textarea
-            rows={10}
-            name="service_ticket_details"
-            value={serviceTicket.service_ticket_details || ""}
-            onChange={handleServiceTicketChange}
-            disabled={isFieldDisabled("service_ticket_details")}
-            className="
-              w-full
-              min-h-[220px]
-              rounded-[24px]
-              border
-              border-gray-200
-              bg-gray-50
-              px-5
-              py-4
-              text-sm
-              text-gray-700
-              resize-y
-              focus:outline-none
-              focus:ring-2
-              focus:ring-indigo-500
-              transition-all
-            "
-            placeholder="Enter detailed service ticket information..."
-          />
+         {isEditing ? (
+            <textarea
+              rows={10}
+              name="service_ticket_details"
+              value={serviceTicket.service_ticket_details || ""}
+              onChange={handleServiceTicketChange}
+              className="
+                w-full
+                min-h-[220px]
+                rounded-[24px]
+                border
+                border-gray-200
+                bg-gray-50
+                px-5
+                py-4
+                text-sm
+                text-gray-700
+                resize-y
+                focus:outline-none
+                focus:ring-2
+                focus:ring-indigo-500
+                transition-all
+              "
+              placeholder="Enter detailed service ticket information..."
+            />
+          ) : (
+            <ReadOnlyContent
+              value={serviceTicket.service_ticket_details}
+            />
+          )}
         </div>
       </div>
     </div>

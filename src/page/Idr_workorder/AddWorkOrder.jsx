@@ -130,7 +130,11 @@ useEffect(() => {
       workOrderDetails.client_id,
     ),
   );
-
+  const selectedEmployee = clientEmployees.find(
+    (emp) =>
+      String(emp.user_id) ===
+      String(workOrderDetails.client_emp_user_id)
+  );
   // STEP 1 PREFILL
   setTicketData((prev) => ({
     ...prev,
@@ -172,7 +176,7 @@ useEffect(() => {
       workOrderDetails.local_onsite_person_contact || "",
 
     client_emp_user_id:
-      workOrderDetails.client_emp_user_id || "",
+      selectedEmployee?.client_emp_id || "",
   }));
 
   // STEP 2 PREFILL
@@ -285,7 +289,7 @@ useEffect(() => {
           contact_person: `${selectedEmployee.first_name} ${selectedEmployee.last_name}`,
           contact_phone_number: selectedEmployee.contact_number,
           contact_mail_id: selectedEmployee.email_id,
-          client_emp_user_id: selectedEmployee.user_id,
+          client_emp_user_id: selectedEmployee.client_emp_id,
         }));
       }
     }
@@ -420,22 +424,23 @@ useEffect(() => {
       transition-all
     `;
 
-  const textareaClass = `
-      w-full
-      rounded-2xl
-      border
-      border-gray-200
-      bg-white
-      px-4
-      py-3
-      text-sm
-      text-gray-700
-      resize-none
-      focus:outline-none
-      focus:ring-2
-      focus:ring-indigo-500
-      transition-all
-    `;
+const textareaClass = `
+  w-full
+  rounded-2xl
+  border
+  border-gray-200
+  bg-white
+  px-4
+  py-3
+  text-sm
+  text-gray-700
+  resize-y
+  min-h-[120px]
+  focus:outline-none
+  focus:ring-2
+  focus:ring-indigo-500
+  transition-all
+`;
 
   return (
     <>

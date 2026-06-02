@@ -19,6 +19,14 @@ to-[#6366F1] relative">
       {/* RIGHT SIDE */}
       <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-10">
         <div className="w-full max-w-md">
+          {/* LOGO */}
+          <div className="flex justify-center mb-8">
+            <img
+              src="idr_logo.png"
+              alt="IDR Logo"
+              className="h-28 object-contain"
+            />
+          </div>
           {/* CARD */}
           <div
             className="
@@ -35,16 +43,6 @@ to-[#6366F1] relative">
 
             <div className="px-8 py-8">
               <title>ResetPassword</title>
-
-              {/* LOGO */}
-              <div className="text-center mb-6">
-                <img
-                  src="idr-logo.png"
-                  alt="Logo"
-                  className="mx-auto h-16 object-contain"
-                />
-              </div>
-
               {/* HEADER */}
               <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold text-[#1E1B4B]">

@@ -678,12 +678,22 @@ to-[#4338CA]
                       Service Request *
                     </label>
 
-                    <input
-                      type="text"
+                    <textarea
                       name="service_request"
                       value={ticketData.service_request}
                       onChange={handleChange}
-                      className="w-full h-12 rounded-2xl border border-gray-200 px-4 text-sm"
+                      rows={4}
+                      className="
+                        w-full
+                        rounded-2xl
+                        border
+                        border-gray-200
+                        px-4
+                        py-3
+                        text-sm
+                        resize-y
+                        min-h-[120px]
+                      "
                     />
                   </div>
 
@@ -728,7 +738,12 @@ to-[#4338CA]
                     rows={10}
                     name="service_ticket_details"
                     value={ticketData.service_ticket_details}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      handleChange(e);
+
+                      e.target.style.height = "auto";
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                    }}
                     className="
                       w-full
                       min-h-[240px]
@@ -739,7 +754,14 @@ to-[#4338CA]
                       px-5
                       py-4
                       text-sm
+                      text-gray-700
                       resize-y
+                      overflow-auto
+                      focus:outline-none
+                      focus:ring-2
+                      focus:ring-indigo-500
+                      focus:border-transparent
+                      transition-all
                     "
                   />
                 </div>

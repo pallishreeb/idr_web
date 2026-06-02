@@ -78,6 +78,14 @@ to-[#6366F1] relative">
         "
       >
         <div className="w-full max-w-md">
+        {/* LOGO */}
+        <div className="flex justify-center mb-8">
+          <img
+            src="idr_logo.png"
+            alt="IDR Logo"
+            className="h-28 object-contain"
+          />
+        </div>
           {/* CARD */}
           <div
             className="
@@ -93,14 +101,7 @@ to-[#6366F1] relative">
             <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="px-7 py-8">
-              {/* MOBILE LOGO */}
-              <div className="flex justify-center lg:hidden mb-6">
-                <img
-                  src="idr-logo.png"
-                  alt="Logo"
-                  className="h-16 object-contain"
-                />
-              </div>
+
 
               {/* ICON */}
               <div className="flex justify-center mb-5">
@@ -111,8 +112,8 @@ to-[#6366F1] relative">
                     rounded-3xl
                     bg-gradient-to-r
                     from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]
+                    via-[#312E81]
+                    to-[#4338CA]
                     text-white
                     flex
                     items-center
