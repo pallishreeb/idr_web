@@ -79,11 +79,11 @@ to-[#6366F1] relative">
       >
         <div className="w-full max-w-md">
         {/* LOGO */}
-        <div className="flex justify-center mb-8">
+          <div className="w-full max-w-md flex justify-center">
           <img
-            src="idr_logo.png"
+            src="IDRLogo.png"
             alt="IDR Logo"
-            className="h-28 object-contain"
+            className="w-[85%] h-[145px]"
           />
         </div>
           {/* CARD */}

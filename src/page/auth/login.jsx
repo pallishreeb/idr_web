@@ -86,13 +86,13 @@ to-[#6366F1] relative">
           "
         >
                   {/* LOGO OUTSIDE CARD */}
-          <div className="mb-8">
-            <img
-              src="idr_logo.png"
-              alt="IDR Logo"
-              className="h-28 object-contain"
-            />
-          </div>
+        <div className="w-full max-w-md flex justify-center">
+          <img
+            src="IDRLogo.png"
+            alt="IDR Logo"
+            className="w-[85%] h-[145px]"
+          />
+        </div>
         <div className="w-full max-w-md">
           {/* LOGIN CARD */}
           <div

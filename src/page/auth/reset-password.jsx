@@ -20,13 +20,13 @@ to-[#6366F1] relative">
       <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-10">
         <div className="w-full max-w-md">
           {/* LOGO */}
-          <div className="flex justify-center mb-8">
-            <img
-              src="idr_logo.png"
-              alt="IDR Logo"
-              className="h-28 object-contain"
-            />
-          </div>
+          <div className="w-full max-w-md flex justify-center">
+          <img
+            src="IDRLogo.png"
+            alt="IDR Logo"
+            className="w-[85%] h-[145px]"
+          />
+        </div>
           {/* CARD */}
           <div
             className="
