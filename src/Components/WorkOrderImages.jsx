@@ -371,7 +371,7 @@ const isPdf = (fileName = "") =>
   /\.pdf$/i.test(fileName);
 
 const isImage = (fileName = "") =>
-  /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(fileName);
+  !isVideo(fileName) && !isPdf(fileName);
 
     const newAccess =
       [
@@ -509,18 +509,18 @@ to-[#6366F1]
                           {/* PREVIEW */}
                           <td className="px-5 py-4">
                            {isVideo(image?.attachment_url) ? (
-                              <div className="flex items-center gap-4">
-                                <video
-                                  src={fileUrl}
-                                  className="w-20 h-20 rounded-2xl object-cover border border-gray-200 cursor-pointer"
-                                  controls
-                                />
+  <div className="flex items-center gap-4">
+    <video
+      src={fileUrl}
+      className="w-20 h-20 rounded-2xl object-cover border border-gray-200 cursor-pointer"
+      controls
+    />
 
-                                <div className="flex items-center gap-2 text-sm font-medium text-purple-600">
-                                  <MdVideoLibrary className="text-lg" />
-                                  Video
-                                </div>
-                              </div>
+    <div className="flex items-center gap-2 text-sm font-medium text-purple-600">
+      <MdVideoLibrary className="text-lg" />
+      Video
+    </div>
+  </div>
                             ) : isPdf(image?.attachment_url) ? (
                               <div className="flex items-center gap-4">
                                 <div
@@ -536,33 +536,40 @@ to-[#6366F1]
                                   PDF
                                 </div>
                               </div>
-                            ) : isImage(image?.attachment_url) ? (
+                            ) : (
                               <div className="flex items-center gap-4">
-                                <img
-                                  src={fileUrl}
-                                  alt={`Attachment ${index + 1}`}
-                                  className="w-20 h-20 rounded-2xl object-cover border border-gray-200 cursor-pointer hover:scale-[1.02] transition-all duration-300"
-                                  onClick={() => handleImageClick(fileUrl)}
-                                />
+<img
+  src={fileUrl}
+  alt={`Attachment ${index + 1}`}
+  className="w-20 h-20 rounded-2xl object-cover border border-gray-200 cursor-pointer hover:scale-[1.02] transition-all duration-300"
+  onClick={() => handleImageClick(fileUrl)}
+  onError={(e) => {
+    e.target.style.display = "none";
+
+    const fallback =
+      e.target.parentElement.querySelector(".heic-fallback");
+
+    if (fallback) {
+      fallback.style.display = "flex";
+    }
+  }}
+/>
+
+<div
+  className="heic-fallback hidden w-20 h-20 rounded-2xl border border-gray-200 bg-indigo-50 items-center justify-center cursor-pointer"
+  onClick={() => window.open(fileUrl, "_blank")}
+>
+  <div className="text-center">
+    <MdImage className="mx-auto text-indigo-600 text-xl" />
+    <span className="text-[10px] font-semibold text-indigo-600">
+      HEIC
+    </span>
+  </div>
+</div>
 
                                 <div className="flex items-center gap-2 text-sm font-medium text-indigo-600">
                                   <MdImage className="text-lg" />
                                   Image
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-4">
-                                <div
-                                  className="w-20 h-20 rounded-2xl border border-gray-200 bg-gray-50 flex items-center justify-center cursor-pointer"
-                                  onClick={() => window.open(fileUrl, "_blank")}
-                                >
-                                  <span className="font-bold text-gray-600">
-                                    FILE
-                                  </span>
-                                </div>
-
-                                <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
-                                  Attachment
                                 </div>
                               </div>
                             )}
@@ -614,11 +621,13 @@ to-[#6366F1]
                               </button>
 
                               {/* DELETE */}
-                              {newAccess.includes(
-                                user_type,
-                              ) &&
-                                image?.by_user_id ===
-                                  user_id && (
+                              {(
+                                        user_type === "Admin" ||
+                                        (
+                                          newAccess.includes(user_type) &&
+                                          image?.by_user_id === user_id
+                                        )
+                                      ) && (
                                   <button
                                     onClick={() =>
                                       handleDelete(
@@ -846,6 +855,6 @@ to-[#4338CA]
         )}
       </div>
     );
-  };
+};
 
 export default WorkOrderImages;

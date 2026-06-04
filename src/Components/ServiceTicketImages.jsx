@@ -395,8 +395,10 @@ to-[#6366F1]
                   {images?.map((image, index) => {
                     const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
 
-                    const fileType = getFileType(image?.attachment_url);
-
+                    // const fileType = getFileType(image?.attachment_url);
+                    const fileType = isVideo(image?.attachment_url)
+                      ? "video"
+                      : "image";
                     return (
                       <tr
                         key={index}
@@ -569,8 +571,13 @@ to-[#6366F1]
                             </button>
 
                             {/* DELETE */}
-                            {canManageImages &&
-                              image?.by_user_id === user_id && (
+                            {(
+                              user_type === "Admin" ||
+                              (
+                                canManageImages &&
+                                image?.by_user_id === user_id
+                              )
+                            ) && (
                                 <button
                                   onClick={() =>
                                     handleDelete(image?.attachment_id)
