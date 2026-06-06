@@ -10,7 +10,7 @@ import {
 } from "react-redux";
 
 import Swal from "sweetalert2";
-
+import heic2any from "heic2any";
 import {
   toast,
 } from "react-toastify";
@@ -37,12 +37,13 @@ import {
   getWorkOrderDetails,
   deleteWorkOrderFiles,
 } from "../actions/workOrderActions";
-
+import ImagePreview from "./ImagePreview"
 import {
   S3_BASE_URL,
 } from "../config";
 
 import ImageModal from "./ImageModal";
+import { convertHeicToJpg } from "../utils/imageUtils";
 
 const WorkOrderImages =
   ({
@@ -135,7 +136,7 @@ const WorkOrderImages =
       };
 
     const handleUpload =
-      () => {
+     async () => {
         if (
           selectedFiles.length ===
           0
@@ -192,11 +193,17 @@ const WorkOrderImages =
               ),
           );
 
+        const processedFiles = await Promise.all(
+          selectedFiles.map(async (file) => {
+            return await convertHeicToJpg(file);
+          })
+        );
+
         dispatch(
           uploadWorkOrderImages(
             serviceTicketId,
-            selectedFiles,
-          ),
+            processedFiles
+          )
         )
           .then(
             (
@@ -538,21 +545,9 @@ to-[#6366F1]
                               </div>
                             ) : (
                               <div className="flex items-center gap-4">
-<img
-  src={fileUrl}
-  alt={`Attachment ${index + 1}`}
-  className="w-20 h-20 rounded-2xl object-cover border border-gray-200 cursor-pointer hover:scale-[1.02] transition-all duration-300"
-  onClick={() => handleImageClick(fileUrl)}
-  onError={(e) => {
-    e.target.style.display = "none";
-
-    const fallback =
-      e.target.parentElement.querySelector(".heic-fallback");
-
-    if (fallback) {
-      fallback.style.display = "flex";
-    }
-  }}
+<ImagePreview
+  fileUrl={fileUrl}
+  onClick={handleImageClick}
 />
 
 <div

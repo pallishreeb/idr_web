@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import Swal from "sweetalert2";
-
+import heic2any from "heic2any";
 import {
   MdAddPhotoAlternate,
   MdDelete,
@@ -30,6 +30,8 @@ import { toast } from "react-toastify";
 import { S3_BASE_URL } from "../config";
 
 import ImageModal from "./ImageModal";
+import ImagePreview from "./ImagePreview";
+import { convertHeicToJpg } from "../utils/imageUtils";
 
 const ServiceTicketImages = ({ images, serviceTicketId }) => {
   const dispatch = useDispatch();
@@ -82,12 +84,13 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
   // =========================
 
   const isVideo = (fileName) => /\.(mp4|mov|avi|webm|mkv)$/i.test(fileName);
-
+ const isPdf = (fileName = "") =>
+  /\.pdf$/i.test(fileName);
   // =========================
   // UPLOAD
   // =========================
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (selectedFiles.length === 0) {
       toast.error("Please select at least one file.");
 
@@ -113,8 +116,13 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
     const isImage = selectedFiles.some((file) =>
       file.type.startsWith("image/"),
     );
+    const processedFiles = await Promise.all(
+      selectedFiles.map(async (file) => {
+        return await convertHeicToJpg(file);
+      })
+    );
 
-    dispatch(uploadServiceTicketImages(serviceTicketId, selectedFiles))
+    dispatch(uploadServiceTicketImages(serviceTicketId, processedFiles))
       .then((data) => {
         if (data?.code === "ST201") {
           if (isVideoFile) {
@@ -397,8 +405,10 @@ to-[#6366F1]
 
                     // const fileType = getFileType(image?.attachment_url);
                     const fileType = isVideo(image?.attachment_url)
-                      ? "video"
-                      : "image";
+                    ? "video"
+                    : isPdf(image?.attachment_url)
+                    ? "pdf"
+                    : "image";
                     return (
                       <tr
                         key={index}
@@ -434,11 +444,10 @@ to-[#6366F1]
     }}
   >
     {fileType === "image" && (
-      <img
-        src={fileUrl}
-        alt={`Attachment ${index + 1}`}
-        className="w-full h-full object-cover"
-      />
+<ImagePreview
+  fileUrl={fileUrl}
+  onClick={handleImageClick}
+/>
     )}
 
     {fileType === "video" && (

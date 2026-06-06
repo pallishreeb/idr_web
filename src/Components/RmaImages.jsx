@@ -19,7 +19,8 @@ import { toast } from "react-toastify";
 import { S3_BASE_URL } from "../config";
 
 import ImageModal from "./ImageModal";
-
+import { convertHeicToJpg } from "../utils/imageUtils";
+import ImagePreview from "./ImagePreview";
 const RmaImages = ({ images, rmaId }) => {
   const dispatch = useDispatch();
 
@@ -47,14 +48,18 @@ const RmaImages = ({ images, rmaId }) => {
     setSelectedFiles(Array.from(e.target.files));
   };
 
-  const handleUpload = () => {
+  const handleUpload =  async () => {
     if (selectedFiles.length === 0) {
       toast.error("Please select at least one image.");
 
       return;
     }
-
-    dispatch(uploadRmaImages(rmaId, selectedFiles))
+    const processedFiles = await Promise.all(
+      selectedFiles.map(async (file) => {
+        return await convertHeicToJpg(file);
+      })
+    );
+    dispatch(uploadRmaImages(rmaId, processedFiles))
       .then((data) => {
         if (data.code === "RMA201") {
           toast.success("Images uploaded successfully.");
@@ -252,10 +257,9 @@ to-[#6366F1]
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <img
-                                src={fileUrl}
-                                alt={`Attachment ${index + 1}`}
-                                className="w-full h-full object-cover"
+                              <ImagePreview
+                                fileUrl={fileUrl}
+                                onClick={handleImageClick}
                               />
                             )}
                           </div>
