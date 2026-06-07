@@ -32,7 +32,7 @@ import ServiceTicketImages from "../../Components/ServiceTicketImages";
 import SignatureModal from "../../Components/SignatureModal";
 import ShowSubcontractorUsers from "../../Components/subcontractor/ShowSubcontractorUsers";
 import { toast } from "react-toastify";
-import { MdDraw, MdDevices, MdClose, MdAdd } from "react-icons/md";
+import { MdDraw, MdDevices, MdClose, MdAdd, MdArrowBack } from "react-icons/md";
 
 const EditServiceTicket = () => {
   const { serviceTicketId } = useParams();
@@ -458,7 +458,7 @@ to-[#4338CA]
               transition-all
             "
                     >
-                      <MdClose className="text-lg" />
+                      <MdArrowBack size={20} />
                       Back
                     </button>
                   </Link>

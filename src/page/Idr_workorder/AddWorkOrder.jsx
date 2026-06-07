@@ -469,6 +469,9 @@ const textareaClass = `
                 navigate(`/workorder?${searchParams.toString()}`)
               }
               className="
+              flex
+              flex-center
+              gap-2
                 px-5
                 py-3
                 rounded-2xl
@@ -481,6 +484,7 @@ const textareaClass = `
                 transition-all
               "
             >
+              <MdArrowBack size={20} />
               Back
             </button>
           </div>

@@ -29,6 +29,7 @@ import Loader from "../../Images/ZZ5H.gif";
 import WorkOrderImages from "../../Components/WorkOrderImages";
 import WOSignatureModal from "../../Components/WOSignatureModal";
 import ShowSubcontractorUsers from "../../Components/subcontractor/ShowSubcontractorUsers";
+import { MdArrowBack } from "react-icons/md";
 
 const EditWorkOrder = () => {
   const { workOrderId } = useParams();
@@ -356,7 +357,21 @@ const EditWorkOrder = () => {
             <h1 className="font-bold text-lg">Edit Work Order</h1>
             <div className="flex gap-3">
               <Link to={`/workorder?${searchParams.toString()}`}>
-                <button className="border border-gray-400 text-gray-400 px-6 py-2 rounded">
+                <button className=" flex
+                    items-center
+                    gap-2
+                    px-4
+                    py-2.5
+                    rounded-2xl
+                    border
+                    border-gray-200
+                    bg-white
+                    text-gray-700
+                    text-sm
+                    font-medium
+                    hover:bg-gray-50
+                    transition-all">
+                  <MdArrowBack size={20} />
                   Back
                 </button>
               </Link>
