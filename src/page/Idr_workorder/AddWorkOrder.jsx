@@ -709,7 +709,35 @@ const textareaClass = `
                       onChange={(e) => handleChange(e, setTicketData)}
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
+                      Local Onsite Person
+                    </label>
 
+                    <input
+                      type="text"
+                      name="local_onsite_person"
+                      value={ticketData.local_onsite_person}
+                      className={inputClass}
+                      onChange={(e) => handleChange(e, setTicketData)}
+                      placeholder="Enter local onsite contact name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
+                      Local Onsite Person Contact
+                    </label>
+
+                    <input
+                      type="text"
+                      name="local_onsite_person_contact"
+                      value={ticketData.local_onsite_person_contact}
+                      className={inputClass}
+                      onChange={(e) => handleChange(e, setTicketData)}
+                      placeholder="Enter contact number"
+                    />
+                  </div>
                   <div className="md:col-span-2 xl:col-span-3">
                     <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                       Service Request *
