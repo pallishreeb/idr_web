@@ -158,44 +158,6 @@ const ClientEquipmentTable = ({
               </div>
             </div>
 
-            {/* ADD EQUIPMENT */}
-            {canAddClientEquip && !isTicketClosed && (
-              <button
-                onClick={() =>
-                  navigate(
-                    `/add-client-equipment/${serviceTicket?.client_id}/${serviceTicket?.location_id}/?&sort_key=device_type&sort_direction=ASC`,
-                    {
-                      state: {
-                        serviceTicketId,
-                        returnTo: "edit-service-ticket",
-                      },
-                    },
-                  )
-                }
-                className="
-                  flex
-                  items-center
-                  justify-center
-                  gap-2
-                  px-5
-                  py-3
-                  rounded-2xl
-                  bg-gradient-to-r
-                 from-[#312E81]
-via-[#4338CA]
-to-[#6366F1]
-                  text-white
-                  text-sm
-                  font-semibold
-                  shadow-sm
-                  hover:shadow-md
-                  transition-all
-                "
-              >
-                <MdAdd className="text-lg" />
-                Add Client Equipment
-              </button>
-            )}
           </div>
 
           {/* TABLE */}

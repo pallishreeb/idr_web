@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "../../axios-config";
-import { Link, useParams,useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams,useSearchParams } from "react-router-dom";
 import { S3_BASE_URL } from "../../config";
 import { FaDownload } from "react-icons/fa";
 import Header from "../../Components/Header";
@@ -32,11 +32,12 @@ import ServiceTicketImages from "../../Components/ServiceTicketImages";
 import SignatureModal from "../../Components/SignatureModal";
 import ShowSubcontractorUsers from "../../Components/subcontractor/ShowSubcontractorUsers";
 import { toast } from "react-toastify";
-import { MdDraw, MdDevices, MdClose, MdAdd, MdArrowBack } from "react-icons/md";
+import { MdDraw, MdDevices, MdClose, MdAdd, MdArrowBack,MdDescription } from "react-icons/md";
 
 const EditServiceTicket = () => {
   const { serviceTicketId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   // const location = useLocation();
   const [searchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -99,7 +100,7 @@ const EditServiceTicket = () => {
       setInventories(serviceTicketDetails?.inventories || []);
       setServiceTicketAgreement(serviceTicketDetails?.agreement || {});
       // API call should be done only if technicianAccess includes user_type
-      const addRmaAccess = [...technicianAccess, "Subcontractor_User"];
+      const addRmaAccess = [...technicianAccess, "Subcontractor_User","Subcontractor"];
       if (addRmaAccess.includes(user_type)) {
         dispatch(
           getClientEquipments({
@@ -341,6 +342,12 @@ const EditServiceTicket = () => {
     return `${month}/${day}/${year}`; // Rearrange to MM/DD/YYYY
   };
   const newAccess = ["Subcontractor_User", "Subcontractor"];
+
+  const isTicketClosed = serviceTicket?.status?.toLowerCase() === "closed";
+  const canAddClientEquip = [
+  "Subcontractor_User",
+  "Subcontractor",
+].includes(user_type) || technicianAccess.includes(user_type);
   return (
     <>
       <Header />
@@ -472,23 +479,28 @@ to-[#4338CA]
                       >
                         <button
                           className="
-                  flex
-                  items-center
-                  justify-center
-                  gap-2
-                  px-5
-                  py-3
-                  rounded-2xl
-                  bg-blue-500
-                  text-white
-                  text-sm
-                  font-semibold
-                  shadow-sm
-                  hover:bg-blue-600
-                  hover:shadow-md
-                  transition-all
-                "
+                            flex
+                            items-center
+                            justify-center
+                            gap-2
+                            px-5
+                            py-3
+                            rounded-2xl
+                            bg-gradient-to-r
+                            from-[#1E1B4B]
+                            via-[#312E81]
+                            to-[#4338CA]
+                            text-white
+                            text-sm
+                            font-semibold
+                            shadow-md
+                            hover:shadow-lg
+                            hover:scale-[1.02]
+                            transition-all
+                            duration-300
+                          "
                         >
+                          <MdDescription className="text-lg" />
                           Service Agreement
                         </button>
                       </Link>
@@ -510,8 +522,8 @@ to-[#4338CA]
               rounded-2xl
               bg-gradient-to-r
              from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]
+              via-[#312E81]
+              to-[#4338CA]
               text-white
               text-sm
               font-semibold
@@ -524,7 +536,44 @@ to-[#4338CA]
                       Add Device
                     </button>
                   )}
-
+            {/* ADD EQUIPMENT */}
+            {canAddClientEquip && !isTicketClosed && (
+              <button
+                onClick={() =>
+                  navigate(
+                    `/add-client-equipment/${serviceTicket?.client_id}/${serviceTicket?.location_id}/?&sort_key=device_type&sort_direction=ASC`,
+                    {
+                      state: {
+                        serviceTicketId,
+                        returnTo: "edit-service-ticket",
+                      },
+                    },
+                  )
+                }
+                className="
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  px-5
+                  py-3
+                  rounded-2xl
+                  bg-gradient-to-r
+                 from-[#312E81]
+                  via-[#4338CA]
+                  to-[#6366F1]
+                  text-white
+                  text-sm
+                  font-semibold
+                  shadow-sm
+                  hover:shadow-md
+                  transition-all
+                "
+              >
+                <MdAdd className="text-lg" />
+                Add Client Equipment
+              </button>
+            )}
                   {/* DOWNLOAD PDF */}
                   {technicianAccess.includes(user_type) && (
                     <button

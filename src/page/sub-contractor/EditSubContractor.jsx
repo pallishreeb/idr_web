@@ -142,7 +142,7 @@ const EditSubContractor =
         {
           id: "technician",
           label:
-            "Technician & Rates",
+            "Technicians & Rates",
           icon: (
             <MdBuild />
           ),
@@ -400,7 +400,7 @@ const EditSubContractor =
                       {/* TECHNICIAN */}
                       <AccordionSection
                         id="technician"
-                        title="Technician & Rate Details"
+                        title="Technicians & Rate Details"
                       >
                         <TechnicianRatesForm
                           id={
@@ -418,7 +418,7 @@ const EditSubContractor =
                       {/* AREA */}
                       <AccordionSection
                         id="area"
-                        title="Area of Work"
+                        title="Areas of Work"
                       >
                         <AreaOfWorkForm
                           id={

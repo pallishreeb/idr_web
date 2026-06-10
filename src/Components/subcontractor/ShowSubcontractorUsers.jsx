@@ -146,7 +146,11 @@ const ShowSubcontractorUsers =
           },
         );
       };
-
+  const newAccess = [
+    ...access,
+    "Subcontractor_User",
+    "Subcontractor",
+  ];
     return (
       <div className="bg-white rounded-[28px] shadow-sm border border-gray-100 overflow-hidden mt-6">
         {/* TOP BAR */}
@@ -175,7 +179,7 @@ const ShowSubcontractorUsers =
             </div>
 
             {/* ADD BUTTON */}
-            {access.includes(
+            {newAccess.includes(
               user_type,
             ) && (
               <button

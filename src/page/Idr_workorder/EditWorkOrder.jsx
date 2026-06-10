@@ -51,7 +51,7 @@ const EditWorkOrder = () => {
   const clientEmployees = useSelector(
     (state) => state.clientEmployee.clientEmployees,
   );
-  const { access } = useSelector((state) => state.user);
+  const { access , technicianAccess} = useSelector((state) => state.user);
   const { user_type } = useSelector((state) => state.user.user);
   const idrEmployees = useSelector((state) => state.employee.idrEmployees);
   const [workOrder, setWorkOrder] = useState(null);
@@ -345,8 +345,10 @@ const EditWorkOrder = () => {
   if (!workOrder) {
     return <div className="text-center mt-5">No work order details found</div>;
   }
-  const canAddClientEquip =
-    user_type == "Subcontractor_User" || user_type == "Subcontractor";
+const canAddClientEquip = [
+  "Subcontractor_User",
+  "Subcontractor",
+].includes(user_type) || technicianAccess.includes(user_type);
   return (
     <>
       <Header />
@@ -469,7 +471,7 @@ const EditWorkOrder = () => {
             workOrderId={workOrderId}
             subcontractorAssignees={subcontractorUsers}
           />
-          {user_type === "Client Employee" && (
+          {user_type !== "Client Employee" && (
             <ShowSubcontractorUsers
               subcontractorAssignees={subcontractorUsers}
               parentId={workOrderId}

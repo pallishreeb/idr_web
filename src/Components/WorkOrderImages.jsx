@@ -65,7 +65,7 @@ const WorkOrderImages =
       );
 
     const {
-      technicianAccess,
+      technicianAccess,access
     } =
       useSelector(
         (
@@ -617,7 +617,7 @@ to-[#6366F1]
 
                               {/* DELETE */}
                               {(
-                                        user_type === "Admin" ||
+                                        access.includes(user_type) ||
                                         (
                                           newAccess.includes(user_type) &&
                                           image?.by_user_id === user_id

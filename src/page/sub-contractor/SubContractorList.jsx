@@ -609,13 +609,6 @@ to-[#4338CA]" />
                   <table className="w-full min-w-[1650px] table-auto">
                     <thead className="bg-indigo-50">
                       <tr>
-                        <th className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 whitespace-nowrap">
-                          Full Name
-                        </th>
-
-                        <th className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 whitespace-nowrap">
-                          Email
-                        </th>
 
                         <th
                           className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 cursor-pointer whitespace-nowrap"
@@ -627,7 +620,7 @@ to-[#4338CA]" />
                         >
                           <div className="flex items-center gap-1">
                             <MdBusiness />
-                            Subcontractor{" "}
+                            Company Name{" "}
                             {
                               getSortSymbol(
                                 "subcontractor_name",
@@ -635,6 +628,14 @@ to-[#4338CA]" />
                             }
                           </div>
                         </th>
+                        <th className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 whitespace-nowrap">
+                           Contact Name
+                        </th>
+
+                        <th className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 whitespace-nowrap">
+                          Email
+                        </th>
+
 
                         <th className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 whitespace-nowrap">
                           Address
@@ -790,6 +791,10 @@ to-[#4338CA]" />
                               }
                               className="border-b border-gray-100 hover:bg-gray-50 transition-all duration-200"
                             >
+                              <td className="px-4 py-4 text-sm font-semibold text-[#1E1B4B] whitespace-nowrap">
+                                {subcontractor.subcontractor_name ||
+                                  "NA"}
+                              </td>
                               <td className="px-4 py-4 text-sm whitespace-nowrap">
                                 {subcontractor.b_firstname +
                                   " " +
@@ -801,12 +806,6 @@ to-[#4338CA]" />
                                 {subcontractor.b_email ||
                                   "NA"}
                               </td>
-
-                              <td className="px-4 py-4 text-sm font-semibold text-[#1E1B4B] whitespace-nowrap">
-                                {subcontractor.subcontractor_name ||
-                                  "NA"}
-                              </td>
-
                               <td className="px-4 py-4 text-sm min-w-[220px]">
                                 {subcontractor.street_address ||
                                   "NA"}

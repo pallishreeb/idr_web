@@ -38,7 +38,7 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
 
   const { user_type, user_id } = useSelector((state) => state.user.user);
 
-  const { technicianAccess } = useSelector((state) => state.user);
+  const { technicianAccess,access } = useSelector((state) => state.user);
 
   const { loadingAssignImage } = useSelector((state) => state.serviceTicket);
 
@@ -581,7 +581,7 @@ to-[#6366F1]
 
                             {/* DELETE */}
                             {(
-                              user_type === "Admin" ||
+                              access.includes(user_type) ||
                               (
                                 canManageImages &&
                                 image?.by_user_id === user_id
