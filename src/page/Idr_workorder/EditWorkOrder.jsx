@@ -391,7 +391,16 @@ const canAddClientEquip = [
                         },
                       )
                     }
-                    className="border border-blue-500 bg-blue-500 text-white px-6 py-2 rounded"
+                    className="rounded-2xl
+                      bg-gradient-to-r
+                      from-[#1E1B4B]
+                      via-[#312E81]
+                      to-[#4338CA]
+                      font-semibold
+                      shadow-md
+                      hover:shadow-lg
+                      hover:scale-[1.02]
+                      transition-all text-white px-6 py-2  flex items-center"
                   >
                     Add Client Equipment
                   </button>

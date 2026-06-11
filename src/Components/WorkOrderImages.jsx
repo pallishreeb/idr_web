@@ -715,19 +715,84 @@ to-[#6366F1]
                 </div>
 
                 {/* INPUT */}
-                <div className="border-2 border-dashed border-indigo-200 rounded-[24px] p-8 text-center bg-indigo-50/40">
+            {/* DRAG & DROP + BROWSE */}
+                <div
+                  className="
+                    border-2
+                    border-dashed
+                    border-indigo-200
+                    rounded-[24px]
+                    p-8
+                    text-center
+                    bg-indigo-50/40
+                    hover:border-indigo-400
+                    transition-all
+                    duration-300
+                  "
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+
+                    const files = Array.from(e.dataTransfer.files);
+
+                    setSelectedFiles((prev) => [
+                      ...prev,
+                      ...files,
+                    ]);
+                  }}
+                >
+                  <MdCloudUpload className="mx-auto text-5xl text-[#4338CA] mb-3" />
+
+                  <h3 className="text-base font-semibold text-[#1E1B4B]">
+                    Drag & Drop Files Here
+                  </h3>
+
+                  <p className="text-sm text-gray-500 mt-2 mb-5">
+                    Upload images, videos or documents
+                  </p>
+
+                  {/* Hidden File Input */}
                   <input
+                    id="work-order-upload"
                     type="file"
                     multiple
-                    onChange={
-                      handleFileChange
-                    }
-                    className="block w-full text-sm text-gray-600"
+                    onChange={handleFileChange}
+                    className="hidden"
                   />
 
-                  <p className="text-xs text-gray-500 mt-3">
-                    Maximum file
-                    size: 150 MB
+                  {/* Browse Button */}
+                  <label
+                    htmlFor="work-order-upload"
+                    className="
+                      inline-flex
+                      items-center
+                      gap-2
+                      px-5
+                      py-2.5
+                      rounded-2xl
+                      bg-gradient-to-r
+                      from-[#312E81]
+                      via-[#4338CA]
+                      to-[#6366F1]
+                      text-white
+                      text-sm
+                      font-semibold
+                      shadow-md
+                      hover:shadow-lg
+                      hover:scale-[1.02]
+                      transition-all
+                      duration-300
+                      cursor-pointer
+                    "
+                  >
+                    <MdCloudUpload className="text-lg" />
+                    Browse Files
+                  </label>
+
+                  <p className="text-xs text-gray-500 mt-4">
+                    Maximum file size: 150 MB
                   </p>
                 </div>
 
