@@ -533,7 +533,7 @@ to-[#4338CA]
             "
                     >
                       <MdAdd className="text-lg" />
-                      Add Device
+                      Add Existing Device
                     </button>
                   )}
             {/* ADD EQUIPMENT */}
@@ -571,7 +571,7 @@ to-[#4338CA]
                 "
               >
                 <MdAdd className="text-lg" />
-                Add Client Equipment
+                Add New Device
               </button>
             )}
                   {/* DOWNLOAD PDF */}

@@ -563,7 +563,7 @@ to-[#4338CA]
                             </td>
 
                             <td className="px-3 py-3 text-sm whitespace-nowrap">
-                              {order?.service_date || "NA"}
+                              {formatDate(order?.service_date) || "NA"}
                             </td>
 
                             <td className="px-3 py-3 text-sm whitespace-nowrap">

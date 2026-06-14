@@ -151,7 +151,7 @@ const EditSubContractor =
         {
           id: "area",
           label:
-            "Area of Work",
+            "Areas of Work",
           icon: (
             <MdLocationOn />
           ),

@@ -35,6 +35,7 @@ import {
   updateSubcontractorUser,
   getSubcontractorLists,
 } from "../../actions/subContractorAction";
+import { toast } from "react-toastify";
 
 const EditSubcontractorUserPage =
   () => {
@@ -105,7 +106,7 @@ const EditSubcontractorUserPage =
 
         is_active:
           true,
-
+        user_type: "Subcontractor_User",
         internal_note:
           "",
       });
@@ -182,7 +183,9 @@ const EditSubcontractorUserPage =
         is_active:
           userDetails.is_active ??
           true,
-
+          user_type:
+            userDetails.user_type ||
+            "Subcontractor_User",
         internal_note:
           userDetails.internal_note ||
           "",
@@ -286,20 +289,29 @@ const EditSubcontractorUserPage =
 
             is_active:
               formData.is_active,
+              user_type:
+                  formData.user_type,
 
             internal_note:
               formData.internal_note.trim(),
           };
 
-        await dispatch(
-          updateSubcontractorUser(
-            payload,
-          ),
-        );
+        try {
+          await dispatch(
+            updateSubcontractorUser(payload)
+          );
 
-        navigate(
-          -1,
-        );
+          toast.success(
+            "User updated successfully"
+          );
+
+          navigate(-1);
+        } catch (error) {
+          toast.error(
+            error?.message ||
+            "Failed to update user"
+          );
+        }
       };
 
     // COMMON INPUT STYLE
@@ -499,7 +511,32 @@ const EditSubcontractorUserPage =
                         />
                       </div>
                     </div>
+                    {/* USER TYPE */}
+                    <div>
+                      <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                        User Type
+                      </label>
 
+                      <div className="relative">
+                        <MdPerson className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <select
+                          name="user_type"
+                          value={formData.user_type}
+                          onChange={handleChange}
+                          className={inputClass}
+                          required
+                        >
+                          <option value="Subcontractor_User">
+                            Subcontractor User
+                          </option>
+
+                          <option value="Subcontractor">
+                            Subcontractor
+                          </option>
+                        </select>
+                      </div>
+                    </div>
                     {/* NOTE */}
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">

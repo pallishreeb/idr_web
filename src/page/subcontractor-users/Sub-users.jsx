@@ -471,8 +471,7 @@ const SubcontractorUsersPage =
                                             </p>
 
                                             <p className="text-xs text-gray-500">
-                                              Subcontractor
-                                              User
+                                              {userItem.user_type}
                                             </p>
                                           </div>
                                         </div>

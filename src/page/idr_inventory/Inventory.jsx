@@ -913,7 +913,7 @@ to-[#4338CA]
                                   <BiTransferAlt className="text-base" />
                                 </button>
 
-                                {user_type === "Admin" && (
+                                {access.includes(user_type) && (
                                   <button
                                     className="
                                         w-8

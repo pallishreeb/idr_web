@@ -218,6 +218,14 @@ const WorkOrder = () => {
     ...technicianAccess,
     "Client Employee"
   ];
+    // DATE FORMAT
+  function formatDateToMDY(date) {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const year = d.getFullYear();
+    return `${month}/${day}/${year}`;
+  }
   return (
     <>
       <Header />
@@ -586,7 +594,8 @@ to-[#4338CA]
                           </td>
 
                           <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
-                            {order.service_date}
+                            {/* {order.service_date} */}
+                            {formatDateToMDY(order.service_date) || ""}
                           </td>
 
                           <td className="px-5 py-4 text-sm text-gray-700">

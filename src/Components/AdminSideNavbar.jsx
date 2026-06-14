@@ -254,6 +254,12 @@ const fullname = first_name + ' ' + last_name
       icon: <MdOutlineBusinessCenter size={22} />,
       roles: ["Subcontractor"],
     },
+    {
+      title: "Subcontractor Users",
+      path: "/sub-contractors-users",
+      icon: <MdOutlineGroup size={22} />,
+      roles: ["Subcontractor"],
+    },
   ];
 
   const subcontractorMenuItems = [
@@ -261,14 +267,14 @@ const fullname = first_name + ' ' + last_name
       title: "Sub Contractors",
       path: "/sub-contractors",
       icon: <MdOutlineBusinessCenter size={22} />,
-      roles: ["Admin", "Subadmin", "IDR Employee"],
+      roles: ["Admin", "Subadmin"],
     },
 
     {
       title: "Subcontractor Users",
       path: "/sub-contractors-users",
       icon: <MdOutlineGroup size={22} />,
-      roles: ["Admin", "Subadmin", "IDR Employee"],
+      roles: ["Admin", "Subadmin"],
     },
   ];
 
@@ -284,8 +290,8 @@ const fullname = first_name + ' ' + last_name
   const getUserLabel = (user_type) => {
     const map = {
       "Client Employee": "CLIENT",
-      Subcontractor: "SUBCONTRACTOR",
-      Subcontractor_User: "SUBCONTRACTOR",
+      "Subcontractor": "SUBCONTRACTOR",
+      "Subcontractor_User": "SUBCONTRACTOR",
     };
 
     return map[user_type] || "IDR";

@@ -100,7 +100,24 @@ export const getSubcontractorLists = (filters) => {
         ? `${apiConfig.getSubcontractorLists}?${params}`
         : apiConfig.getSubcontractorLists;
       const response = await axios.get(url);
-      dispatch(getSubcontractorListsSuccess(response?.data?.subcontractors));
+      const sortedSubcontractors = [
+            ...(response?.data?.subcontractors || []),
+          ].sort((a, b) =>
+            (a.subcontractor_name || "").localeCompare(
+              b.subcontractor_name || "",
+              undefined,
+              {
+                sensitivity: "base",
+              }
+            )
+          );
+
+          dispatch(
+            getSubcontractorListsSuccess(
+              sortedSubcontractors
+            )
+          );
+      // dispatch(getSubcontractorListsSuccess(response?.data?.subcontractors));
     } catch (error) {
       dispatch(getSubcontractorListsFailure(error.message));
       toast.error(
@@ -286,9 +303,9 @@ export const updateAreaOfWork = (payload) => {
         body: payload,
       });
 
-      toast.success("Area of work updated successfully");
+      toast.success("Areas of work updated successfully");
     } catch (error) {
-      toast.error(error?.message || "Failed to update area of work");
+      toast.error(error?.message || "Failed to update areas of work");
     }
   };
 };
@@ -440,6 +457,7 @@ export const updateSubcontractorUser =
       }
     } catch (error) {
       dispatch(updateSubcontractorUserFailure(error?.message));
+      throw error;
     }
   };
 

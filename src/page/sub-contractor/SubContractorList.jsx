@@ -378,7 +378,7 @@ const SubContractorList =
               max-w-[1920px] + w-full used to reduce unnecessary scrolling on 3XL screens
           */}
           <div className="flex-1 bg-gradient-to-br from-[#FAFAFA] to-indigo-50 min-h-screen overflow-y-auto overflow-x-hidden">
-            <div className="w-full max-w-[1920px] mx-auto p-4 md:p-6 xl:p-8">
+            <div className="w-full px-4 md:px-6 xl:px-8">
               {/* PAGE HEADER */}
               <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 mb-8">
                 <div>
@@ -606,28 +606,19 @@ to-[#4338CA]" />
                   {/* IMPORTANT:
                       Wider min width to fit 3XL screens better
                   */}
-                  <table className="w-full min-w-[1650px] table-auto">
+                  <table className="w-full  table-auto">
                     <thead className="bg-indigo-50">
                       <tr>
 
-                        <th
-                          className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 cursor-pointer whitespace-nowrap"
-                          onClick={() =>
-                            requestSort(
-                              "subcontractor_name",
-                            )
-                          }
-                        >
-                          <div className="flex items-center gap-1">
-                            <MdBusiness />
-                            Company Name{" "}
-                            {
-                              getSortSymbol(
-                                "subcontractor_name",
-                              )
-                            }
-                          </div>
-                        </th>
+                    <th
+                      className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 cursor-pointer"
+                      onClick={() => requestSort("subcontractor_name")}
+                    >
+                      <div className="flex items-center gap-1">
+                        <MdBusiness />
+                        Company Name {getSortSymbol("subcontractor_name")}
+                      </div>
+                    </th>
                         <th className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 whitespace-nowrap">
                            Contact Name
                         </th>
@@ -680,7 +671,12 @@ to-[#4338CA]" />
                         <th className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 whitespace-nowrap">
                           Coverage
                         </th>
-
+                        <th className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 whitespace-nowrap">
+                          <div className="flex items-center gap-1">
+                            {/* <MdPerson /> */}
+                            Status
+                          </div>
+                        </th>
                         <th
                           className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 cursor-pointer whitespace-nowrap"
                           onClick={() =>
@@ -710,14 +706,6 @@ to-[#4338CA]" />
                           <div className="flex items-center gap-1">
                             <MdGroups />
                             Technicians
-                          </div>
-                        </th>
-
-                        <th className="px-4 py-4 text-left text-xs uppercase font-bold text-indigo-600 whitespace-nowrap">
-                          <div className="flex items-center gap-1">
-                            <MdPerson />
-                            Primary
-                            Contact
                           </div>
                         </th>
 
@@ -831,7 +819,9 @@ to-[#4338CA]" />
                                 {subcontractor.coverage_area || "NA"}
                               
                             </td>
-
+                              <td className="px-4 py-4 text-sm whitespace-nowrap">
+                                {subcontractor?.contract_status}
+                              </td>
                               <td className="px-4 py-4  text-sm whitespace-nowrap font-medium text-emerald-600">
                                 {formatCurrency(
                                   subcontractor.hourly_rate,
@@ -849,15 +839,6 @@ to-[#4338CA]" />
                               <td className="px-4 py-4 text-sm text-center whitespace-nowrap">
                                 {subcontractor.no_of_technicians ||
                                   "NA"}
-                              </td>
-
-                              <td className="px-4 py-4 text-sm whitespace-nowrap">
-                                {
-                                  subcontractor.p_firstname
-                                }{" "}
-                                {
-                                  subcontractor.p_lastname
-                                }
                               </td>
 
                               <td className="px-4 py-4 text-sm whitespace-nowrap">

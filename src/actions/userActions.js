@@ -56,11 +56,11 @@ export const userLogin = (userData, navigate) => {
       const response = await axios.post(apiConfig.loginUser, userData);
       dispatch(userLoginSuccess(response.data));
       toast.success(`Logged in successfully`);
-      if (response.data.user.user_type === "Subcontractor") {
-        navigate(`/edit-subcontractor/${response.data.user?.subcontractor_id}`);
-      } else {
+      // if (response.data.user.user_type === "Subcontractor") {
+      //   navigate(`/edit-subcontractor/${response.data.user?.subcontractor_id}`);
+      // } else {
         navigate("/admin/dashboard");
-      }
+      // }
       // navigate("/admin/dashboard");
     } catch (error) {
       dispatch(userLoginFailure(error.message));

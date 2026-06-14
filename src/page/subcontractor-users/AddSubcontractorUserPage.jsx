@@ -95,7 +95,7 @@ const AddSubcontractorUserPage =
 
         last_name:
           "",
-
+        user_type: "Subcontractor_User",
         is_active:
           true,
       });
@@ -495,7 +495,32 @@ const AddSubcontractorUserPage =
                         />
                       </div>
                     </div>
+                    {/* USER TYPE */}
+                    <div>
+                      <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                        User Type
+                      </label>
 
+                      <div className="relative">
+                        <MdPerson className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                        <select
+                          name="user_type"
+                          value={formData.user_type}
+                          onChange={handleChange}
+                          className={inputClass}
+                          required
+                        >
+                          <option value="Subcontractor_User">
+                            Subcontractor User
+                          </option>
+
+                          <option value="Subcontractor">
+                            Subcontractor
+                          </option>
+                        </select>
+                      </div>
+                    </div>
                     {/* ACTIVE */}
                     <div className="bg-gradient-to-r from-indigo-50 to-pink-50 border border-indigo-100 rounded-2xl p-4">
                       <label className="flex items-center gap-3 cursor-pointer">
