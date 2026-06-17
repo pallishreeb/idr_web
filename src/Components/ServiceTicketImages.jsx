@@ -304,8 +304,8 @@ const getFileType = (fileName = "") => {
                   rounded-2xl
                   bg-gradient-to-r
                  from-[#312E81]
-via-[#4338CA]
-to-[#6366F1]
+                  via-[#4338CA]
+                  to-[#6366F1]
                   text-white
                   text-sm
                   font-semibold
@@ -326,15 +326,15 @@ to-[#6366F1]
             <div className="py-14 flex flex-col items-center justify-center text-center">
               <div
                 className="
-        w-20
-        h-20
-        rounded-full
-        bg-gray-100
-        flex
-        items-center
-        justify-center
-        mb-4
-      "
+                  w-20
+                  h-20
+                  rounded-full
+                  bg-gray-100
+                  flex
+                  items-center
+                  justify-center
+                  mb-4
+                "
               >
                 <MdImage className="text-4xl text-gray-400" />
               </div>
@@ -350,11 +350,11 @@ to-[#6366F1]
           ) : (
             <div
               className="
-      overflow-x-auto
-      border
-      border-gray-100
-      rounded-2xl
-    "
+                  overflow-x-auto
+                  border
+                  border-gray-100
+                  rounded-2xl
+                "
             >
               <table className="w-full min-w-[900px]">
                 <thead>
@@ -404,7 +404,7 @@ to-[#6366F1]
                       Uploaded By
                     </th>
 
-                    {/* <th
+                    <th
                       className="
                         px-4
                         py-3
@@ -417,7 +417,7 @@ to-[#6366F1]
                       "
                     >
                       Date
-                    </th> */}
+                    </th>
 
                     <th
                       className="
@@ -574,7 +574,7 @@ to-[#6366F1]
                           </div>
                         </td>
                         {/* Date */}
-                        {/* <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center gap-3">
 
                             <div>
@@ -583,7 +583,7 @@ to-[#6366F1]
                               </p>
                             </div>
                           </div>
-                        </td> */}
+                        </td>
                         {/* ACTIONS */}
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center gap-2">

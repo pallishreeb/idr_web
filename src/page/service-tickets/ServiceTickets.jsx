@@ -16,7 +16,7 @@ import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { fetchIDREmployees } from "../../actions/employeeActions";
 import { toast } from "react-toastify";
-import { MdAssignmentInd, MdAdd, MdContentCopy } from "react-icons/md";
+import { MdAssignmentInd, MdAdd, MdContentCopy,  MdKeyboardArrowUp, MdKeyboardArrowDown, } from "react-icons/md";
 const ServiceTickets = () => {
   const dispatch = useDispatch();
   // const location = useLocation();
@@ -122,13 +122,13 @@ const handleReset = () => {
   setSearchParams({});
   dispatch(getServiceTicketLists(clearedFilters));
 };
-  function formatDate(date) {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-based
-    const year = d.getFullYear();
-    return `${month}/${day}/${year}`;
-  }
+function formatDate(date) {
+  if (!date) return "NA";
+
+  const [year, month, day] = date.split("-");
+
+  return `${month}/${day}/${year}`;
+}
   const handleSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -181,6 +181,14 @@ const handleReset = () => {
     ...technicianAccess,
     "Client Employee"
   ];
+
+  const getSortIcon = (key) => {
+  if (sortConfig.key !== key) return "↕";
+
+  return sortConfig.direction === "asc"
+    ? <MdKeyboardArrowUp />
+    : <MdKeyboardArrowDown />;
+};
   return (
     <>
       <Header />
@@ -492,28 +500,43 @@ to-[#4338CA]
                           className="px-3 py-3 text-left text-xs font-bold text-gray-600 whitespace-nowrap cursor-pointer"
                           onClick={() => handleSort("service_ticket_number")}
                         >
-                          Ticket #
+                           <div className="flex items-center gap-1">
+                            <span>Ticket # </span>
+                            <span>{getSortIcon("service_ticket_number")}</span>
+                          </div>
+                          
                         </th>
 
                         <th
                           className="px-3 py-3 text-left text-xs font-bold text-gray-600 whitespace-nowrap cursor-pointer"
                           onClick={() => handleSort("client_name")}
                         >
-                          Client
+                            <div className="flex items-center gap-1">
+                            <span>Client</span>
+                            <span>{getSortIcon("client_name")}</span>
+                          </div>
                         </th>
 
                         <th
                           className="px-3 py-3 text-left text-xs font-bold text-gray-600 whitespace-nowrap cursor-pointer"
                           onClick={() => handleSort("client_location")}
                         >
-                          Location
+                          <div className="flex items-center gap-1">
+                            <span> Location</span>
+                            <span>{getSortIcon("client_location")}</span>
+                          </div>
+                          
                         </th>
 
                         <th
                           className="px-3 py-3 text-left text-xs font-bold text-gray-600 whitespace-nowrap cursor-pointer"
                           onClick={() => handleSort("service_date")}
                         >
-                          Service Date
+                          <div className="flex items-center gap-1">
+                            <span>Service Date </span>
+                            <span>{getSortIcon("service_date")}</span>
+                          </div>
+                          
                         </th>
 
                         <th className="px-3 py-3 text-left text-xs font-bold text-gray-600 whitespace-nowrap">

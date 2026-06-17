@@ -182,6 +182,16 @@ const WorkOrder = () => {
           bValue = b.client_name || "";
         }
 
+        if (sortConfig.key === "client_location") {
+          aValue = `${
+            a.location_details?.address_line_one ?? ""
+          } ${a.location_details?.address_line_two ?? ""}`.toLowerCase();
+
+          bValue = `${
+            b.location_details?.address_line_one ?? ""
+          } ${b.location_details?.address_line_two ?? ""}`.toLowerCase();
+        }
+
         if (sortConfig.key === "service_date") {
           aValue = new Date(aValue);
 
@@ -220,12 +230,12 @@ const WorkOrder = () => {
   ];
     // DATE FORMAT
   function formatDateToMDY(date) {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-based
-    const year = d.getFullYear();
-    return `${month}/${day}/${year}`;
-  }
+  if (!date) return "NA";
+
+  const [year, month, day] = date.split("-");
+
+  return `${month}/${day}/${year}`;
+}
   return (
     <>
       <Header />
@@ -269,8 +279,8 @@ const WorkOrder = () => {
                     rounded-2xl
                     bg-gradient-to-r
                     from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]
+                  via-[#312E81]
+                  to-[#4338CA]
                     text-white
                     font-semibold
                     shadow-md
@@ -529,8 +539,9 @@ to-[#4338CA]
                   <thead className="bg-gradient-to-r from-indigo-50 to-pink-50">
                     <tr>
                       {[
-                        ["ticket_number", "Ticket Number"],
+                        ["ticket_number", "Ticket #"],
                         ["client_name", "Client"],
+                        ["client_location","Location"],
                         ["service_date", "Service Date"],
                       ].map((col) => (
                         <th
@@ -592,7 +603,10 @@ to-[#4338CA]
                           <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
                             {order.client_name}
                           </td>
-
+                          <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
+                            {order?.location_details?.address_line_one ||
+                                "NA"}
+                          </td>
                           <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
                             {/* {order.service_date} */}
                             {formatDateToMDY(order.service_date) || ""}
