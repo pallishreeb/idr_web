@@ -407,7 +407,10 @@ useEffect(() => {
 
     return `${year}-${month}-${day}`;
   };
-
+const autoResize = (e) => {
+  e.target.style.height = "auto";
+  e.target.style.height = `${e.target.scrollHeight}px`;
+};
   const inputClass = `
       w-full
       rounded-2xl
@@ -434,7 +437,8 @@ const textareaClass = `
   py-3
   text-sm
   text-gray-700
-  resize-y
+  resize-none
+  overflow-hidden
   min-h-[120px]
   focus:outline-none
   focus:ring-2
@@ -744,11 +748,20 @@ const textareaClass = `
                     </label>
 
                     <textarea
-                      rows={4}
+                      ref={(el) => {
+                        if (el) {
+                          el.style.height = "auto";
+                          el.style.height = `${el.scrollHeight}px`;
+                        }
+                      }}
+                      rows={1}
                       name="issue"
                       className={textareaClass}
                       value={ticketData.issue}
-                      onChange={(e) => handleChange(e, setTicketData)}
+                      onChange={(e) => {
+                        handleChange(e, setTicketData)
+                        autoResize(e);
+                      }}
                     />
                   </div>
                 </div>
@@ -849,11 +862,20 @@ to-[#4338CA]
                         />
                       ) : (
                         <textarea
-                          rows={4}
+                        ref={(el) => {
+                          if (el) {
+                            el.style.height = "auto";
+                            el.style.height = `${el.scrollHeight}px`;
+                          }
+                        }}
+                          rows={1}
                           name={field.name}
                           className={textareaClass}
                           value={technicianData[field.name]}
-                          onChange={(e) => handleChange(e, setTechnicianData)}
+                          onChange={(e) => {
+                            handleChange(e, setTechnicianData)
+                            autoResize(e)
+                          }}
                         />
                       )}
                     </div>

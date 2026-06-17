@@ -715,10 +715,21 @@ to-[#4338CA]
 
          {isEditing ? (
             <textarea
-              rows={10}
+              ref={(el) => {
+                if (el) {
+                  el.style.height = "auto";
+                  el.style.height = `${el.scrollHeight}px`;
+                }
+              }}
               name="service_ticket_details"
               value={serviceTicket.service_ticket_details || ""}
-              onChange={handleServiceTicketChange}
+              onChange={(e) => {
+                handleServiceTicketChange(e);
+
+                e.target.style.height = "auto";
+                e.target.style.height = `${e.target.scrollHeight}px`;
+              }}
+              rows={1}
               className="
                 w-full
                 min-h-[220px]
@@ -730,7 +741,8 @@ to-[#4338CA]
                 py-4
                 text-sm
                 text-gray-700
-                resize-y
+                resize-none
+                overflow-hidden
                 focus:outline-none
                 focus:ring-2
                 focus:ring-indigo-500

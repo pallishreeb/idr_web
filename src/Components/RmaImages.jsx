@@ -114,7 +114,15 @@ const handleFileChange = (e) => {
     "Subcontractor_User",
     "Subcontractor",
   ];
-
+    const formatDate = (date) => {
+      return new Date(date)
+        .toLocaleDateString("en-US", {
+          month: "2-digit",
+          day: "2-digit",
+          year: "numeric",
+        })
+        .replaceAll("/", "-");
+    };
   return (
     <>
       <div
@@ -231,7 +239,9 @@ to-[#6366F1]
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
                       Uploaded By
                     </th>
-
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                      Date
+                    </th>
                     <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">
                       Actions
                     </th>
@@ -252,15 +262,15 @@ to-[#6366F1]
                           <div
                             onClick={() => handleImageClick(fileUrl)}
                             className="
-                  w-20
-                  h-20
-                  rounded-xl
-                  overflow-hidden
-                  bg-gray-100
-                  cursor-pointer
-                  border
-                  border-gray-200
-                "
+                              w-20
+                              h-20
+                              rounded-xl
+                              overflow-hidden
+                              bg-gray-100
+                              cursor-pointer
+                              border
+                              border-gray-200
+                            "
                           >
                             {isVideo(image?.attachment_url) ? (
                               <video
@@ -303,7 +313,12 @@ to-[#6366F1]
                             {image?.user_name || "NA"}
                           </p>
                         </td>
-
+                          {/* Created By */}
+                        <td className="px-4 py-4">
+                          <p className="text-sm font-semibold text-[#1E1B4B]">
+                            {formatDate(image?.created_at) || "NA"}
+                          </p>
+                        </td>
                         {/* ACTIONS */}
                         <td className="px-4 py-4">
                           <div className="flex items-center justify-center">
@@ -315,19 +330,19 @@ to-[#6366F1]
                                 )
                               }
                               className="
-                    flex
-                    items-center
-                    gap-2
-                    px-4
-                    py-2
-                    rounded-xl
-                    bg-blue-50
-                    text-blue-600
-                    text-sm
-                    font-semibold
-                    hover:bg-blue-100
-                    transition-all
-                  "
+                                flex
+                                items-center
+                                gap-2
+                                px-4
+                                py-2
+                                rounded-xl
+                                bg-blue-50
+                                text-blue-600
+                                text-sm
+                                font-semibold
+                                hover:bg-blue-100
+                                transition-all
+                              "
                             >
                               <MdDownload className="text-lg" />
                               Download

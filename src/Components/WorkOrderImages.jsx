@@ -386,7 +386,15 @@ const isImage = (fileName = "") =>
         "Subcontractor_User",
         "Subcontractor",
       ];
-
+    const formatDate = (date) => {
+      return new Date(date)
+        .toLocaleDateString("en-US", {
+          month: "2-digit",
+          day: "2-digit",
+          year: "numeric",
+        })
+        .replaceAll("/", "-");
+    };
     return (
       <div className="mt-4 bg-white border border-gray-100 rounded-[30px] shadow-sm overflow-hidden">
         {/* TOP BAR */}
@@ -490,7 +498,9 @@ to-[#6366F1]
                     <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B]">
                       Uploaded By
                     </th>
-
+                    <th className="px-5 py-4 text-left text-sm font-semibold text-[#1E1B4B]">
+                      Date
+                    </th>
                     <th className="px-5 py-4 text-center text-sm font-semibold text-[#1E1B4B]">
                       Actions
                     </th>
@@ -516,18 +526,18 @@ to-[#6366F1]
                           {/* PREVIEW */}
                           <td className="px-5 py-4">
                            {isVideo(image?.attachment_url) ? (
-  <div className="flex items-center gap-4">
-    <video
-      src={fileUrl}
-      className="w-20 h-20 rounded-2xl object-cover border border-gray-200 cursor-pointer"
-      controls
-    />
+                            <div className="flex items-center gap-4">
+                              <video
+                                src={fileUrl}
+                                className="w-20 h-20 rounded-2xl object-cover border border-gray-200 cursor-pointer"
+                                controls
+                              />
 
-    <div className="flex items-center gap-2 text-sm font-medium text-purple-600">
-      <MdVideoLibrary className="text-lg" />
-      Video
-    </div>
-  </div>
+                              <div className="flex items-center gap-2 text-sm font-medium text-purple-600">
+                                <MdVideoLibrary className="text-lg" />
+                                Video
+                              </div>
+                            </div>
                             ) : isPdf(image?.attachment_url) ? (
                               <div className="flex items-center gap-4">
                                 <div
@@ -545,22 +555,22 @@ to-[#6366F1]
                               </div>
                             ) : (
                               <div className="flex items-center gap-4">
-<ImagePreview
-  fileUrl={fileUrl}
-  onClick={handleImageClick}
-/>
+                                  <ImagePreview
+                                    fileUrl={fileUrl}
+                                    onClick={handleImageClick}
+                                  />
 
-<div
-  className="heic-fallback hidden w-20 h-20 rounded-2xl border border-gray-200 bg-indigo-50 items-center justify-center cursor-pointer"
-  onClick={() => window.open(fileUrl, "_blank")}
->
-  <div className="text-center">
-    <MdImage className="mx-auto text-indigo-600 text-xl" />
-    <span className="text-[10px] font-semibold text-indigo-600">
-      HEIC
-    </span>
-  </div>
-</div>
+                                  <div
+                                    className="heic-fallback hidden w-20 h-20 rounded-2xl border border-gray-200 bg-indigo-50 items-center justify-center cursor-pointer"
+                                    onClick={() => window.open(fileUrl, "_blank")}
+                                  >
+                                    <div className="text-center">
+                                      <MdImage className="mx-auto text-indigo-600 text-xl" />
+                                      <span className="text-[10px] font-semibold text-indigo-600">
+                                        HEIC
+                                      </span>
+                                    </div>
+                                  </div>
 
                                 <div className="flex items-center gap-2 text-sm font-medium text-indigo-600">
                                   <MdImage className="text-lg" />
@@ -584,7 +594,15 @@ to-[#6366F1]
                               </p>
                             </div>
                           </td>
-
+                          {/* Date */}
+                          <td className="px-5 py-4">
+                            <div className="flex flex-col">
+                              <p className="text-sm font-semibold text-[#1E1B4B]">
+                                {formatDate(image?.created_at) ||
+                                  "NA"}
+                              </p>
+                            </div>
+                          </td>
                           {/* ACTIONS */}
                           <td className="px-5 py-4">
                             <div className="flex justify-center gap-2">

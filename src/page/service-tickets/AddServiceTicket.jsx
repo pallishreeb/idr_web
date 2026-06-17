@@ -682,7 +682,7 @@ to-[#4338CA]
                       name="service_request"
                       value={ticketData.service_request}
                       onChange={handleChange}
-                      rows={4}
+                      rows={2}
                       className="
                         w-full
                         rounded-2xl
@@ -734,8 +734,13 @@ to-[#4338CA]
                     Service Ticket Details
                   </label>
 
-                  <textarea
-                    rows={10}
+                 <textarea
+                    ref={(el) => {
+                      if (el) {
+                        el.style.height = "auto";
+                        el.style.height = `${el.scrollHeight}px`;
+                      }
+                    }}
                     name="service_ticket_details"
                     value={ticketData.service_ticket_details}
                     onChange={(e) => {
@@ -744,6 +749,7 @@ to-[#4338CA]
                       e.target.style.height = "auto";
                       e.target.style.height = `${e.target.scrollHeight}px`;
                     }}
+                    rows={1}
                     className="
                       w-full
                       min-h-[240px]
@@ -755,8 +761,8 @@ to-[#4338CA]
                       py-4
                       text-sm
                       text-gray-700
-                      resize-y
-                      overflow-auto
+                      resize-none
+                      overflow-hidden
                       focus:outline-none
                       focus:ring-2
                       focus:ring-indigo-500

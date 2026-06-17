@@ -235,6 +235,16 @@ const getFileType = (fileName = "") => {
 
   return "attachment";
 };
+
+    const formatDate = (date) => {
+      return new Date(date)
+        .toLocaleDateString("en-US", {
+          month: "2-digit",
+          day: "2-digit",
+          year: "numeric",
+        })
+        .replaceAll("/", "-");
+    };
   return (
     <>
       <div
@@ -366,45 +376,60 @@ to-[#6366F1]
 
                     <th
                       className="
-              px-4
-              py-3
-              text-left
-              text-xs
-              font-bold
-              text-gray-600
-              uppercase
-              whitespace-nowrap
-            "
+                          px-4
+                          py-3
+                          text-left
+                          text-xs
+                          font-bold
+                          text-gray-600
+                          uppercase
+                          whitespace-nowrap
+                        "
                     >
                       File Type
                     </th>
 
                     <th
                       className="
-              px-4
-              py-3
-              text-left
-              text-xs
-              font-bold
-              text-gray-600
-              uppercase
-              whitespace-nowrap
-            "
+                        px-4
+                        py-3
+                        text-left
+                        text-xs
+                        font-bold
+                        text-gray-600
+                        uppercase
+                        whitespace-nowrap
+                      "
                     >
                       Uploaded By
                     </th>
 
+                    {/* <th
+                      className="
+                        px-4
+                        py-3
+                        text-left
+                        text-xs
+                        font-bold
+                        text-gray-600
+                        uppercase
+                        whitespace-nowrap
+                      "
+                    >
+                      Date
+                    </th> */}
+
                     <th
                       className="
-              px-4
-              py-3
-              text-left
-              text-xs
-              font-bold
-              text-gray-600
-              uppercase
-              whitespace-nowrap
-            "
+                        px-4
+                        py-3
+                        text-left
+                        text-xs
+                        font-bold
+                        text-gray-600
+                        uppercase
+                        whitespace-nowrap
+                      "
                     >
                       Actions
                     </th>
@@ -425,86 +450,86 @@ to-[#6366F1]
                       <tr
                         key={index}
                         className="
-                border-b
-                border-gray-100
-                hover:bg-gray-50
-                transition-all
-              "
+                          border-b
+                          border-gray-100
+                          hover:bg-gray-50
+                          transition-all
+                        "
                       >
                         {/* PREVIEW */}
-<td className="px-4 py-3">
-  <div
-    className="
-      w-24
-      h-20
-      rounded-xl
-      overflow-hidden
-      bg-gray-100
-      border
-      border-gray-200
-      cursor-pointer
-      flex
-      items-center
-      justify-center
-    "
-    onClick={() => {
-      if (fileType === "image") {
-        handleImageClick(fileUrl);
-      } else {
-        window.open(fileUrl, "_blank");
-      }
-    }}
-  >
-    {fileType === "image" && (
-<ImagePreview
-  fileUrl={fileUrl}
-  onClick={handleImageClick}
-/>
-    )}
+                        <td className="px-4 py-3">
+                          <div
+                            className="
+                              w-24
+                              h-20
+                              rounded-xl
+                              overflow-hidden
+                              bg-gray-100
+                              border
+                              border-gray-200
+                              cursor-pointer
+                              flex
+                              items-center
+                              justify-center
+                            "
+                            onClick={() => {
+                              if (fileType === "image") {
+                                handleImageClick(fileUrl);
+                              } else {
+                                window.open(fileUrl, "_blank");
+                              }
+                            }}
+                          >
+                            {fileType === "image" && (
+                        <ImagePreview
+                          fileUrl={fileUrl}
+                          onClick={handleImageClick}
+                        />
+                            )}
 
-    {fileType === "video" && (
-      <video
-        src={fileUrl}
-        className="w-full h-full object-cover"
-      />
-    )}
+                            {fileType === "video" && (
+                              <video
+                                src={fileUrl}
+                                className="w-full h-full object-cover"
+                              />
+                            )}
 
-    {fileType === "pdf" && (
-      <div className="text-center">
-        <div className="text-red-600 font-bold text-lg">PDF</div>
-      </div>
-    )}
+                            {fileType === "pdf" && (
+                              <div className="text-center">
+                                <div className="text-red-600 font-bold text-lg">PDF</div>
+                              </div>
+                            )}
 
-    {fileType === "attachment" && (
-      <div className="text-center text-xs font-medium text-gray-600">
-        FILE
-      </div>
-    )}
-  </div>
-</td>
+                            {fileType === "attachment" && (
+                              <div className="text-center text-xs font-medium text-gray-600">
+                                FILE
+                              </div>
+                            )}
+                          </div>
+                        </td>
 
                         {/* TYPE */}
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div
                             className={`
-                    inline-flex
-                    items-center
-                    gap-2
-                    px-3
-                    py-1.5
-                    rounded-full
-                    text-xs
-                    font-semibold
-                    ${
-                      fileType === "video"
-                      ? "bg-purple-100 text-purple-700"
-                      : fileType === "pdf"
-                      ? "bg-red-100 text-red-700"
-                      : fileType === "attachment"
-                      ? "bg-gray-100 text-gray-700"
-                      : "bg-indigo-100 text-indigo-700"
-                    }
-                  `}
+                            inline-flex
+                            items-center
+                            gap-2
+                            px-3
+                            py-1.5
+                            rounded-full
+                            text-xs
+                            font-semibold
+                            ${
+                              fileType === "video"
+                              ? "bg-purple-100 text-purple-700"
+                              : fileType === "pdf"
+                              ? "bg-red-100 text-red-700"
+                              : fileType === "attachment"
+                              ? "bg-gray-100 text-gray-700"
+                              : "bg-indigo-100 text-indigo-700"
+                            }
+                          `}
                           >
                             <>
                           {fileType === "image" && (
@@ -541,21 +566,6 @@ to-[#6366F1]
                         {/* USER */}
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center gap-3">
-                            <div
-                              className="
-                      w-10
-                      h-10
-                      rounded-xl
-                      bg-indigo-100
-                      text-indigo-600
-                      flex
-                      items-center
-                      justify-center
-                    "
-                            >
-                              <MdPerson className="text-lg" />
-                            </div>
-
                             <div>
                               <p className="text-sm font-semibold text-[#1E1B4B]">
                                 {image?.user_name || "NA"}
@@ -563,7 +573,17 @@ to-[#6366F1]
                             </div>
                           </div>
                         </td>
+                        {/* Date */}
+                        {/* <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="flex items-center gap-3">
 
+                            <div>
+                              <p className="text-sm font-semibold text-[#1E1B4B]">
+                                {formatDate(image?.created_at) || "NA"}
+                              </p>
+                            </div>
+                          </div>
+                        </td> */}
                         {/* ACTIONS */}
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center gap-2">

@@ -26,8 +26,11 @@ const TechniciansCards = ({
   const handleEditToggle = () => {
     setIsWorkOrderEditing(!isWorkOrderEditing);
   };
-
-  const inputClass = `
+const autoResize = (e) => {
+  e.target.style.height = "auto";
+  e.target.style.height = `${e.target.scrollHeight}px`;
+};
+const inputClass = `
   w-full
   rounded-2xl
   border
@@ -37,15 +40,12 @@ const TechniciansCards = ({
   py-3
   text-sm
   text-gray-700
-  resize-y
-  overflow-auto
-  min-h-[200px]
+  resize-none
+  overflow-hidden
   focus:outline-none
   focus:ring-2
   focus:ring-indigo-500
   focus:border-transparent
-  transition-all
-  duration-200
 `;
 
   const labelClass = "text-sm font-medium text-[#1E1B4B] mb-2";
@@ -228,11 +228,20 @@ const TechniciansCards = ({
 
                   {isWorkOrderEditing ? (
                     <textarea
+                      ref={(el) => {
+                        if (el) {
+                          el.style.height = "auto";
+                          el.style.height = `${el.scrollHeight}px`;
+                        }
+                      }}
                       className={inputClass}
                       name="parts"
                       value={technician.parts || ""}
-                      onChange={(e) => handleTechnicianChange(index, e)}
-                      rows={8}
+                      onChange={(e) => {
+                        handleTechnicianChange(index, e);
+                        autoResize(e);
+                      }}
+                      rows={1}
                     />
                   ) : (
                      <ReadOnlyContent
@@ -261,11 +270,20 @@ const TechniciansCards = ({
 
                   {isWorkOrderEditing ? (
                     <textarea
+                      ref={(el) => {
+                        if (el) {
+                          el.style.height = "auto";
+                          el.style.height = `${el.scrollHeight}px`;
+                        }
+                      }}
                       className={inputClass}
                       name="other_details"
                       value={technician.other_details || ""}
-                      onChange={(e) => handleTechnicianChange(index, e)}
-                      rows={8}
+                      onChange={(e) => {
+                        handleTechnicianChange(index, e);
+                        autoResize(e);
+                      }}
+                      rows={1}
                     />
                   ) : (
                     <ReadOnlyContent
@@ -280,11 +298,20 @@ const TechniciansCards = ({
 
                   {isWorkOrderEditing ? (
                     <textarea
+                      ref={(el) => {
+                        if (el) {
+                          el.style.height = "auto";
+                          el.style.height = `${el.scrollHeight}px`;
+                        }
+                      }}
                       className={inputClass}
                       name="procedures"
                       value={technician.procedures || ""}
-                      onChange={(e) => handleTechnicianChange(index, e)}
-                      rows={8}
+                      onChange={(e) => {
+                        handleTechnicianChange(index, e);
+                        autoResize(e);
+                      }}
+                      rows={1}
                     />
                   ) : (
                     <ReadOnlyContent
@@ -299,11 +326,20 @@ const TechniciansCards = ({
 
                   {isWorkOrderEditing ? (
                       <textarea
+                        ref={(el) => {
+                          if (el) {
+                            el.style.height = "auto";
+                            el.style.height = `${el.scrollHeight}px`;
+                          }
+                        }}
                         className={inputClass}
                         name="required_deliverables"
                         value={technician.required_deliverables || ""}
-                        onChange={(e) => handleTechnicianChange(index, e)}
-                        rows={8}
+                        onChange={(e) => {
+                          handleTechnicianChange(index, e);
+                          autoResize(e);
+                        }}
+                        rows={1}
                       />
                     ) : (
                       <ReadOnlyContent
@@ -318,11 +354,20 @@ const TechniciansCards = ({
 
                   {isWorkOrderEditing ? (
                     <textarea
+                      ref={(el) => {
+                        if (el) {
+                          el.style.height = "auto";
+                          el.style.height = `${el.scrollHeight}px`;
+                        }
+                      }}
                       className={inputClass}
                       name="deliverable_instructions"
                       value={technician.deliverable_instructions || ""}
-                      onChange={(e) => handleTechnicianChange(index, e)}
-                      rows={8}
+                      onChange={(e) => {
+                        handleTechnicianChange(index, e);
+                        autoResize(e);
+                      }}
+                      rows={1}
                     />
                   ) : (
                      <ReadOnlyContent
