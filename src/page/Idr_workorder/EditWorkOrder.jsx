@@ -270,7 +270,7 @@ const EditWorkOrder = () => {
   };
 
   const handleSaveTechnician = (index) => {
-    const filteredTechnician = getFilteredTechnician(technicians[index]);
+    const filteredTechnician = getFilteredTechnician(technicians[0]);
     dispatch(updateTechnician(filteredTechnician));
     setIsWorkOrderEditing(!isWorkOrderEditing);
   };

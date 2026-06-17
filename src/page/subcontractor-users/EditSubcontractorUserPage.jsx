@@ -117,7 +117,10 @@ const EditSubcontractorUserPage =
 
     useEffect(() => {
       dispatch(
-        getSubcontractorLists(),
+        getSubcontractorLists({
+            contractor_state_active:
+              true,
+          }),
       );
 
       dispatch(
