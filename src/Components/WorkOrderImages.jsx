@@ -30,6 +30,7 @@ import {
   MdCloudUpload,
   MdClose,
   MdPermMedia,
+  MdCalendarToday
 } from "react-icons/md";
 
 import {
@@ -389,9 +390,14 @@ const isImage = (fileName = "") =>
     const formatDate = (date) => {
       return new Date(date)
         .toLocaleDateString("en-US", {
-          month: "2-digit",
-          day: "2-digit",
-          year: "numeric",
+        timeZone: "America/New_York",
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: true,
         })
         .replaceAll("/", "-");
     };
@@ -596,7 +602,8 @@ to-[#6366F1]
                           </td>
                           {/* Date */}
                           <td className="px-5 py-4">
-                            <div className="flex flex-col">
+                            <div className="flex items-center gap-3">
+                              <MdCalendarToday className="text-sm" />
                               <p className="text-sm font-semibold text-[#1E1B4B]">
                                 {formatDate(image?.created_at) ||
                                   "NA"}

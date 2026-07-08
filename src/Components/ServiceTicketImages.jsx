@@ -15,6 +15,7 @@ import {
   MdCloudUpload,
   MdClose,
   MdPerson,
+  MdCalendarToday,
 } from "react-icons/md";
 
 import { FaSpinner } from "react-icons/fa";
@@ -239,9 +240,14 @@ const getFileType = (fileName = "") => {
     const formatDate = (date) => {
       return new Date(date)
         .toLocaleDateString("en-US", {
-          month: "2-digit",
-          day: "2-digit",
-          year: "numeric",
+          timeZone: "America/New_York",
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: true,
         })
         .replaceAll("/", "-");
     };
@@ -576,9 +582,10 @@ const getFileType = (fileName = "") => {
                         {/* Date */}
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center gap-3">
-
+                            <MdCalendarToday className="text-sm" />
                             <div>
                               <p className="text-sm font-semibold text-[#1E1B4B]">
+                                
                                 {formatDate(image?.created_at) || "NA"}
                               </p>
                             </div>

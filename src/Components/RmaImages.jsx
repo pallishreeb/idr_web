@@ -10,6 +10,7 @@ import {
   MdVideoLibrary,
   MdCloudUpload,
   MdClose,
+  MdCalendarToday,
 } from "react-icons/md";
 
 import { getRMADetails, uploadRmaImages } from "../actions/rmaActions";
@@ -117,9 +118,14 @@ const handleFileChange = (e) => {
     const formatDate = (date) => {
       return new Date(date)
         .toLocaleDateString("en-US", {
-          month: "2-digit",
-          day: "2-digit",
-          year: "numeric",
+          timeZone: "America/New_York",
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: true,
         })
         .replaceAll("/", "-");
     };
@@ -313,11 +319,14 @@ to-[#6366F1]
                             {image?.user_name || "NA"}
                           </p>
                         </td>
-                          {/* Created By */}
+                          {/* Created at */}
                         <td className="px-4 py-4">
+                          <div className="flex items-center gap-3">
+                          <MdCalendarToday className="text-sm" />
                           <p className="text-sm font-semibold text-[#1E1B4B]">
                             {formatDate(image?.created_at) || "NA"}
                           </p>
+                          </div>
                         </td>
                         {/* ACTIONS */}
                         <td className="px-4 py-4">
