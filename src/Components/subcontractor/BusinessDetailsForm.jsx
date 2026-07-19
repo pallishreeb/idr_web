@@ -19,6 +19,7 @@ import {
   MdSave,
   MdStar,
   MdBadge,
+  MdEmail,
 } from "react-icons/md";
 
 import {
@@ -93,6 +94,7 @@ const BusinessDetailsForm =
         false,
       company_provide_service:
         false,
+      b_email :""
     });
 
     useEffect(() => {
@@ -185,6 +187,8 @@ const BusinessDetailsForm =
           company_provide_service:
             data.company_provide_service ||
             false,
+
+            b_email : data?.b_email || ""
         });
       }
     }, [data]);
@@ -382,7 +386,26 @@ to-[#4338CA]" />
                     />
                   </div>
                 </div>
+                {/* BUSINESS EMAIL */}
+                <div>
+                  <label className={labelClass}>
+                    Business Email
+                  </label>
 
+                  <div className="relative">
+                    <MdEmail className="absolute top-4 left-4 text-indigo-400 text-xl" />
+
+                    <input
+                      type="email"
+                      name="b_email"
+                      value={formData.b_email}
+                      onChange={handleChange}
+                      disabled={!isEditable}
+                      className={`${inputClass} pl-12`}
+                      placeholder="Enter business email"
+                    />
+                  </div>
+                </div>
                 {/* DBA */}
                 <div>
                   <label
