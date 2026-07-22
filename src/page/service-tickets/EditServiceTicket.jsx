@@ -154,7 +154,7 @@ const EditServiceTicket = () => {
           contact_person:
             selectedEmployee.first_name + " " + selectedEmployee.last_name,
           contact_phone_number: selectedEmployee.contact_number,
-          contact_mail_id: selectedEmployee.email_id,
+          contact_email: selectedEmployee.email_id,
           client_emp_user_id: selectedEmployee.user_id,
         }));
       }
