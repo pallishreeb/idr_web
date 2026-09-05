@@ -26,6 +26,7 @@ import {
   MdOutlineAnalytics,
   MdOutlineApartment,
   MdOutlineBadge,
+  MdAdminPanelSettings,
 } from "react-icons/md";
 
 import { Link, useLocation } from "react-router-dom";
@@ -117,6 +118,12 @@ const fullname = first_name + ' ' + last_name
       path: "/service-requests",
       icon: <MdOutlineRequestPage size={22} />,
       roles: ["Admin", "Subadmin"],
+    },
+    {
+      title: "Permission",
+      path: "/permissions",
+      icon: <MdAdminPanelSettings size={22} />,
+      roles: ["Admin"],
     },
   ];
 

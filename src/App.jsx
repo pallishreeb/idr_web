@@ -76,7 +76,7 @@ import AddSubcontractorPage from "./page/sub-contractor/AddSubcontractorPage";
 import SubcontractorUsersPage from "./page/subcontractor-users/Sub-users";
 import AddSubcontractorUserPage from "./page/subcontractor-users/AddSubcontractorUserPage";
 import EditSubcontractorUserPage from "./page/subcontractor-users/EditSubcontractorUserPage";
-
+import Permission from "./page/permission/Permission";
 
 
 
@@ -232,6 +232,10 @@ function App() {
          <Route path="/create-sub-contractor-user/:subcontractorId" element={<AddSubcontractorUserPage />} />
          <Route path="/sub-contractors-users" element={<SubcontractorUsersPage />} />
           <Route path="/edit-subcontractor-user/:userId" element={<EditSubcontractorUserPage />} />
+
+          {/* Permission */}
+
+          <Route path="/permissions" element={<Permission />} />
           {/* Service request */}
           <Route path="/service-requests" element={<ListServiceRequests />} />
           <Route path="/add-service-request" element={<AddServiceRequest />} />
