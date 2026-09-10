@@ -28,7 +28,7 @@ import {
   MdOutlineBadge,
   MdAdminPanelSettings,
 } from "react-icons/md";
-
+import usePermission from "../hooks/usePermission";
 import { Link, useLocation } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -37,7 +37,7 @@ import { getServiceRequestLists } from "../actions/serviceTicket";
 
 const AdminSideNavbar = () => {
   const dispatch = useDispatch();
-
+  const { can } = usePermission();
   const {
     user_type,
     client_type,
@@ -97,6 +97,7 @@ const fullname = first_name + ' ' + last_name
       path: "/client-equipments",
       icon: <MdBuild size={22} />,
       roles: ["Admin", "Subadmin"],
+
     },
 
     {
@@ -153,10 +154,7 @@ const fullname = first_name + ' ' + last_name
       title: "Client Equipment",
       path: "/client-equipments",
       icon: <MdBuild size={22} />,
-      roles:
-        client_type !== "User"
-          ? ["IDR Employee", "Client Employee"]
-          : ["IDR Employee"],
+      permission: "Client Equipment",
     },
 
     {
@@ -488,9 +486,11 @@ to-[#4338CA] flex items-center justify-center text-white text-lg font-bold shado
                   user_type === "Subcontractor"
                     ? `/edit-subcontractor/${subcontractor_id}`
                     : item.path;
-
+                const hasAccess = item.permission
+                    ? can(item.permission, "Read")
+                    : item.roles?.includes(user_type);
                 return (
-                  item.roles.includes(user_type) && (
+                  hasAccess && (
                     <MenuItem
                       key={item.title}
                       item={item}

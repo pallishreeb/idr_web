@@ -1,42 +1,47 @@
+import { createSlice } from "@reduxjs/toolkit";
+
 const initialState = {
-  selectedRole: "client-employee",
   permissions: [],
   loading: false,
+  loaded: false,
   error: null,
 };
 
-const permissionReducer = (
-  state = initialState,
-  action
-) => {
-  switch (action.type) {
-    case "permission/setRole":
-      return {
-        ...state,
-        selectedRole: action.payload,
-      };
+const permissionSlice = createSlice({
+  name: "permission",
+  initialState,
+  reducers: {
+    setPermissions(state, action) {
+      state.permissions = action.payload;
+      state.loading = false;
+      state.loaded = true;
+      state.error = null;
+    },
 
-    case "permission/setPermissions":
-      return {
-        ...state,
-        permissions: action.payload,
-      };
+    setLoading(state, action) {
+      state.loading = action.payload;
+    },
 
-    case "permission/setLoading":
-      return {
-        ...state,
-        loading: action.payload,
-      };
+    setError(state, action) {
+      state.loading = false;
+      state.loaded = false;
+      state.error = action.payload;
+    },
 
-    case "permission/setError":
-      return {
-        ...state,
-        error: action.payload,
-      };
+    clearPermissions(state) {
+      state.permissions = [];
+      state.loading = false;
+      state.loaded = false;
+      state.error = null;
+    },
+  },
+});
 
-    default:
-      return state;
-  }
-};
+export const {
+  setPermissions,
+  setLoading,
+  setError,
+  clearPermissions,
+} = permissionSlice.actions;
 
-export default permissionReducer;
+export default permissionSlice.reducer;

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 import PermissionHeader from "../../Components/permission/PermissionHeader";
 import PermissionTable from "../../Components/permission/PermissionTable";
@@ -14,6 +15,8 @@ import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 
 const Permission = () => {
+    const dispatch = useDispatch();
+
   const [roles, setRoles] = useState([]);
 
   const [selectedRole, setSelectedRole] =
@@ -89,12 +92,12 @@ const Permission = () => {
       const response =
         await getRolePermissions(roleId);
 
-      console.log(
-        "Role permissions:",
-        response?.modules
-      );
-
       setPermissions(response?.modules || []);
+      // Save permissions in Redux
+      dispatch({
+        type: "permission/setPermissions",
+        payload: response?.modules || [],
+      });
     } catch (error) {
       console.error(
         "Error fetching permissions:",

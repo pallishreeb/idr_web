@@ -20,7 +20,7 @@ import {
 } from "react-icons/md";
 
 import Swal from "sweetalert2";
-
+import usePermission from "../../hooks/usePermission";
 import { getClients } from "../../actions/clientActions";
 
 import { getLocationByClient } from "../../actions/locationActions";
@@ -36,6 +36,12 @@ import Loader from "../../Images/ZZ5H.gif";
 import { clearLicense } from "../../reducers/licenseSlice";
 
 const ClientLicenseList = () => {
+  const { can } = usePermission();
+
+const canRead = can("Client Licensing", "Read");
+const canCreate = can("Client Licensing", "Create");
+const canUpdate = can("Client Licensing", "Update");
+const canDelete = can("Client Licensing", "Delete");
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -395,7 +401,7 @@ const ClientLicenseList = () => {
 
             {/* ADD BUTTON */}
             <div>
-              {access?.includes(user_type) && (
+              {canCreate && (
                 <Link
                   to={`/add-client-licensing/${selectedClient}/${selectedLocation}?${searchParams.toString()}`}
                 >
@@ -428,7 +434,7 @@ to-[#4338CA]" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5">
               {/* CLIENT */}
-              {user_type !== "Client Employee" && (
+              {canRead && (
                 <div>
                   <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                     Client
@@ -464,9 +470,7 @@ to-[#4338CA]" />
               )}
 
               {/* LOCATION */}
-              {(user_type !== "Client Employee" ||
-                (clientAccess?.includes(client_type) &&
-                  userLocations?.length > 0)) && (
+              {canRead && (
                 <div>
                   <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                     Location

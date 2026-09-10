@@ -46,6 +46,7 @@ import {
   MdArrowBack,
   MdEdit,
 } from "react-icons/md";
+import usePermission from "../../hooks/usePermission";
 
 const EditClientEquipment = () => {
   const dispatch = useDispatch();
@@ -59,7 +60,9 @@ const EditClientEquipment = () => {
 
   const [searchParams] =
     useSearchParams();
+const { can } = usePermission();
 
+const canUpdate = can("Client Equipment", "Update");
   const returnTo =
     location.state?.returnTo;
 
@@ -315,12 +318,7 @@ const EditClientEquipment = () => {
     }
   };
 
-  // READ ONLY USERS
-  const readOnlyAccess = [
-    "Subcontractor_User",
-    "Subcontractor",
-    "Client Employee",
-  ];
+
 
   // COMMON CLASSES
   const inputClass =
@@ -352,9 +350,7 @@ const EditClientEquipment = () => {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              {technicianAccess.includes(
-                user_type,
-              ) && (
+              {canUpdate && (
                 <button
                   type="submit"
                   form="editDeviceForm"
@@ -713,9 +709,7 @@ to-[#4338CA]" />
                               required={
                                 field.required
                               }
-                              readOnly={readOnlyAccess.includes(
-                                user_type,
-                              )}
+                              readOnly={!canUpdate}
                               className={`${inputClass} pl-12`}
                             />
                           </div>
@@ -759,9 +753,7 @@ to-[#4338CA]" />
                         onChange={
                           handleChange
                         }
-                        readOnly={readOnlyAccess.includes(
-                          user_type,
-                        )}
+                        readOnly={!canUpdate}
                         className={`${inputClass} pl-12 pt-4`}
                       />
                     </div>

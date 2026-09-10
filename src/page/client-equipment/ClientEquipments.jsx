@@ -14,12 +14,12 @@ import {
   retireClientEquipment,
 } from "../../actions/clientEquipment";
 import { clearClientEquipments } from "../../reducers/clientEquipmentSlice";
-
+import usePermission from "../../hooks/usePermission";
 const ClientEquipments = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-
+  const { can } = usePermission();
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
   const locations = useSelector((state) => state.location.locations);
@@ -282,7 +282,7 @@ const ClientEquipments = () => {
     <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
       <div className="flex justify-between items-center">
         <div className="flex gap-2 w-[80%]">
-          {clientAccess?.includes(client_type) && userLocations?.length > 0 && (
+          {can("Client Equipment", "Read") && userLocations?.length > 0 && (
             <div className="flex flex-col gap-2">
               <label htmlFor="location" className="text-sm font-medium">
                 Select Location
@@ -449,7 +449,7 @@ const ClientEquipments = () => {
 
             {/* ACTION BUTTONS */}
             <div className="flex flex-wrap gap-3">
-              {technicianAccess.includes(user_type) && (
+              {can("Client Equipment", "Create") && (
                 <button
                   className="px-5 py-3 rounded-2xl bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-all duration-300 shadow-sm"
                   onClick={handleDownloadCSVTemplate}
@@ -458,7 +458,7 @@ const ClientEquipments = () => {
                 </button>
               )}
 
-              {technicianAccess.includes(user_type) && (
+              {can("Client Equipment", "Create") && (
                 <button
                   onClick={handleExportToExcel}
                   className="px-5 py-3 rounded-2xl bg-green-600 text-white font-semibold hover:bg-green-700 transition-all duration-300 shadow-md"
@@ -467,7 +467,7 @@ const ClientEquipments = () => {
                 </button>
               )}
 
-              {technicianAccess.includes(user_type) && (
+              {can("Client Equipment", "Create") && (
                 <Link
                   to={`/add-client-equipment/${selectedClient}/${selectedLocation}?${searchParams.toString()}`}
                 >
@@ -480,12 +480,10 @@ const ClientEquipments = () => {
           </div>
 
           {/* CLIENT FILTERS */}
-          {technicianAccess.includes(user_type) && (
+          {can("Client Equipment", "Read") && (
             <div className="bg-white rounded-[28px] shadow-md border border-gray-100 p-6 mb-6">
               <div className="flex items-center gap-2 mb-5">
-                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]" />
+                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
                 <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                   Client & Location
@@ -586,7 +584,7 @@ to-[#4338CA]" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
               {/* LOCATION FOR CLIENT EMPLOYEE */}
-              {clientAccess?.includes(client_type) &&
+              {can("Client Equipment", "Read") &&
                 userLocations?.length > 0 && (
                   <div>
                     <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
@@ -830,7 +828,7 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                               </button>
 
                               {/* DECOMMISSION / REACTIVATE */}
-                              {technicianAccess.includes(user_type) && (
+                              {can("Client Equipment", "Update") && (
                                 <>
                                   {equipment?.is_deleted === true ? (
                                     <button
@@ -859,7 +857,7 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                                   )}
                                 </>
                               )}
-                              {technicianAccess.includes(user_type) && (
+                              {can("RMAs", "Create") && (
                                 <>
                                   {/* RMA */}
                         <button
