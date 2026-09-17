@@ -960,6 +960,7 @@ to-[#4338CA]
                 Retainage
                 Billed
               </option>
+              <option value="Cancelled"> Cancelled</option>
             </select>
           </div>
         </div>

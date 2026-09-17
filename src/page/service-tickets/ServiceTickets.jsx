@@ -29,6 +29,10 @@ const [filters, setFilters] = useState({
   project_manager: searchParams.get("project_manager") || "",
   location_id: searchParams.get("location_id") || "",
   is_billed: searchParams.get("is_billed") || "",
+
+  date_range: searchParams.get("date_range") || "",
+  start_date: searchParams.get("start_date") || "",
+  end_date: searchParams.get("end_date") || "",
 });
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
@@ -59,7 +63,14 @@ const [filters, setFilters] = useState({
     params.set("location_id", filters.location_id);
   if (filters.is_billed)
     params.set("is_billed", filters.is_billed);
+  if (filters.date_range)
+    params.set("date_range", filters.date_range);
 
+  if (filters.start_date)
+    params.set("start_date", filters.start_date);
+
+  if (filters.end_date)
+    params.set("end_date", filters.end_date);
   setSearchParams(params);
 }, [filters, setSearchParams]);
 useEffect(() => {
@@ -106,8 +117,15 @@ useEffect(() => {
     });
   };
   const handleSearch = () => {
-    dispatch(getServiceTicketLists(filters));
+  const dateRange = getDateRange(filters.date_range);
+
+  const appliedFilters = {
+    ...filters,
+    ...dateRange,
   };
+
+  dispatch(getServiceTicketLists(appliedFilters));
+};
 const handleReset = () => {
   const clearedFilters = {
     status: "",
@@ -188,6 +206,58 @@ function formatDate(date) {
   return sortConfig.direction === "asc"
     ? <MdKeyboardArrowUp />
     : <MdKeyboardArrowDown />;
+};
+const currentYear = new Date().getFullYear();
+
+const years = Array.from(
+  { length: 5 },
+  (_, index) => currentYear - index
+);
+
+const getDateRange = (range) => {
+  const today = new Date();
+
+  if (range === "last_30_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 30);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (range === "last_60_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 60);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (range === "last_90_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 90);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (/^\d{4}$/.test(range)) {
+    return {
+      start_date: `${range}-01-01`,
+      end_date: `${range}-12-31`,
+    };
+  }
+
+  return {
+    start_date: "",
+    end_date: "",
+  };
 };
   return (
     <>
@@ -385,6 +455,7 @@ to-[#4338CA]
                       </option>
                       <option value="Warranty">Warranty</option>
                       <option value="Courtesy">Courtesy</option>
+                      <option value="Cancelled"> Cancelled</option>
                     </select>
                   </div>
                 )}
@@ -444,6 +515,33 @@ to-[#4338CA]
                     </select>
                   </div>
                 )}
+                {/* DATE RANGE */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-gray-600">
+                    Date Range
+                  </label>
+
+                  <select
+                    name="date_range"
+                    value={filters.date_range}
+                    className="h-10 px-3 rounded-xl border border-gray-200 text-sm"
+                    onChange={handleFilterChange}
+                  >
+                    <option value="">All</option>
+
+                    <option value="last_30_days">Last 30 Days</option>
+                    <option value="last_60_days">Last 60 Days</option>
+                    <option value="last_90_days">Last 90 Days</option>
+
+                    <option disabled>──────────</option>
+
+                    {years.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               {/* BUTTONS */}

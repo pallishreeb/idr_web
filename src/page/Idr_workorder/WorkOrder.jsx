@@ -54,6 +54,10 @@ const WorkOrder = () => {
     project_manager: searchParams.get("project_manager") || "",
     location_id: searchParams.get("location_id") || "",
     is_billed: searchParams.get("is_billed") || "",
+
+    date_range: searchParams.get("date_range") || "",
+    start_date: searchParams.get("start_date") || "",
+    end_date: searchParams.get("end_date") || "",
   });
 
   const [sortConfig, setSortConfig] = useState({
@@ -134,7 +138,12 @@ const WorkOrder = () => {
   };
 
   const handleSearch = () => {
-    dispatch(getWorkOrderLists(filters));
+  const dateRange = getDateRange(filters.date_range);
+  const appliedFilters = {
+      ...filters,
+      ...dateRange,
+    };
+    dispatch(getWorkOrderLists(appliedFilters));
   };
 
   const handleReset = () => {
@@ -145,6 +154,9 @@ const WorkOrder = () => {
       technician: "",
       project_manager: "",
       is_billed: "",
+      date_range: "",
+      start_date: "",
+      end_date: "",
     };
 
     setFilters(clearedFilters);
@@ -236,6 +248,57 @@ const WorkOrder = () => {
 
   return `${month}/${day}/${year}`;
 }
+const currentYear = new Date().getFullYear();
+
+const years = Array.from(
+  { length: 5 },
+  (_, index) => currentYear - index
+);
+const getDateRange = (range) => {
+  const today = new Date();
+
+  if (range === "last_30_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 30);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (range === "last_60_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 60);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (range === "last_90_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 90);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (/^\d{4}$/.test(range)) {
+    return {
+      start_date: `${range}-01-01`,
+      end_date: `${range}-12-31`,
+    };
+  }
+
+  return {
+    start_date: "",
+    end_date: "",
+  };
+};
   return (
     <>
       <Header />
@@ -472,9 +535,41 @@ const WorkOrder = () => {
                         <option value="Retainage Billed">
                           Retainage Billed
                         </option>
+                        <option value="Cancelled"> Cancelled</option>
+                       
                       </select>
                     </div>
                   </>
+                )}
+
+                {access.includes(user_type) && (
+
+                <div>
+                  <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
+                    Date Range
+                  </label>
+
+                 <select
+                  name="date_range"
+                  value={filters.date_range}
+                  className={filterInputClass}
+                  onChange={handleFilterChange}
+                >
+                  <option value="">All</option>
+
+                  <option value="last_30_days">Last 30 Days</option>
+                  <option value="last_60_days">Last 60 Days</option>
+                  <option value="last_90_days">Last 90 Days</option>
+
+                  <option disabled>──────────</option>
+
+                  {years.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+                </div>
                 )}
               </div>
 

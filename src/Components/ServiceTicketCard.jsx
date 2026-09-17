@@ -665,6 +665,7 @@ to-[#4338CA]
               <option value="Warranty">Warranty</option>
 
               <option value="Courtesy">Courtesy</option>
+              <option value="Cancelled"> Cancelled</option>
             </select>
           </div>
         </div>
