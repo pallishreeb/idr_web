@@ -1,6 +1,12 @@
 /** @format */
 
 import { useEffect, useState } from "react";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import usePermission from "../../hooks/usePermission";
+import {
+  PERMISSION_TYPES,
+  PERMISSION_MODULES,
+} from "../../constants/permissionConstants";
 
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -70,9 +76,17 @@ const IdrEquipment = () => {
     (state) => state.locationInventory.locations,
   );
 
-  const { access, technicianAccess } = useSelector((state) => state.user);
-
-  const { user_type } = useSelector((state) => state.user.user);
+  const {
+    canCreate,
+    canUpdate,
+    canDelete,
+    canViewEquipmentFilter
+  } = useModulePermissions(PERMISSION_MODULES.IDR_EQUIPMENT);
+  const { can } = usePermission();
+  const canRead = can(
+    PERMISSION_MODULES.IDR_EQUIPMENT,
+    PERMISSION_TYPES.READ
+  );
 
   const loading = useSelector((state) => state.idrequipment.loading);
 
@@ -149,6 +163,8 @@ const IdrEquipment = () => {
   };
 
   const handleDelete = (equipmentId) => {
+    if (!canDelete) return;
+
     Swal.fire({
       title: "Are you sure?",
       text: "Do you really want to delete this Equipment?",
@@ -289,7 +305,7 @@ to-[#4338CA]
               </div>
 
               {/* ACTIONS */}
-              {access.includes(user_type) && (
+              {canViewEquipmentFilter && (
                 <div className="flex flex-wrap gap-3">
                   {/* FILTER */}
                   <select
@@ -344,6 +360,7 @@ to-[#4338CA]
                   </button>
 
                   {/* ADD */}
+                  {canCreate && (
                   <Link
                     to="/add-company-equipment"
                     state={{
@@ -374,6 +391,7 @@ to-[#4338CA]
                       Add Equipment
                     </button>
                   </Link>
+                  )}
                 </div>
               )}
             </div>
@@ -765,6 +783,7 @@ to-[#4338CA]
                         <td className="px-4 py-3 border-b">
                           <div className="flex gap-2">
                             {/* EDIT */}
+                            {canUpdate && (
                             <button
                               onClick={() =>
                                 navigate(
@@ -791,9 +810,10 @@ to-[#4338CA]
                             >
                               <BiSolidEditAlt className="text-base" />
                             </button>
+                            )}
 
                             {/* TRANSFER */}
-                            {technicianAccess.includes(user_type) && (
+                            {canUpdate && (
                               <button
                                 onClick={() =>
                                   navigate(
@@ -823,7 +843,7 @@ to-[#4338CA]
                             )}
 
                             {/* DELETE */}
-                            {user_type === "Admin" && (
+                            {canDelete && (
                               <button
                                 onClick={() =>
                                   handleDelete(equipment?.equipment_id)

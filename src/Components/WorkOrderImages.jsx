@@ -45,6 +45,8 @@ import {
 
 import ImageModal from "./ImageModal";
 import { convertHeicToJpg } from "../utils/imageUtils";
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
 
 const WorkOrderImages =
   ({
@@ -58,22 +60,13 @@ const WorkOrderImages =
       user_type,
       user_id,
     } =
-      useSelector(
-        (
-          state,
-        ) =>
-          state.user.user,
-      );
+      useSelector((state) => state.user.user);
+const { access } = useSelector((state) => state.user);
+    const { canUpdate,canDeleteAttachment, canDelete,canAddAttachment } = useModulePermissions(
+      PERMISSION_MODULES.WORK_ORDERS,
+    );
 
-    const {
-      technicianAccess,access
-    } =
-      useSelector(
-        (
-          state,
-        ) =>
-          state.user,
-      );
+
 
     const {
       loadingAssignImage,
@@ -266,6 +259,8 @@ const WorkOrderImages =
       (
         imageId,
       ) => {
+
+
         Swal.fire({
           title:
             "Are you sure?",
@@ -381,12 +376,12 @@ const isPdf = (fileName = "") =>
 const isImage = (fileName = "") =>
   !isVideo(fileName) && !isPdf(fileName);
 
-    const newAccess =
-      [
-        ...technicianAccess,
-        "Subcontractor_User",
-        "Subcontractor",
-      ];
+    // const newAccess =
+    //   [
+    //     ...technicianAccess,
+    //     "Subcontractor_User",
+    //     "Subcontractor",
+    //   ];
     const formatDate = (date) => {
       return new Date(date)
         .toLocaleDateString("en-US", {
@@ -432,13 +427,7 @@ const isImage = (fileName = "") =>
             </div>
 
             {/* BUTTON */}
-            {(newAccess?.includes(
-              user_type,
-            ) ||
-              user_type
-                ?.trim()
-                .toLowerCase() ===
-                "subcontractor_user") && (
+            {canAddAttachment && (
               <button
                 className="
                   flex
@@ -449,8 +438,8 @@ const isImage = (fileName = "") =>
                   rounded-2xl
                   bg-gradient-to-r
                  from-[#312E81]
-via-[#4338CA]
-to-[#6366F1]
+                  via-[#4338CA]
+                  to-[#6366F1]
                   text-white
                   text-sm
                   font-semibold
@@ -642,10 +631,11 @@ to-[#6366F1]
 
                               {/* DELETE */}
                               {(
+                                         
                                         access.includes(user_type) ||
                                         (
-                                          newAccess.includes(user_type) &&
-                                          image?.by_user_id === user_id
+                                          canDeleteAttachment &&
+                                             image?.by_user_id === user_id
                                         )
                                       ) && (
                                   <button

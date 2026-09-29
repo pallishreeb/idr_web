@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
 
 import Swal from "sweetalert2";
 import heic2any from "heic2any";
@@ -34,12 +36,20 @@ import ImageModal from "./ImageModal";
 import ImagePreview from "./ImagePreview";
 import { convertHeicToJpg } from "../utils/imageUtils";
 
-const ServiceTicketImages = ({ images, serviceTicketId }) => {
+const ServiceTicketImages = ({
+  images,
+  serviceTicketId,
+  permissionModule = PERMISSION_MODULES.SERVICE_TICKETS,
+}) => {
   const dispatch = useDispatch();
 
-  const { user_type, user_id } = useSelector((state) => state.user.user);
+  const { user_id } = useSelector((state) => state.user.user);
 
-  const { technicianAccess,access } = useSelector((state) => state.user);
+const {
+  canRead,
+  canAddAttachment,
+  canDeleteAttachment,
+} = useModulePermissions(permissionModule);
 
   const { loadingAssignImage } = useSelector((state) => state.serviceTicket);
 
@@ -50,16 +60,14 @@ const ServiceTicketImages = ({ images, serviceTicketId }) => {
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
 
   // =========================
-  // ACCESS
+  // PERMISSIONS
   // =========================
 
-  const newAccess = [
-    ...technicianAccess,
-    "Subcontractor_User",
-    "Subcontractor",
-  ];
+ const canManageImages = canAddAttachment;
 
-  const canManageImages = newAccess.includes(user_type);
+  if (!canRead) {
+    return null;
+  }
 
   // =========================
   // MODAL
@@ -620,11 +628,8 @@ const getFileType = (fileName = "") => {
 
                             {/* DELETE */}
                             {(
-                              access.includes(user_type) ||
-                              (
-                                canManageImages &&
-                                image?.by_user_id === user_id
-                              )
+                              canDeleteAttachment ||
+                              (canManageImages && image?.by_user_id === user_id)
                             ) && (
                                 <button
                                   onClick={() =>

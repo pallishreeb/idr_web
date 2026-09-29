@@ -20,7 +20,10 @@ import {
 } from "react-icons/md";
 
 import Swal from "sweetalert2";
-import usePermission from "../../hooks/usePermission";
+
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
+
 import { getClients } from "../../actions/clientActions";
 
 import { getLocationByClient } from "../../actions/locationActions";
@@ -36,17 +39,25 @@ import Loader from "../../Images/ZZ5H.gif";
 import { clearLicense } from "../../reducers/licenseSlice";
 
 const ClientLicenseList = () => {
-  const { can } = usePermission();
-
-const canRead = can("Client Licensing", "Read");
-const canCreate = can("Client Licensing", "Create");
-const canUpdate = can("Client Licensing", "Update");
-const canDelete = can("Client Licensing", "Delete");
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // PERMISSIONS
+  const {
+    canRead,
+    canCreate,
+    canDelete,
+    canViewClientFilter,
+    canViewLocationFilter,
+    canViewManufacturerFilter,
+    canViewIdrCost,
+    canViewSalePrice,
+    canViewTotalSalesCost,
+    canViewTotalSalePrice,
+  } = useModulePermissions(PERMISSION_MODULES.CLIENT_LICENSING);
 
   // REDUX
   const { clients } = useSelector((state) => state.client);
@@ -60,8 +71,6 @@ const canDelete = can("Client Licensing", "Delete");
     client_type,
     locations: userLocations,
   } = useSelector((state) => state.user.user);
-
-  const { access, clientAccess } = useSelector((state) => state.user);
 
   // FILTERS APPLIED
   const [filtersApplied, setFiltersApplied] = useState(
@@ -124,7 +133,7 @@ const canDelete = can("Client Licensing", "Delete");
 
     const manufacturer = searchParams.get("manufacturer");
 
-    if (user_type !== "Client Employee") {
+    if (canViewClientFilter) {
       dispatch(getClients());
     }
 
@@ -143,7 +152,7 @@ const canDelete = can("Client Licensing", "Delete");
     };
 
     dispatch(getLicenseLists(query, sortConfig.key, sortConfig.direction));
-  }, [dispatch, user_type, searchParams, sortConfig]);
+  }, [dispatch, searchParams, sortConfig, canViewClientFilter,user_type]);
 
   // FETCH LOCATIONS
   useEffect(() => {
@@ -250,13 +259,15 @@ const canDelete = can("Client Licensing", "Delete");
 
     dispatch(getLicenseLists({}));
 
-    if (user_type !== "Client Employee") {
+    if (canViewClientFilter) {
       dispatch(getClients());
     }
   };
 
   // DELETE
   const handleDeleteLicense = (licenseId) => {
+    if (!canDelete) return;
+
     Swal.fire({
       title: "Are you sure?",
       text: "Do you really want to delete this license?",
@@ -296,7 +307,9 @@ const canDelete = can("Client Licensing", "Delete");
 
   // EDIT
   const handleEdit = (licenseId) => {
-    navigate(`/edit-client-licensing/${licenseId}?${searchParams.toString()}`);
+    navigate(
+      `/edit-client-licensing/${licenseId}?${searchParams.toString()}`,
+    );
   };
 
   // FORMAT DATE
@@ -424,8 +437,8 @@ const canDelete = can("Client Licensing", "Delete");
           <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 p-6 mb-6">
             <div className="flex items-center gap-2 mb-5">
               <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]" />
+              via-[#312E81]
+              to-[#4338CA]" />
 
               <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                 Filters
@@ -434,7 +447,7 @@ to-[#4338CA]" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5">
               {/* CLIENT */}
-              {canRead && (
+              {canViewClientFilter && (
                 <div>
                   <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                     Client
@@ -470,7 +483,7 @@ to-[#4338CA]" />
               )}
 
               {/* LOCATION */}
-              {canRead && (
+              {canViewLocationFilter && (
                 <div>
                   <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                     Location
@@ -483,12 +496,12 @@ to-[#4338CA]" />
                       value={filters.location_id}
                       onChange={handleLocationChange}
                       disabled={
-                        user_type !== "Client Employee" && !filters.client_id
-                      }
+                            user_type !== "Client Employee" && !filters.client_id
+                          }
                       className={`w-full pl-12 pr-4 py-3 rounded-2xl border transition-all duration-300
                         
                         ${
-                          user_type !== "Client Employee" && !filters.client_id
+                          !filters.client_id
                             ? "bg-gray-100 text-gray-500 border-gray-200"
                             : "bg-white border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                         }
@@ -496,7 +509,7 @@ to-[#4338CA]" />
                     >
                       <option value="">Select Location</option>
 
-                      {(clientAccess?.includes(client_type)
+                      {(userLocations?.length > 0
                         ? [...userLocations]
                         : [...locations]
                       )
@@ -524,31 +537,33 @@ to-[#4338CA]" />
               )}
 
               {/* MANUFACTURER */}
-              <div>
-                <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
-                  Manufacturer
-                </label>
+              {canViewManufacturerFilter && (
+                <div>
+                  <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                    Manufacturer
+                  </label>
 
-                <div className="relative">
-                  <MdKey className="absolute top-4 left-4 text-indigo-400 text-xl" />
+                  <div className="relative">
+                    <MdKey className="absolute top-4 left-4 text-indigo-400 text-xl" />
 
-                  <input
-                    type="text"
-                    value={filters.manufacturer}
-                    onChange={handleManufacturerChange}
-                    placeholder="Enter manufacturer"
-                    className="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
-                  />
+                    <input
+                      type="text"
+                      value={filters.manufacturer}
+                      onChange={handleManufacturerChange}
+                      placeholder="Enter manufacturer"
+                      className="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* SEARCH */}
               <div className="flex items-end">
                 <button
                   onClick={handleSearch}
                   className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                  via-[#312E81]
+                  to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                 >
                   <MdSearch size={20} />
                   Search
@@ -570,7 +585,7 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
 
           {/* TOTAL CARDS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {access.includes(user_type) && (
+            {canViewTotalSalesCost && (
               <div className="bg-white rounded-[28px] shadow-lg border border-gray-100 p-6">
                 <p className="text-sm text-gray-500 mb-2">Total Sales Cost</p>
 
@@ -580,7 +595,7 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
               </div>
             )}
 
-            {user_type !== "IDR Employee" && (
+            {canViewTotalSalePrice && (
               <div className="bg-white rounded-[28px] shadow-lg border border-gray-100 p-6">
                 <p className="text-sm text-gray-500 mb-2">Total Sale Price</p>
 
@@ -662,7 +677,7 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                     ))}
 
                     {/* IDR COST */}
-                    {access.includes(user_type) && (
+                    {canViewIdrCost && (
                       <th
                         onClick={() => handleSort("idr_cost")}
                         className="px-4 py-4 text-left text-xs uppercase tracking-wider font-bold text-indigo-600 cursor-pointer whitespace-nowrap"
@@ -672,7 +687,7 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                     )}
 
                     {/* SALE PRICE */}
-                    {user_type !== "IDR Employee" && (
+                    {canViewSalePrice && (
                       <th
                         onClick={() => handleSort("sale_cost")}
                         className="px-4 py-4 text-left text-xs uppercase tracking-wider font-bold text-indigo-600 cursor-pointer whitespace-nowrap"
@@ -741,13 +756,13 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                           {formatDateToMDY(license.expiration_date) || ""}
                         </td>
 
-                        {access.includes(user_type) && (
+                        {canViewIdrCost && (
                           <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
                             {formatCurrency(license.idr_cost)}
                           </td>
                         )}
 
-                        {user_type !== "IDR Employee" && (
+                        {canViewSalePrice && (
                           <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
                             {formatCurrency(license.sale_cost)}
                           </td>
@@ -757,15 +772,17 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                         <td className="px-4 py-4">
                           <div className="flex items-center justify-center gap-2">
                             {/* EDIT */}
-                            <button
-                              onClick={() => handleEdit(license.license_id)}
-                              className="w-10 h-10 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-all duration-300"
-                            >
-                              <BiSolidEditAlt size={18} />
-                            </button>
+                            {canRead && (
+                              <button
+                                onClick={() => handleEdit(license.license_id)}
+                                className="w-10 h-10 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-all duration-300"
+                              >
+                                <BiSolidEditAlt size={18} />
+                              </button>
+                            )}
 
                             {/* DELETE */}
-                            {user_type === "Admin" && (
+                            {canDelete && (
                               <button
                                 onClick={() =>
                                   handleDeleteLicense(license.license_id)

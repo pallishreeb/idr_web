@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 
 import { useSelector } from "react-redux";
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
 
 import {
   MdEdit,
@@ -31,7 +33,9 @@ const ServiceTicketCard = ({
 }) => {
   const { user_type } = useSelector((state) => state.user.user);
 
-  const { access } = useSelector((state) => state.user);
+  const { canUpdate } = useModulePermissions(
+    PERMISSION_MODULES.SERVICE_TICKETS,
+  );
 
   const newAccess = ["Subcontractor_User", "Subcontractor"];
 
@@ -82,8 +86,9 @@ const ServiceTicketCard = ({
       return fieldName !== "status";
     }
 
-    return !isEditing || !access.includes(user_type);
+    return !isEditing || !canUpdate;
   };
+  
 const ReadOnlyContent = ({ value }) => (
   <div
     className="
@@ -154,7 +159,7 @@ const ReadOnlyContent = ({ value }) => (
           </div>
 
           {/* ACTION BUTTONS */}
-          {(access.includes(user_type) || user_type === "IDR Employee") && (
+          {(canUpdate || user_type === "IDR Employee") && (
             <div className="flex flex-wrap gap-3">
               {isEditing ? (
                 <>

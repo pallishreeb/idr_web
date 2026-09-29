@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
+
 import Header from "../../Components/Header";
 
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
@@ -60,16 +63,17 @@ const EditEquipment = () => {
 
   const [isEditing, setIsEditing] = useState(false);
 
-  const { user_type } = useSelector((state) => state.user.user);
-
-  const { access } = useSelector((state) => state.user);
+  const { canUpdate } = useModulePermissions(
+   PERMISSION_MODULES.IDR_EQUIPMENT
+  );
 
   const locationsInventory = useSelector(
     (state) => state.locationInventory.locations,
   );
 
   const handleEditToggle = () => {
-    setIsEditing(!isEditing);
+    if (!canUpdate) return;
+    setIsEditing((prev) => !prev);
   };
 
   useEffect(() => {
@@ -115,6 +119,8 @@ const EditEquipment = () => {
   }, [dispatch, idr_equipment_id]);
 
   const handleInputChange = (e) => {
+    if (!canUpdate) return;
+
     const { name, value } = e.target;
 
     setEditableFields((prevData) => ({
@@ -124,6 +130,8 @@ const EditEquipment = () => {
   };
 
   const handleLocationChange = (e) => {
+    if (!canUpdate) return;
+
     const selectedLocation = locationsInventory.find(
       (loc) => loc.location === e.target.value,
     );
@@ -138,9 +146,14 @@ const EditEquipment = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    editableFields.equipment_id = idr_equipment_id;
+    if (!canUpdate) return;
 
-    dispatch(updateEquipment(editableFields, navigate, location.state));
+    const payload = {
+      ...editableFields,
+      equipment_id: idr_equipment_id,
+    };
+
+    dispatch(updateEquipment(payload, navigate, location.state));
   };
 
   if (loading) {
@@ -221,7 +234,7 @@ to-[#4338CA]
 
               {/* ACTIONS */}
               <div className="flex flex-wrap gap-3">
-                {access.includes(user_type) &&
+                {canUpdate &&
                   !isEditing &&
                   type !== "assign" && (
                     <button
@@ -309,7 +322,7 @@ to-[#4338CA]
                   </p>
                 </div>
 
-                {isEditing && (
+                {isEditing && canUpdate && (
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -333,7 +346,7 @@ to-[#4338CA]
 
                     <button
                       type="submit"
-                      disabled={loading}
+                      disabled={loading || !canUpdate}
                       className="
                           flex
                           items-center
@@ -399,7 +412,7 @@ to-[#4338CA]
                     type="text"
                     value={editableFields.make}
                     onChange={handleInputChange}
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                         w-full
                         rounded-2xl
@@ -429,7 +442,7 @@ to-[#4338CA]
                     type="text"
                     value={editableFields.model}
                     onChange={handleInputChange}
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                         w-full
                         rounded-2xl
@@ -459,7 +472,7 @@ to-[#4338CA]
                     type="text"
                     value={editableFields.device_type}
                     onChange={handleInputChange}
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                         w-full
                         rounded-2xl
@@ -489,7 +502,7 @@ to-[#4338CA]
                     type="text"
                     value={editableFields.mac_address}
                     onChange={handleInputChange}
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                         w-full
                         rounded-2xl
@@ -519,6 +532,7 @@ to-[#4338CA]
                       name="location"
                       value={editableFields.location_name}
                       onChange={handleLocationChange}
+                      disabled={!canUpdate}
                       className="
                           w-full
                           rounded-2xl
@@ -631,7 +645,7 @@ to-[#4338CA]
                     value={editableFields.description}
                     onChange={handleInputChange}
                     rows={5}
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                         w-full
                         rounded-2xl

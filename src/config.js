@@ -1,4 +1,5 @@
-const API_BASE_URL = 'https://api.portal.idrtechnologysolutions.com';
+// const API_BASE_URL = 'https://api.portal.idrtechnologysolutions.com';
+const API_BASE_URL = 'https://staging.portal.idrtechnologysolutions.com';
 const S3_BASE_URL = 'https://idr-app-images-bucket.s3.amazonaws.com';
 const apiConfig = {
   setPassword: "/users/set_password",

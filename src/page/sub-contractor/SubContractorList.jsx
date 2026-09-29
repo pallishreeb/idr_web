@@ -49,6 +49,9 @@ import Loader from "../../Images/ZZ5H.gif";
 
 import { toast } from "react-toastify";
 
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
+
 const SubContractorList =
   () => {
     const dispatch =
@@ -92,21 +95,9 @@ const SubContractorList =
           state.subcontractor,
       );
 
-    const {
-      user_type,
-    } =
-      useSelector(
-        (state) =>
-          state.user.user,
-      );
-
-    const {
-      access,
-    } =
-      useSelector(
-        (state) =>
-          state.user,
-      );
+    const { canRead, canUpdate, canDelete } = useModulePermissions(
+      PERMISSION_MODULES.SUBCONTRACTORS,
+    );
 
     // FETCH
     useEffect(() => {
@@ -122,6 +113,8 @@ const SubContractorList =
       (
         subcontractorId,
       ) => {
+        if (!canDelete) return;
+
         Swal.fire({
           title:
             "Are you sure?",
@@ -246,6 +239,8 @@ const SubContractorList =
       (
         subcontractorId,
       ) => {
+        if (!canUpdate) return;
+
         navigate(
           `/edit-subcontractor/${subcontractorId}`,
         );
@@ -412,9 +407,7 @@ const SubContractorList =
               </div>
 
               {/* FILTER CARD */}
-              {access.includes(
-                user_type,
-              ) && (
+              {canRead && (
                 <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 p-6 mb-6">
                   <div className="flex items-center gap-2 mb-5">
                     <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
@@ -563,8 +556,7 @@ to-[#4338CA]" />
                       Clear
                     </button>
 
-                    {user_type ===
-                      "Admin" && (
+                    {canUpdate && (
                       <Link
                         to="/create-sub-contractor"
                         className="ml-auto"
@@ -716,9 +708,11 @@ to-[#4338CA]" />
                           </div>
                         </th>
 
-                        <th className="px-4 py-4 text-center text-xs uppercase font-bold text-indigo-600 whitespace-nowrap sticky right-0 bg-indigo-50 z-10">
-                          Action
-                        </th>
+                        {(canUpdate || canDelete) && (
+                          <th className="px-4 py-4 text-center text-xs uppercase font-bold text-indigo-600 whitespace-nowrap sticky right-0 bg-indigo-50 z-10">
+                            Action
+                          </th>
+                        )}
                       </tr>
                     </thead>
 
@@ -850,31 +844,37 @@ to-[#4338CA]" />
                               </td>
 
                               {/* STICKY ACTION */}
-                              <td className="px-4 py-4 sticky right-0 bg-white border-l border-gray-100">
-                                <div className="flex items-center justify-center gap-2">
-                                  <button
-                                    className="w-10 h-10 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-all duration-300"
-                                    onClick={() =>
-                                      handleEdit(
-                                        subcontractor.subcontractor_id,
-                                      )
-                                    }
-                                  >
-                                    <BiSolidEditAlt size={18} />
-                                  </button>
+                              {(canUpdate || canDelete) && (
+                                <td className="px-4 py-4 sticky right-0 bg-white border-l border-gray-100">
+                                  <div className="flex items-center justify-center gap-2">
+                                    {canUpdate && (
+                                      <button
+                                        className="w-10 h-10 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-all duration-300"
+                                        onClick={() =>
+                                          handleEdit(
+                                            subcontractor.subcontractor_id,
+                                          )
+                                        }
+                                      >
+                                        <BiSolidEditAlt size={18} />
+                                      </button>
+                                    )}
 
-                                  <button
-                                    className="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-all duration-300"
-                                    onClick={() =>
-                                      handleDelete(
-                                        subcontractor.subcontractor_id,
-                                      )
-                                    }
-                                  >
-                                    <AiFillDelete size={18} />
-                                  </button>
-                                </div>
-                              </td>
+                                    {canDelete && (
+                                      <button
+                                        className="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-all duration-300"
+                                        onClick={() =>
+                                          handleDelete(
+                                            subcontractor.subcontractor_id,
+                                          )
+                                        }
+                                      >
+                                        <AiFillDelete size={18} />
+                                      </button>
+                                    )}
+                                  </div>
+                                </td>
+                              )}
                             </tr>
                           ),
                         )

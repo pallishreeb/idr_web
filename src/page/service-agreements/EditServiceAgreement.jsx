@@ -134,6 +134,7 @@ const EditServiceAgreement =
       price: "",
       service_details:
         "",
+      customer_pays: "",
     });
 
     const [
@@ -207,6 +208,7 @@ const EditServiceAgreement =
                   service_details:
                     data.service_details ||
                     "",
+                  customer_pays: data.customer_pays || "",  
                 },
               );
 
@@ -804,6 +806,37 @@ to-[#4338CA]" />
                             </div>
                           </div>
                         )}
+
+                        {/* CUSTOMER PAYS */}
+                        {
+                        access?.includes(user_type) && <div>
+                        <label className={labelClass}>
+                          Customer Pays
+                        </label>
+
+                        <select
+                          name="customer_pays"
+                          value={serviceAgreement.customer_pays}
+                          onChange={handleChange}
+                          required
+                          disabled={!access?.includes(user_type)}
+                          className={inputClass}
+                        >
+                          <option value="">
+                            Select Payment Frequency
+                          </option>
+
+                          <option value="A">
+                            Monthly
+                          </option>
+
+                          <option value="B">
+                            Yearly
+                          </option>
+                        </select>
+                      </div>
+                        }
+                      
                     </div>
 
                     {/* SERVICE DETAILS */}

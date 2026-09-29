@@ -40,9 +40,20 @@ import {
 } from "../../actions/clientEmployeeActions";
 
 import { getClients } from "../../actions/clientActions";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 const EmployeePage = () => {
   const location = useLocation();
+
+  const {
+    canCreate,
+    canRead,
+    canUpdate,
+    canDelete,
+    canViewClientFilter,
+    canUpdatePassword
+  } = useModulePermissions(PERMISSION_MODULES.CLIENT_EMPLOYEES);
 
   const dispatch = useDispatch();
 
@@ -116,6 +127,17 @@ const EmployeePage = () => {
     }
   }, [user]);
 
+useEffect(() => {
+  if (user?.client_id) {
+    setSelectedClient(String(user.client_id));
+  } else if (
+    !canViewClientFilter &&
+    !selectedClient &&
+    clients?.data?.length > 0
+  ) {
+    setSelectedClient(String(clients.data[0].client_id));
+  }
+}, [user, canViewClientFilter, clients, selectedClient]);
   const handleClientChange = (
     clientId,
   ) => {
@@ -125,6 +147,8 @@ const EmployeePage = () => {
   const handleDeleteEmployee = (
     employeeId,
   ) => {
+    if (!canDelete) return;
+
     Swal.fire({
       title: "Are you sure?",
       text: "Do you really want to delete this employee?",
@@ -150,6 +174,8 @@ const EmployeePage = () => {
   const handleEdit = (
     employeeId,
   ) => {
+    if (!canUpdate) return;
+
     navigate(
       `/edit-employee/${employeeId}`,
       {
@@ -163,6 +189,8 @@ const EmployeePage = () => {
   const handleSetPassword = (
     userId,
   ) => {
+    if (!canUpdate) return;
+
     navigate(
       `/set-user-password/${userId}`,
       {
@@ -173,6 +201,7 @@ const EmployeePage = () => {
       },
     );
   };
+
 
   return (
     <>
@@ -195,7 +224,7 @@ const EmployeePage = () => {
               </p>
             </div>
 
-            {selectedClient && (
+            {selectedClient && canCreate && (
               <Link
                 to={`/add-employee/${selectedClient}`}
                 state={{
@@ -211,12 +240,7 @@ const EmployeePage = () => {
           </div>
 
           {/* FILTER CARD */}
-          {[
-            "Admin",
-            "Subadmin",
-          ].includes(
-            user?.user_type,
-          ) && (
+          {canViewClientFilter && (
             <div className="bg-white rounded-[28px] shadow-md border border-gray-100 p-6 mb-6">
               <div className="flex items-center gap-2 mb-5">
                 <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
@@ -249,8 +273,8 @@ to-[#4338CA]" />
                       )
                     }
                     disabled={
-                      user?.client_type ===
-                      "Admin"
+                      user?.client_type === "Admin" ||
+                      !canViewClientFilter
                     }
                     className="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300"
                   >
@@ -508,14 +532,14 @@ to-[#4338CA] flex items-center justify-center text-white shadow-lg">
                                           employee?.client_emp_id,
                                         )
                                       }
+                                      disabled={!canUpdate}
                                       className="w-10 h-10 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-all duration-300"
                                     >
                                       <BiSolidEditAlt size={18} />
                                     </button>
 
                                     {/* PASSWORD */}
-                                    {user?.user_type ===
-                                      "Admin" && (
+                                    {canUpdatePassword && (
                                       <button
                                         onClick={() =>
                                           handleSetPassword(
@@ -529,12 +553,9 @@ to-[#4338CA] flex items-center justify-center text-white shadow-lg">
                                     )}
 
                                     {/* DELETE */}
-                                    {(user?.user_type ===
-                                      "Admin" ||
-                                      (user?.client_type ===
-                                        "Admin" &&
-                                        user.user_id !==
-                                          employee.user_id)) && (
+                                    {canDelete &&
+                                      (user?.client_type !== "Admin" ||
+                                        user.user_id !== employee.user_id) && (
                                       <button
                                         onClick={() =>
                                           handleDeleteEmployee(

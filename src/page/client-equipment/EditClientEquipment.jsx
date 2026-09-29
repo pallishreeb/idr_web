@@ -46,7 +46,8 @@ import {
   MdArrowBack,
   MdEdit,
 } from "react-icons/md";
-import usePermission from "../../hooks/usePermission";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 const EditClientEquipment = () => {
   const dispatch = useDispatch();
@@ -60,9 +61,9 @@ const EditClientEquipment = () => {
 
   const [searchParams] =
     useSearchParams();
-const { can } = usePermission();
-
-const canUpdate = can("Client Equipment", "Update");
+const { canUpdate } = useModulePermissions(
+    PERMISSION_MODULES.CLIENT_EQUIPMENT,
+  );
   const returnTo =
     location.state?.returnTo;
 
@@ -107,12 +108,6 @@ const canUpdate = can("Client Equipment", "Update");
     user_type,
   } = useSelector(
     (state) => state.user.user,
-  );
-
-  const {
-    technicianAccess,
-  } = useSelector(
-    (state) => state.user,
   );
 
   // NOTES
@@ -287,6 +282,8 @@ const canUpdate = can("Client Equipment", "Update");
   // SAVE
   const handleSave = (e) => {
     e.preventDefault();
+
+    if (!canUpdate) return;
 
     const {
       decomission_reason,

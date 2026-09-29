@@ -6,6 +6,9 @@ import { Link, useNavigate, useLocation, useSearchParams } from "react-router-do
 
 import { useDispatch, useSelector } from "react-redux";
 
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
+
 import { BiSolidEditAlt, BiTransferAlt } from "react-icons/bi";
 
 import { AiFillDelete } from "react-icons/ai";
@@ -81,9 +84,17 @@ const [model, setModel] = useState(
 
   const navigate = useNavigate();
 
-  const { user_type } = useSelector((state) => state.user.user);
+  const {
+    canCreate,
+    canRead,
+    canTransfer,
+    canUpdate,
+    canDelete,
+  } = useModulePermissions(PERMISSION_MODULES.INVENTORY);
 
-  const { access } = useSelector((state) => state.user);
+  const {
+    canCreate: canCreateLocation,
+  } = useModulePermissions(PERMISSION_MODULES.INVENTORY_LOCATIONS);
 
   const loading = useSelector((state) => state.locationInventory.loading);
 
@@ -205,6 +216,8 @@ useEffect(() => {
   };
 
   const handleConfirmSave = async () => {
+    if (!canCreateLocation) return;
+
     const data = {
       location: location,
     };
@@ -229,6 +242,8 @@ useEffect(() => {
   };
 
   const handleDelete = (inventoryId) => {
+    if (!canDelete) return;
+
     Swal.fire({
       title: "Are you sure?",
       text: "Do you really want to delete this Inventory?",
@@ -319,6 +334,7 @@ useEffect(() => {
     });
   };
 
+
   return (
     <>
       <Header />
@@ -383,7 +399,7 @@ to-[#4338CA]
 
               {/* ACTIONS */}
               <div className="flex flex-wrap gap-3">
-                {access.includes(user_type) && (
+                {canUpdate && (
                   <button
                     onClick={handleInventoryExportToExcel}
                     className="
@@ -403,7 +419,7 @@ to-[#4338CA]
                   </button>
                 )}
 
-                {user_type === "Admin" && (
+                {canCreateLocation && (
                   <button
                     onClick={handleOpenModel}
                     className="
@@ -427,7 +443,8 @@ to-[#4338CA]
                   </button>
                 )}
 
-               <Link to={`/addinventory?${searchParams.toString()}`} >
+                {canCreate && (
+                  <Link to={`/addinventory?${searchParams.toString()}`}>
                   <button
                     className="
                       flex
@@ -451,7 +468,8 @@ to-[#4338CA]
                     <MdAdd className="text-lg" />
                     Add Inventory
                   </button>
-                </Link>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -773,13 +791,13 @@ to-[#4338CA]
                               border-b
                               text-[13px]
                               ${
-                                access.includes(user_type)
+                                canUpdate
                                   ? "cursor-pointer"
                                   : ""
                               }
                             `}
                           onDoubleClick={() => {
-                            if (access.includes(user_type)) {
+                            if (canUpdate) {
                               setEditRowId(item.inventory_id);
 
                               setEditQuantity(item.quantity);
@@ -869,6 +887,7 @@ to-[#4338CA]
                               </>
                             ) : (
                               <>
+                                {canRead && (
                                 <button
                                   className="
                                       w-8
@@ -890,7 +909,9 @@ to-[#4338CA]
                                 >
                                   <BiSolidEditAlt className="text-base" />
                                 </button>
+                                )}
 
+                                {canTransfer && (
                                 <button
                                   className="
                                       w-8
@@ -912,8 +933,9 @@ to-[#4338CA]
                                 >
                                   <BiTransferAlt className="text-base" />
                                 </button>
+                                )}
 
-                                {access.includes(user_type) && (
+                                {canDelete && (
                                   <button
                                     className="
                                         w-8

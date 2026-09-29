@@ -32,6 +32,9 @@ import Swal from "sweetalert2";
 
 import { toast } from "react-toastify";
 
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
+
 const AssignedEquipments = () => {
   const navigate = useNavigate();
 
@@ -51,9 +54,9 @@ const AssignedEquipments = () => {
     direction: "ASC",
   });
 
-  const { access } = useSelector((state) => state.user);
-
-  const { user_type } = useSelector((state) => state.user.user);
+  const { canRead, canUpdate } = useModulePermissions(
+    PERMISSION_MODULES.IDR_EQUIPMENT
+  );
 
   const loading = useSelector((state) => state.idrequipment.loading);
 
@@ -63,6 +66,8 @@ const AssignedEquipments = () => {
 
   /* FETCH DATA */
   useEffect(() => {
+    if (!canRead) return;
+
     const params = new URLSearchParams(location.search);
 
     const type = params.get("type");
@@ -72,7 +77,7 @@ const AssignedEquipments = () => {
     } else if (type === "returns") {
       dispatch(getReturnedRequestEquipments(filters));
     }
-  }, [location.search, dispatch, filters]);
+  }, [location.search, dispatch, filters, canRead]);
 
   /* SELECT FILTER */
   const handleSelectChange = (e) => {
@@ -99,6 +104,8 @@ const AssignedEquipments = () => {
 
   /* CONFIRM */
   const handleConfirm = (equipmentId) => {
+    if (!canUpdate) return;
+
     Swal.fire({
       title: "Are you sure?",
       text: "Do you really want to confirm this return request?",
@@ -170,6 +177,22 @@ const AssignedEquipments = () => {
 
     return text?.slice(0, maxLength) + "...";
   };
+
+  if (!canRead) {
+    return (
+      <>
+        <Header />
+        <div className="flex bg-gray-50 min-h-screen">
+          <AdminSideNavbar />
+          <div className="flex-1 p-5 flex items-center justify-center">
+            <p className="text-sm text-gray-500">
+              You do not have permission to view assigned equipment.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -611,7 +634,7 @@ to-[#4338CA]
                             </button>
 
                             {/* CONFIRM */}
-                            {access.includes(user_type) && isReturnPage && (
+                            {canUpdate && isReturnPage && (
                               <button
                                 onClick={() =>
                                   handleConfirm(equipment?.assign_equip_id)

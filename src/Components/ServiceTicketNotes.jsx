@@ -1,8 +1,11 @@
 /** @format */
 
 import React, { useState, useMemo } from "react";
+import PropTypes from "prop-types";
 
 import { useSelector, useDispatch } from "react-redux";
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
 
 import Swal from "sweetalert2";
 
@@ -46,20 +49,14 @@ const NotesTable = ({
 
   const [editingIndex, setEditingIndex] = useState(null);
 
-  const { user_type, user_id } = useSelector((state) => state.user.user);
-
-  const { access, technicianAccess } = useSelector((state) => state.user);
-
-  // =========================
-  // ACCESS
-  // =========================
-
-  const newAccess = [
-    ...technicianAccess,
-    "Subcontractor_User",
-    "Subcontractor",
-  ];
-
+const {
+  canRead,
+  canAddNote,
+  canUpdateNote,
+  canDeleteNote,
+  canChangeSubcontractorNoteStatus,
+} = useModulePermissions(PERMISSION_MODULES.SERVICE_TICKETS);
+const { user_id } = useSelector((state) => state.user.user);
   // =========================
   // MODAL
   // =========================
@@ -145,6 +142,7 @@ const NotesTable = ({
       });
   };
 
+
   // =========================
   // EMPTY STATE
   // =========================
@@ -200,7 +198,7 @@ to-[#4338CA]
                 </div>
               </div>
 
-              {newAccess.includes(user_type) && (
+              {canAddNote && (
                 <button
                   className="
                     flex
@@ -315,7 +313,7 @@ to-[#4338CA]
             </div>
 
             {/* ADD BUTTON */}
-            {newAccess.includes(user_type) && (
+            {canAddNote && (
               <button
                 className="
                   flex
@@ -401,7 +399,7 @@ to-[#6366F1]
                         <h3 className="text-sm font-semibold text-[#1E1B4B]">
                           {note?.profile?.first_name} {note?.profile?.last_name}
                         </h3>
-                        {access.includes(user_type) && (<>
+                        {canRead && (<>
 
                         {/* ACCEPTED BADGE */}
                         {note.is_added_by_subcontractor &&
@@ -464,7 +462,7 @@ to-[#6366F1]
                   </div>
 
                   {/* ACTIONS */}
-                  {(access.includes(user_type) ||
+                  {(canUpdateNote ||
                     note.profile?.user_id === user_id) && (
                     <div className="flex flex-wrap gap-2">
                       {/* SAVE/CANCEL */}
@@ -544,7 +542,8 @@ to-[#6366F1]
                           </button>
 
                           {/* DELETE */}
-                          {access.includes(user_type) && (
+                          {(canDeleteNote ||
+                              note.profile?.user_id === user_id) && (
                             <button
                               className="
                                   w-11
@@ -567,7 +566,7 @@ to-[#6366F1]
                           {/* APPROVE / REJECT */}
                           {note.is_added_by_subcontractor &&
                             !note.is_accepted_subcontractor_note &&
-                            access.includes(user_type) && (
+                             canChangeSubcontractorNoteStatus && (
                               <>
                                 <button
                                   className="
@@ -646,6 +645,13 @@ to-[#6366F1]
       />
     </>
   );
+};
+
+NotesTable.propTypes = {
+  notes: PropTypes.array,
+  serviceTicketId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  handleSaveNote: PropTypes.func,
+  handleNoteChange: PropTypes.func,
 };
 
 export default NotesTable;

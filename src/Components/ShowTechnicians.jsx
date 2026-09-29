@@ -4,6 +4,9 @@ import React, { useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
+
 import { AiFillDelete } from "react-icons/ai";
 
 import {
@@ -40,7 +43,7 @@ const ShowTechnicians = ({
   const [selectedAssignees, setSelectedAssignees] = useState([]);
   const { user_type } = useSelector((state) => state.user.user);
 
-  const { access } = useSelector((state) => state.user);
+  const { canUpdate } = useModulePermissions(PERMISSION_MODULES.WORK_ORDERS);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -191,7 +194,7 @@ const ShowTechnicians = ({
             </div>
           </div>
 
-          {user_type === "Admin" && (
+          {canUpdate && (
             <div className="flex items-center gap-3">
               {selectedAssignees.length > 0 && (
                 <button
@@ -255,7 +258,7 @@ to-[#6366F1]
           <table className="min-w-full">
             <thead>
               <tr className="bg-gradient-to-r from-indigo-50 to-pink-50">
-                {user_type === "Admin" && (
+                {canUpdate && (
                   <th className="px-5 py-4 w-[60px]">
                     <input
                       type="checkbox"
@@ -293,7 +296,7 @@ to-[#6366F1]
                   Role
                 </th>
 
-                {user_type === "Admin" && (
+                {canUpdate && (
                   <th className="px-5 py-4 text-center text-sm font-semibold text-[#1E1B4B] w-[100px]">
                     Actions
                   </th>
@@ -305,7 +308,7 @@ to-[#6366F1]
               {allAssignees?.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={user_type === "Admin" ? 4 : 3}
+                    colSpan={canUpdate ? 4 : 3}
                     className="py-14 text-center"
                   >
                     <div className="flex flex-col items-center justify-center">
@@ -327,7 +330,7 @@ to-[#6366F1]
                     key={index}
                     className="border-t border-gray-100 hover:bg-gray-50 transition-all duration-200"
                   >
-                    {user_type === "Admin" && (
+                    {canUpdate && (
                       <td className="px-5 py-4">
                         {!person.isSubcontractor && (
                           <input
@@ -403,7 +406,7 @@ to-[#6366F1]
                     </td>
 
                     {/* ACTION */}
-                    {user_type === "Admin" && (
+                    {canUpdate && (
                       <td className="px-5 py-4">
                         <div className="flex justify-center">
                           {!person.isSubcontractor && (

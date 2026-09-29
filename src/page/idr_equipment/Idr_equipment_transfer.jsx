@@ -35,6 +35,10 @@ import {
 import { fetchIDREmployees } from "../../actions/employeeActions";
 
 import Loader from "../../Images/ZZ5H.gif";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import usePermission from "../../hooks/usePermission";
+import { PERMISSION_TYPES } from "../../constants/permissionConstants";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 const TransferIdrEquipment = () => {
   const navigate = useNavigate();
@@ -86,14 +90,20 @@ const TransferIdrEquipment = () => {
 
   const { idrEmployees } = useSelector((state) => state.employee);
 
-  const { access, technicianAccess } = useSelector((state) => state.user);
-
-  const { user_type } = useSelector((state) => state.user.user);
-
+  const { canUpdate } = useModulePermissions(
+    PERMISSION_MODULES.IDR_EQUIPMENT
+  );
+  const { can } = usePermission();
+  const canRead = can(PERMISSION_MODULES.IDR_EQUIPMENT, PERMISSION_TYPES.READ);
+  const canAssignWorkOrder= can(PERMISSION_MODULES.IDR_EQUIPMENT, PERMISSION_TYPES.ASSIGN_WORK_ORDER)
+  const canAssignIDREmployee = can(PERMISSION_MODULES.IDR_EQUIPMENT, PERMISSION_TYPES.ASSIGN_IDR_EMPLOYEE)
   useEffect(() => {
+    if (!canRead) return;
+
     dispatch(getClients());
 
-    dispatch(fetchIDREmployees());
+    {canAssignIDREmployee && dispatch(fetchIDREmployees())}
+    
 
     if (idr_equipment_id) {
       setLoading(true);
@@ -110,7 +120,7 @@ const TransferIdrEquipment = () => {
           console.error("Error fetching IDR equipment item:", error);
         });
     }
-  }, [dispatch, idr_equipment_id]);
+  }, [dispatch, idr_equipment_id, canRead]);
 
   useEffect(() => {
     if (selectedClient) {
@@ -132,6 +142,7 @@ const TransferIdrEquipment = () => {
 
   const handleAssignWorkorder = (e) => {
     e.preventDefault();
+    if (!canUpdate) return;
 
     const formattedDateTime = new Date(signedInDate).toLocaleString("en-US", {
       timeZone: "America/New_York",
@@ -163,6 +174,7 @@ const TransferIdrEquipment = () => {
 
   const handleAssignIDREmployee = (e) => {
     e.preventDefault();
+    if (!canUpdate) return;
 
     const selectedEmployeeData = idrEmployees.find(
       (emp) => emp.user_id === selectedEmployee,
@@ -200,6 +212,24 @@ const TransferIdrEquipment = () => {
 
     dispatch(idrEmployeeAssign(assignData, navigate, location.state));
   };
+
+  if (!canRead) {
+    return (
+      <>
+        <Header />
+        <div className="flex bg-gray-50 min-h-screen">
+          <AdminSideNavbar />
+          <div className="flex-1 p-6">
+            <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
+              <h2 className="text-lg font-semibold text-red-600">
+                You do not have permission to view this page.
+              </h2>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   if (loading) {
     return (
@@ -400,7 +430,7 @@ to-[#4338CA]
           </div>
 
           {/* ASSIGN TO WORK ORDER */}
-          {technicianAccess.includes(user_type) && (
+          {canAssignWorkOrder && (
             <form
               onSubmit={handleAssignWorkorder}
               className="
@@ -459,7 +489,7 @@ to-[#4338CA]
                         shadow-sm
                       "
                     type="submit"
-                    disabled={loadingAssign}
+                    disabled={loadingAssign || !canUpdate}
                   >
                     {loadingAssign ? "Saving..." : "Assign Equipment"}
                   </button>
@@ -625,7 +655,7 @@ to-[#4338CA]
           )}
 
           {/* ASSIGN TO EMPLOYEE */}
-          {access.includes(user_type) && (
+          {canAssignIDREmployee && (
             <form
               onSubmit={handleAssignIDREmployee}
               className="
@@ -683,7 +713,7 @@ to-[#4338CA]
                         shadow-sm
                       "
                     type="submit"
-                    disabled={loadingTransfer}
+                    disabled={loadingTransfer || !canUpdate}
                   >
                     {loadingTransfer ? "Saving..." : "Assign Equipment"}
                   </button>

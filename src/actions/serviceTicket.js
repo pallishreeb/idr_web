@@ -496,8 +496,9 @@ export const getServiceRequestLists = (filters) => {
       // console.log("service serviceRequests", response)
       dispatch(getServiceRequestsListsSuccess(response?.data?.Requests));
     } catch (error) {
+      console.log(error.message)
       dispatch(getServiceTicketListsFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to fetch service ticket lists");
+      // toast.error(error.response?.data?.message || "Failed to fetch service ticket lists");
     }
   };
 };

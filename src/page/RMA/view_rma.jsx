@@ -33,9 +33,20 @@ import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 
 import { getRmaLists, deleteRma } from "../../actions/rmaActions";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 const RmaViewList = () => {
   const dispatch = useDispatch();
+
+  const {
+    canRead,
+    canDelete,
+    canViewClientFilter,
+    canViewLocationFilter,
+    canViewManufacturerFilter,
+  } = useModulePermissions(PERMISSION_MODULES.RMAS);
+
 
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,7 +56,7 @@ const RmaViewList = () => {
 
   const { rmaList, loading } = useSelector((state) => state.rma);
 
-  const { user_type, client_type } = useSelector((state) => state.user.user);
+  const { client_type } = useSelector((state) => state.user.user);
   const [filters, setFilters] = useState({
     client_id: searchParams.get("client_id") || "",
     location_id: searchParams.get("location_id") || "",
@@ -64,12 +75,15 @@ const RmaViewList = () => {
   });
 
   useEffect(() => {
+    if (!canRead) return;
+
     dispatch(getRmaLists(filters));
 
-    if (user_type !== "Client Employee") {
+    if (canViewClientFilter) {
       dispatch(getClients());
     }
-  }, [dispatch, user_type,filters]);
+  }, [dispatch, filters, canRead, canViewClientFilter]);
+
 useEffect(() => {
   const params = new URLSearchParams();
 
@@ -310,11 +324,23 @@ const getDateRange = (range) => {
     return "↕";
   };
 
-  const userTypesWithClientPermission = [
-    "Subcontractor_User",
-    "Client Employee",
-    "Subcontractor",
-  ];
+  const showAdvancedFilters =
+    canViewClientFilter || canViewLocationFilter || canViewManufacturerFilter;
+
+  if (!canRead) {
+    // return null;
+       return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh] px-4">
+          <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-8 text-center">
+            <h2 className="text-lg font-semibold text-gray-800">Access Denied</h2>
+            <p className="mt-2 text-sm text-gray-500">You do not have permission to view RMA records.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -409,7 +435,7 @@ to-[#4338CA]
             <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-5">
-              {!userTypesWithClientPermission.includes(user_type) && (
+              {showAdvancedFilters && (
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -419,6 +445,7 @@ to-[#4338CA]
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
                     {/* CLIENT */}
+                    {canViewClientFilter && (
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                         Client
@@ -466,7 +493,10 @@ to-[#4338CA]
                       </div>
                     </div>
 
+                    
+                    )}
                     {/* LOCATION */}
+                    {canViewLocationFilter && (
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                         Location
@@ -521,6 +551,8 @@ to-[#4338CA]
                       </div>
                     </div>
 
+                    
+                    )}
                     {/* STATUS */}
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
@@ -564,6 +596,7 @@ to-[#4338CA]
                     </div>
 
                     {/* MANUFACTURER */}
+                    {canViewManufacturerFilter && (
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                         Manufacturer
@@ -588,6 +621,8 @@ to-[#4338CA]
                         onChange={handleManufacturerChange}
                       />
                     </div>
+                    
+                    )}
                     {/* DATE RANGE */}
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
@@ -746,7 +781,7 @@ to-[#4338CA]
                 </form>
               )}
 
-              {user_type === "Client Employee" && client_type !== "user" && (
+              {!showAdvancedFilters && client_type !== "user" && (
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -1057,8 +1092,9 @@ to-[#4338CA]
 
                         <td className="px-2 py-3 border-b">
                           <div className="flex items-center justify-center gap-1">
-                            <button
-                              onClick={() => handleEdit(rma.rma_id)}
+                            {canRead && (
+                              <button
+                                onClick={() => handleEdit(rma.rma_id)}
                               className="
                     w-8
                     h-8
@@ -1073,9 +1109,10 @@ to-[#4338CA]
                   "
                             >
                               <BiSolidEditAlt className="text-base" />
-                            </button>
+                              </button>
+                            )}
 
-                            {user_type === "Admin" && (
+                            {canDelete && (
                               <button
                                 onClick={() => handleDeleteRma(rma.rma_id)}
                                 className="

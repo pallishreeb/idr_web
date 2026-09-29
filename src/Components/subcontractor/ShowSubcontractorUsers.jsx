@@ -23,6 +23,8 @@ import {
 } from "react-icons/md";
 
 import AddSubcontractorUserModal from "./AddSubcontractorUserModal";
+import useModulePermissions from "../../hooks/useModulePermissions";
+
 
 const ShowSubcontractorUsers =
   ({
@@ -34,29 +36,17 @@ const ShowSubcontractorUsers =
     parentKey,
     idKey,
     title = "Subcontractor Users",
+    permissionModule,
   }) => {
     const dispatch =
       useDispatch();
 
-    const {
-      user_type,
-    } =
-      useSelector(
-        (
-          state,
-        ) =>
-          state.user.user,
-      );
 
     const {
-      access,
-    } =
-      useSelector(
-        (
-          state,
-        ) =>
-          state.user,
-      );
+      canRead,
+      canCreate,
+      canDelete,
+    } = useModulePermissions(permissionModule);
 
     const [
       isModalOpen,
@@ -146,11 +136,12 @@ const ShowSubcontractorUsers =
           },
         );
       };
-  const newAccess = [
-    ...access,
-    "Subcontractor_User",
-    "Subcontractor",
-  ];
+    // Permission checks are driven by the centralized permission hook.
+    // The module can be overridden by the parent page (e.g. Work Order or RMA).
+    if (!canRead) {
+      return null;
+    }
+
     return (
       <div className="bg-white rounded-[28px] shadow-sm border border-gray-100 overflow-hidden mt-6">
         {/* TOP BAR */}
@@ -179,9 +170,7 @@ const ShowSubcontractorUsers =
             </div>
 
             {/* ADD BUTTON */}
-            {newAccess.includes(
-              user_type,
-            ) && (
+            {canCreate && (
               <button
                 className="
                   flex
@@ -193,8 +182,8 @@ const ShowSubcontractorUsers =
                   rounded-2xl
                   bg-gradient-to-r
                  from-[#312E81]
-via-[#4338CA]
-to-[#6366F1]
+                via-[#4338CA]
+                to-[#6366F1]
                   text-white
                   text-sm
                   font-semibold
@@ -256,8 +245,7 @@ to-[#6366F1]
                       Contact
                     </th>
 
-                    {user_type ===
-                      "Admin" && (
+                    {canDelete && (
                       <th className="px-5 py-4 text-center text-sm font-semibold text-[#1E1B4B] w-[100px]">
                         Actions
                       </th>
@@ -310,8 +298,7 @@ to-[#6366F1]
                           </td>
 
                           {/* ACTION */}
-                          {user_type ===
-                            "Admin" && (
+                          {canDelete && (
                             <td className="px-5 py-4">
                               <div className="flex justify-center">
                                 <button

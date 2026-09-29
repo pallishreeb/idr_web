@@ -1,118 +1,115 @@
 import React from "react";
 
 const PermissionTable = ({
-  modules,
+  module,
   isEditing,
   onPermissionChange,
 }) => {
-  // Get all unique permission types from API response
-const permissionTypes = [
-  ...new Set(
-    modules?.flatMap((module) =>
-      (module.permission_types || []).map(
-        (permission) => permission.type
-      )
-    )
-  ),
-];
+  if (!module) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-10 text-center">
+        <p className="text-sm text-gray-500">
+          Select a module to view its permissions.
+        </p>
+      </div>
+    );
+  }
+
+  const permissions = module.permission_types || [];
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[900px]">
 
-          <thead>
-            <tr className="border-b border-gray-200 bg-gray-50">
+      {/* MODULE HEADER */}
+      <div className="border-b border-gray-200 bg-gray-50 px-5 py-4">
+        <h3 className="text-base font-semibold text-gray-800">
+          {module.module_name}
+        </h3>
 
-              <th className="px-5 py-4 text-left text-sm font-semibold text-gray-700">
-                Module
-              </th>
+        <p className="mt-1 text-xs text-gray-500">
+          Manage permissions for this module.
+        </p>
+      </div>
 
-              {permissionTypes.map((type) => (
-                <th
-                  key={type}
-                  className="px-4 py-4 text-center text-sm font-semibold text-gray-700"
+      {/* PERMISSIONS */}
+      <div className="divide-y divide-gray-100">
+
+        {permissions.length === 0 ? (
+          <div className="p-8 text-center text-sm text-gray-500">
+            No permission types available for this module.
+          </div>
+        ) : (
+          permissions.map((permission) => (
+            <div
+              key={permission.perm_type_id}
+              className="
+                flex
+                items-center
+                justify-between
+                px-5
+                py-4
+                hover:bg-gray-50
+              "
+            >
+              <div>
+                <p className="text-sm font-medium text-gray-800">
+                  {permission.type}
+                </p>
+
+                <p className="mt-1 text-xs text-gray-400">
+                  {permission.allow
+                    ? "Permission allowed"
+                    : "Permission not allowed"}
+                </p>
+              </div>
+
+              {!isEditing ? (
+                <span
+                  className={`
+                    inline-flex
+                    h-8
+                    min-w-8
+                    items-center
+                    justify-center
+                    rounded-full
+                    px-2
+                    text-sm
+                    font-semibold
+                    ${
+                      permission.allow
+                        ? "bg-green-100 text-green-600"
+                        : "bg-gray-100 text-gray-400"
+                    }
+                  `}
                 >
-                  {type}
-                </th>
-              ))}
+                  {permission.allow ? "✓" : "✕"}
+                </span>
+              ) : (
+                <label className="relative inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    checked={permission.allow === true}
+                    onChange={() =>
+                      onPermissionChange(
+                        permission.perm_type_id
+                      )
+                    }
+                    className="
+                      h-5
+                      w-5
+                      cursor-pointer
+                      rounded
+                      border-gray-300
+                      text-indigo-600
+                      focus:ring-indigo-500
+                    "
+                  />
+                </label>
+              )}
+            </div>
+          ))
+        )}
 
-            </tr>
-          </thead>
-
-          <tbody className="divide-y divide-gray-100">
-
-            {modules.map((module) => (
-
-              <tr
-                key={module.perm_module_id}
-                className="hover:bg-gray-50"
-              >
-
-                <td className="px-5 py-4">
-                  <span className="text-sm font-medium text-gray-900">
-                    {module.module_name}
-                  </span>
-                </td>
-
-                {permissionTypes.map((type) => {
-
-                  const permission =
-                    module.permission_types?.find(
-                      (item) => item.type === type
-                    );
-
-                  if (!permission) {
-                    return (
-                      <td
-                        key={type}
-                        className="px-4 py-4 text-center text-gray-300"
-                      >
-                        —
-                      </td>
-                    );
-                  }
-
-                  return (
-                    <td
-                      key={permission.perm_type_id}
-                      className="px-4 py-4 text-center"
-                    >
-                     {!isEditing ? (
-                             <span
-                            className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold ${
-                              permission.allow
-                                ? "bg-green-100 text-green-600"
-                                : "bg-gray-100 text-gray-400"
-                            }`}
-                          >
-                            {permission.allow ? "✓" : "✕"}
-                          </span>
-                        ) : (
-                          <input
-                            type="checkbox"
-                            checked={permission.allow}
-                            onChange={() =>
-                              onPermissionChange(
-                                module.perm_module_id,
-                                permission.perm_type_id
-                              )
-                            }
-                            className="h-4 w-4 cursor-pointer rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                          />
-                        )}
-                    </td>
-                  );
-
-                })}
-
-              </tr>
-
-            ))}
-
-          </tbody>
-
-        </table>
       </div>
     </div>
   );

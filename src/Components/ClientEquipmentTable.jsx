@@ -3,6 +3,8 @@
 import React, { useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
 
 import {
   MdDevices,
@@ -35,26 +37,29 @@ const ClientEquipmentTable = ({
 
   const { user_type } = useSelector((state) => state.user.user);
 
-  const { technicianAccess } = useSelector((state) => state.user);
-
   // ========================
-  // ACCESS CONTROLS
+  // PERMISSION CONTROLS
   // ========================
+  const {
+    canRead: canReadServiceTicket,
+    canCreate: canCreateServiceTicket,
+    canUpdate: canUpdateServiceTicket,
+  } = useModulePermissions(PERMISSION_MODULES.SERVICE_TICKETS);
 
-  const subcontractorAccess = ["Subcontractor_User", "Subcontractor"];
+  const {
+    canRead: canReadEquipment,
+    canUpdate: canUpdateEquipment,
+  } = useModulePermissions(PERMISSION_MODULES.CLIENT_EQUIPMENT);
 
-  const addRmaAccess = [...technicianAccess, ...subcontractorAccess];
+  const {
+    canRead: canReadRMA,
+    canCreate: canCreateRMA,
+  } = useModulePermissions(PERMISSION_MODULES.RMAS);
 
-  const canAddNote = addRmaAccess.includes(user_type);
-
-  const canViewEquipment = technicianAccess.includes(user_type);
-
-  const canAddClientEquip = subcontractorAccess.includes(user_type);
-
-  const canViewRMA = addRmaAccess.includes(user_type);
-
-  const canToggleNotes = true;
-
+  const canAddNote = canUpdateServiceTicket;
+  const canViewEquipment = canReadEquipment;
+  const canAddClientEquip = canUpdateEquipment;
+  const canViewRMA = canReadRMA && canCreateRMA;
   const isTicketClosed = serviceTicket?.status?.toLowerCase() === "closed";
 
   // ========================

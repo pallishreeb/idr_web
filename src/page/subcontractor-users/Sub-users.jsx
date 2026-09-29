@@ -36,6 +36,8 @@ import {
 
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 import {
   getSubcontractorLists,
@@ -47,6 +49,10 @@ const SubcontractorUsersPage =
   () => {
     const dispatch =
       useDispatch();
+
+    const { canUpdate, canDelete } = useModulePermissions(
+      PERMISSION_MODULES.SUBCONTRACTORS,
+    );
 
     const navigate =
       useNavigate();
@@ -201,6 +207,8 @@ const SubcontractorUsersPage =
       (
         userId,
       ) => {
+        if (!canDelete) return;
+
         Swal.fire({
           title:
             "Are you sure?",
@@ -238,6 +246,8 @@ const SubcontractorUsersPage =
       (
         userId,
       ) => {
+        if (!canUpdate) return;
+
         navigate(
           `/edit-subcontractor-user/${userId}`,
           {
@@ -285,7 +295,7 @@ const SubcontractorUsersPage =
                   </div>
 
                   {/* ADD BUTTON */}
-                  {selectedSubcontractor && (
+                  {selectedSubcontractor && canUpdate && (
                     <Link
                       to={`/create-sub-contractor-user/${selectedSubcontractor}`}
                       state={{
@@ -395,9 +405,11 @@ const SubcontractorUsersPage =
                                 Status
                               </th>
 
-                              <th className="px-5 py-4 text-center text-sm font-semibold text-[#1E1B4B] w-[140px]">
-                                Actions
-                              </th>
+                              {(canUpdate || canDelete) && (
+                                <th className="px-5 py-4 text-center text-sm font-semibold text-[#1E1B4B] w-[140px]">
+                                  Actions
+                                </th>
+                              )}
                             </tr>
                           </thead>
 
@@ -406,7 +418,7 @@ const SubcontractorUsersPage =
                             0 ? (
                               <tr>
                                 <td
-                                  colSpan="5"
+                                  colSpan={canUpdate || canDelete ? 5 : 4}
                                   className="py-14 text-center"
                                 >
                                   <div className="flex flex-col items-center justify-center">
@@ -517,8 +529,10 @@ const SubcontractorUsersPage =
                                       </td>
 
                                       {/* ACTIONS */}
-                                      <td className="px-5 py-4">
-                                        <div className="flex items-center justify-center gap-2">
+                                      {(canUpdate || canDelete) && (
+                                        <td className="px-5 py-4">
+                                          <div className="flex items-center justify-center gap-2">
+                                          {canUpdate && (
                                           <button
                                             onClick={() =>
                                               handleEdit(
@@ -529,9 +543,9 @@ const SubcontractorUsersPage =
                                           >
                                             <BiSolidEditAlt className="text-lg" />
                                           </button>
+                                          )}
 
-                                          {user_type ===
-                                            "Admin" && (
+                                          {canDelete && (
                                             <button
                                               onClick={() =>
                                                 handleDeleteUser(
@@ -543,8 +557,9 @@ const SubcontractorUsersPage =
                                               <AiFillDelete className="text-lg" />
                                             </button>
                                           )}
-                                        </div>
-                                      </td>
+                                          </div>
+                                        </td>
+                                      )}
                                     </tr>
                                   ),
                                 )

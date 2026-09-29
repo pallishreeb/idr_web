@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams,useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import {
   MdEdit,
@@ -30,16 +30,19 @@ import Loader from "../../Images/ZZ5H.gif";
 
 import RmaImages from "../../Components/RmaImages";
 import RmaNotes from "../../Components/RmaNotes";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 export default function EditRma() {
   const { rmaId } = useParams();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-const [searchParams] = useSearchParams();
-  const { user_type } = useSelector((state) => state.user.user);
+  const [searchParams] = useSearchParams();
 
-  const { technicianAccess } = useSelector((state) => state.user);
+  const { canRead, canUpdate } = useModulePermissions(
+    PERMISSION_MODULES.RMAS
+  );
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -82,7 +85,7 @@ const [searchParams] = useSearchParams();
   const loadingDetails = useSelector((state) => state.rma.loadingDetails);
 
   useEffect(() => {
-    if (rmaId) {
+    if (rmaId && canRead) {
       dispatch(getRMADetails(rmaId)).then((data) => {
         if (data) {
           setFormData({
@@ -150,7 +153,7 @@ const [searchParams] = useSearchParams();
         }
       });
     }
-  }, [rmaId, dispatch]);
+  }, [rmaId, dispatch, canRead]);
 
   useEffect(() => {
     if (location) {
@@ -258,12 +261,6 @@ const [searchParams] = useSearchParams();
     
   };
 
-  const newAccess = [
-    ...technicianAccess,
-    "Subcontractor_User",
-    "Subcontractor",
-  ];
-
   const renderInput = (label, name, type = "text", readOnly = false) => (
     <div>
       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
@@ -293,6 +290,8 @@ const [searchParams] = useSearchParams();
       />
     </div>
   );
+
+  if (!canRead) return null;
 
   if (loadingDetails) {
     return (
@@ -392,7 +391,7 @@ to-[#4338CA]
                   Back
                 </button>
 
-                {newAccess?.includes(user_type) && (
+                {canUpdate && (
                   <>
                     {!isEditing ? (
                       <button

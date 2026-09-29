@@ -39,6 +39,8 @@ import { getClients } from "../../actions/clientActions";
 import { fetchIDREmployees } from "../../actions/employeeActions";
 
 import { toast } from "react-toastify";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 const WorkOrder = () => {
   const dispatch = useDispatch();
@@ -65,13 +67,19 @@ const WorkOrder = () => {
     direction: "asc",
   });
 
-  const { user_type, client_type, locations } = useSelector(
-    (state) => state.user.user,
-  );
-
-  const { access, clientAccess, technicianAccess } = useSelector(
-    (state) => state.user,
-  );
+  const {
+    canRead,
+    canCreate,
+    canUpdate,
+    canDelete,
+    canViewClientFilter,
+    canViewLocationFilter,
+    canViewTechnicianFilter,
+    canViewProjectManagerFilter,
+    canViewBilledFilter,
+    canDuplicate,
+    canReadIDREmp
+  } = useModulePermissions(PERMISSION_MODULES.WORK_ORDERS);
 
   const { workOrders, loading } = useSelector((state) => state.workOrder);
 
@@ -80,14 +88,27 @@ const WorkOrder = () => {
   const { idrEmployees } = useSelector((state) => state.employee);
 
   const clientLocations = useSelector((state) => state.location.locations);
+    console.log(  canRead,
+    canCreate,
+    canUpdate,
+    canDelete,
+    canViewClientFilter,
+    canViewLocationFilter,
+    canDuplicate,"workorder permission");
 
   useEffect(() => {
+    if (!canRead) return;
+
     dispatch(getWorkOrderLists(filters));
-  if (technicianAccess.includes(user_type)) {
-    dispatch(getClients());
-    dispatch(fetchIDREmployees());
-  }
-  }, [dispatch]);
+
+    if (canViewClientFilter) {
+      dispatch(getClients());
+    }
+
+    if (canReadIDREmp) {
+      dispatch(fetchIDREmployees());
+    }
+  }, [dispatch, canRead, canViewClientFilter]);
   useEffect(() => {
     const params = new URLSearchParams();
 
@@ -101,10 +122,10 @@ const WorkOrder = () => {
   }, [filters, setSearchParams]);
 
   useEffect(() => {
-    if (filters?.client_id) {
+    if (canViewLocationFilter && filters?.client_id) {
       dispatch(getLocationByClient(filters.client_id));
     }
-  }, [dispatch, filters?.client_id]);
+  }, [dispatch, filters?.client_id, canViewLocationFilter]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -116,6 +137,8 @@ const WorkOrder = () => {
   };
 
   const handleDelete = (orderId) => {
+    if (!canDelete) return;
+
     Swal.fire({
       title: "Are you sure?",
       text: "Do you really want to delete this work order?",
@@ -138,7 +161,9 @@ const WorkOrder = () => {
   };
 
   const handleSearch = () => {
-  const dateRange = getDateRange(filters.date_range);
+    if (!canRead) return;
+
+    const dateRange = getDateRange(filters.date_range);
   const appliedFilters = {
       ...filters,
       ...dateRange,
@@ -147,6 +172,8 @@ const WorkOrder = () => {
   };
 
   const handleReset = () => {
+    if (!canRead) return;
+
     const clearedFilters = {
       status: "",
       client_id: "",
@@ -236,10 +263,6 @@ const WorkOrder = () => {
       focus:ring-indigo-500
       transition-all
     `;
-  const locationAccess = [
-    ...technicianAccess,
-    "Client Employee"
-  ];
     // DATE FORMAT
   function formatDateToMDY(date) {
   if (!date) return "NA";
@@ -299,6 +322,8 @@ const getDateRange = (range) => {
     end_date: "",
   };
 };
+
+
   return (
     <>
       <Header />
@@ -325,7 +350,7 @@ const getDateRange = (range) => {
               </div>
             </div>
 
-            {access.includes(user_type) && (
+            {canCreate && (
               <Link
                 to={`/add-work-order?${searchParams.toString()}`}
                 state={{
@@ -404,7 +429,7 @@ const getDateRange = (range) => {
                 </div>
 
                 {/* CLIENT */}
-                {technicianAccess.includes(user_type) && (
+                {canViewClientFilter && (
                   <div>
                     <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                       Client Name
@@ -436,7 +461,7 @@ const getDateRange = (range) => {
                   </div>
                 )}
                 {/* Location filters */}
-               {locationAccess.includes(user_type) && (
+               {canViewLocationFilter && (
                 <div>
                   <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                     Location
@@ -461,10 +486,14 @@ const getDateRange = (range) => {
                   </select>
                 </div>
                 )}
+              
+    
+    
                 {/* TECH */}
-                {access.includes(user_type) && (
+                {canRead && (
                   <>
-                    <div>
+                  {
+                    canViewTechnicianFilter &&  <div>
                       <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                         Technician
                       </label>
@@ -488,8 +517,10 @@ const getDateRange = (range) => {
                         })}
                       </select>
                     </div>
-
-                    <div>
+                  }
+                   
+                    {
+                      canViewProjectManagerFilter &&    <div>
                       <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                         Project Manager
                       </label>
@@ -513,9 +544,11 @@ const getDateRange = (range) => {
                         })}
                       </select>
                     </div>
+                    }
+                 
 
                     {/* BILLED */}
-                    <div>
+                    {canViewBilledFilter &&  <div>
                       <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                         Billed Status
                       </label>
@@ -538,11 +571,12 @@ const getDateRange = (range) => {
                         <option value="Cancelled"> Cancelled</option>
                        
                       </select>
-                    </div>
+                    </div>}
+                   
                   </>
                 )}
 
-                {access.includes(user_type) && (
+                {canRead && (
 
                 <div>
                   <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
@@ -735,18 +769,20 @@ to-[#4338CA]
 
                           <td className="px-5 py-4">
                             <div className="flex items-center justify-center gap-3">
-                              <Link
-                                to={`/edit-work-order/${order?.work_order_id}?${searchParams.toString()}`}
-                                state={{
-                                  filters,
-                                }}
-                              >
-                                <button className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 transition-all">
-                                  <BiSolidEditAlt className="text-lg" />
-                                </button>
-                              </Link>
+                              {canRead && (
+                                <Link
+                                  to={`/edit-work-order/${order?.work_order_id}?${searchParams.toString()}`}
+                                  state={{
+                                    filters,
+                                  }}
+                                >
+                                  <button className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 transition-all">
+                                    <BiSolidEditAlt className="text-lg" />
+                                  </button>
+                                </Link>
+                              )}
 
-                              {user_type === "Admin" && (
+                              {canDelete && (
                                 <button
                                   onClick={() =>
                                     handleDelete(order.work_order_id)
@@ -756,7 +792,7 @@ to-[#4338CA]
                                   <AiFillDelete className="text-lg" />
                                 </button>
                               )}
-                              {access.includes(user_type) && (
+                              {canDuplicate && (
                                 <button
                                   onClick={() =>
                                     navigate(
@@ -764,17 +800,17 @@ to-[#4338CA]
                                     )
                                   }
                                   className="
-    w-10
-    h-10
-    rounded-2xl
-    bg-blue-50
-    text-blue-600
-    flex
-    items-center
-    justify-center
-    hover:bg-blue-100
-    transition-all
-  "
+                                          w-10
+                                          h-10
+                                          rounded-2xl
+                                          bg-blue-50
+                                          text-blue-600
+                                          flex
+                                          items-center
+                                          justify-center
+                                          hover:bg-blue-100
+                                          transition-all
+                                        "
                                 >
                                   <MdContentCopy className="text-lg" />
                                 </button>

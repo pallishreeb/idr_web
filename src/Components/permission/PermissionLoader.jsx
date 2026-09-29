@@ -1,7 +1,13 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
-import { getRolePermissions } from "../../actions/permissionAction";
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
+
+import {
+  getMyRolePermissions,
+} from "../../actions/permissionAction";
 
 import {
   setPermissions,
@@ -13,15 +19,19 @@ import {
 const PermissionLoader = () => {
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector(
+    (state) => state.user.user
+  );
 
   useEffect(() => {
     const loadPermissions = async () => {
-      const roleId = user?.user_role_id;
-
-    //   console.log("Permission role ID:", roleId);
-
-      if (!roleId) {
+      /*
+       * We only need the user to be logged in.
+       *
+       * The backend determines the user's role from
+       * the authenticated request.
+       */
+      if (!user?.user_id) {
         dispatch(clearPermissions());
         return;
       }
@@ -29,29 +39,62 @@ const PermissionLoader = () => {
       try {
         dispatch(setLoading(true));
 
-        const response = await getRolePermissions(roleId);
+        console.log(
+          "Loading permissions for logged-in user..."
+        );
 
-        // console.log("Permission API response:", response);
+        const response =
+          await getMyRolePermissions();
 
+        console.log(
+          "My role permissions response:",
+          response
+        );
 
-        dispatch(setPermissions(response?.modules || []));
+        /*
+         * API response:
+         *
+         * {
+         *   code: "PERM200",
+         *   message: "Records",
+         *   role: {...},
+         *   modules: [...]
+         * }
+         */
+
+        const permissions =
+          response?.modules || [];
+
+        console.log(
+          "Final permissions:",
+          permissions
+        );
+
+        dispatch(
+          setPermissions(permissions)
+        );
       } catch (error) {
         console.error(
           "Failed to load user permissions:",
           error
         );
 
+        dispatch(clearPermissions());
+
         dispatch(
           setError(
             error?.response?.data?.message ||
+              error?.message ||
               "Failed to load permissions."
           )
         );
+      } finally {
+        dispatch(setLoading(false));
       }
     };
 
     loadPermissions();
-  }, [user?.user_role_id, dispatch]);
+  }, [user?.user_id, dispatch]);
 
   return null;
 };
