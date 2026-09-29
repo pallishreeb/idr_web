@@ -358,7 +358,7 @@ const ClientEquipmentTable = ({
                             )}
 
                             {/* VIEW EQUIPMENT */}
-                            {(canViewEquipment || canAddClientEquip) && (
+                            {( canAddClientEquip) && (
                               <button
                                 onClick={() =>
                                   navigate(
