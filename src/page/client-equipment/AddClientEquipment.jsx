@@ -48,9 +48,17 @@ import {
   MdAdd,
   MdArrowBack,
 } from "react-icons/md";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 const AddClientEquipment = () => {
   const dispatch = useDispatch();
+
+  const {
+    canCreate,
+    canViewClientFilter,
+    canViewLocationFilter,
+  } = useModulePermissions(PERMISSION_MODULES.CLIENT_EQUIPMENT);
 
   const navigate = useNavigate();
 
@@ -93,11 +101,6 @@ const AddClientEquipment = () => {
     (state) =>
       state.clientEquipment.loading,
   );
-
-  const { user_type } =
-    useSelector(
-      (state) => state.user.user,
-    );
 
   const [clientEquipment,
     setClientEquipment] =
@@ -258,6 +261,8 @@ const AddClientEquipment = () => {
   const handleSave = (e) => {
     e.preventDefault();
 
+    if (!canCreate) return;
+
     if (file) {
       const formData =
         new FormData();
@@ -367,11 +372,6 @@ const AddClientEquipment = () => {
     }
   };
 
-  const newAccess = [
-    "Subcontractor_User",
-    "Subcontractor",
-  ];
-
   const inputClass =
     "w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-300";
 
@@ -400,21 +400,23 @@ const AddClientEquipment = () => {
             </div>
 
             <div className="flex gap-3 flex-wrap">
-              <button
-                type="button"
-                onClick={() =>
-                  setShowCsvUpload(
-                    !showCsvUpload,
-                  )
-                }
+              {canCreate && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowCsvUpload(
+                      !showCsvUpload,
+                    )
+                  }
                 className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-all duration-300"
               >
                 <MdUploadFile size={20} />
 
-                {showCsvUpload
-                  ? "Manual Entry"
-                  : "Upload CSV"}
-              </button>
+                  {showCsvUpload
+                    ? "Manual Entry"
+                    : "Upload CSV"}
+                </button>
+              )}
 
               <button
                 type="button"
@@ -492,9 +494,7 @@ to-[#4338CA]" />
                           handleChange
                         }
                         required
-                        disabled={newAccess.includes(
-                          user_type,
-                        )}
+                        disabled={!canCreate || !canViewClientFilter}
                       >
                         <option value="">
                           Select Client
@@ -555,9 +555,8 @@ to-[#4338CA]" />
                         }
                         required
                         disabled={
-                          newAccess.includes(
-                            user_type,
-                          ) ||
+                          !canCreate ||
+                          !canViewLocationFilter ||
                           !clientEquipment.client_id
                         }
                       >
@@ -850,16 +849,18 @@ to-[#4338CA]" />
 
               {/* ACTION BUTTONS */}
               <div className="flex flex-wrap justify-end gap-3 mt-10">
-                <button
-                  type="submit"
+                {canCreate && (
+                  <button
+                    type="submit"
                   className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
                 >
-                  <MdAdd size={20} />
+                    <MdAdd size={20} />
 
-                  {loading
-                    ? "Saving..."
-                    : "Add Client Device"}
-                </button>
+                    {loading
+                      ? "Saving..."
+                      : "Add Client Device"}
+                  </button>
+                )}
 
                 <button
                   type="button"

@@ -29,6 +29,8 @@ import {
 
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 import {
   getSubcontractorUserById,
@@ -44,6 +46,10 @@ const EditSubcontractorUserPage =
 
     const navigate =
       useNavigate();
+
+    const { canUpdate } = useModulePermissions(
+      PERMISSION_MODULES.SUBCONTRACTORS,
+    );
 
     const {
       userId,
@@ -276,6 +282,8 @@ const EditSubcontractorUserPage =
       ) => {
         e.preventDefault();
 
+        if (!canUpdate) return;
+
         const payload =
           {
             subcontractor_user_id:
@@ -437,6 +445,7 @@ const EditSubcontractorUserPage =
                               inputClass
                             }
                             required
+                            disabled={!canUpdate}
                           />
                         </div>
                       </div>
@@ -464,6 +473,7 @@ const EditSubcontractorUserPage =
                               inputClass
                             }
                             required
+                            disabled={!canUpdate}
                           />
                         </div>
                       </div>
@@ -511,6 +521,7 @@ const EditSubcontractorUserPage =
                             inputClass
                           }
                           required
+                            disabled={!canUpdate}
                         />
                       </div>
                     </div>
@@ -529,6 +540,7 @@ const EditSubcontractorUserPage =
                           onChange={handleChange}
                           className={inputClass}
                           required
+                          disabled={!canUpdate}
                         >
                           <option value="Subcontractor_User">
                             Subcontractor User

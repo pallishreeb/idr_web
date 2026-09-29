@@ -4,6 +4,9 @@ import React, {
   useEffect,
 } from "react";
 
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
+
 import {
   useDispatch,
   useSelector,
@@ -54,6 +57,10 @@ const EditSubContractor =
     const dispatch =
       useDispatch();
 
+    const { canRead, canUpdate } = useModulePermissions(
+      PERMISSION_MODULES.SUBCONTRACTORS,
+    );
+
     const {
       subcontractor,
       loadingDetails,
@@ -73,16 +80,6 @@ const EditSubContractor =
           state,
         ) =>
           state.user.user,
-      );
-
-    const {
-      access,
-    } =
-      useSelector(
-        (
-          state,
-        ) =>
-          state.user,
       );
 
     // FETCH
@@ -112,11 +109,12 @@ const EditSubContractor =
       ];
 
     const isEditable =
-      !isSubcontractor ||
-      (isSubcontractor &&
-        allowedStatuses.includes(
-          subcontractor?.contract_status,
-        ));
+      canUpdate &&
+      (!isSubcontractor ||
+        (isSubcontractor &&
+          allowedStatuses.includes(
+            subcontractor?.contract_status,
+          )));
 
     // SECTIONS
     const sections =
@@ -490,9 +488,7 @@ const EditSubContractor =
                       </AccordionSection>
 
                       {/* NOTES */}
-                      {access.includes(
-                        user_type,
-                      ) && (
+                      {canRead && (
                         <AccordionSection
                           id="notes"
                           title="Subcontractor Notes"

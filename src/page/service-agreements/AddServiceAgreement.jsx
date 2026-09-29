@@ -121,6 +121,7 @@ const AddServiceAgreement =
 
       service_details:
         "",
+      customer_pays: "",
     });
 
     const [
@@ -485,8 +486,7 @@ to-[#4338CA] flex items-center justify-center text-white shadow-lg">
                 <div className="mb-10">
                   <div className="flex items-center gap-2 mb-5">
                     <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]" />
+                    via-[#312E81] to-[#4338CA]" />
 
                     <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                       Client
@@ -756,7 +756,27 @@ to-[#4338CA]" />
                         />
                       </div>
                     </div>
-                  </div>
+                                        {/* CUSTOMER PAYS */}
+                    <div>
+                      <label className={labelClass}>
+                        Customer Pays
+                      </label>
+
+                      <div className="relative">
+                        <select
+                          name="customer_pays"
+                          value={serviceAgreement.customer_pays}
+                          onChange={handleChange}
+                          required
+                          className={inputClass}
+                        >
+                          <option value="">Select Payment Frequency</option>
+                          <option value="Monthly">Monthly</option>
+                          <option value="Yearly">Yearly</option>
+                        </select>
+                      </div>
+                    </div>
+                     </div>
 
                   {/* SERVICE DETAILS */}
                   <div className="mt-8">

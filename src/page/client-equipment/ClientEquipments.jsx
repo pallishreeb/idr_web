@@ -14,12 +14,22 @@ import {
   retireClientEquipment,
 } from "../../actions/clientEquipment";
 import { clearClientEquipments } from "../../reducers/clientEquipmentSlice";
-
+import useModulePermissions from "../../hooks/useModulePermissions";
+import usePermission from "../../hooks/usePermission";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 const ClientEquipments = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-
+  const {
+    canCreate,
+    canUpdate,
+    canViewClientFilter,
+    canViewLocationFilter,
+    canDecommission
+  } = useModulePermissions(PERMISSION_MODULES.CLIENT_EQUIPMENT);
+  const { can } = usePermission();
+  const canCreateRma = can("RMAs", "Create");
   // Redux state selectors
   const clients = useSelector((state) => state.client.clients);
   const locations = useSelector((state) => state.location.locations);
@@ -31,12 +41,8 @@ const ClientEquipments = () => {
   const loadingLocations = useSelector((state) => state.location.loading);
   const {
     user_type,
-    client_type,
     locations: userLocations,
   } = useSelector((state) => state.user.user);
-  const { access, technicianAccess, clientAccess } = useSelector(
-    (state) => state.user,
-  );
   // Component state
   const [selectedClient, setSelectedClient] = useState(
     searchParams.get("client") || null,
@@ -83,8 +89,10 @@ const ClientEquipments = () => {
   }, [selectedClient, dispatch]);
   // Fetch clients on component mount
   useEffect(() => {
-    dispatch(getClients());
-  }, [dispatch]);
+    if (canViewClientFilter) {
+      dispatch(getClients());
+    }
+  }, [dispatch, canViewClientFilter]);
 
   useEffect(() => {
     if (user_type !== "Client Employee" && selectedClient) {
@@ -203,6 +211,7 @@ const ClientEquipments = () => {
   };
 
   const handleEdit = (equipmentId) => {
+    if (!canUpdate) return;
     navigate(
       `/edit-client-equipment/${equipmentId}?${searchParams.toString()}`,
     );
@@ -233,6 +242,7 @@ const ClientEquipments = () => {
       : "Decommission"
     : "Not Found";
   const handleDecommission = async () => {
+    if (!canUpdate) return;
     const specificEquipment = equipments?.find(
       (item) => item.client_equipment_id === decommissionModal.equipmentId,
     );
@@ -282,7 +292,7 @@ const ClientEquipments = () => {
     <div className="flex flex-col gap-5 mt-4 border py-7 px-5 bg-white">
       <div className="flex justify-between items-center">
         <div className="flex gap-2 w-[80%]">
-          {clientAccess?.includes(client_type) && userLocations?.length > 0 && (
+          {canViewLocationFilter && userLocations?.length > 0 && (
             <div className="flex flex-col gap-2">
               <label htmlFor="location" className="text-sm font-medium">
                 Select Location
@@ -449,7 +459,7 @@ const ClientEquipments = () => {
 
             {/* ACTION BUTTONS */}
             <div className="flex flex-wrap gap-3">
-              {technicianAccess.includes(user_type) && (
+              {canCreate && (
                 <button
                   className="px-5 py-3 rounded-2xl bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-all duration-300 shadow-sm"
                   onClick={handleDownloadCSVTemplate}
@@ -458,7 +468,7 @@ const ClientEquipments = () => {
                 </button>
               )}
 
-              {technicianAccess.includes(user_type) && (
+              {canCreate && (
                 <button
                   onClick={handleExportToExcel}
                   className="px-5 py-3 rounded-2xl bg-green-600 text-white font-semibold hover:bg-green-700 transition-all duration-300 shadow-md"
@@ -467,7 +477,7 @@ const ClientEquipments = () => {
                 </button>
               )}
 
-              {technicianAccess.includes(user_type) && (
+              {canCreate && (
                 <Link
                   to={`/add-client-equipment/${selectedClient}/${selectedLocation}?${searchParams.toString()}`}
                 >
@@ -480,12 +490,10 @@ const ClientEquipments = () => {
           </div>
 
           {/* CLIENT FILTERS */}
-          {technicianAccess.includes(user_type) && (
+          {canViewClientFilter && (
             <div className="bg-white rounded-[28px] shadow-md border border-gray-100 p-6 mb-6">
               <div className="flex items-center gap-2 mb-5">
-                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]" />
+                <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
                 <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                   Client & Location
@@ -529,6 +537,7 @@ to-[#4338CA]" />
                 </div>
 
                 {/* LOCATION */}
+                {canViewLocationFilter && (
                 <div>
                   <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                     Select Location
@@ -568,6 +577,7 @@ to-[#4338CA]" />
                     )}
                   </select>
                 </div>
+                )}
               </div>
             </div>
           )}
@@ -586,7 +596,7 @@ to-[#4338CA]" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
               {/* LOCATION FOR CLIENT EMPLOYEE */}
-              {clientAccess?.includes(client_type) &&
+              {canViewLocationFilter &&
                 userLocations?.length > 0 && (
                   <div>
                     <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
@@ -820,17 +830,17 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                           <td className="px-4 py-4 w-[220px]">
                             <div className="flex items-center justify-center gap-2 flex-wrap">
                               {/* EDIT */}
-                              <button
+                              {canUpdate && <button
                                 onClick={() =>
                                   handleEdit(equipment.client_equipment_id)
                                 }
                                 className="w-10 h-10 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-all duration-300"
                               >
                                 <BiSolidEditAlt size={18} />
-                              </button>
+                              </button>}
 
                               {/* DECOMMISSION / REACTIVATE */}
-                              {technicianAccess.includes(user_type) && (
+                              {canDecommission && (
                                 <>
                                   {equipment?.is_deleted === true ? (
                                     <button
@@ -842,6 +852,7 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                                       className="w-10 h-10 rounded-xl bg-green-50 hover:bg-green-100 text-green-600 flex items-center justify-center transition-all duration-300"
                                       title="Reactivate Equipment"
                                     >
+                                     
                                       <AiFillCheckCircle size={18} />
                                     </button>
                                   ) : (
@@ -854,12 +865,13 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                                       className="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-all duration-300"
                                       title="Decommission Equipment"
                                     >
+                                    
                                       <AiFillDelete size={18} />
                                     </button>
                                   )}
                                 </>
                               )}
-                              {technicianAccess.includes(user_type) && (
+                              {canCreate && (
                                 <>
                                   {/* RMA */}
                         <button

@@ -3,6 +3,8 @@
 import { useNavigate, useParams, useLocation,useSearchParams } from "react-router-dom";
 
 import { useState, useEffect } from "react";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -38,6 +40,12 @@ const TransferInventory = () => {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+
+const {
+  canRead,
+  canAssign,
+  canTransfer,
+} = useModulePermissions(PERMISSION_MODULES.INVENTORY);
   const [searchParams] = useSearchParams();
   // const location = useLocation();
 
@@ -94,6 +102,8 @@ const TransferInventory = () => {
   );
 
   useEffect(() => {
+    if (!canRead) return;
+
     dispatch(getClients());
 
     dispatch(getLocationInventory());
@@ -115,7 +125,7 @@ const TransferInventory = () => {
           console.error("Error fetching inventory item:", error);
         });
     }
-  }, [dispatch, inventory_id]);
+  }, [dispatch, inventory_id, canRead]);
 
   useEffect(() => {
     if (selectedClient) {
@@ -131,6 +141,7 @@ const TransferInventory = () => {
 
   const handleAssignWorkorder = (e) => {
     e.preventDefault();
+    if (!canAssign) return;
 
     dispatch(
       inventoryWorkOrderAssign(
@@ -151,6 +162,7 @@ const TransferInventory = () => {
 
   const handleAssignServiceTicket = (e) => {
     e.preventDefault();
+    if (!canAssign) return;
 
     dispatch(
       inventoryAssignToServiceTicket(
@@ -171,6 +183,7 @@ const TransferInventory = () => {
 
   const handleTransferInventory = (e) => {
     e.preventDefault();
+    if (!canTransfer) return;
 
     dispatch(
       inventoryTransfer(
@@ -421,7 +434,7 @@ to-[#4338CA]
 
                 <button
                   type="submit"
-                  disabled={loadingAssign}
+                  disabled={loadingAssign || !canAssign}
                   className="
                       px-5
                       py-3
@@ -532,7 +545,7 @@ to-[#4338CA]
                         focus:ring-2
                         focus:ring-indigo-500
                       "
-                  />
+                  disabled={!canAssign} />
                 </div>
               </div>
             </div>
@@ -584,7 +597,7 @@ to-[#4338CA]
 
                 <button
                   type="submit"
-                  disabled={loadingServiceTicketAssign}
+                  disabled={loadingServiceTicketAssign || !canAssign}
                   className="
                       px-5
                       py-3
@@ -702,7 +715,7 @@ to-[#4338CA]
                         focus:ring-2
                         focus:ring-indigo-500
                       "
-                  />
+                  disabled={!canAssign} />
                 </div>
               </div>
             </div>
@@ -753,15 +766,15 @@ to-[#4338CA]
 
                 <button
                   type="submit"
-                  disabled={loadingTransfer}
+                  disabled={loadingTransfer || !canTransfer}
                   className="
                       px-5
                       py-3
                       rounded-2xl
                       bg-gradient-to-r
                       from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]
+                      via-[#312E81]
+                      to-[#4338CA]
                       text-white
                       text-sm
                       font-semibold
@@ -832,7 +845,7 @@ to-[#4338CA]
                         focus:ring-2
                         focus:ring-indigo-500
                       "
-                  />
+                  disabled={!canTransfer} />
                 </div>
               </div>
             </div>

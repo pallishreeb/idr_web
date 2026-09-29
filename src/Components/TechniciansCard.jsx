@@ -1,7 +1,5 @@
 import React from "react";
 
-import { useSelector } from "react-redux";
-
 import {
   MdBuild,
   MdEdit,
@@ -11,6 +9,9 @@ import {
   MdEngineering,
 } from "react-icons/md";
 
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
+
 const TechniciansCards = ({
   technicians,
   handleTechnicianChange,
@@ -19,11 +20,12 @@ const TechniciansCards = ({
   setIsWorkOrderEditing,
   loading,
 }) => {
-  const { user_type } = useSelector((state) => state.user.user);
-
-  const { access } = useSelector((state) => state.user);
+  const { canUpdate } = useModulePermissions(
+    PERMISSION_MODULES.WORK_ORDERS,
+  );
 
   const handleEditToggle = () => {
+    if (!canUpdate) return;
     setIsWorkOrderEditing(!isWorkOrderEditing);
   };
 const autoResize = (e) => {
@@ -97,7 +99,7 @@ const inputClass = `
           </div>
 
           {/* ACTION BUTTONS */}
-          {access.includes(user_type) && (
+          {canUpdate && (
             <div className="flex flex-wrap gap-3">
               {isWorkOrderEditing ? (
                 <>

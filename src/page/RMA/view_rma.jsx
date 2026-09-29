@@ -33,9 +33,20 @@ import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 
 import { getRmaLists, deleteRma } from "../../actions/rmaActions";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 const RmaViewList = () => {
   const dispatch = useDispatch();
+
+  const {
+    canRead,
+    canDelete,
+    canViewClientFilter,
+    canViewLocationFilter,
+    canViewManufacturerFilter,
+  } = useModulePermissions(PERMISSION_MODULES.RMAS);
+
 
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,12 +56,17 @@ const RmaViewList = () => {
 
   const { rmaList, loading } = useSelector((state) => state.rma);
 
-  const { user_type, client_type } = useSelector((state) => state.user.user);
+  const { client_type } = useSelector((state) => state.user.user);
   const [filters, setFilters] = useState({
     client_id: searchParams.get("client_id") || "",
     location_id: searchParams.get("location_id") || "",
     manufacturer: searchParams.get("manufacturer") || "",
     status: searchParams.get("status") || "",
+
+
+    date_range: searchParams.get("date_range") || "",
+    start_date: searchParams.get("start_date") || "",
+    end_date: searchParams.get("end_date") || "",
   });
 
   const [sortConfig, setSortConfig] = useState({
@@ -59,12 +75,15 @@ const RmaViewList = () => {
   });
 
   useEffect(() => {
+    if (!canRead) return;
+
     dispatch(getRmaLists(filters));
 
-    if (user_type !== "Client Employee") {
+    if (canViewClientFilter) {
       dispatch(getClients());
     }
-  }, [dispatch, user_type,filters]);
+  }, [dispatch, filters, canRead, canViewClientFilter]);
+
 useEffect(() => {
   const params = new URLSearchParams();
 
@@ -123,7 +142,13 @@ useEffect(() => {
   /* SEARCH */
   const handleSearch = () => {
     const { client_id, location_id, manufacturer, status } = filters;
-
+    const dateRange =
+      filters.date_range === "custom"
+        ? {
+            start_date: filters.start_date,
+            end_date: filters.end_date,
+          }
+        : getDateRange(filters.date_range);
     const query = {
       ...(client_id && {
         client_id,
@@ -139,6 +164,13 @@ useEffect(() => {
 
       ...(status && {
         status,
+      }),
+      ...(dateRange.start_date && {
+        start_date: dateRange.start_date,
+      }),
+
+      ...(dateRange.end_date && {
+        end_date: dateRange.end_date,
       }),
     };
 
@@ -196,7 +228,58 @@ useEffect(() => {
 
     return `${month}/${day}/${year}`;
   };
+const currentYear = new Date().getFullYear();
 
+const years = Array.from(
+  { length: 5 },
+  (_, index) => currentYear - index
+);
+
+const getDateRange = (range) => {
+  const today = new Date();
+
+  if (range === "last_30_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 30);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (range === "last_60_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 60);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (range === "last_90_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 90);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (/^\d{4}$/.test(range)) {
+    return {
+      start_date: `${range}-01-01`,
+      end_date: `${range}-12-31`,
+    };
+  }
+
+  return {
+    start_date: "",
+    end_date: "",
+  };
+};
   /* SORT */
   const handleSort = (key) => {
     let direction = "ASC";
@@ -241,11 +324,23 @@ useEffect(() => {
     return "↕";
   };
 
-  const userTypesWithClientPermission = [
-    "Subcontractor_User",
-    "Client Employee",
-    "Subcontractor",
-  ];
+  const showAdvancedFilters =
+    canViewClientFilter || canViewLocationFilter || canViewManufacturerFilter;
+
+  if (!canRead) {
+    // return null;
+       return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh] px-4">
+          <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-8 text-center">
+            <h2 className="text-lg font-semibold text-gray-800">Access Denied</h2>
+            <p className="mt-2 text-sm text-gray-500">You do not have permission to view RMA records.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -340,7 +435,7 @@ to-[#4338CA]
             <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
             <div className="p-5">
-              {!userTypesWithClientPermission.includes(user_type) && (
+              {showAdvancedFilters && (
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -350,6 +445,7 @@ to-[#4338CA]
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
                     {/* CLIENT */}
+                    {canViewClientFilter && (
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                         Client
@@ -397,7 +493,10 @@ to-[#4338CA]
                       </div>
                     </div>
 
+                    
+                    )}
                     {/* LOCATION */}
+                    {canViewLocationFilter && (
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                         Location
@@ -452,6 +551,8 @@ to-[#4338CA]
                       </div>
                     </div>
 
+                    
+                    )}
                     {/* STATUS */}
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
@@ -495,6 +596,7 @@ to-[#4338CA]
                     </div>
 
                     {/* MANUFACTURER */}
+                    {canViewManufacturerFilter && (
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
                         Manufacturer
@@ -518,6 +620,110 @@ to-[#4338CA]
                         value={filters.manufacturer}
                         onChange={handleManufacturerChange}
                       />
+                    </div>
+                    
+                    )}
+                    {/* DATE RANGE */}
+                    <div>
+                      <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                        Date Range
+                      </label>
+
+                      <select
+                        className="
+                          w-full
+                          rounded-2xl
+                          border
+                          border-gray-200
+                          px-4
+                          py-3
+                          text-sm
+                          focus:outline-none
+                          focus:ring-2
+                          focus:ring-indigo-500
+                        "
+                        value={filters.date_range}
+                        onChange={(e) =>
+                          setFilters((prevFilters) => ({
+                            ...prevFilters,
+                            date_range: e.target.value,
+                            ...(e.target.value !== "custom" && {
+                              start_date: "",
+                              end_date: "",
+                            }),
+                          }))
+                        }
+                      >
+                        <option value="">All</option>
+                        <option value="last_30_days">Last 30 Days</option>
+                        <option value="last_60_days">Last 60 Days</option>
+                        <option value="last_90_days">Last 90 Days</option>
+                        <option value="custom">Custom Range</option>
+
+                        <option disabled>──────────</option>
+
+                        {years.map((year) => (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        ))}
+                      </select>
+
+                      {filters.date_range === "custom" && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              Start Date
+                            </label>
+
+                            <input
+                              type="date"
+                              value={filters.start_date}
+                              onChange={(e) =>
+                                setFilters((prevFilters) => ({
+                                  ...prevFilters,
+                                  start_date: e.target.value,
+                                }))
+                              }
+                              className="
+                                w-full
+                                rounded-xl
+                                border
+                                border-gray-200
+                                px-3
+                                py-2
+                                text-sm
+                              "
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                              End Date
+                            </label>
+
+                            <input
+                              type="date"
+                              value={filters.end_date}
+                              onChange={(e) =>
+                                setFilters((prevFilters) => ({
+                                  ...prevFilters,
+                                  end_date: e.target.value,
+                                }))
+                              }
+                              className="
+                                w-full
+                                rounded-xl
+                                border
+                                border-gray-200
+                                px-3
+                                py-2
+                                text-sm
+                              "
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -575,7 +781,7 @@ to-[#4338CA]
                 </form>
               )}
 
-              {user_type === "Client Employee" && client_type !== "user" && (
+              {!showAdvancedFilters && client_type !== "user" && (
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -886,8 +1092,9 @@ to-[#4338CA]
 
                         <td className="px-2 py-3 border-b">
                           <div className="flex items-center justify-center gap-1">
-                            <button
-                              onClick={() => handleEdit(rma.rma_id)}
+                            {canRead && (
+                              <button
+                                onClick={() => handleEdit(rma.rma_id)}
                               className="
                     w-8
                     h-8
@@ -902,9 +1109,10 @@ to-[#4338CA]
                   "
                             >
                               <BiSolidEditAlt className="text-base" />
-                            </button>
+                              </button>
+                            )}
 
-                            {user_type === "Admin" && (
+                            {canDelete && (
                               <button
                                 onClick={() => handleDeleteRma(rma.rma_id)}
                                 className="

@@ -1,8 +1,12 @@
 /** @format */
 
 import React, { useState, useMemo } from "react";
+import PropTypes from "prop-types";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
+
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
 
 import {
   MdInventory2,
@@ -17,7 +21,14 @@ import { returnInventory } from "../actions/workOrderActions";
 
 import { returnInventoryFromServiceTicket } from "../actions/serviceTicket";
 
-const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
+const InventoryTable = ({
+  inventories,
+  work_order_id,
+  service_ticket_id,
+  permissionModule = work_order_id
+    ? PERMISSION_MODULES.WORK_ORDER
+    : PERMISSION_MODULES.SERVICE_TICKETS,
+}) => {
   const dispatch = useDispatch();
 
   const [showModal, setShowModal] = useState(false);
@@ -28,9 +39,7 @@ const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { user_type } = useSelector((state) => state.user.user);
-
-  const { technicianAccess } = useSelector((state) => state.user);
+  const { canRead, canUpdate,canReturnInventory } = useModulePermissions(permissionModule);
 
   // =========================
   // FILTERED INVENTORY
@@ -96,7 +105,7 @@ const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
   // EMPTY STATE
   // =========================
 
-  if (!inventories || inventories.length === 0) {
+  if (!canRead || !inventories || inventories.length === 0) {
     return null;
   }
 
@@ -360,8 +369,7 @@ const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
                     Quantity
                   </th>
 
-                  {(user_type === "Admin" ||
-                    technicianAccess.includes(user_type)) && (
+                  {canUpdate && (
                     <th
                       className="
                         px-5
@@ -454,7 +462,7 @@ const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
                     </td>
 
                     {/* ACTION */}
-                    {technicianAccess.includes(user_type) && (
+                    {canReturnInventory && (
                       <td className="px-5 py-5 whitespace-nowrap">
                         <div className="flex justify-center">
                           <button
@@ -499,7 +507,7 @@ const InventoryTable = ({ inventories, work_order_id, service_ticket_id }) => {
                 {filteredInventories.length === 0 && (
                   <tr>
                     <td
-                      colSpan={technicianAccess.includes(user_type) ? 5 : 4}
+                      colSpan={canUpdate ? 5 : 4}
                       className="py-16"
                     >
                       <div className="flex flex-col items-center justify-center text-center">
@@ -715,6 +723,14 @@ to-[#4338CA]
       )}
     </>
   );
+};
+
+
+InventoryTable.propTypes = {
+  inventories: PropTypes.array,
+  work_order_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  service_ticket_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  permissionModule: PropTypes.string,
 };
 
 export default InventoryTable;

@@ -27,6 +27,9 @@ import {
   deleteRmaNote,
 } from "../actions/rmaActions";
 
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
+
 const RmaNotes = ({ notes, rmaId, handleSaveNote, handleNoteChange }) => {
   const dispatch = useDispatch();
 
@@ -38,7 +41,11 @@ const RmaNotes = ({ notes, rmaId, handleSaveNote, handleNoteChange }) => {
     (state) => state.user.user,
   );
 
-  const { access, technicianAccess } = useSelector((state) => state.user);
+const {
+  canAddNote,
+  canUpdateNote,
+  canDeleteNote,
+} = useModulePermissions(PERMISSION_MODULES.RMAS);
 
   const fullName = `${first_name} ${last_name}`;
 
@@ -89,12 +96,6 @@ const RmaNotes = ({ notes, rmaId, handleSaveNote, handleNoteChange }) => {
     });
   };
 
-  const newAccess = [
-    ...technicianAccess,
-    "Subcontractor_User",
-    "Subcontractor",
-  ];
-
   return (
     <>
       <div
@@ -140,7 +141,7 @@ const RmaNotes = ({ notes, rmaId, handleSaveNote, handleNoteChange }) => {
               </div>
             </div>
 
-            {newAccess.includes(user_type) && (
+            {canAddNote && (
               <button
                 className="
                   flex
@@ -296,8 +297,7 @@ to-[#6366F1]
                     </div>
 
                     {/* ACTIONS */}
-                    {(access.includes(user_type) ||
-                      note?.created_by === fullName) && (
+                    {(canUpdateNote || note?.created_by === fullName) && (
                       <div className="flex items-center gap-2">
                         {editingIndex === index ? (
                           <>
@@ -369,7 +369,7 @@ to-[#6366F1]
                               <BiSolidEditAlt className="text-lg" />
                             </button>
 
-                            {access.includes(user_type) && (
+                            {canDeleteNote && (
                               <button
                                 className="
                                     w-10

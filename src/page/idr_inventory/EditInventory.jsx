@@ -15,7 +15,9 @@ import {
   updateInventory,
 } from "../../actions/inventoryAction";
 
-import { useNavigate, useParams, useLocation,useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation, useSearchParams } from "react-router-dom";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 import Loader from "../../Images/ZZ5H.gif";
 
@@ -65,15 +67,18 @@ const EditInventory = () => {
 
   const [isEditing, setIsEditing] = useState(false);
 
-  const { user_type } = useSelector((state) => state.user.user);
-
-  const { access } = useSelector((state) => state.user);
+  const { canRead, canUpdate } = useModulePermissions(
+    PERMISSION_MODULES.INVENTORY
+  );
 
   const handleEditToggle = () => {
+    if (!canUpdate) return;
     setIsEditing(!isEditing);
   };
 
   useEffect(() => {
+    if (!canRead) return;
+
     dispatch(getLocationInventory());
 
     if (inventory_id) {
@@ -104,7 +109,7 @@ const EditInventory = () => {
           console.error("Error fetching inventory item:", error);
         });
     }
-  }, [dispatch, inventory_id]);
+  }, [dispatch, inventory_id, canRead]);
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
@@ -140,6 +145,7 @@ const EditInventory = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canUpdate) return;
 
     editableFields.inventory_id = inventory_id;
 
@@ -230,7 +236,7 @@ to-[#4338CA]
 
               {/* ACTIONS */}
               <div className="flex flex-wrap gap-3">
-                {access.includes(user_type) && !isEditing && (
+                {canUpdate && !isEditing && (
                   <button
                     onClick={handleEditToggle}
                     className="
@@ -314,7 +320,7 @@ to-[#4338CA]
                   </p>
                 </div>
 
-                {isEditing && (
+                {canUpdate && isEditing && (
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -379,7 +385,7 @@ to-[#4338CA]
                     type="text"
                     value={editableFields.make}
                     onChange={handleInputChange}
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                       w-full
                       rounded-2xl
@@ -433,7 +439,7 @@ to-[#4338CA]
                     type="text"
                     value={editableFields.device_type}
                     onChange={handleInputChange}
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                       w-full
                       rounded-2xl
@@ -463,7 +469,7 @@ to-[#4338CA]
                     type="text"
                     value={editableFields.color}
                     onChange={handleInputChange}
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                       w-full
                       rounded-2xl
@@ -493,7 +499,7 @@ to-[#4338CA]
                     type="text"
                     value={editableFields.size}
                     onChange={handleInputChange}
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                       w-full
                       rounded-2xl
@@ -522,7 +528,7 @@ to-[#4338CA]
                     name="location_id"
                     value={editableFields.location_id}
                     onChange={handleLocationChange}
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                       w-full
                       rounded-2xl
@@ -565,7 +571,7 @@ to-[#4338CA]
                     placeholder="Type quantity"
                     onChange={handleInputChange}
                     required
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                       w-full
                       rounded-2xl
@@ -654,7 +660,7 @@ to-[#4338CA]
                     onChange={handleInputChange}
                     required
                     rows={5}
-                    disabled={!isEditing}
+                    disabled={!isEditing || !canUpdate}
                     className="
                       w-full
                       rounded-2xl

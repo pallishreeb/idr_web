@@ -4,6 +4,9 @@ import React, { useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
+
 import Swal from "sweetalert2";
 
 import { toast } from "react-toastify";
@@ -47,6 +50,9 @@ const NotesTable = ({
   const { user_type, user_id } = useSelector((state) => state.user.user);
 
   const { access, technicianAccess } = useSelector((state) => state.user);
+  const { canUpdate, canDelete,canAddNote,canUpdateNote,canDeleteNote } = useModulePermissions(
+    PERMISSION_MODULES.WORK_ORDERS,
+  );
 
   const handleEditToggle = (index) => {
     setEditingIndex(index === editingIndex ? null : index);
@@ -61,6 +67,8 @@ const NotesTable = ({
   };
 
   const handleAddNote = (newNote) => {
+    if (!canUpdate) return;
+
     dispatch(addNotesToTicket(newNote))
       .then((response) => {
         if (response.code === "WO201") {
@@ -81,6 +89,8 @@ const NotesTable = ({
   };
 
   const handleDelete = (noteId) => {
+  
+
     Swal.fire({
       title: "Are you sure?",
 
@@ -107,6 +117,8 @@ const NotesTable = ({
   };
 
   const handleApproveReject = (noteId, status) => {
+
+
     dispatch(updateWOSubcontractorNoteStatus(noteId, status))
       .then(() => {
         dispatch(getWorkOrderDetails(workOrderId));
@@ -115,12 +127,6 @@ const NotesTable = ({
         console.error("Failed to update note status");
       });
   };
-
-  const newAccess = [
-    ...technicianAccess,
-    "Subcontractor_User",
-    "Subcontractor",
-  ];
 
   return (
     <div className="mt-4 bg-white border border-gray-100 rounded-[30px] shadow-sm overflow-hidden">
@@ -149,7 +155,7 @@ const NotesTable = ({
           </div>
 
           {/* ADD BUTTON */}
-          {newAccess.includes(user_type) && (
+          {canAddNote && (
             <button
               className="
                   flex
@@ -237,7 +243,7 @@ to-[#6366F1]
                         <h3 className="text-sm font-semibold text-[#1E1B4B]">
                           {note?.profile?.first_name} {note?.profile?.last_name}
                         </h3>
-                         {access.includes(user_type) && (<>
+                         {canUpdate && (<>
 
                         {/* ACCEPTED BADGE */}
                         {note.is_added_by_subcontractor &&
@@ -298,7 +304,7 @@ to-[#6366F1]
                   </div>
 
                   {/* ACTIONS */}
-                  {(access.includes(user_type) ||
+                  {(canUpdate ||
                     note.profile?.user_id === user_id) && (
                     <div className="flex flex-wrap gap-2">
                       {/* SAVE/CANCEL */}

@@ -16,6 +16,7 @@ import serviceAgreementSlice from './serviceAgreementSlice'
 import licenseSlice from "./licenseSlice"
 import rmaSlice from "./rmaSlice"
 import subcontractorSlice from "./subcontractorSlice"
+import permissionSlice from "./permissionReducer"
 
 const rootReducer = combineReducers({
   user: userReducer,
@@ -33,7 +34,8 @@ const rootReducer = combineReducers({
   serviceAgreement:serviceAgreementSlice,
   license:licenseSlice,
   rma:rmaSlice,
-  subcontractor:subcontractorSlice
+  subcontractor:subcontractorSlice,
+  permission:permissionSlice
 });
 
 export default rootReducer;

@@ -31,6 +31,9 @@ import {
 
 import AddSubcontractorModal from "./AddSubcontractorModal";
 
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
+
 const SubcontractorNotes =
   ({
     notes,
@@ -52,25 +55,13 @@ const SubcontractorNotes =
       useState(null);
 
     const {
-      user_type,
       user_id,
-    } =
-      useSelector(
-        (
-          state,
-        ) =>
-          state.user.user,
-      );
+    } = useSelector((state) => state.user.user);
 
-    const {
-      access,
-    } =
-      useSelector(
-        (
-          state,
-        ) =>
-          state.user,
-      );
+    const { canUpdate, canDelete } = useModulePermissions(
+      PERMISSION_MODULES.SUBCONTRACTORS,
+    );
+;
 
     const handleOpenModal =
       () => {
@@ -90,6 +81,8 @@ const SubcontractorNotes =
       (
         newNote,
       ) => {
+        if (!canUpdate) return;
+
         dispatch(
           addNotesToSubcontractor(
             newNote,
@@ -122,6 +115,8 @@ const SubcontractorNotes =
       (
         noteId,
       ) => {
+        if (!canDelete) return;
+
         Swal.fire({
           title:
             "Are you sure?",
@@ -163,13 +158,6 @@ const SubcontractorNotes =
         );
       };
 
-    const addAccess =
-      [
-        "Admin",
-        "Subadmin",
-        "IDR Employee",
-      ];
-
     return (
       <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 overflow-hidden mt-6">
         {/* TOP BAR */}
@@ -198,9 +186,7 @@ const SubcontractorNotes =
               </div>
             </div> */}
 
-            {addAccess.includes(
-              user_type,
-            ) && (
+            {canUpdate && (
               <button
                 className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
                 onClick={
@@ -318,13 +304,11 @@ const SubcontractorNotes =
                       </div>
 
                       {/* DELETE */}
-                      {(access.includes(
-                        user_type,
-                      ) ||
+                      {canDelete &&
                         note
                           ?.profile
                           ?.user_id ===
-                          user_id) && (
+                          user_id && (
                         <button
                           className="flex items-center justify-center gap-2 px-4 py-2 rounded-2xl bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 transition-all duration-300"
                           onClick={() =>

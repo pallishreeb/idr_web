@@ -32,6 +32,8 @@ import ServiceTicketImages from "../../Components/ServiceTicketImages";
 import SignatureModal from "../../Components/SignatureModal";
 import ShowSubcontractorUsers from "../../Components/subcontractor/ShowSubcontractorUsers";
 import { toast } from "react-toastify";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 import { MdDraw, MdDevices, MdClose, MdAdd, MdArrowBack,MdDescription } from "react-icons/md";
 
 const EditServiceTicket = () => {
@@ -71,7 +73,28 @@ const EditServiceTicket = () => {
   const [serviceTicketAgreement, setServiceTicketAgreement] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const { user_type, client_type } = useSelector((state) => state.user.user);
-  const { technicianAccess, access } = useSelector((state) => state.user);
+
+  const {
+    canRead,
+    canUpdate,
+    canAddEquipment,
+    canLinkDevice,
+    canViewSubcontractor,
+    canAddSignature,
+    canDownloadPDF,
+    canAssignTechnicianManager,
+    canRemoveTechnicianManager,
+    canAssignSubcontractorUser,
+    canDeleteSubcontractorUser,
+  } = useModulePermissions(PERMISSION_MODULES.SERVICE_TICKETS);
+
+  const { canRead: canReadServiceAgreement } =
+    useModulePermissions(PERMISSION_MODULES.SERVICE_AGREEMENTS);
+
+  const permissionLoading = useSelector(
+    (state) => state.permission.loading
+  );
+ 
   const [isDownloading, setIsDownloading] = useState(false); // Loading state
   // Track which row is being processed
   const [processingId, setProcessingId] = useState(null);
@@ -79,10 +102,12 @@ const EditServiceTicket = () => {
   const [showDeviceModal, setShowDeviceModal] = useState(false);
   // const [isDownloading, setIsDownloading] = useState(false); // Loading state
   useEffect(() => {
+    if (!canRead) return;
+
     dispatch(getServiceTicketDetails(serviceTicketId));
     dispatch(getClients());
     dispatch(fetchIDREmployees());
-  }, [dispatch, serviceTicketId]);
+  }, [dispatch, serviceTicketId, canRead]);
 
   useEffect(() => {
     if (!serviceTicketDetails) return;
@@ -99,9 +124,11 @@ const EditServiceTicket = () => {
       setServiceTicketEquipments(serviceTicketDetails?.linkedDevices || []);
       setInventories(serviceTicketDetails?.inventories || []);
       setServiceTicketAgreement(serviceTicketDetails?.agreement || {});
-      // API call should be done only if technicianAccess includes user_type
-      const addRmaAccess = [...technicianAccess, "Subcontractor_User","Subcontractor"];
-      if (addRmaAccess.includes(user_type)) {
+      /*
+       * Fetch available client equipment only when the user
+       * has permission to link an existing device.
+       */
+      if (canLinkDevice) {
         dispatch(
           getClientEquipments({
             client_id: serviceTicketDetails.client_id,
@@ -109,8 +136,10 @@ const EditServiceTicket = () => {
           }),
         );
       }
+  
+
     }
-  }, [serviceTicketDetails, user_type, technicianAccess, dispatch]);
+  }, [serviceTicketDetails, canLinkDevice, dispatch]);
   useEffect(() => {
     if (serviceTicket?.client_id) {
       dispatch(getLocationByClient(serviceTicket?.client_id));
@@ -119,6 +148,8 @@ const EditServiceTicket = () => {
   }, [dispatch, serviceTicket?.client_id]);
 
   const handleServiceTicketChange = (e) => {
+    if (!canUpdate) return;
+
     const { name, value } = e.target;
     setServiceTicket((prev) => ({
       ...prev,
@@ -221,13 +252,15 @@ const EditServiceTicket = () => {
   };
 
   const handleSaveTicket = () => {
+    if (!canUpdate) return;
+
     const filteredWorkOrder = getFilteredServiceTicket(serviceTicket);
     dispatch(updateServiceTicket(filteredWorkOrder, serviceTicketId));
     setIsEditing(!isEditing);
     dispatch(getServiceTicketDetails(serviceTicketId));
   };
 
-  if (loadingDetails) {
+  if (permissionLoading || loadingDetails) {
     return (
       <div className="flex justify-center items-center h-screen">
         <img className="w-20 h-20" src={Loader} alt="Loading..." />
@@ -235,7 +268,24 @@ const EditServiceTicket = () => {
     );
   }
 
+  if (!canRead) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-50">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm px-8 py-6 text-center">
+          <h2 className="text-lg font-semibold text-[#1E1B4B]">
+            Access Denied
+          </h2>
+          <p className="text-sm text-gray-500 mt-2">
+            You do not have permission to view this service ticket.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const openDeviceModal = () => {
+    if (!canLinkDevice) return;
+
     setShowDeviceModal(true);
   };
 
@@ -244,6 +294,8 @@ const EditServiceTicket = () => {
   };
 
   const handleAddDeviceToTicket = (equipmentId) => {
+    if (!canLinkDevice) return;
+
     setProcessingId(equipmentId);
     const payload = {
       service_ticket_id: serviceTicketId,
@@ -344,10 +396,9 @@ const EditServiceTicket = () => {
   const newAccess = ["Subcontractor_User", "Subcontractor"];
 
   const isTicketClosed = serviceTicket?.status?.toLowerCase() === "closed";
-  const canAddClientEquip = [
-  "Subcontractor_User",
-  "Subcontractor",
-].includes(user_type) || technicianAccess.includes(user_type);
+  const canAddClientEquip = canAddEquipment;
+  const canAddExistingDevice = canLinkDevice;
+  
   return (
     <>
       <Header />
@@ -472,7 +523,7 @@ to-[#4338CA]
 
                   {/* SERVICE AGREEMENT */}
                   {client_type !== "User" &&
-                    !newAccess.includes(user_type) &&
+                    canReadServiceAgreement &&
                     serviceTicketAgreement?.agreement_id && (
                       <Link
                         to={`/edit-service-agreement/${serviceTicketAgreement?.agreement_id}`}
@@ -507,75 +558,74 @@ to-[#4338CA]
                     )}
 
                   {/* ADD DEVICE */}
-                  {((newAccess.includes(user_type) &&
-                    serviceTicket?.status?.toLowerCase() !== "closed") ||
-                    technicianAccess.includes(user_type)) && (
+                  {canAddExistingDevice &&
+                    !isTicketClosed && (
                     <button
                       onClick={openDeviceModal}
                       className="
-              flex
-              items-center
-              justify-center
-              gap-2
-              px-5
-              py-3
-              rounded-2xl
-              bg-gradient-to-r
-             from-[#1E1B4B]
-              via-[#312E81]
-              to-[#4338CA]
-              text-white
-              text-sm
-              font-semibold
-              shadow-sm
-              hover:shadow-md
-              transition-all
-            "
+                        flex
+                        items-center
+                        justify-center
+                        gap-2
+                        px-5
+                        py-3
+                        rounded-2xl
+                        bg-gradient-to-r
+                      from-[#1E1B4B]
+                        via-[#312E81]
+                        to-[#4338CA]
+                        text-white
+                        text-sm
+                        font-semibold
+                        shadow-sm
+                        hover:shadow-md
+                        transition-all
+                      "
                     >
                       <MdAdd className="text-lg" />
                       Add Existing Device
                     </button>
                   )}
-            {/* ADD EQUIPMENT */}
-            {canAddClientEquip && !isTicketClosed && (
-              <button
-                onClick={() =>
-                  navigate(
-                    `/add-client-equipment/${serviceTicket?.client_id}/${serviceTicket?.location_id}/?&sort_key=device_type&sort_direction=ASC`,
-                    {
-                      state: {
-                        serviceTicketId,
-                        returnTo: "edit-service-ticket",
-                      },
-                    },
-                  )
-                }
-                className="
-                  flex
-                  items-center
-                  justify-center
-                  gap-2
-                  px-5
-                  py-3
-                  rounded-2xl
-                  bg-gradient-to-r
-                 from-[#312E81]
-                  via-[#4338CA]
-                  to-[#6366F1]
-                  text-white
-                  text-sm
-                  font-semibold
-                  shadow-sm
-                  hover:shadow-md
-                  transition-all
-                "
-              >
-                <MdAdd className="text-lg" />
-                Add New Device
-              </button>
-            )}
+                    {/* ADD EQUIPMENT */}
+                    {canAddClientEquip && !isTicketClosed && (
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/add-client-equipment/${serviceTicket?.client_id}/${serviceTicket?.location_id}/?&sort_key=device_type&sort_direction=ASC`,
+                            {
+                              state: {
+                                serviceTicketId,
+                                returnTo: "edit-service-ticket",
+                              },
+                            },
+                          )
+                        }
+                        className="
+                          flex
+                          items-center
+                          justify-center
+                          gap-2
+                          px-5
+                          py-3
+                          rounded-2xl
+                          bg-gradient-to-r
+                        from-[#312E81]
+                          via-[#4338CA]
+                          to-[#6366F1]
+                          text-white
+                          text-sm
+                          font-semibold
+                          shadow-sm
+                          hover:shadow-md
+                          transition-all
+                        "
+                      >
+                        <MdAdd className="text-lg" />
+                        Add New Device
+                      </button>
+                    )}
                   {/* DOWNLOAD PDF */}
-                  {technicianAccess.includes(user_type) && (
+                  {canDownloadPDF && (
                     <button
                       onClick={handleDownloadPdf}
                       disabled={isDownloading}
@@ -636,6 +686,8 @@ to-[#4338CA]
             loading={loading}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
+            canUpdate={canUpdate}
+            permissionModule={PERMISSION_MODULES.SERVICE_TICKETS}
           />
 
           {/* update Assignee */}
@@ -648,8 +700,11 @@ to-[#4338CA]
             subcontractorAssignees={
               serviceTicketDetails?.subcontractor_in_service_tickets
             }
+            canAssignTechnicianManager={canAssignTechnicianManager}
+            canRemoveTechnicianManager={canRemoveTechnicianManager}
+            permissionModule={PERMISSION_MODULES.SERVICE_TICKETS}
           />
-          {user_type !== "Client Employee" && (
+          {canViewSubcontractor && (
             <ShowSubcontractorUsers
               subcontractorAssignees={
                 serviceTicketDetails?.subcontractor_in_service_tickets
@@ -659,8 +714,11 @@ to-[#4338CA]
               deleteAction={deleteSubcontractorUserFromServiceTicket}
               refreshAction={getServiceTicketDetails}
               parentKey="service_ticket_id"
-              idKey="subcontractor_in_st_id" // 🔥 unique id key for ST
+              idKey="subcontractor_in_st_id" // unique id key for ST
               title="Subcontractor Users"
+              permissionModule={PERMISSION_MODULES.SERVICE_TICKETS}
+              canAssignSubcontractorUser={canAssignSubcontractorUser}
+              canDeleteSubcontractorUser={canDeleteSubcontractorUser}
             />
           )}
           {/* show ClientEquipmentTable */}
@@ -675,45 +733,48 @@ to-[#4338CA]
           <ServiceTicketImages
             images={serviceTicketImages}
             serviceTicketId={serviceTicketId}
+            permissionModule={PERMISSION_MODULES.SERVICE_TICKETS}
           />
           {/* InventoryTable */}
           <InventoryTable
             inventories={inventories}
             service_ticket_id={serviceTicketId}
+            permissionModule={PERMISSION_MODULES.SERVICE_TICKETS}
           />
-          {/* Ticket Notes */}
-          <ServiceTicketNotes
-            notes={notes}
-            loading={loading}
-            serviceTicketId={serviceTicketId}
-            handleSaveNote={handleSaveNote}
-            handleNoteChange={handleNoteChange}
-          />
+         {/* Ticket Notes */}
+            <ServiceTicketNotes
+              notes={notes}
+              loading={loading}
+              serviceTicketId={serviceTicketId}
+              handleSaveNote={handleSaveNote}
+              handleNoteChange={handleNoteChange}
+              permissionModule={PERMISSION_MODULES.SERVICE_TICKETS}
+            />
           {showDeviceModal && (
             <div
               className="
-      fixed
-      inset-0
-      bg-black/50
-      flex
-      items-center
-      justify-center
-      z-50
-      p-4
-    "
+                fixed
+                inset-0
+                bg-black/50
+                flex
+                items-center
+                justify-center
+                z-50
+                p-4
+              "
             >
               <div
                 className="
-        bg-white
-        rounded-[28px]
-        shadow-2xl
-        w-full
-        max-w-7xl
-        max-h-[92vh]
-        overflow-hidden
-        flex
-        flex-col
-      "
+                    bg-white
+                    rounded-[28px]
+                    shadow-2xl
+                    w-full
+                    max-w-7xl
+                    max-h-[92vh]
+                    overflow-hidden
+                    flex
+                    flex-col
+                  "
               >
                 {/* TOP BORDER */}
                 <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
@@ -721,30 +782,30 @@ to-[#4338CA]
                 {/* HEADER */}
                 <div
                   className="
-          px-6
-          py-5
-          border-b
-          border-gray-100
-          flex
-          flex-col
-          md:flex-row
-          md:items-center
-          md:justify-between
-          gap-4
-        "
+                    px-6
+                    py-5
+                    border-b
+                    border-gray-100
+                    flex
+                    flex-col
+                    md:flex-row
+                    md:items-center
+                    md:justify-between
+                    gap-4
+                  "
                 >
                   <div className="flex items-center gap-4">
                     <div
                       className="
-              w-14
-              h-14
-              rounded-2xl
-              bg-indigo-100
-              text-indigo-600
-              flex
-              items-center
-              justify-center
-            "
+                            w-14
+                            h-14
+                            rounded-2xl
+                            bg-indigo-100
+                            text-indigo-600
+                            flex
+                            items-center
+                            justify-center
+                          "
                     >
                       <MdDevices className="text-3xl" />
                     </div>
@@ -764,22 +825,22 @@ to-[#4338CA]
                   <button
                     onClick={closeDeviceModal}
                     className="
-            flex
-            items-center
-            justify-center
-            gap-2
-            px-5
-            py-3
-            rounded-2xl
-            border
-            border-gray-200
-            bg-white
-            text-gray-700
-            text-sm
-            font-semibold
-            hover:bg-gray-50
-            transition-all
-          "
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  px-5
+                  py-3
+                  rounded-2xl
+                  border
+                  border-gray-200
+                  bg-white
+                  text-gray-700
+                  text-sm
+                  font-semibold
+                  hover:bg-gray-50
+                  transition-all
+                "
                   >
                     <MdClose className="text-lg" />
                     Close
@@ -793,81 +854,81 @@ to-[#4338CA]
                       <tr>
                         <th
                           className="
-                  px-4
-                  py-4
-                  text-xs
-                  font-semibold
-                  uppercase
-                  tracking-wide
-                  text-gray-500
-                  border-b
-                  whitespace-nowrap
-                "
+                            px-4
+                            py-4
+                            text-xs
+                            font-semibold
+                            uppercase
+                            tracking-wide
+                            text-gray-500
+                            border-b
+                            whitespace-nowrap
+                          "
                         >
                           Serial Number
                         </th>
 
                         <th
                           className="
-                  px-4
-                  py-4
-                  text-xs
-                  font-semibold
-                  uppercase
-                  tracking-wide
-                  text-gray-500
-                  border-b
-                  whitespace-nowrap
-                "
+                          px-4
+                          py-4
+                          text-xs
+                          font-semibold
+                          uppercase
+                          tracking-wide
+                          text-gray-500
+                          border-b
+                          whitespace-nowrap
+                        "
                         >
                           Device ID
                         </th>
 
                         <th
                           className="
-                  px-4
-                  py-4
-                  text-xs
-                  font-semibold
-                  uppercase
-                  tracking-wide
-                  text-gray-500
-                  border-b
-                  whitespace-nowrap
-                "
+                              px-4
+                              py-4
+                              text-xs
+                              font-semibold
+                              uppercase
+                              tracking-wide
+                              text-gray-500
+                              border-b
+                              whitespace-nowrap
+                            "
                         >
                           MAC Address
                         </th>
 
                         <th
                           className="
-                  px-4
-                  py-4
-                  text-xs
-                  font-semibold
-                  uppercase
-                  tracking-wide
-                  text-gray-500
-                  border-b
-                  whitespace-nowrap
-                "
+                            px-4
+                            py-4
+                            text-xs
+                            font-semibold
+                            uppercase
+                            tracking-wide
+                            text-gray-500
+                            border-b
+                            whitespace-nowrap
+                          "
                         >
                           Model
                         </th>
 
                         <th
                           className="
-                  px-4
-                  py-4
-                  text-xs
-                  font-semibold
-                  uppercase
-                  tracking-wide
-                  text-gray-500
-                  border-b
-                  text-center
-                  whitespace-nowrap
-                "
+                            px-4
+                            py-4
+                            text-xs
+                            font-semibold
+                            uppercase
+                            tracking-wide
+                            text-gray-500
+                            border-b
+                            text-center
+                            whitespace-nowrap
+                          "
                         >
                           Action
                         </th>
@@ -881,15 +942,15 @@ to-[#4338CA]
                             <div className="flex flex-col items-center justify-center text-center">
                               <div
                                 className="
-                        w-20
-                        h-20
-                        rounded-full
-                        bg-gray-100
-                        flex
-                        items-center
-                        justify-center
-                        mb-4
-                      "
+                                  w-20
+                                  h-20
+                                  rounded-full
+                                  bg-gray-100
+                                  flex
+                                  items-center
+                                  justify-center
+                                  mb-4
+                                "
                               >
                                 <MdDevices className="text-4xl text-gray-400" />
                               </div>
@@ -909,11 +970,11 @@ to-[#4338CA]
                           <tr
                             key={equipment.client_equipment_id}
                             className="
-                      border-b
-                      border-gray-100
-                      hover:bg-indigo-50/40
-                      transition-all
-                    "
+                                border-b
+                                border-gray-100
+                                hover:bg-indigo-50/40
+                                transition-all
+                              "
                           >
                             {/* SERIAL */}
                             <td className="px-4 py-4">
@@ -1039,14 +1100,14 @@ to-[#4338CA]
           {/* Signature Section */}
           <div
             className="
-    bg-white
-    rounded-[24px]
-    border
-    border-gray-100
-    shadow-sm
-    overflow-hidden
-    mt-5
-  "
+              bg-white
+              rounded-[24px]
+              border
+              border-gray-100
+              shadow-sm
+              overflow-hidden
+              mt-5
+            "
           >
             {/* TOP BORDER */}
             <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
@@ -1056,15 +1117,15 @@ to-[#4338CA]
               <div className="flex items-center gap-3 mb-5">
                 <div
                   className="
-          w-12
-          h-12
-          rounded-2xl
-          bg-indigo-100
-          text-indigo-600
-          flex
-          items-center
-          justify-center
-        "
+                        w-12
+                        h-12
+                        rounded-2xl
+                        bg-indigo-100
+                        text-indigo-600
+                        flex
+                        items-center
+                        justify-center
+                      "
                 >
                   <MdDraw className="text-2xl" />
                 </div>
@@ -1081,50 +1142,48 @@ to-[#4338CA]
               </div>
 
               {/* AGREEMENT TEXT */}
-              {user_type === "Client Employee" && (
-                <div
-                  className="
-          bg-indigo-50
-          border
-          border-indigo-100
-          rounded-2xl
-          p-4
-          mb-5
-        "
-                >
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    By signing below, the client confirms that the services
-                    outlined in this ticket have been completed satisfactorily
-                    in accordance with the notes, updates, and supporting photos
-                    provided.
-                  </p>
-                </div>
-              )}
+              <div
+                className="
+                  bg-indigo-50
+                  border
+                  border-indigo-100
+                  rounded-2xl
+                  p-4
+                  mb-5
+                "
+              >
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  By signing below, the client confirms that the services
+                  outlined in this ticket have been completed satisfactorily
+                  in accordance with the notes, updates, and supporting photos
+                  provided.
+                </p>
+              </div>
 
               {/* SIGNATURE EXISTS */}
               {signatureImage ? (
                 <div
                   className="
-          max-w-2xl
-          border
-          border-gray-100
-          rounded-2xl
-          overflow-hidden
-          bg-gray-50
-        "
+                      max-w-2xl
+                      border
+                      border-gray-100
+                      rounded-2xl
+                      overflow-hidden
+                      bg-gray-50
+                    "
                 >
                   {/* SIGNATURE HEADER */}
                   <div
                     className="
-            px-5
-            py-4
-            border-b
-            border-gray-100
-            bg-white
-            flex
-            items-center
-            justify-between
-          "
+                        px-5
+                        py-4
+                        border-b
+                        border-gray-100
+                        bg-white
+                        flex
+                        items-center
+                        justify-between
+                      "
                   >
                     <div>
                       <h3 className="text-base font-semibold text-[#1E1B4B]">
@@ -1138,14 +1197,14 @@ to-[#4338CA]
 
                     <div
                       className="
-              px-3
-              py-1
-              rounded-full
-              bg-green-100
-              text-green-700
-              text-xs
-              font-semibold
-            "
+                          px-3
+                          py-1
+                          rounded-full
+                          bg-green-100
+                          text-green-700
+                          text-xs
+                          font-semibold
+                        "
                     >
                       Signed
                     </div>
@@ -1156,23 +1215,23 @@ to-[#4338CA]
                     {/* IMAGE */}
                     <div
                       className="
-              bg-white
-              border
-              border-gray-200
-              rounded-2xl
-              p-4
-              flex
-              items-center
-              justify-center
-            "
+                        bg-white
+                        border
+                        border-gray-200
+                        rounded-2xl
+                        p-4
+                        flex
+                        items-center
+                        justify-center
+                      "
                     >
                       <img
                         src={`${S3_BASE_URL}/${signatureImage}`}
                         alt="Signature"
                         className="
-                max-h-52
-                object-contain
-              "
+                                max-h-52
+                                object-contain
+                              "
                       />
                     </div>
 
@@ -1180,13 +1239,13 @@ to-[#4338CA]
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
                       <div
                         className="
-                bg-white
-                border
-                border-gray-100
-                rounded-2xl
-                px-4
-                py-3
-              "
+                            bg-white
+                            border
+                            border-gray-100
+                            rounded-2xl
+                            px-4
+                            py-3
+                          "
                       >
                         <p className="text-xs text-gray-500 mb-1">Signed By</p>
 
@@ -1197,13 +1256,13 @@ to-[#4338CA]
 
                       <div
                         className="
-                bg-white
-                border
-                border-gray-100
-                rounded-2xl
-                px-4
-                py-3
-              "
+                              bg-white
+                              border
+                              border-gray-100
+                              rounded-2xl
+                              px-4
+                              py-3
+                            "
                       >
                         <p className="text-xs text-gray-500 mb-1">
                           Signature Date
@@ -1223,32 +1282,32 @@ to-[#4338CA]
                   {/* EMPTY STATE */}
                   <div
                     className="
-            border-2
-            border-dashed
-            border-gray-200
-            rounded-2xl
-            bg-gray-50
-            py-12
-            px-6
-            flex
-            flex-col
-            items-center
-            justify-center
-            text-center
-          "
+                        border-2
+                        border-dashed
+                        border-gray-200
+                        rounded-2xl
+                        bg-gray-50
+                        py-12
+                        px-6
+                        flex
+                        flex-col
+                        items-center
+                        justify-center
+                        text-center
+                      "
                   >
                     <div
                       className="
-              w-20
-              h-20
-              rounded-full
-              bg-white
-              shadow-sm
-              flex
-              items-center
-              justify-center
-              mb-4
-            "
+                          w-20
+                          h-20
+                          rounded-full
+                          bg-white
+                          shadow-sm
+                          flex
+                          items-center
+                          justify-center
+                          mb-4
+                        "
                     >
                       <MdDraw className="text-4xl text-gray-400" />
                     </div>
@@ -1263,29 +1322,29 @@ to-[#4338CA]
                     </p>
 
                     {/* ADD BUTTON */}
-                    {user_type === "Client Employee" && (
+                    {canAddSignature && (
                       <button
                         onClick={openModal}
                         className="
-                mt-6
-                flex
-                items-center
-                justify-center
-                gap-2
-                px-6
-                py-3
-                rounded-2xl
-                bg-gradient-to-r
-               from-[#312E81]
-via-[#4338CA]
-to-[#6366F1]
-                text-white
-                text-sm
-                font-semibold
-                shadow-sm
-                hover:shadow-md
-                transition-all
-              "
+                            mt-6
+                            flex
+                            items-center
+                            justify-center
+                            gap-2
+                            px-6
+                            py-3
+                            rounded-2xl
+                            bg-gradient-to-r
+                          from-[#312E81]
+                          via-[#4338CA]
+                          to-[#6366F1]
+                            text-white
+                            text-sm
+                            font-semibold
+                            shadow-sm
+                            hover:shadow-md
+                            transition-all
+                          "
                       >
                         <MdDraw className="text-lg" />
                         Add Signature

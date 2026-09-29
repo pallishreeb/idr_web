@@ -39,6 +39,8 @@ import { getClients } from "../../actions/clientActions";
 import { fetchIDREmployees } from "../../actions/employeeActions";
 
 import { toast } from "react-toastify";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 const WorkOrder = () => {
   const dispatch = useDispatch();
@@ -54,6 +56,10 @@ const WorkOrder = () => {
     project_manager: searchParams.get("project_manager") || "",
     location_id: searchParams.get("location_id") || "",
     is_billed: searchParams.get("is_billed") || "",
+
+    date_range: searchParams.get("date_range") || "",
+    start_date: searchParams.get("start_date") || "",
+    end_date: searchParams.get("end_date") || "",
   });
 
   const [sortConfig, setSortConfig] = useState({
@@ -61,13 +67,19 @@ const WorkOrder = () => {
     direction: "asc",
   });
 
-  const { user_type, client_type, locations } = useSelector(
-    (state) => state.user.user,
-  );
-
-  const { access, clientAccess, technicianAccess } = useSelector(
-    (state) => state.user,
-  );
+  const {
+    canRead,
+    canCreate,
+    canUpdate,
+    canDelete,
+    canViewClientFilter,
+    canViewLocationFilter,
+    canViewTechnicianFilter,
+    canViewProjectManagerFilter,
+    canViewBilledFilter,
+    canDuplicate,
+    canReadIDREmp
+  } = useModulePermissions(PERMISSION_MODULES.WORK_ORDERS);
 
   const { workOrders, loading } = useSelector((state) => state.workOrder);
 
@@ -76,14 +88,27 @@ const WorkOrder = () => {
   const { idrEmployees } = useSelector((state) => state.employee);
 
   const clientLocations = useSelector((state) => state.location.locations);
+    console.log(  canRead,
+    canCreate,
+    canUpdate,
+    canDelete,
+    canViewClientFilter,
+    canViewLocationFilter,
+    canDuplicate,"workorder permission");
 
   useEffect(() => {
+    if (!canRead) return;
+
     dispatch(getWorkOrderLists(filters));
-  if (technicianAccess.includes(user_type)) {
-    dispatch(getClients());
-    dispatch(fetchIDREmployees());
-  }
-  }, [dispatch]);
+
+    if (canViewClientFilter) {
+      dispatch(getClients());
+    }
+
+    if (canReadIDREmp) {
+      dispatch(fetchIDREmployees());
+    }
+  }, [dispatch, canRead, canViewClientFilter]);
   useEffect(() => {
     const params = new URLSearchParams();
 
@@ -97,10 +122,10 @@ const WorkOrder = () => {
   }, [filters, setSearchParams]);
 
   useEffect(() => {
-    if (filters?.client_id) {
+    if (canViewLocationFilter && filters?.client_id) {
       dispatch(getLocationByClient(filters.client_id));
     }
-  }, [dispatch, filters?.client_id]);
+  }, [dispatch, filters?.client_id, canViewLocationFilter]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -112,6 +137,8 @@ const WorkOrder = () => {
   };
 
   const handleDelete = (orderId) => {
+    if (!canDelete) return;
+
     Swal.fire({
       title: "Are you sure?",
       text: "Do you really want to delete this work order?",
@@ -134,10 +161,19 @@ const WorkOrder = () => {
   };
 
   const handleSearch = () => {
-    dispatch(getWorkOrderLists(filters));
+    if (!canRead) return;
+
+    const dateRange = getDateRange(filters.date_range);
+  const appliedFilters = {
+      ...filters,
+      ...dateRange,
+    };
+    dispatch(getWorkOrderLists(appliedFilters));
   };
 
   const handleReset = () => {
+    if (!canRead) return;
+
     const clearedFilters = {
       status: "",
       client_id: "",
@@ -145,6 +181,9 @@ const WorkOrder = () => {
       technician: "",
       project_manager: "",
       is_billed: "",
+      date_range: "",
+      start_date: "",
+      end_date: "",
     };
 
     setFilters(clearedFilters);
@@ -224,10 +263,6 @@ const WorkOrder = () => {
       focus:ring-indigo-500
       transition-all
     `;
-  const locationAccess = [
-    ...technicianAccess,
-    "Client Employee"
-  ];
     // DATE FORMAT
   function formatDateToMDY(date) {
   if (!date) return "NA";
@@ -236,6 +271,59 @@ const WorkOrder = () => {
 
   return `${month}/${day}/${year}`;
 }
+const currentYear = new Date().getFullYear();
+
+const years = Array.from(
+  { length: 5 },
+  (_, index) => currentYear - index
+);
+const getDateRange = (range) => {
+  const today = new Date();
+
+  if (range === "last_30_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 30);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (range === "last_60_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 60);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (range === "last_90_days") {
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 90);
+
+    return {
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: today.toISOString().split("T")[0],
+    };
+  }
+
+  if (/^\d{4}$/.test(range)) {
+    return {
+      start_date: `${range}-01-01`,
+      end_date: `${range}-12-31`,
+    };
+  }
+
+  return {
+    start_date: "",
+    end_date: "",
+  };
+};
+
+
   return (
     <>
       <Header />
@@ -262,7 +350,7 @@ const WorkOrder = () => {
               </div>
             </div>
 
-            {access.includes(user_type) && (
+            {canCreate && (
               <Link
                 to={`/add-work-order?${searchParams.toString()}`}
                 state={{
@@ -341,7 +429,7 @@ const WorkOrder = () => {
                 </div>
 
                 {/* CLIENT */}
-                {technicianAccess.includes(user_type) && (
+                {canViewClientFilter && (
                   <div>
                     <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                       Client Name
@@ -373,7 +461,7 @@ const WorkOrder = () => {
                   </div>
                 )}
                 {/* Location filters */}
-               {locationAccess.includes(user_type) && (
+               {canViewLocationFilter && (
                 <div>
                   <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                     Location
@@ -398,10 +486,14 @@ const WorkOrder = () => {
                   </select>
                 </div>
                 )}
+              
+    
+    
                 {/* TECH */}
-                {access.includes(user_type) && (
+                {canRead && (
                   <>
-                    <div>
+                  {
+                    canViewTechnicianFilter &&  <div>
                       <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                         Technician
                       </label>
@@ -425,8 +517,10 @@ const WorkOrder = () => {
                         })}
                       </select>
                     </div>
-
-                    <div>
+                  }
+                   
+                    {
+                      canViewProjectManagerFilter &&    <div>
                       <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                         Project Manager
                       </label>
@@ -450,9 +544,11 @@ const WorkOrder = () => {
                         })}
                       </select>
                     </div>
+                    }
+                 
 
                     {/* BILLED */}
-                    <div>
+                    {canViewBilledFilter &&  <div>
                       <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
                         Billed Status
                       </label>
@@ -472,9 +568,42 @@ const WorkOrder = () => {
                         <option value="Retainage Billed">
                           Retainage Billed
                         </option>
+                        <option value="Cancelled"> Cancelled</option>
+                       
                       </select>
-                    </div>
+                    </div>}
+                   
                   </>
+                )}
+
+                {canRead && (
+
+                <div>
+                  <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
+                    Date Range
+                  </label>
+
+                 <select
+                  name="date_range"
+                  value={filters.date_range}
+                  className={filterInputClass}
+                  onChange={handleFilterChange}
+                >
+                  <option value="">All</option>
+
+                  <option value="last_30_days">Last 30 Days</option>
+                  <option value="last_60_days">Last 60 Days</option>
+                  <option value="last_90_days">Last 90 Days</option>
+
+                  <option disabled>──────────</option>
+
+                  {years.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+                </div>
                 )}
               </div>
 
@@ -640,18 +769,20 @@ to-[#4338CA]
 
                           <td className="px-5 py-4">
                             <div className="flex items-center justify-center gap-3">
-                              <Link
-                                to={`/edit-work-order/${order?.work_order_id}?${searchParams.toString()}`}
-                                state={{
-                                  filters,
-                                }}
-                              >
-                                <button className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 transition-all">
-                                  <BiSolidEditAlt className="text-lg" />
-                                </button>
-                              </Link>
+                              {canRead && (
+                                <Link
+                                  to={`/edit-work-order/${order?.work_order_id}?${searchParams.toString()}`}
+                                  state={{
+                                    filters,
+                                  }}
+                                >
+                                  <button className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 transition-all">
+                                    <BiSolidEditAlt className="text-lg" />
+                                  </button>
+                                </Link>
+                              )}
 
-                              {user_type === "Admin" && (
+                              {canDelete && (
                                 <button
                                   onClick={() =>
                                     handleDelete(order.work_order_id)
@@ -661,7 +792,7 @@ to-[#4338CA]
                                   <AiFillDelete className="text-lg" />
                                 </button>
                               )}
-                              {access.includes(user_type) && (
+                              {canDuplicate && (
                                 <button
                                   onClick={() =>
                                     navigate(
@@ -669,17 +800,17 @@ to-[#4338CA]
                                     )
                                   }
                                   className="
-    w-10
-    h-10
-    rounded-2xl
-    bg-blue-50
-    text-blue-600
-    flex
-    items-center
-    justify-center
-    hover:bg-blue-100
-    transition-all
-  "
+                                          w-10
+                                          h-10
+                                          rounded-2xl
+                                          bg-blue-50
+                                          text-blue-600
+                                          flex
+                                          items-center
+                                          justify-center
+                                          hover:bg-blue-100
+                                          transition-all
+                                        "
                                 >
                                   <MdContentCopy className="text-lg" />
                                 </button>

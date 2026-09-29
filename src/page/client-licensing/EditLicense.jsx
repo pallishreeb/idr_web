@@ -34,6 +34,9 @@ import {
 
 import Loader from "../../Images/ZZ5H.gif";
 
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
+
 import {
   MdBusiness,
   MdLocationOn,
@@ -84,19 +87,19 @@ const EditLicense = () => {
         state.location.loading,
     );
 
-  const {
-    user_type,
-    client_type,
-  } = useSelector(
-    (state) =>
-      state.user.user,
+  const { user_type } = useSelector(
+    (state) => state.user.user,
   );
 
-  const { access } =
-    useSelector(
-      (state) =>
-        state.user,
-    );
+  const {
+    canUpdate,
+    canViewClientFilter,
+    canViewLocationFilter,
+    canViewIdrCost,
+    canViewSalePrice,
+  } = useModulePermissions(
+    PERMISSION_MODULES.CLIENT_LICENSING,
+  );
 
   const {
     licenseDetails,
@@ -135,10 +138,7 @@ const EditLicense = () => {
       ),
     );
 
-    if (
-      user_type !==
-      "Client Employee"
-    ) {
+    if (canViewClientFilter) {
       dispatch(
         getClients(),
       );
@@ -146,7 +146,7 @@ const EditLicense = () => {
   }, [
     dispatch,
     licenseId,
-    user_type,
+    canViewClientFilter,
   ]);
 
   // SET DETAILS
@@ -312,6 +312,8 @@ const EditLicense = () => {
   ) => {
     e.preventDefault();
 
+    if (!canUpdate) return;
+
     const formattedLicenseData =
       {
         ...licenseData,
@@ -395,9 +397,7 @@ const EditLicense = () => {
 
             {/* ACTIONS */}
             <div className="flex flex-wrap gap-3">
-              {access?.includes(
-                user_type,
-              ) && (
+              {canUpdate && (
                 <button
                   type="submit"
                   form="editLicenseForm"
@@ -506,9 +506,7 @@ to-[#4338CA]" />
                             handleChange
                           }
                           disabled={
-                            !access?.includes(
-                              user_type,
-                            ) ||
+                            !canUpdate ||
                             loadingClients
                           }
                           className={`${inputClass} pl-12`}
@@ -569,9 +567,7 @@ to-[#4338CA]" />
                             handleChange
                           }
                           disabled={
-                            !access?.includes(
-                              user_type,
-                            ) ||
+                            !canUpdate ||
                             loadingLocations
                           }
                           className={`${inputClass} pl-12`}
@@ -651,9 +647,7 @@ to-[#4338CA]" />
                             handleChange
                           }
                           disabled={
-                            !access?.includes(
-                              user_type,
-                            )
+                            !canUpdate
                           }
                           required
                           className={`${inputClass} pl-12`}
@@ -684,9 +678,7 @@ to-[#4338CA]" />
                             handleChange
                           }
                           disabled={
-                            !access?.includes(
-                              user_type,
-                            )
+                            !canUpdate
                           }
                           required
                           className={`${inputClass} pl-12`}
@@ -718,9 +710,7 @@ to-[#4338CA]" />
                             handleChange
                           }
                           disabled={
-                            !access?.includes(
-                              user_type,
-                            )
+                            !canUpdate
                           }
                           required
                           className={`${inputClass} pl-12`}
@@ -753,9 +743,7 @@ to-[#4338CA]" />
                           }
                           required
                           disabled={
-                            !access?.includes(
-                              user_type,
-                            )
+                            !canUpdate
                           }
                           className={`${inputClass} pl-12`}
                         />
@@ -787,9 +775,7 @@ to-[#4338CA]" />
                           }
                           required
                           disabled={
-                            !access?.includes(
-                              user_type,
-                            )
+                            !canUpdate
                           }
                           className={`${inputClass} pl-12`}
                         />
@@ -797,9 +783,7 @@ to-[#4338CA]" />
                     </div>
 
                     {/* IDR COST */}
-                    {access.includes(
-                      user_type,
-                    ) && (
+                    {canViewIdrCost && (
                       <div>
                         <label
                           className={
@@ -822,9 +806,7 @@ to-[#4338CA]" />
                               handleChange
                             }
                             disabled={
-                              !access?.includes(
-                                user_type,
-                              )
+                              !canUpdate
                             }
                             required
                             className={`${inputClass} pl-12`}
@@ -834,8 +816,7 @@ to-[#4338CA]" />
                     )}
 
                     {/* SALE PRICE */}
-                    {user_type !==
-                      "IDR Employee" && (
+                    {canViewSalePrice && (
                       <div>
                         <label
                           className={
@@ -858,9 +839,7 @@ to-[#4338CA]" />
                               handleChange
                             }
                             disabled={
-                              !access?.includes(
-                                user_type,
-                              )
+                              !canUpdate
                             }
                             required
                             className={`${inputClass} pl-12`}

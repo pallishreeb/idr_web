@@ -32,6 +32,8 @@ import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 
 import MultiSelectDropdown from "./MultiSelectDropdown";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 const EditEmployeePage = () => {
   const dispatch = useDispatch();
@@ -41,6 +43,12 @@ const EditEmployeePage = () => {
   const location = useLocation();
 
   const { employeeId } = useParams();
+
+  const {
+    canUpdate,
+    canViewClientFilter,
+    canViewLocationFilter,
+  } = useModulePermissions(PERMISSION_MODULES.CLIENT_EMPLOYEES);
 
   const clients = useSelector(
     (state) => state.client.clients,
@@ -62,10 +70,6 @@ const EditEmployeePage = () => {
     (state) => state.clientEmployee.loading,
   );
 
-  const user = useSelector(
-    (state) => state.user.user,
-  );
-
   const [formData, setFormData] = useState({
     client_id: "",
     first_name: "",
@@ -82,34 +86,6 @@ const EditEmployeePage = () => {
 
     dispatch(getClients());
   }, [dispatch, employeeId]);
-
-  useEffect(() => {
-    if (
-      user?.client_type === "Admin" &&
-      user?.client_id &&
-      formData.client_id &&
-      String(formData.client_id) !==
-        String(user.client_id)
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        client_id: String(
-          user.client_id,
-        ),
-        client_location_id: [],
-      }));
-
-      dispatch(
-        getLocationByClient(
-          user.client_id,
-        ),
-      );
-    }
-  }, [
-    user,
-    formData.client_id,
-    dispatch,
-  ]);
 
   useEffect(() => {
     if (employee) {
@@ -182,6 +158,8 @@ const EditEmployeePage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!canUpdate) return;
+
     const updatedFormData = {
       ...formData,
     };
@@ -244,6 +222,7 @@ const EditEmployeePage = () => {
               <button
                 type="submit"
                 form="employeeEditForm"
+                disabled={!canUpdate || loadingEmployees}
                 className="px-6 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA] text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
               >
                 {loadingEmployees
@@ -306,12 +285,7 @@ to-[#4338CA]" />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {/* CLIENT */}
-                  {[
-                    "Admin",
-                    "Subadmin",
-                  ].includes(
-                    user?.user_type,
-                  ) && (
+                  {canViewClientFilter && (
                     <div>
                       <label
                         htmlFor="client_id"
@@ -335,10 +309,7 @@ to-[#4338CA]" />
                             handleChange
                           }
                           className={`${inputClass} pl-12`}
-                          disabled={
-                            user?.client_type ===
-                            "Admin"
-                          }
+                          disabled={!canViewClientFilter}
                         >
                           <option value="">
                             Select Client
@@ -352,21 +323,7 @@ to-[#4338CA]" />
                               Loading...
                             </option>
                           ) : (
-                            (user?.client_type ===
-                            "Admin"
-                              ? clients?.data?.filter(
-                                  (
-                                    client,
-                                  ) =>
-                                    String(
-                                      client.client_id,
-                                    ) ===
-                                    String(
-                                      user.client_id,
-                                    ),
-                                )
-                              : clients?.data
-                            )?.map(
+                            clients?.data.map(
                               (
                                 client,
                               ) => (
@@ -407,6 +364,7 @@ to-[#4338CA]" />
                       <select
                         id="employee_type"
                         name="employee_type"
+                        disabled={!canUpdate}
                         value={
                           formData.employee_type
                         }
@@ -452,6 +410,7 @@ to-[#4338CA]" />
                         <input
                           type="radio"
                           name="access_to_website"
+                          disabled={!canUpdate}
                           value="true"
                           checked={
                             formData.access_to_website ===
@@ -480,6 +439,7 @@ to-[#4338CA]" />
                         <input
                           type="radio"
                           name="access_to_website"
+                          disabled={!canUpdate}
                           value="false"
                           checked={
                             formData.access_to_website ===
@@ -510,7 +470,7 @@ to-[#4338CA]" />
 
               {/* LOCATION ACCESS */}
               {formData.employee_type ===
-                "Location Admin" && (
+                "Location Admin" && canViewLocationFilter && (
                 <div className="mb-10">
                   <div className="flex items-center gap-2 mb-5">
                     <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]

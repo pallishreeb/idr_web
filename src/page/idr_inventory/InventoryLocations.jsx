@@ -13,6 +13,8 @@ import Swal from "sweetalert2";
 import Header from "../../Components/Header";
 
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 import Loader from "../../Images/ZZ5H.gif";
 
@@ -33,17 +35,24 @@ const InventoryLocations = () => {
     (state) => state.locationInventory,
   );
 
-  const { user_type } = useSelector((state) => state.user.user);
+  const { canRead, canCreate, canDelete } = useModulePermissions(
+    PERMISSION_MODULES.INVENTORY_LOCATIONS
+  );
 
   useEffect(() => {
+    if (!canRead) return;
+
     dispatch(getLocationInventory());
-  }, [dispatch]);
+  }, [dispatch, canRead]);
 
   const handleOpenModel = () => {
+    if (!canCreate) return;
     setShowModal(true);
   };
 
   const handleConfirmSave = async () => {
+    if (!canCreate) return;
+
     if (location === "") {
       toast.error("Please enter location.");
 
@@ -68,6 +77,8 @@ const InventoryLocations = () => {
   };
 
   const handleDelete = (locationId) => {
+    if (!canDelete) return;
+
     Swal.fire({
       title: "Are you sure?",
       text: "Do you really want to delete this location?",
@@ -152,7 +163,7 @@ to-[#4338CA]
               </div>
 
               {/* RIGHT */}
-              {user_type === "Admin" && (
+              {canCreate && (
                 <button
                   onClick={handleOpenModel}
                   className="
@@ -226,7 +237,7 @@ to-[#4338CA]
                           Location
                         </th>
 
-                        {user_type === "Admin" && (
+                        {canDelete && (
                           <th
                             className="
                               px-4
@@ -280,7 +291,7 @@ to-[#4338CA]
                               </div>
                             </td>
 
-                            {user_type === "Admin" && (
+                            {canDelete && (
                               <td className="px-4 py-3 border-b">
                                 <button
                                   onClick={() =>
@@ -345,7 +356,7 @@ to-[#4338CA]
       </div>
 
       {/* ADD LOCATION MODAL */}
-      {showModal && (
+      {showModal && canCreate && (
         <div
           className="
             fixed

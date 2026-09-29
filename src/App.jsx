@@ -77,6 +77,8 @@ import SubcontractorUsersPage from "./page/subcontractor-users/Sub-users";
 import AddSubcontractorUserPage from "./page/subcontractor-users/AddSubcontractorUserPage";
 import EditSubcontractorUserPage from "./page/subcontractor-users/EditSubcontractorUserPage";
 import Permission from "./page/permission/Permission";
+import PermissionLoader from "./Components/permission/PermissionLoader";
+import { useSelector } from "react-redux";
 
 
 
@@ -86,9 +88,17 @@ function App() {
     sessionConfig.TIMEOUT_MINUTES,
     sessionConfig.WARNING_MINUTES
   );
-
+  const user = useSelector(
+    (state) => state.user.user
+  );
+   const permission = useSelector(
+    (state) => state.permission
+  );
+  console.log("permission",permission)
+  console.log("user",user)
   return (
     <>
+    <PermissionLoader />
       {/* Session Warning Modal */}
       <SessionWarningModal
         show={showWarning}

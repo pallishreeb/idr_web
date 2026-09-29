@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { Link, useNavigate, useSearchParams, } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import Header from "../../Components/Header";
@@ -16,20 +16,29 @@ import { getClients } from "../../actions/clientActions";
 import { getLocationByClient } from "../../actions/locationActions";
 import { fetchIDREmployees } from "../../actions/employeeActions";
 import { toast } from "react-toastify";
-import { MdAssignmentInd, MdAdd, MdContentCopy,  MdKeyboardArrowUp, MdKeyboardArrowDown, } from "react-icons/md";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
+import {
+  MdAssignmentInd,
+  MdAdd,
+  MdContentCopy,
+  MdKeyboardArrowUp,
+  MdKeyboardArrowDown,
+} from "react-icons/md";
 const ServiceTickets = () => {
   const dispatch = useDispatch();
   // const location = useLocation();
   // const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-const [filters, setFilters] = useState({
-  client_id: searchParams.get("client_id") || "",
-  status: searchParams.get("status") || "",
-  technician: searchParams.get("technician") || "",
-  project_manager: searchParams.get("project_manager") || "",
-  location_id: searchParams.get("location_id") || "",
-  is_billed: searchParams.get("is_billed") || "",
-});
+  const [filters, setFilters] = useState({
+    client_id: searchParams.get("client_id") || "",
+    status: searchParams.get("status") || "",
+    technician: searchParams.get("technician") || "",
+    project_manager: searchParams.get("project_manager") || "",
+    location_id: searchParams.get("location_id") || "",
+    is_billed: searchParams.get("is_billed") || "",
+    date: searchParams.get("date") || "",
+  });
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
   const { user_type, client_type, locations } = useSelector(
@@ -38,6 +47,22 @@ const [filters, setFilters] = useState({
   const { access, clientAccess, technicianAccess } = useSelector(
     (state) => state.user,
   );
+
+  const {
+    canRead,
+    canCreate,
+    canUpdate,
+    canDelete,
+    canDuplicate,
+    canViewClientFilter,
+    canViewLocationFilter,
+    canViewStatusFilter,
+    canViewDateFilter,
+    canViewBilledFilter,
+    canViewTechnicianFilter,
+    canViewProjectManagerFilter,
+    canViewSubcontractorFilter,
+  } = useModulePermissions(PERMISSION_MODULES.SERVICE_TICKETS);
   // const { serviceTickets, loading } = useSelector((state) => state.workOrder);
   const { serviceTickets, loading } = useSelector(
     (state) => state.serviceTicket,
@@ -47,28 +72,29 @@ const [filters, setFilters] = useState({
   const loadingLocations = useSelector((state) => state.location.loading);
   const clientLocations = useSelector((state) => state.location.locations);
   useEffect(() => {
-  const params = new URLSearchParams();
+    const params = new URLSearchParams();
 
-  if (filters.client_id) params.set("client_id", filters.client_id);
-  if (filters.status) params.set("status", filters.status);
-  if (filters.technician)
-    params.set("technician", filters.technician);
-  if (filters.project_manager)
-    params.set("project_manager", filters.project_manager);
-  if (filters.location_id)
-    params.set("location_id", filters.location_id);
-  if (filters.is_billed)
-    params.set("is_billed", filters.is_billed);
-
-  setSearchParams(params);
-}, [filters, setSearchParams]);
-useEffect(() => {
-  dispatch(getServiceTicketLists(filters));
-  if (technicianAccess.includes(user_type)) {
-  dispatch(getClients());
-  dispatch(fetchIDREmployees());
-  }
-}, [dispatch]);
+    if (filters.client_id) params.set("client_id", filters.client_id);
+    if (filters.status) params.set("status", filters.status);
+    if (filters.technician) params.set("technician", filters.technician);
+    if (filters.project_manager)
+      params.set("project_manager", filters.project_manager);
+    if (filters.location_id) params.set("location_id", filters.location_id);
+    if (filters.is_billed) params.set("is_billed", filters.is_billed);
+    if (filters.date) params.set("date", filters.date);
+    setSearchParams(params);
+  }, [filters, setSearchParams]);
+  useEffect(() => {
+    dispatch(getServiceTicketLists(filters));
+    if (
+      canViewClientFilter ||
+      canViewTechnicianFilter ||
+      canViewProjectManagerFilter
+    ) {
+      dispatch(getClients());
+      dispatch(fetchIDREmployees());
+    }
+  }, [dispatch]);
   useEffect(() => {
     if (filters?.client_id) {
       dispatch(getLocationByClient(filters.client_id));
@@ -108,27 +134,28 @@ useEffect(() => {
   const handleSearch = () => {
     dispatch(getServiceTicketLists(filters));
   };
-const handleReset = () => {
-  const clearedFilters = {
-    status: "",
-    client_id: "",
-    location_id: "",
-    technician: "",
-    project_manager: "",
-    is_billed: "",
+  const handleReset = () => {
+    const clearedFilters = {
+      status: "",
+      client_id: "",
+      location_id: "",
+      technician: "",
+      project_manager: "",
+      is_billed: "",
+      date: "",
+    };
+
+    setFilters(clearedFilters);
+    setSearchParams({});
+    dispatch(getServiceTicketLists(clearedFilters));
   };
+  function formatDate(date) {
+    if (!date) return "NA";
 
-  setFilters(clearedFilters);
-  setSearchParams({});
-  dispatch(getServiceTicketLists(clearedFilters));
-};
-function formatDate(date) {
-  if (!date) return "NA";
+    const [year, month, day] = date.split("-");
 
-  const [year, month, day] = date.split("-");
-
-  return `${month}/${day}/${year}`;
-}
+    return `${month}/${day}/${year}`;
+  }
   const handleSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -177,18 +204,67 @@ function formatDate(date) {
       return 0;
     });
   }, [serviceTickets, sortConfig]);
-  const locationAccess = [
-    ...technicianAccess,
-    "Client Employee"
-  ];
+  const locationAccess = [...technicianAccess, "Client Employee"];
 
   const getSortIcon = (key) => {
-  if (sortConfig.key !== key) return "↕";
+    if (sortConfig.key !== key) return "↕";
 
-  return sortConfig.direction === "asc"
-    ? <MdKeyboardArrowUp />
-    : <MdKeyboardArrowDown />;
-};
+    return sortConfig.direction === "asc" ? (
+      <MdKeyboardArrowUp />
+    ) : (
+      <MdKeyboardArrowDown />
+    );
+  };
+  const currentYear = new Date().getFullYear();
+
+  const years = Array.from({ length: 5 }, (_, index) => currentYear - index);
+
+  const getDateRange = (range) => {
+    const today = new Date();
+
+    if (range === "last_30_days") {
+      const startDate = new Date(today);
+      startDate.setDate(today.getDate() - 30);
+
+      return {
+        start_date: startDate.toISOString().split("T")[0],
+        end_date: today.toISOString().split("T")[0],
+      };
+    }
+
+    if (range === "last_60_days") {
+      const startDate = new Date(today);
+      startDate.setDate(today.getDate() - 60);
+
+      return {
+        start_date: startDate.toISOString().split("T")[0],
+        end_date: today.toISOString().split("T")[0],
+      };
+    }
+
+    if (range === "last_90_days") {
+      const startDate = new Date(today);
+      startDate.setDate(today.getDate() - 90);
+
+      return {
+        start_date: startDate.toISOString().split("T")[0],
+        end_date: today.toISOString().split("T")[0],
+      };
+    }
+
+    if (/^\d{4}$/.test(range)) {
+      return {
+        start_date: `${range}-01-01`,
+        end_date: `${range}-12-31`,
+      };
+    }
+
+    return {
+      start_date: "",
+      end_date: "",
+    };
+  };
+  console.log("canViewStatusFilter",canViewStatusFilter)
   return (
     <>
       <Header />
@@ -199,13 +275,13 @@ function formatDate(date) {
             {/* HEADER */}
             <div
               className="
-      bg-white
-      rounded-[22px]
-      border
-      border-gray-100
-      shadow-sm
-      overflow-hidden
-    "
+                bg-white
+                rounded-[22px]
+                border
+                border-gray-100
+                shadow-sm
+                overflow-hidden
+                "
             >
               <div className="h-1 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
@@ -213,18 +289,18 @@ function formatDate(date) {
                 <div className="flex items-center gap-3">
                   <div
                     className="
-            w-12
-            h-12
-            rounded-2xl
-            bg-gradient-to-r
-          from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]
-            text-white
-            flex
-            items-center
-            justify-center
-          "
+                      w-12
+                      h-12
+                      rounded-2xl
+                      bg-gradient-to-r
+                    from-[#1E1B4B]
+                    via-[#312E81]
+                    to-[#4338CA]
+                      text-white
+                      flex
+                      items-center
+                      justify-center
+                    "
                   >
                     <MdAssignmentInd className="text-2xl" />
                   </div>
@@ -240,25 +316,25 @@ to-[#4338CA]
                   </div>
                 </div>
 
-                {access.includes(user_type) && (
+                {canCreate && (
                   <Link to={`/add-service-ticket?${searchParams.toString()}`}>
                     <button
                       className="
-              flex
-              items-center
-              gap-2
-              px-4
-              py-2.5
-              rounded-2xl
-              bg-gradient-to-r
-             from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]
-              text-white
-              text-sm
-              font-semibold
-              hover:shadow-md
-            "
+                        flex
+                        items-center
+                        gap-2
+                        px-4
+                        py-2.5
+                        rounded-2xl
+                        bg-gradient-to-r
+                      from-[#1E1B4B]
+                        via-[#312E81]
+                        to-[#4338CA]
+                        text-white
+                        text-sm
+                        font-semibold
+                        hover:shadow-md
+                      "
                     >
                       <MdAdd className="text-lg" />
                       New Ticket
@@ -271,35 +347,37 @@ to-[#4338CA]
             {/* FILTERS */}
             <div
               className="
-      bg-white
-      rounded-[22px]
-      border
-      border-gray-100
-      shadow-sm
-      p-4
-    "
+                  bg-white
+                  rounded-[22px]
+                  border
+                  border-gray-100
+                  shadow-sm
+                  p-4
+                "
             >
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
                 {/* STATUS */}
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-gray-600">
-                    Ticket Status
-                  </label>
+                {canViewStatusFilter && (
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-gray-600">
+                      Ticket Status
+                    </label>
 
-                  <select
-                    name="status"
-                    value={filters.status}
-                    className="h-10 px-3 rounded-xl border border-gray-200 text-sm"
-                    onChange={handleFilterChange}
-                  >
-                    <option value="">All</option>
-                    <option value="Open">Open</option>
-                    <option value="Closed">Closed</option>
-                  </select>
-                </div>
+                    <select
+                      name="status"
+                      value={filters.status}
+                      className="h-10 px-3 rounded-xl border border-gray-200 text-sm"
+                      onChange={handleFilterChange}
+                    >
+                      <option value="">All</option>
+                      <option value="Open">Open</option>
+                      <option value="Closed">Closed</option>
+                    </select>
+                  </div>
+                )}
 
                 {/* CLIENT */}
-                {technicianAccess.includes(user_type) && (
+                {canViewClientFilter && (
                   <div className="flex flex-col gap-1">
                     <label className="text-xs font-semibold text-gray-600">
                       Client
@@ -332,40 +410,40 @@ to-[#4338CA]
                 )}
 
                 {/* LOCATION */}
-                {locationAccess.includes(user_type) && (
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-gray-600">
-                    Location
-                  </label>
+                {canViewLocationFilter && (
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-gray-600">
+                      Location
+                    </label>
 
-                  <select
-                    name="location_id"
-                    value={filters.location_id}
-                    className="h-10 px-3 rounded-xl border border-gray-200 text-sm"
-                    onChange={handleFilterChange}
-                  >
-                    <option value="">All</option>
+                    <select
+                      name="location_id"
+                      value={filters.location_id}
+                      className="h-10 px-3 rounded-xl border border-gray-200 text-sm"
+                      onChange={handleFilterChange}
+                    >
+                      <option value="">All</option>
 
-                    {[...(clientLocations || [])]
-                      .sort((a, b) =>
-                        `${a.address_line_one || ""} ${a.address_line_two || ""}`.localeCompare(
-                          `${b.address_line_one || ""} ${b.address_line_two || ""}`,
-                        ),
-                      )
-                      .map((location) => (
-                        <option
-                          key={location.location_id}
-                          value={location.location_id}
-                        >
-                          {location.address_line_one}{" "}
-                          {location.address_line_two}
-                        </option>
-                      ))}
-                  </select>
-                </div>
+                      {[...(clientLocations || [])]
+                        .sort((a, b) =>
+                          `${a.address_line_one || ""} ${a.address_line_two || ""}`.localeCompare(
+                            `${b.address_line_one || ""} ${b.address_line_two || ""}`,
+                          ),
+                        )
+                        .map((location) => (
+                          <option
+                            key={location.location_id}
+                            value={location.location_id}
+                          >
+                            {location.address_line_one}{" "}
+                            {location.address_line_two}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
                 )}
                 {/* BILLED */}
-                {access.includes(user_type) && (
+                {canViewBilledFilter && (
                   <div className="flex flex-col gap-1">
                     <label className="text-xs font-semibold text-gray-600">
                       Billed
@@ -385,12 +463,13 @@ to-[#4338CA]
                       </option>
                       <option value="Warranty">Warranty</option>
                       <option value="Courtesy">Courtesy</option>
+                      <option value="Cancelled"> Cancelled</option>
                     </select>
                   </div>
                 )}
 
                 {/* TECH */}
-                {access.includes(user_type) && (
+                {canViewTechnicianFilter && (
                   <div className="flex flex-col gap-1">
                     <label className="text-xs font-semibold text-gray-600">
                       Technician
@@ -418,7 +497,7 @@ to-[#4338CA]
                 )}
 
                 {/* PM */}
-                {access.includes(user_type) && (
+                {canViewProjectManagerFilter && (
                   <div className="flex flex-col gap-1">
                     <label className="text-xs font-semibold text-gray-600">
                       Project Manager
@@ -444,20 +523,48 @@ to-[#4338CA]
                     </select>
                   </div>
                 )}
+                {/* DATE RANGE */}
+                {canViewDateFilter && (
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-gray-600">
+                      Date Range
+                    </label>
+
+                    <select
+                      name="date"
+                      value={filters.date}
+                      className="h-10 px-3 rounded-xl border border-gray-200 text-sm"
+                      onChange={handleFilterChange}
+                    >
+                      <option value="">All</option>
+                      <option value="30">Last 30 Days</option>
+                      <option value="60">Last 60 Days</option>
+                      <option value="90">Last 90 Days</option>
+
+                      <option disabled>──────────</option>
+
+                      {years.map((year) => (
+                        <option key={year} value={year.toString()}>
+                          {year}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
 
               {/* BUTTONS */}
               <div className="flex justify-end gap-2 mt-4">
                 <button
                   className="
-          px-4
-          py-2
-          rounded-xl
-          bg-indigo-600
-          text-white
-          text-sm
-          font-medium
-        "
+                          px-4
+                          py-2
+                          rounded-xl
+                          bg-indigo-600
+                          text-white
+                          text-sm
+                          font-medium
+                        "
                   onClick={handleSearch}
                 >
                   Search
@@ -465,14 +572,14 @@ to-[#4338CA]
 
                 <button
                   className="
-          px-4
-          py-2
-          rounded-xl
-          bg-gray-100
-          text-gray-700
-          text-sm
-          font-medium
-        "
+                          px-4
+                          py-2
+                          rounded-xl
+                          bg-gray-100
+                          text-gray-700
+                          text-sm
+                          font-medium
+                        "
                   onClick={handleReset}
                 >
                   Reset
@@ -483,13 +590,13 @@ to-[#4338CA]
             {/* TABLE */}
             <div
               className="
-      bg-white
-      rounded-[22px]
-      border
-      border-gray-100
-      shadow-sm
-      overflow-hidden
-    "
+                    bg-white
+                    rounded-[22px]
+                    border
+                    border-gray-100
+                    shadow-sm
+                    overflow-hidden
+                  "
             >
               {!loading ? (
                 <div className="overflow-x-auto">
@@ -500,18 +607,17 @@ to-[#4338CA]
                           className="px-3 py-3 text-left text-xs font-bold text-gray-600 whitespace-nowrap cursor-pointer"
                           onClick={() => handleSort("service_ticket_number")}
                         >
-                           <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1">
                             <span>Ticket # </span>
                             <span>{getSortIcon("service_ticket_number")}</span>
                           </div>
-                          
                         </th>
 
                         <th
                           className="px-3 py-3 text-left text-xs font-bold text-gray-600 whitespace-nowrap cursor-pointer"
                           onClick={() => handleSort("client_name")}
                         >
-                            <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1">
                             <span>Client</span>
                             <span>{getSortIcon("client_name")}</span>
                           </div>
@@ -525,7 +631,6 @@ to-[#4338CA]
                             <span> Location</span>
                             <span>{getSortIcon("client_location")}</span>
                           </div>
-                          
                         </th>
 
                         <th
@@ -536,7 +641,6 @@ to-[#4338CA]
                             <span>Service Date </span>
                             <span>{getSortIcon("service_date")}</span>
                           </div>
-                          
                         </th>
 
                         <th className="px-3 py-3 text-left text-xs font-bold text-gray-600 whitespace-nowrap">
@@ -567,10 +671,10 @@ to-[#4338CA]
                           <tr
                             key={order.service_ticket_id}
                             className="
-                    border-b
-                    border-gray-100
-                    hover:bg-gray-50
-                  "
+                                  border-b
+                                  border-gray-100
+                                  hover:bg-gray-50
+                                "
                           >
                             <td className="px-3 py-3 text-sm font-semibold whitespace-nowrap">
                               {order?.service_ticket_number || "NA"}
@@ -604,19 +708,19 @@ to-[#4338CA]
                             <td className="px-3 py-3 whitespace-nowrap">
                               <span
                                 className={`
-                        inline-flex
-                        items-center
-                        px-3
-                        py-1
-                        rounded-full
-                        text-xs
-                        font-semibold
-                        ${
-                          order.status === "Closed"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-green-100 text-green-700"
-                        }
-                      `}
+                                  inline-flex
+                                  items-center
+                                  px-3
+                                  py-1
+                                  rounded-full
+                                  text-xs
+                                  font-semibold
+                                  ${
+                                    order.status === "Closed"
+                                      ? "bg-red-100 text-red-700"
+                                      : "bg-green-100 text-green-700"
+                                  }
+                                `}
                               >
                                 {order.status}
                               </span>
@@ -633,66 +737,66 @@ to-[#4338CA]
                             <td className="px-3 py-3 whitespace-nowrap">
                               <div className="flex items-center gap-2">
                                 {/* EDIT */}
-                               <Link
+                                <Link
                                   to={`/edit-service-ticket/${order?.service_ticket_id}?${searchParams.toString()}`}
                                 >
                                   <button
                                     className="
-                            w-9
-                            h-9
-                            rounded-xl
-                            bg-blue-50
-                            text-blue-600
-                            flex
-                            items-center
-                            justify-center
-                          "
+                                          w-9
+                                          h-9
+                                          rounded-xl
+                                          bg-blue-50
+                                          text-blue-600
+                                          flex
+                                          items-center
+                                          justify-center
+                                        "
                                   >
                                     <BiSolidEditAlt className="text-lg" />
                                   </button>
                                 </Link>
 
                                 {/* DUPLICATE */}
-                                {access.includes(user_type) && (
-                                <Link
-                                  to={`/add-service-ticket?${searchParams.toString()}`}
-                                  state={{
-                                    duplicateData: order,
-                                    isDuplicate: true,
-                                  }}
-                                >
-                                  <button
-                                    className="
-                            w-9
-                            h-9
-                            rounded-xl
-                            bg-indigo-50
-                            text-indigo-600
-                            flex
-                            items-center
-                            justify-center
-                          "
+                                {canDuplicate && (
+                                  <Link
+                                    to={`/add-service-ticket?${searchParams.toString()}`}
+                                    state={{
+                                      duplicateData: order,
+                                      isDuplicate: true,
+                                    }}
                                   >
-                                    <MdContentCopy className="text-lg" />
-                                  </button>
-                                </Link>
+                                    <button
+                                      className="
+                                            w-9
+                                            h-9
+                                            rounded-xl
+                                            bg-indigo-50
+                                            text-indigo-600
+                                            flex
+                                            items-center
+                                            justify-center
+                                          "
+                                    >
+                                      <MdContentCopy className="text-lg" />
+                                    </button>
+                                  </Link>
                                 )}
                                 {/* DELETE */}
-                                {user_type === "Admin" && (
+                                {canDelete && (
                                   <button
                                     onClick={() =>
                                       handleDelete(order?.service_ticket_id)
                                     }
                                     className="
-                            w-9
-                            h-9
-                            rounded-xl
-                            bg-red-50
-                            text-red-600
-                            flex
-                            items-center
-                            justify-center
-                          "
+                                        w-9
+                                        h-9
+                                        rounded-xl
+                                        bg-red-50
+                                        text-red-600
+                                        flex
+                                        items-center
+                                        justify-center
+                                      "
                                   >
                                     <AiFillDelete className="text-lg" />
                                   </button>

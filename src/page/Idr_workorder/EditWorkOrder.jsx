@@ -30,6 +30,8 @@ import WorkOrderImages from "../../Components/WorkOrderImages";
 import WOSignatureModal from "../../Components/WOSignatureModal";
 import ShowSubcontractorUsers from "../../Components/subcontractor/ShowSubcontractorUsers";
 import { MdArrowBack } from "react-icons/md";
+import useModulePermissions from "../../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../../constants/permissionConstants";
 
 const EditWorkOrder = () => {
   const { workOrderId } = useParams();
@@ -51,8 +53,12 @@ const EditWorkOrder = () => {
   const clientEmployees = useSelector(
     (state) => state.clientEmployee.clientEmployees,
   );
-  const { access , technicianAccess} = useSelector((state) => state.user);
-  const { user_type } = useSelector((state) => state.user.user);
+  const { canRead, canUpdate ,canAddEquipment,canAddSignature} =
+    useModulePermissions(PERMISSION_MODULES.WORK_ORDERS); 
+    
+
+
+
   const idrEmployees = useSelector((state) => state.employee.idrEmployees);
   const [workOrder, setWorkOrder] = useState(null);
   const [technicians, setTechnicians] = useState([]);
@@ -65,11 +71,15 @@ const EditWorkOrder = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isWorkOrderEditing, setIsWorkOrderEditing] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false); // Loading state
+  
+
   useEffect(() => {
+    if (!canRead) return;
+
     dispatch(getWorkOrderDetails(workOrderId));
     dispatch(getClients());
     dispatch(fetchIDREmployees());
-  }, [dispatch, workOrderId]);
+  }, [dispatch, workOrderId, canRead]);
 
   useEffect(() => {
     // console.log("workOrderDetails:", workOrderDetails); // Debugging line
@@ -88,13 +98,14 @@ const EditWorkOrder = () => {
     }
   }, [workOrderDetails]);
   useEffect(() => {
-    if (workOrder?.client_id) {
+    if (canRead && workOrder?.client_id) {
       dispatch(getLocationByClient(workOrder?.client_id));
       dispatch(getClientEmployeeByClientId(workOrder?.client_id));
     }
-  }, [dispatch, workOrder?.client_id]);
+  }, [dispatch, workOrder?.client_id, canRead]);
 
   const handleWorkOrderChange = (e) => {
+    if (!canUpdate) return;
     const { name, value } = e.target;
     setWorkOrder((prev) => ({
       ...prev,
@@ -138,6 +149,7 @@ const EditWorkOrder = () => {
   };
 
   const handleTechnicianChange = (index, e) => {
+    if (!canUpdate) return;
     const { name, value } = e.target;
     const updatedTechnicians = [...technicians];
     updatedTechnicians[index] = { ...updatedTechnicians[index], [name]: value };
@@ -170,6 +182,7 @@ const EditWorkOrder = () => {
   };
 
   const handleNoteChange = (index, e) => {
+    if (!canUpdate) return;
     const { name, value } = e.target;
     const updatedNotes = [...notes];
     updatedNotes[index] = { ...updatedNotes[index], [name]: value };
@@ -177,6 +190,7 @@ const EditWorkOrder = () => {
   };
 
   const handleAssigneeChange = (index, e) => {
+    if (!canUpdate) return;
     const { name, value } = e.target;
     const updatedAssignees = [...assignees];
     updatedAssignees[index] = { ...updatedAssignees[index], [name]: value };
@@ -240,6 +254,7 @@ const EditWorkOrder = () => {
   };
 
   const handleSaveTicket = () => {
+    if (!canUpdate) return;
     const filteredWorkOrder = getFilteredWorkOrder(workOrder);
     dispatch(updateTicket(filteredWorkOrder));
     setIsEditing(!isEditing);
@@ -270,6 +285,7 @@ const EditWorkOrder = () => {
   };
 
   const handleSaveTechnician = (index) => {
+    if (!canUpdate) return;
     const filteredTechnician = getFilteredTechnician(technicians[0]);
     dispatch(updateTechnician(filteredTechnician));
     setIsWorkOrderEditing(!isWorkOrderEditing);
@@ -288,6 +304,7 @@ const EditWorkOrder = () => {
   };
 
   const handleSaveNote = (index) => {
+    if (!canUpdate) return;
     const filteredNote = getFilteredNote(notes[index]);
     dispatch(updateNotes(filteredNote));
   };
@@ -345,10 +362,8 @@ const EditWorkOrder = () => {
   if (!workOrder) {
     return <div className="text-center mt-5">No work order details found</div>;
   }
-const canAddClientEquip = [
-  "Subcontractor_User",
-  "Subcontractor",
-].includes(user_type) || technicianAccess.includes(user_type);
+ 
+const canAddClientEquip = canAddEquipment;
   return (
     <>
       <Header />
@@ -359,7 +374,8 @@ const canAddClientEquip = [
             <h1 className="font-bold text-lg">Edit Work Order</h1>
             <div className="flex gap-3">
               <Link to={`/workorder?${searchParams.toString()}`}>
-                <button className=" flex
+                <button
+                  className=" flex
                     items-center
                     gap-2
                     px-4
@@ -372,7 +388,8 @@ const canAddClientEquip = [
                     text-sm
                     font-medium
                     hover:bg-gray-50
-                    transition-all">
+                    transition-all"
+                >
                   <MdArrowBack size={20} />
                   Back
                 </button>
@@ -461,6 +478,8 @@ const canAddClientEquip = [
             loading={loading}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
+            canUpdate={canUpdate}
+            permissionModule={PERMISSION_MODULES.WORK_ORDERS}
           />
           {/* update Technicians */}
           <TechniciansCard
@@ -470,6 +489,8 @@ const canAddClientEquip = [
             loading={loading}
             isWorkOrderEditing={isWorkOrderEditing}
             setIsWorkOrderEditing={setIsWorkOrderEditing}
+            canUpdate={canUpdate}
+            permissionModule={PERMISSION_MODULES.WORK_ORDERS}
           />
           {/* update Assignee */}
           <ShowTechnicians
@@ -479,8 +500,10 @@ const canAddClientEquip = [
             loading={loading}
             workOrderId={workOrderId}
             subcontractorAssignees={subcontractorUsers}
+            canUpdate={canUpdate}
+            permissionModule={PERMISSION_MODULES.WORK_ORDERS}
           />
-          {user_type !== "Client Employee" && (
+          {canRead && (
             <ShowSubcontractorUsers
               subcontractorAssignees={subcontractorUsers}
               parentId={workOrderId}
@@ -490,12 +513,16 @@ const canAddClientEquip = [
               parentKey="work_order_id"
               idKey="subcontractor_in_wo_id" // 🔥 unique id key for WO
               title="Subcontractor Users"
+              permissionModule={PERMISSION_MODULES.WORK_ORDERS}
+              canUpdate={canUpdate}
             />
           )}
           {/* Show Images  */}
           <WorkOrderImages
             images={serviceTicketImages}
             serviceTicketId={workOrderId}
+            permissionModule={PERMISSION_MODULES.WORK_ORDERS}
+            canUpdate={canUpdate}
           />
           {/* update Notes */}
           <NotesTable
@@ -504,14 +531,23 @@ const canAddClientEquip = [
             handleNoteChange={handleNoteChange}
             loading={loading}
             workOrderId={workOrderId}
+            permissionModule={PERMISSION_MODULES.WORK_ORDERS}
+            canUpdate={canUpdate}
           />
           {/* InventoryTable */}
           <InventoryTable
             inventories={inventories}
             work_order_id={workOrderId}
+            permissionModule={PERMISSION_MODULES.WORK_ORDERS}
+            canUpdate={canUpdate}
           />
           {/* Equipments Table */}
-          <EquipmentTable equipments={equipments} work_order_id={workOrderId} />
+          <EquipmentTable
+            equipments={equipments}
+            work_order_id={workOrderId}
+            permissionModule={PERMISSION_MODULES.WORK_ORDERS}
+            canUpdate={canUpdate}
+          />
 
           {/* SIGNATURE SECTION */}
 
@@ -519,14 +555,14 @@ const canAddClientEquip = [
             {signatureImage ? (
               <div
                 className="
-        bg-white
-        rounded-[28px]
-        border
-        border-gray-100
-        shadow-sm
-        overflow-hidden
-        max-w-2xl
-      "
+                  bg-white
+                  rounded-[28px]
+                  border
+                  border-gray-100
+                  shadow-sm
+                  overflow-hidden
+                  max-w-2xl
+                "
               >
                 {/* TOP GRADIENT */}
                 <div className="h-1.5 bg-gradient-to-r from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
@@ -536,18 +572,18 @@ const canAddClientEquip = [
                   <div className="flex items-center gap-4 mb-5">
                     <div
                       className="
-              w-12
-              h-12
-              rounded-2xl
-              bg-gradient-to-r
-              from-indigo-500
-              to-pink-500
-              text-white
-              flex
-              items-center
-              justify-center
-              shadow-md
-            "
+                            w-12
+                            h-12
+                            rounded-2xl
+                            bg-gradient-to-r
+                            from-indigo-500
+                            to-pink-500
+                            text-white
+                            flex
+                            items-center
+                            justify-center
+                            shadow-md
+                          "
                     >
                       ✍️
                     </div>
@@ -566,17 +602,17 @@ const canAddClientEquip = [
                   {/* AGREEMENT TEXT */}
                   <div
                     className="
-            rounded-2xl
-            border
-            border-indigo-100
-            bg-indigo-50
-            px-4
-            py-4
-            text-sm
-            text-indigo-800
-            leading-relaxed
-            mb-5
-          "
+                        rounded-2xl
+                        border
+                        border-indigo-100
+                        bg-indigo-50
+                        px-4
+                        py-4
+                        text-sm
+                        text-indigo-800
+                        leading-relaxed
+                        mb-5
+                      "
                   >
                     By signing below, the client acknowledges that the work has
                     been completed to their satisfaction based on the notes,
@@ -586,24 +622,24 @@ const canAddClientEquip = [
                   {/* SIGNATURE IMAGE */}
                   <div
                     className="
-            rounded-3xl
-            border
-            border-gray-200
-            bg-gray-50
-            p-5
-            flex
-            justify-center
-            items-center
-          "
+                      rounded-3xl
+                      border
+                      border-gray-200
+                      bg-gray-50
+                      p-5
+                      flex
+                      justify-center
+                      items-center
+                    "
                   >
                     <img
                       src={`${S3_BASE_URL}/${signatureImage}`}
                       alt="Signature"
                       className="
-              w-full
-              max-w-md
-              object-contain
-            "
+                          w-full
+                          max-w-md
+                          object-contain
+                        "
                     />
                   </div>
 
@@ -611,13 +647,13 @@ const canAddClientEquip = [
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
                     <div
                       className="
-              rounded-2xl
-              border
-              border-gray-100
-              bg-gray-50
-              px-4
-              py-3
-            "
+                          rounded-2xl
+                          border
+                          border-gray-100
+                          bg-gray-50
+                          px-4
+                          py-3
+                        "
                     >
                       <p className="text-xs text-gray-500 mb-1">Signed By</p>
 
@@ -628,13 +664,13 @@ const canAddClientEquip = [
 
                     <div
                       className="
-              rounded-2xl
-              border
-              border-gray-100
-              bg-gray-50
-              px-4
-              py-3
-            "
+                        rounded-2xl
+                        border
+                        border-gray-100
+                        bg-gray-50
+                        px-4
+                        py-3
+                      "
                     >
                       <p className="text-xs text-gray-500 mb-1">Signed Date</p>
 
@@ -649,86 +685,89 @@ const canAddClientEquip = [
               </div>
             ) : (
               <>
-                {user_type !== "Client Employee" &&
-                  user_type !== "Subcontractor_User" && (
+                {canAddSignature && (
+                  <div
+                    className="
+                        bg-white
+                        rounded-[28px]
+                        border
+                        border-dashed
+                        border-gray-300
+                        shadow-sm
+                        p-8
+                        flex
+                        flex-col
+                        items-center
+                        justify-center
+                        text-center
+                        max-w-2xl
+                      "
+                  >
                     <div
                       className="
-              bg-white
-              rounded-[28px]
-              border
-              border-dashed
-              border-gray-300
-              shadow-sm
-              p-8
-              flex
-              flex-col
-              items-center
-              justify-center
-              text-center
-              max-w-2xl
-            "
+                          w-16
+                          h-16
+                          rounded-3xl
+                          bg-gradient-to-r
+                        from-[#312E81]
+                        via-[#4338CA]
+                        to-[#6366F1]
+                          text-white
+                          flex
+                          items-center
+                          justify-center
+                          text-3xl
+                          shadow-lg
+                          mb-5
+                        "
                     >
-                      <div
-                        className="
-                w-16
-                h-16
-                rounded-3xl
-                bg-gradient-to-r
-              from-[#312E81]
-              via-[#4338CA]
-              to-[#6366F1]
-                text-white
-                flex
-                items-center
-                justify-center
-                text-3xl
-                shadow-lg
-                mb-5
-              "
-                      >
-                        ✍️
-                      </div>
-
-                      <h2 className="text-lg font-semibold text-[#1E1B4B]">
-                        Add Customer Signature
-                      </h2>
-
-                      <p className="text-sm text-gray-500 mt-2 max-w-md leading-relaxed">
-                        Capture the customer acknowledgment signature after work
-                        completion and verification.
-                      </p>
-
-                      <button
-                        onClick={openModal}
-                        className="
-                mt-6
-                px-6
-                py-3
-                rounded-2xl
-                bg-gradient-to-r
-             from-[#312E81]
-            via-[#4338CA]
-            to-[#6366F1]
-                text-white
-                font-semibold
-                shadow-md
-                hover:shadow-lg
-                hover:scale-[1.02]
-                transition-all
-              "
-                      >
-                        Add Signature
-                      </button>
+                      ✍️
                     </div>
-                  )}
+
+                    <h2 className="text-lg font-semibold text-[#1E1B4B]">
+                      Add Customer Signature
+                    </h2>
+
+                    <p className="text-sm text-gray-500 mt-2 max-w-md leading-relaxed">
+                      Capture the customer acknowledgment signature after work
+                      completion and verification.
+                    </p>
+
+                    <button
+                      onClick={openModal}
+                      className="
+                          mt-6
+                          px-6
+                          py-3
+                          rounded-2xl
+                          bg-gradient-to-r
+                        from-[#312E81]
+                        via-[#4338CA]
+                        to-[#6366F1]
+                          text-white
+                          font-semibold
+                          shadow-md
+                          hover:shadow-lg
+                          hover:scale-[1.02]
+                          transition-all
+                        "
+                    >
+                      Add Signature
+                    </button>
+                  </div>
+                )}
               </>
             )}
 
-            <WOSignatureModal
-              isOpen={isModalOpen}
-              onClose={closeModal}
-              serviceTicketId={workOrderId}
-            />
+            {canAddSignature && (
+              <WOSignatureModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                serviceTicketId={workOrderId}
+                permissionModule={PERMISSION_MODULES.WORK_ORDERS}
+                canUpdate={canAddSignature}
+              />
+            )}
           </div>
         </div>
       </div>

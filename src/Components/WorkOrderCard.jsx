@@ -8,9 +8,8 @@ import React, {
   useEffect,
 } from "react";
 
-import {
-  useSelector,
-} from "react-redux";
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
 
 import {
   MdEdit,
@@ -18,6 +17,7 @@ import {
   MdClose,
   MdAssignment,
 } from "react-icons/md";
+import { useSelector } from "react-redux";
 
 const WorkOrderCard = ({
   workOrder,
@@ -29,33 +29,17 @@ const WorkOrderCard = ({
   isEditing,
   setIsEditing,
 }) => {
+  const { canUpdate } = useModulePermissions(
+    PERMISSION_MODULES.WORK_ORDERS,
+  );
+
+  const handleEditToggle = () => {
+    if (!canUpdate) return;
+    setIsEditing(!isEditing);
+  };
   const {
     user_type,
-  } =
-    useSelector(
-      (
-        state,
-      ) =>
-        state.user.user,
-    );
-
-  const {
-    access,
-  } =
-    useSelector(
-      (
-        state,
-      ) =>
-        state.user,
-      );
-
-  const handleEditToggle =
-    () => {
-      setIsEditing(
-        !isEditing,
-      );
-    };
-
+  } = useSelector((state) => state.user.user);
   useEffect(() => {
     if (
       workOrder.location_id
@@ -203,9 +187,7 @@ const WorkOrderCard = ({
           </div>
 
           {/* ACTIONS */}
-          {access.includes(
-            user_type,
-          ) && (
+          {canUpdate && (
             <div className="flex flex-wrap gap-3">
               {isEditing ? (
                 <>
@@ -960,6 +942,7 @@ to-[#4338CA]
                 Retainage
                 Billed
               </option>
+              <option value="Cancelled"> Cancelled</option>
             </select>
           </div>
         </div>

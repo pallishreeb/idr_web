@@ -28,17 +28,29 @@ import { fetchIDREmployees } from "../actions/employeeActions";
 
 import { toast } from "react-toastify";
 
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
+
 const ServiceTicketAssigneePeopleCard = ({
   assignees,
   idrEmployees,
   serviceTicketId,
   subcontractorAssignees,
+  permissionModule = PERMISSION_MODULES.SERVICE_TICKETS,
 }) => {
   const dispatch = useDispatch();
   const [selectedAssignees, setSelectedAssignees] = useState([]);
   const { user_type } = useSelector((state) => state.user.user);
 
-  const { access } = useSelector((state) => state.user);
+  const {
+    canRead,
+    canCreate,
+    canUpdate,
+    canDelete,
+  } = useModulePermissions(permissionModule);
+
+  // Assigning people is treated as a create/update operation.
+  const canManageAssignees = canCreate || canUpdate;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -170,6 +182,10 @@ const ServiceTicketAssigneePeopleCard = ({
       : []),
   ];
 
+  if (!canRead) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col mt-4 bg-white border border-gray-100 rounded-[28px] shadow-sm overflow-hidden">
       {/* TOP BAR */}
@@ -194,7 +210,7 @@ const ServiceTicketAssigneePeopleCard = ({
             </div>
           </div>
 
-          {user_type === "Admin" && (
+          {canManageAssignees && (
             <div className="flex items-center gap-3">
               {selectedAssignees.length > 0 && (
                 <button
@@ -258,7 +274,7 @@ to-[#6366F1]
           <table className="min-w-full">
             <thead>
               <tr className="bg-gradient-to-r from-indigo-50 to-pink-50">
-                {user_type === "Admin" && (
+                {canDelete && (
                 <th className="px-5 py-4 w-[60px]">
                   <input
                     type="checkbox"
@@ -295,7 +311,7 @@ to-[#6366F1]
                   Company
                 </th> */}
 
-                {user_type === "Admin" && (
+                {canDelete && (
                   <th className="px-5 py-4 text-center text-sm font-semibold text-[#1E1B4B] w-[100px]">
                     Actions
                   </th>
@@ -329,7 +345,7 @@ to-[#6366F1]
                     key={index}
                     className="border-t border-gray-100 hover:bg-gray-50 transition-all duration-200"
                   >
-                    {user_type === "Admin" && (
+                    {canDelete && (
                     <td className="px-5 py-4">
                       {!person.isSubcontractor && (
                         <input
@@ -409,7 +425,7 @@ to-[#6366F1]
                         </td> */}
 
                     {/* ACTION */}
-                    {user_type === "Admin" && (
+                    {canDelete && (
                       <td className="px-5 py-4">
                         <div className="flex justify-center">
                           {!person.isSubcontractor && (

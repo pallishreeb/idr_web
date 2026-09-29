@@ -22,12 +22,10 @@ import { S3_BASE_URL } from "../config";
 import ImageModal from "./ImageModal";
 import { convertHeicToJpg } from "../utils/imageUtils";
 import ImagePreview from "./ImagePreview";
+import useModulePermissions from "../hooks/useModulePermissions";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
 const RmaImages = ({ images, rmaId }) => {
   const dispatch = useDispatch();
-
-  const { user_type } = useSelector((state) => state.user.user);
-
-  const { technicianAccess } = useSelector((state) => state.user);
 
   const { loadingAssignImage } = useSelector((state) => state.rma);
 
@@ -110,11 +108,11 @@ const handleFileChange = (e) => {
 
   const isVideo = (fileName) => /\.(mp4|mov|avi|webm|mkv)$/i.test(fileName);
 
-  const newAccess = [
-    ...technicianAccess,
-    "Subcontractor_User",
-    "Subcontractor",
-  ];
+  // Centralized permission check for adding RMA images/videos.
+  // Keep the existing UI and upload flow unchanged.
+const { canAddAttachment } = useModulePermissions(
+  PERMISSION_MODULES.RMAS
+);
     const formatDate = (date) => {
       return new Date(date)
         .toLocaleDateString("en-US", {
@@ -174,7 +172,7 @@ const handleFileChange = (e) => {
               </div>
             </div>
 
-            {newAccess.includes(user_type) && (
+            {canAddAttachment && (
               <button
                 className="
                   flex
