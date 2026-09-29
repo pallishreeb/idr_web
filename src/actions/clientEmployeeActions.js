@@ -76,7 +76,7 @@ export const getClientEmployeeByClientId = (clientId) => {
       dispatch(getClientEmployeeByIdSuccess(response.data.employees));
     } catch (error) {
       dispatch(getClientEmployeeByIdFailure(error.message));
-      toast.error(error.response?.data?.message || "Error fetching employee details");
+      // toast.error(error.response?.data?.message || "Error fetching employee details");
     }
   };
 };
@@ -89,7 +89,7 @@ export const getEmployeeById = (employeeId) => {
       dispatch(getEmployeeByIdSuccess(response.data.emp));
     } catch (error) {
       dispatch(getEmployeeByIdFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to fetch employee by ID");
+      //toast.error(error.response?.data?.message || "Failed to fetch employee by ID");
     }
   };
 };

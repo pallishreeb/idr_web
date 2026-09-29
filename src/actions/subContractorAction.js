@@ -120,9 +120,9 @@ export const getSubcontractorLists = (filters) => {
       // dispatch(getSubcontractorListsSuccess(response?.data?.subcontractors));
     } catch (error) {
       dispatch(getSubcontractorListsFailure(error.message));
-      toast.error(
-        error.response?.data?.message || "Failed to fetch subcontractor lists",
-      );
+      // toast.error(
+      //   error.response?.data?.message || "Failed to fetch subcontractor lists",
+      // );
     }
   };
 };

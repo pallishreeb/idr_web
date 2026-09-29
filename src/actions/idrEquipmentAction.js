@@ -85,9 +85,9 @@ export const getIdrEquipments = ({
       return response.data;
     } catch (error) {
       dispatch(getIdrEquipmentsFailure(error.message));
-      toast.error(
-        error.response?.data?.message || "Failed to fetch equipments"
-      );
+      // toast.error(
+      //   error.response?.data?.message || "Failed to fetch equipments"
+      // );
     }
   };
 };

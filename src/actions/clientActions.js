@@ -59,7 +59,7 @@ export const getClients = ({ clientName, industryId } = {}) => {
       dispatch(getClientsSuccess(response.data));
     } catch (error) {
       dispatch(getClientsFailure(error.message));
-      toast.error(error.response?.data?.message || "Failed to fetch clients");
+      // toast.error(error.response?.data?.message || "Failed to fetch clients");
     }
   };
 };

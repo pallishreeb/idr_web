@@ -17,7 +17,7 @@ export const fetchIDREmployees = () => async dispatch => {
     dispatch(fetchIDREmployeesSuccess(response?.data?.employees));
   } catch (error) {
     dispatch(fetchIDREmployeesFailure(error.message));
-    toast.error(error.response?.data?.message || "Failed to fetch idr employees");
+    //toast.error(error.response?.data?.message || "Failed to fetch idr employees");
   }
 };
 

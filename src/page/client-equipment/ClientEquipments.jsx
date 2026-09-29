@@ -22,6 +22,7 @@ const ClientEquipments = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const {
+    canRead,
     canCreate,
     canUpdate,
     canViewClientFilter,
@@ -211,7 +212,6 @@ const ClientEquipments = () => {
   };
 
   const handleEdit = (equipmentId) => {
-    if (!canUpdate) return;
     navigate(
       `/edit-client-equipment/${equipmentId}?${searchParams.toString()}`,
     );
@@ -830,7 +830,7 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                           <td className="px-4 py-4 w-[220px]">
                             <div className="flex items-center justify-center gap-2 flex-wrap">
                               {/* EDIT */}
-                              {canUpdate && <button
+                              {canRead && <button
                                 onClick={() =>
                                   handleEdit(equipment.client_equipment_id)
                                 }
