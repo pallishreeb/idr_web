@@ -154,7 +154,10 @@ const fullname = first_name + ' ' + last_name
       title: "Client Equipment",
       path: "/client-equipments",
       icon: <MdBuild size={22} />,
-      permission: "Client Equipment",
+         roles:
+        client_type !== "User"
+          ? ["IDR Employee", "Client Employee"]
+          : ["IDR Employee"],
     },
 
     {
