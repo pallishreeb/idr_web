@@ -50,8 +50,8 @@ const SubcontractorUsersPage =
     const dispatch =
       useDispatch();
 
-    const { canUpdate, canDelete } = useModulePermissions(
-      PERMISSION_MODULES.SUBCONTRACTORS,
+    const { canUpdate, canDelete, canRead, canCreate } = useModulePermissions(
+      PERMISSION_MODULES.SUBCONTRACTOR_USERS,
     );
 
     const navigate =
@@ -246,7 +246,6 @@ const SubcontractorUsersPage =
       (
         userId,
       ) => {
-        if (!canUpdate) return;
 
         navigate(
           `/edit-subcontractor-user/${userId}`,
@@ -295,7 +294,7 @@ const SubcontractorUsersPage =
                   </div>
 
                   {/* ADD BUTTON */}
-                  {selectedSubcontractor && canUpdate && (
+                  {selectedSubcontractor && canCreate && (
                     <Link
                       to={`/create-sub-contractor-user/${selectedSubcontractor}`}
                       state={{
@@ -405,7 +404,7 @@ const SubcontractorUsersPage =
                                 Status
                               </th>
 
-                              {(canUpdate || canDelete) && (
+                              {canRead && (
                                 <th className="px-5 py-4 text-center text-sm font-semibold text-[#1E1B4B] w-[140px]">
                                   Actions
                                 </th>
@@ -529,10 +528,10 @@ const SubcontractorUsersPage =
                                       </td>
 
                                       {/* ACTIONS */}
-                                      {(canUpdate || canDelete) && (
+                                      {canRead && (
                                         <td className="px-5 py-4">
                                           <div className="flex items-center justify-center gap-2">
-                                          {canUpdate && (
+                                          {canRead && (
                                           <button
                                             onClick={() =>
                                               handleEdit(

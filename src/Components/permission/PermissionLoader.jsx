@@ -65,10 +65,10 @@ const PermissionLoader = () => {
         const permissions =
           response?.modules || [];
 
-        console.log(
-          "Final permissions:",
-          permissions
-        );
+        // console.log(
+        //   "Final permissions:",
+        //   permissions
+        // );
 
         dispatch(
           setPermissions(permissions)

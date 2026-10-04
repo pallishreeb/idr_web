@@ -94,8 +94,8 @@ function App() {
    const permission = useSelector(
     (state) => state.permission
   );
-  console.log("permission",permission)
-  console.log("user",user)
+  // console.log("permission",permission)
+  // console.log("user",user)
   return (
     <>
     <PermissionLoader />

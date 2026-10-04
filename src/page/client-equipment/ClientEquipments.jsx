@@ -242,7 +242,6 @@ const ClientEquipments = () => {
       : "Decommission"
     : "Not Found";
   const handleDecommission = async () => {
-    if (!canUpdate) return;
     const specificEquipment = equipments?.find(
       (item) => item.client_equipment_id === decommissionModal.equipmentId,
     );

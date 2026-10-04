@@ -45,6 +45,7 @@ const RmaViewList = () => {
     canViewClientFilter,
     canViewLocationFilter,
     canViewManufacturerFilter,
+    canViewDateFilter,
   } = useModulePermissions(PERMISSION_MODULES.RMAS);
 
 
@@ -62,11 +63,7 @@ const RmaViewList = () => {
     location_id: searchParams.get("location_id") || "",
     manufacturer: searchParams.get("manufacturer") || "",
     status: searchParams.get("status") || "",
-
-
-    date_range: searchParams.get("date_range") || "",
-    start_date: searchParams.get("start_date") || "",
-    end_date: searchParams.get("end_date") || "",
+    date: searchParams.get("date") || "",
   });
 
   const [sortConfig, setSortConfig] = useState({
@@ -141,14 +138,8 @@ useEffect(() => {
 
   /* SEARCH */
   const handleSearch = () => {
-    const { client_id, location_id, manufacturer, status } = filters;
-    const dateRange =
-      filters.date_range === "custom"
-        ? {
-            start_date: filters.start_date,
-            end_date: filters.end_date,
-          }
-        : getDateRange(filters.date_range);
+    const { client_id, location_id, manufacturer, status,date } = filters;
+
     const query = {
       ...(client_id && {
         client_id,
@@ -165,13 +156,9 @@ useEffect(() => {
       ...(status && {
         status,
       }),
-      ...(dateRange.start_date && {
-        start_date: dateRange.start_date,
-      }),
-
-      ...(dateRange.end_date && {
-        end_date: dateRange.end_date,
-      }),
+         ...(date && {
+      date,
+    }),
     };
 
     dispatch(getRmaLists(query));
@@ -184,6 +171,7 @@ useEffect(() => {
       location_id: "",
       manufacturer: "",
       status: "",
+      date:"",
     });
 
     dispatch(getRmaLists({}));
@@ -235,51 +223,7 @@ const years = Array.from(
   (_, index) => currentYear - index
 );
 
-const getDateRange = (range) => {
-  const today = new Date();
 
-  if (range === "last_30_days") {
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 30);
-
-    return {
-      start_date: startDate.toISOString().split("T")[0],
-      end_date: today.toISOString().split("T")[0],
-    };
-  }
-
-  if (range === "last_60_days") {
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 60);
-
-    return {
-      start_date: startDate.toISOString().split("T")[0],
-      end_date: today.toISOString().split("T")[0],
-    };
-  }
-
-  if (range === "last_90_days") {
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 90);
-
-    return {
-      start_date: startDate.toISOString().split("T")[0],
-      end_date: today.toISOString().split("T")[0],
-    };
-  }
-
-  if (/^\d{4}$/.test(range)) {
-    return {
-      start_date: `${range}-01-01`,
-      end_date: `${range}-12-31`,
-    };
-  }
-
-  return {
-    start_date: "",
-    end_date: "",
-  };
-};
   /* SORT */
   const handleSort = (key) => {
     let direction = "ASC";
@@ -623,108 +567,49 @@ to-[#4338CA]
                     </div>
                     
                     )}
-                    {/* DATE RANGE */}
-                    <div>
-                      <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
-                        Date Range
-                      </label>
+                  {/* DATE RANGE */}
+                    {canViewDateFilter && (
+                      <div>
+                        <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                          Date Range
+                        </label>
 
-                      <select
-                        className="
-                          w-full
-                          rounded-2xl
-                          border
-                          border-gray-200
-                          px-4
-                          py-3
-                          text-sm
-                          focus:outline-none
-                          focus:ring-2
-                          focus:ring-indigo-500
-                        "
-                        value={filters.date_range}
-                        onChange={(e) =>
-                          setFilters((prevFilters) => ({
-                            ...prevFilters,
-                            date_range: e.target.value,
-                            ...(e.target.value !== "custom" && {
-                              start_date: "",
-                              end_date: "",
-                            }),
-                          }))
-                        }
-                      >
-                        <option value="">All</option>
-                        <option value="last_30_days">Last 30 Days</option>
-                        <option value="last_60_days">Last 60 Days</option>
-                        <option value="last_90_days">Last 90 Days</option>
-                        <option value="custom">Custom Range</option>
+                        <select
+                          className="
+                            w-full
+                            rounded-2xl
+                            border
+                            border-gray-200
+                            px-4
+                            py-3
+                            text-sm
+                            focus:outline-none
+                            focus:ring-2
+                            focus:ring-indigo-500
+                          "
+                          value={filters.date}
+                          onChange={(e) =>
+                            setFilters((prevFilters) => ({
+                              ...prevFilters,
+                              date: e.target.value,
+                            }))
+                          }
+                        >
+                      <option value="">All</option>
+                      <option value="30">Last 30 Days</option>
+                      <option value="60">Last 60 Days</option>
+                      <option value="90">Last 90 Days</option>
 
-                        <option disabled>──────────</option>
+                      <option disabled>──────────</option>
 
-                        {years.map((year) => (
-                          <option key={year} value={year}>
-                            {year}
-                          </option>
-                        ))}
-                      </select>
-
-                      {filters.date_range === "custom" && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                          <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">
-                              Start Date
-                            </label>
-
-                            <input
-                              type="date"
-                              value={filters.start_date}
-                              onChange={(e) =>
-                                setFilters((prevFilters) => ({
-                                  ...prevFilters,
-                                  start_date: e.target.value,
-                                }))
-                              }
-                              className="
-                                w-full
-                                rounded-xl
-                                border
-                                border-gray-200
-                                px-3
-                                py-2
-                                text-sm
-                              "
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">
-                              End Date
-                            </label>
-
-                            <input
-                              type="date"
-                              value={filters.end_date}
-                              onChange={(e) =>
-                                setFilters((prevFilters) => ({
-                                  ...prevFilters,
-                                  end_date: e.target.value,
-                                }))
-                              }
-                              className="
-                                w-full
-                                rounded-xl
-                                border
-                                border-gray-200
-                                px-3
-                                py-2
-                                text-sm
-                              "
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                      {years.map((year) => (
+                        <option key={year} value={year.toString()}>
+                          {year}
+                        </option>
+                      ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
 
                   {/* ACTION BUTTONS */}

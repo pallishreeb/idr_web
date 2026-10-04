@@ -120,12 +120,12 @@ const fullname = first_name + ' ' + last_name
       icon: <MdOutlineRequestPage size={22} />,
       roles: ["Admin", "Subadmin"],
     },
-    {
-      title: "Permission",
-      path: "/permissions",
-      icon: <MdAdminPanelSettings size={22} />,
-      roles: ["Admin"],
-    },
+    // {
+    //   title: "Permission",
+    //   path: "/permissions",
+    //   icon: <MdAdminPanelSettings size={22} />,
+    //   roles: ["Admin"],
+    // },
   ];
 
   const idrMenuItems = [
@@ -135,7 +135,12 @@ const fullname = first_name + ' ' + last_name
       icon: <MdPeople size={22} />,
       roles: client_type === "Admin" ? ["Client Employee"] : [""],
     },
-
+    {
+      title: "Permission",
+      path: "/permissions",
+      icon: <MdAdminPanelSettings size={22} />,
+      roles: ["Admin"],
+    },
     {
       title: "IDR Employees",
       path: "/idr-employees",

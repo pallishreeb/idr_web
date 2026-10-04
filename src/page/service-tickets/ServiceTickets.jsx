@@ -219,52 +219,6 @@ const ServiceTickets = () => {
 
   const years = Array.from({ length: 5 }, (_, index) => currentYear - index);
 
-  const getDateRange = (range) => {
-    const today = new Date();
-
-    if (range === "last_30_days") {
-      const startDate = new Date(today);
-      startDate.setDate(today.getDate() - 30);
-
-      return {
-        start_date: startDate.toISOString().split("T")[0],
-        end_date: today.toISOString().split("T")[0],
-      };
-    }
-
-    if (range === "last_60_days") {
-      const startDate = new Date(today);
-      startDate.setDate(today.getDate() - 60);
-
-      return {
-        start_date: startDate.toISOString().split("T")[0],
-        end_date: today.toISOString().split("T")[0],
-      };
-    }
-
-    if (range === "last_90_days") {
-      const startDate = new Date(today);
-      startDate.setDate(today.getDate() - 90);
-
-      return {
-        start_date: startDate.toISOString().split("T")[0],
-        end_date: today.toISOString().split("T")[0],
-      };
-    }
-
-    if (/^\d{4}$/.test(range)) {
-      return {
-        start_date: `${range}-01-01`,
-        end_date: `${range}-12-31`,
-      };
-    }
-
-    return {
-      start_date: "",
-      end_date: "",
-    };
-  };
-  console.log("canViewStatusFilter",canViewStatusFilter)
   return (
     <>
       <Header />
