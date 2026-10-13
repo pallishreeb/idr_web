@@ -58,7 +58,7 @@ const WorkOrder = () => {
     is_billed: searchParams.get("is_billed") || "",
     date: searchParams.get("date") || "",
   });
-
+  const [customDate, setCustomDate] = useState("");
   const [sortConfig, setSortConfig] = useState({
     key: "",
     direction: "asc",
@@ -152,9 +152,17 @@ const WorkOrder = () => {
     });
   };
 
-  const handleSearch = () => {
-    dispatch(getWorkOrderLists(filters));
-  };
+const handleSearch = () => {
+  const selectedDate =
+    filters.date === "custom" ? customDate : filters.date;
+
+  dispatch(
+    getWorkOrderLists({
+      ...filters,
+      date: selectedDate,
+    })
+  );
+};
 
   const handleReset = () => {
     const clearedFilters = {
@@ -513,33 +521,45 @@ const years = Array.from(
                   </>
                 )}
 
-                {canViewDateFilter && (
+               {canViewDateFilter && (
+                  <div>
+                    <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
+                      Date Range
+                    </label>
 
-                <div>
-                  <label className="block text-sm font-medium text-[#1E1B4B] mb-2">
-                    Date Range
-                  </label>
-
-                 <select
-                  name="date"
-                  value={filters.date}
-                  className={filterInputClass}
-                  onChange={handleFilterChange}
-                >
-                 <option value="">All</option>
+                    <select
+                      name="date"
+                      value={filters.date}
+                      className={filterInputClass}
+                      onChange={handleFilterChange}
+                    >
+                      <option value="">All</option>
                       <option value="30">Last 30 Days</option>
                       <option value="60">Last 60 Days</option>
                       <option value="90">Last 90 Days</option>
 
-                      <option disabled>──────────</option>
+                      <option disabled>— Select the year —</option>
 
                       {years.map((year) => (
                         <option key={year} value={year.toString()}>
                           {year}
                         </option>
                       ))}
-                </select>
-                </div>
+
+                      <option value="custom">Custom</option>
+                    </select>
+
+                    {filters.date === "custom" && (
+                      <input
+                        type="number"
+                        min="1"
+                        placeholder="Enter the 4 digit year"
+                        value={customDate}
+                        onChange={(e) => setCustomDate(e.target.value)}
+                        className={filterInputClass}
+                      />
+                    )}
+                  </div>
                 )}
               </div>
 

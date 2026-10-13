@@ -90,11 +90,11 @@ const Permission = () => {
       }
 
       // Select first module
-      if (response?.modules?.length > 0) {
-        setSelectedModule(
-          response.modules[0].perm_module_id
-        );
-      }
+      // if (response?.modules?.length > 0) {
+      //   setSelectedModule(
+      //     response.modules[0].perm_module_id
+      //   );
+      // }
     } catch (error) {
       console.error(
         "Error fetching roles:",
@@ -224,6 +224,7 @@ const Permission = () => {
      * Reset selected module permissions
      * while the new role is loading.
      */
+      setSelectedModule("");
     setSelectedModuleData(null);
 
     setIsEditing(false);
@@ -233,14 +234,21 @@ const Permission = () => {
   // ============================================
   // MODULE CHANGE
   // ============================================
-  const handleModuleChange = (moduleId) => {
-    setSelectedModule(moduleId);
-
+const handleModuleChange = (moduleId) => {
+  // Close currently opened module
+  if (selectedModule === moduleId) {
+    setSelectedModule("");
     setSelectedModuleData(null);
-
     setIsEditing(false);
-    setSaved(false);
-  };
+    return;
+  }
+
+  // Open selected module
+  setSelectedModule(moduleId);
+  setSelectedModuleData(null);
+  setIsEditing(false);
+  setSaved(false);
+};
 
   // ============================================
   // CHANGE PERMISSION
@@ -436,9 +444,97 @@ const Permission = () => {
                 loadingPermissions
               }
             />
+            {selectedRole && (
+              <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                <div className="border-b border-gray-200 bg-gray-50 px-5 py-4">
+                  <h3 className="text-base font-semibold text-gray-800">
+                    Modules & Permissions
+                  </h3>
 
+                  <p className="mt-1 text-xs text-gray-500">
+                    Select a module to view and manage its permissions.
+                  </p>
+                </div>
+
+                <div className="divide-y divide-gray-200">
+                  {modules?.map((module) => {
+                    const isOpen =
+                      selectedModule === module.perm_module_id;
+
+                    return (
+                      <div key={module.perm_module_id}>
+                        {/* MODULE HEADER */}
+                        <button
+                          type="button"
+                          disabled={isEditing}
+                          onClick={() =>
+                            handleModuleChange(
+                              module.perm_module_id
+                            )
+                          }
+                          className={`
+                            flex
+                            w-full
+                            items-center
+                            justify-between
+                            px-5
+                            py-4
+                            text-left
+                            transition
+                            ${
+                              isOpen
+                                ? "bg-indigo-50 text-indigo-700"
+                                : "bg-white text-gray-700 hover:bg-gray-50"
+                            }
+                            disabled:cursor-not-allowed
+                            disabled:opacity-60
+                          `}
+                        >
+                          <span className="text-sm font-semibold">
+                            {module.module_name}
+                          </span>
+
+                          <span
+                            className={`
+                              text-xl
+                              transition-transform
+                              ${
+                                isOpen
+                                  ? "rotate-90"
+                                  : ""
+                              }
+                            `}
+                          >
+                            ›
+                          </span>
+                        </button>
+
+                        {/* PERMISSIONS */}
+                        {isOpen && (
+                          <div className="border-t border-gray-200 bg-gray-50 p-4">
+                            {loadingPermissions ? (
+                              <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-sm text-gray-500">
+                                Loading permissions...
+                              </div>
+                            ) : (
+                              <PermissionTable
+                                module={selectedModuleData}
+                                isEditing={isEditing}
+                                onPermissionChange={
+                                  handlePermissionChange
+                                }
+                              />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             {/* PERMISSIONS */}
-            {loadingPermissions ? (
+            {/* {loadingPermissions ? (
               <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500">
                 Loading permissions...
               </div>
@@ -450,10 +546,10 @@ const Permission = () => {
                   handlePermissionChange
                 }
               />
-            )}
+            )} */}
 
             {/* ADD NEW PERMISSION TYPE */}
-            {selectedModuleData && (
+            {/* {selectedModuleData && (
               <AddPermissionType
                 module={selectedModuleData}
                 disabled={isEditing}
@@ -461,7 +557,7 @@ const Permission = () => {
                   handlePermissionAdded
                 }
               />
-            )}
+            )} */}
 
           </div>
         </main>

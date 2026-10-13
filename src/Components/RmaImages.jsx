@@ -1,6 +1,7 @@
 /** @format */
 
 import React, { useState } from "react";
+import JSZip from "jszip";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -34,7 +35,7 @@ const RmaImages = ({ images, rmaId }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
-
+const [downloadingAll, setDownloadingAll] = useState(false);
   const handleOpenModal = () => setIsModalOpen(true);
 
   const handleCloseModal = () => {
@@ -97,7 +98,95 @@ const handleFileChange = (e) => {
 
     link.click();
   };
+// const handleDownload = (url, filename) => {
+//   const link = document.createElement("a");
+//   link.href = url;
+//   link.download = filename || "attachment";
+//   link.click();
+// };
 
+const handleDownloadAll = async () => {
+  if (!images || images.length === 0) {
+    toast.info("No attachments available to download.");
+    return;
+  }
+
+  try {
+    setDownloadingAll(true);
+
+    const zip = new JSZip();
+    let successfulDownloads = 0;
+
+    for (let index = 0; index < images.length; index++) {
+      const image = images[index];
+
+      const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
+
+      try {
+        const response = await fetch(fileUrl);
+
+        if (!response.ok) {
+          throw new Error(`Failed with status ${response.status}`);
+        }
+
+        const blob = await response.blob();
+
+        const originalPath = image?.attachment_url || "";
+
+        const originalName =
+          originalPath.split("/").pop() ||
+          `attachment-${index + 1}`;
+
+        zip.file(originalName, blob);
+
+        successfulDownloads++;
+      } catch (error) {
+        console.error(
+          `Failed to download attachment ${index + 1}:`,
+          error
+        );
+      }
+    }
+
+    // Don't create an empty ZIP
+    if (successfulDownloads === 0) {
+      toast.error(
+        "Unable to download attachments. Please check S3 access."
+      );
+      return;
+    }
+
+    const zipBlob = await zip.generateAsync({
+      type: "blob",
+      compression: "STORE",
+    });
+
+    const downloadUrl = window.URL.createObjectURL(zipBlob);
+
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = `rma-${rmaId}-attachments.zip`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(downloadUrl);
+
+    if (successfulDownloads < images.length) {
+      toast.warning(
+        `${successfulDownloads} of ${images.length} attachments were downloaded.`
+      );
+    } else {
+      toast.success("All attachments downloaded successfully.");
+    }
+  } catch (error) {
+    console.error("Error creating attachments ZIP:", error);
+    toast.error("Failed to download attachments.");
+  } finally {
+    setDownloadingAll(false);
+  }
+};
   const handleImageClick = (imageUrl) => {
     setSelectedImageUrl(imageUrl);
   };
@@ -171,6 +260,36 @@ const { canAddAttachment } = useModulePermissions(
                 </p>
               </div>
             </div>
+          <div className="flex items-center gap-3">
+            {images?.length > 0 && (
+              <button
+                onClick={handleDownloadAll}
+                disabled={downloadingAll}
+                className="
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  px-5
+                  py-3
+                  rounded-2xl
+                  bg-blue-50
+                  text-blue-600
+                  border
+                  border-blue-100
+                  text-sm
+                  font-semibold
+                  hover:bg-blue-100
+                  transition-all
+                  disabled:opacity-60
+                  disabled:cursor-not-allowed
+                "
+              >
+                <MdDownload className="text-lg" />
+
+                {downloadingAll ? "Downloading..." : "Download All"}
+              </button>
+            )}
 
             {canAddAttachment && (
               <button
@@ -183,9 +302,9 @@ const { canAddAttachment } = useModulePermissions(
                   py-3
                   rounded-2xl
                   bg-gradient-to-r
-                 from-[#312E81]
-via-[#4338CA]
-to-[#6366F1]
+                  from-[#312E81]
+                  via-[#4338CA]
+                  to-[#6366F1]
                   text-white
                   text-sm
                   font-semibold
@@ -199,6 +318,7 @@ to-[#6366F1]
                 Add Images/Videos
               </button>
             )}
+          </div>
           </div>
 
           {/* EMPTY STATE */}

@@ -62,7 +62,7 @@ const ServiceAgreements = () => {
   // FILTERS
   const [filters, setFilters] = useState({
     client_id: searchParams.get("client_id") || "",
-
+    customer_pays: searchParams.get("customer_pays") || "",
     location_id: searchParams.get("location_id") || "",
   });
 
@@ -88,7 +88,9 @@ const ServiceAgreements = () => {
     if (filters.client_id) params.set("client_id", filters.client_id);
 
     if (filters.location_id) params.set("location_id", filters.location_id);
-
+    if (filters.customer_pays) {
+      params.set("customer_pays", filters.customer_pays);
+    }
     if (sortConfig.key) params.set("sort_by", sortConfig.key);
 
     if (sortConfig.direction) params.set("order", sortConfig.direction);
@@ -105,7 +107,7 @@ const ServiceAgreements = () => {
     const client_id = searchParams.get("client_id");
 
     const location_id = searchParams.get("location_id");
-
+    const customer_pays = searchParams.get("customer_pays");
     const query = {
       ...(client_id && {
         client_id,
@@ -114,6 +116,9 @@ const ServiceAgreements = () => {
       ...(location_id && {
         location_id,
       }),
+      ...(customer_pays && {
+        customer_pays,
+  }),
     };
 
     dispatch(
@@ -159,7 +164,7 @@ const ServiceAgreements = () => {
   const handleSearch = () => {
     setFiltersApplied(true);
 
-    const { client_id, location_id } = filters;
+    const { client_id, location_id,customer_pays } = filters;
 
     const query = {
       ...(client_id && {
@@ -169,6 +174,9 @@ const ServiceAgreements = () => {
       ...(location_id && {
         location_id,
       }),
+        ...(customer_pays && {
+          customer_pays,
+        }),
     };
 
     dispatch(
@@ -183,6 +191,7 @@ const ServiceAgreements = () => {
     setFilters({
       client_id: "",
       location_id: "",
+      customer_pays: "",
     });
 
     setSelectedClient(null);
@@ -254,7 +263,7 @@ const ServiceAgreements = () => {
       direction,
     });
 
-    const { client_id, location_id } = filters;
+   const { client_id, location_id, customer_pays } = filters;
 
     const query = {
       ...(client_id && {
@@ -263,6 +272,9 @@ const ServiceAgreements = () => {
 
       ...(location_id && {
         location_id,
+      }),
+       ...(customer_pays && {
+        customer_pays,
       }),
     };
 
@@ -323,8 +335,7 @@ const ServiceAgreements = () => {
           <div className="bg-white rounded-[32px] shadow-lg border border-gray-100 p-6 mb-6">
             <div className="flex items-center gap-2 mb-5">
               <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]" />
+                via-[#312E81] to-[#4338CA]" />
 
               <h2 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                 Filters
@@ -395,7 +406,27 @@ to-[#4338CA]" />
                     </select>
                   </div>
                 </div>
+                {/* Customer pays */}
+                <div>
+                  <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                    Customer Pays
+                  </label>
 
+                  <select
+                    value={filters.customer_pays}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        customer_pays: e.target.value,
+                      }))
+                    }
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white"
+                  >
+                    <option value="">All</option>
+                    <option value="Monthly">Monthly</option>
+                    <option value="Yearly">Yearly</option>
+                  </select>
+                </div>
                 {/* SEARCH */}
                 <div className="flex items-end">
                   <button
@@ -473,8 +504,7 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                       type="button"
                       onClick={handleSearch}
                       className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                      via-[#312E81]to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                     >
                       <MdSearch size={20} />
                       Search
@@ -565,7 +595,10 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                     <th className="px-4 py-4 text-left text-xs uppercase tracking-wider font-bold text-indigo-600 whitespace-nowrap">
                       Parts Covered
                     </th>
-
+                    {/* CUSTOMER PAYS */}
+                    <th className="px-4 py-4 text-left text-xs uppercase tracking-wider font-bold text-indigo-600 whitespace-nowrap">
+                      Customer Pays
+                    </th>
                     {/* PRICE */}
                     {(access.includes(user_type) || client_type !== "User") && (
                       <th
@@ -625,7 +658,9 @@ to-[#4338CA] text-white font-semibold shadow-md hover:shadow-lg transition-all d
                         <td className="px-4 py-4 text-sm text-gray-600">
                           {agreement.parts_covered ? "Yes" : "No"}
                         </td>
-
+                        <td className="px-4 py-4 text-sm text-gray-600">
+                          {agreement?.customer_pays}
+                        </td>
                         {user_type !== "IDR Employee" &&
                           client_type !== "User" && (
                             <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">

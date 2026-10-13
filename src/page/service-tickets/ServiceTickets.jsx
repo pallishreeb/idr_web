@@ -40,7 +40,7 @@ const ServiceTickets = () => {
     date: searchParams.get("date") || "",
   });
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-
+  const [customDate, setCustomDate] = useState("");
   const { user_type, client_type, locations } = useSelector(
     (state) => state.user.user,
   );
@@ -85,6 +85,7 @@ const ServiceTickets = () => {
     setSearchParams(params);
   }, [filters, setSearchParams]);
   useEffect(() => {
+    if (filters.date === "custom") return;
     dispatch(getServiceTicketLists(filters));
     if (
       canViewClientFilter ||
@@ -132,8 +133,16 @@ const ServiceTickets = () => {
     });
   };
   const handleSearch = () => {
-    dispatch(getServiceTicketLists(filters));
-  };
+  const selectedDate =
+    filters.date === "custom" ? customDate : filters.date;
+
+  dispatch(
+    getServiceTicketLists({
+      ...filters,
+      date: selectedDate,
+    })
+  );
+};
   const handleReset = () => {
     const clearedFilters = {
       status: "",
@@ -495,14 +504,25 @@ const ServiceTickets = () => {
                       <option value="60">Last 60 Days</option>
                       <option value="90">Last 90 Days</option>
 
-                      <option disabled>──────────</option>
+                      <option disabled>— Select the year —</option>
 
                       {years.map((year) => (
                         <option key={year} value={year.toString()}>
                           {year}
                         </option>
                       ))}
+                      <option value="custom">Custom</option>
                     </select>
+                    {filters.date === "custom" && (
+                      <input
+                        type="number"
+                        min="1"
+                        placeholder="Enter the 4 digit year"
+                        value={customDate}
+                        onChange={(e) => setCustomDate(e.target.value)}
+                        className="h-10 px-3 rounded-xl border border-gray-200 text-sm"
+                      />
+                    )}
                   </div>
                 )}
               </div>
@@ -520,6 +540,7 @@ const ServiceTickets = () => {
                           font-medium
                         "
                   onClick={handleSearch}
+                  disabled={filters.date === "custom" && !customDate}
                 >
                   Search
                 </button>

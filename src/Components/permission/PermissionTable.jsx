@@ -18,21 +18,10 @@ const PermissionTable = ({
   const permissions = module.permission_types || [];
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+  <div className="bg-white">
 
-      {/* MODULE HEADER */}
-      <div className="border-b border-gray-200 bg-gray-50 px-5 py-4">
-        <h3 className="text-base font-semibold text-gray-800">
-          {module.module_name}
-        </h3>
-
-        <p className="mt-1 text-xs text-gray-500">
-          Manage permissions for this module.
-        </p>
-      </div>
-
-      {/* PERMISSIONS */}
-      <div className="divide-y divide-gray-100">
+    {/* PERMISSIONS */}
+    <div className="divide-y divide-gray-100">
 
         {permissions.length === 0 ? (
           <div className="p-8 text-center text-sm text-gray-500">

@@ -291,7 +291,7 @@ export default function EditRma() {
     </div>
   );
 
-  if (!canRead) return null;
+
 
   if (loadingDetails) {
     return (
@@ -346,8 +346,8 @@ export default function EditRma() {
                     rounded-2xl
                     bg-gradient-to-r
                    from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]
+                    via-[#312E81]
+                    to-[#4338CA]
                     text-white
                     flex
                     items-center

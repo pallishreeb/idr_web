@@ -3,7 +3,7 @@
 import React, {
   useState,
 } from "react";
-
+import JSZip from "jszip";
 import {
   useDispatch,
   useSelector,
@@ -22,6 +22,7 @@ import {
 import {
   FaDownload,
   FaSpinner,
+   FaFileArchive,
 } from "react-icons/fa";
 
 import {
@@ -87,20 +88,11 @@ const { access } = useSelector((state) => state.user);
         false,
       );
 
-    const [
-      selectedFiles,
-      setSelectedFiles,
-    ] =
-      useState([]);
+const [selectedFiles, setSelectedFiles] = useState([]);
 
-    const [
-      selectedImageUrl,
-      setSelectedImageUrl,
-    ] =
-      useState(
-        null,
-      );
+const [selectedImageUrl, setSelectedImageUrl] = useState(null);
 
+const [downloadingAll, setDownloadingAll] = useState(false);
     const handleOpenModal =
       () =>
         setIsModalOpen(
@@ -350,7 +342,76 @@ const { access } = useSelector((state) => state.user);
 
         link.click();
       };
+const handleDownloadAll = async () => {
+  if (!images || images.length === 0) {
+    toast.info("No attachments available to download.");
+    return;
+  }
 
+  try {
+    setDownloadingAll(true);
+
+    const zip = new JSZip();
+
+    for (let index = 0; index < images.length; index++) {
+      const image = images[index];
+
+      const fileUrl = `${S3_BASE_URL}/${image?.attachment_url}`;
+
+      try {
+        const response = await fetch(fileUrl);
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to download ${image?.attachment_url}`
+          );
+        }
+
+        const blob = await response.blob();
+
+        const originalPath =
+          image?.attachment_url || "";
+
+        const originalName =
+          originalPath.split("/").pop() ||
+          `attachment-${index + 1}`;
+
+        zip.file(originalName, blob);
+      } catch (error) {
+        console.error(
+          `Failed to download attachment ${index + 1}:`,
+          error
+        );
+      }
+    }
+
+    const zipBlob = await zip.generateAsync({
+      type: "blob",
+      compression: "STORE",
+    });
+
+    const downloadUrl = window.URL.createObjectURL(zipBlob);
+
+    const link = document.createElement("a");
+
+    link.href = downloadUrl;
+    link.download = `work-order-${serviceTicketId}-attachments.zip`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(downloadUrl);
+
+    // toast.success("All attachments downloaded successfully.");
+  } catch (error) {
+    console.error("Error creating attachments ZIP:", error);
+
+    toast.error("Failed to download attachments.");
+  } finally {
+    setDownloadingAll(false);
+  }
+};
     const handleImageClick =
       (
         imageUrl,
@@ -426,38 +487,77 @@ const isImage = (fileName = "") =>
               </div>
             </div>
 
-            {/* BUTTON */}
-            {canAddAttachment && (
-              <button
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  px-5
-                  py-2.5
-                  rounded-2xl
-                  bg-gradient-to-r
-                 from-[#312E81]
-                  via-[#4338CA]
-                  to-[#6366F1]
-                  text-white
-                  text-sm
-                  font-semibold
-                  shadow-md
-                  hover:shadow-lg
-                  hover:scale-[1.02]
-                  transition-all
-                  duration-300
-                "
-                onClick={
-                  handleOpenModal
-                }
-              >
-                <MdCloudUpload className="text-lg" />
-                Upload
-                Media
-              </button>
-            )}
+                {/* BUTTONS */}
+            <div className="flex flex-wrap items-center gap-3">
+              {images?.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleDownloadAll}
+                  disabled={downloadingAll}
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    px-5
+                    py-2.5
+                    rounded-2xl
+                    bg-blue-600
+                    text-white
+                    text-sm
+                    font-semibold
+                    shadow-md
+                    hover:bg-blue-700
+                    hover:shadow-lg
+                    transition-all
+                    duration-300
+                    disabled:opacity-60
+                    disabled:cursor-not-allowed
+                  "
+                >
+                  {downloadingAll ? (
+                    <>
+                      <FaSpinner className="animate-spin text-lg" />
+                      Preparing ZIP...
+                    </>
+                  ) : (
+                    <>
+                      <FaFileArchive className="text-lg" />
+                      Download All
+                    </>
+                  )}
+                </button>
+              )}
+
+              {canAddAttachment && (
+                <button
+                  type="button"
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    px-5
+                    py-2.5
+                    rounded-2xl
+                    bg-gradient-to-r
+                    from-[#312E81]
+                    via-[#4338CA]
+                    to-[#6366F1]
+                    text-white
+                    text-sm
+                    font-semibold
+                    shadow-md
+                    hover:shadow-lg
+                    hover:scale-[1.02]
+                    transition-all
+                    duration-300
+                  "
+                  onClick={handleOpenModal}
+                >
+                  <MdCloudUpload className="text-lg" />
+                  Upload Media
+                </button>
+              )}
+            </div>
           </div>
 
           {/* EMPTY */}

@@ -28,7 +28,9 @@ import {
   MdOutlineBadge,
   MdAdminPanelSettings,
 } from "react-icons/md";
+
 import usePermission from "../hooks/usePermission";
+import { PERMISSION_MODULES } from "../constants/permissionConstants";
 import { Link, useLocation } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -76,6 +78,7 @@ const fullname = first_name + ' ' + last_name
       path: "/clients",
       icon: <MdPeople size={22} />,
       roles: ["Admin", "Subadmin"],
+      permission: PERMISSION_MODULES.CLIENTS,
     },
 
     {
@@ -83,6 +86,7 @@ const fullname = first_name + ' ' + last_name
       path: "/client-employees",
       icon: <MdOutlineBadge size={22} />,
       roles: ["Admin", "Subadmin"],
+      permission: PERMISSION_MODULES.CLIENT_EMPLOYEES,
     },
 
     {
@@ -90,6 +94,7 @@ const fullname = first_name + ' ' + last_name
       path: "/locations",
       icon: <MdLocationOn size={22} />,
       roles: ["Admin", "Subadmin"],
+      permission: PERMISSION_MODULES.CLIENT_LOCATIONS,
     },
 
     {
@@ -97,7 +102,7 @@ const fullname = first_name + ' ' + last_name
       path: "/client-equipments",
       icon: <MdBuild size={22} />,
       roles: ["Admin", "Subadmin"],
-
+      permission: PERMISSION_MODULES.CLIENT_EQUIPMENT,
     },
 
     {
@@ -105,6 +110,7 @@ const fullname = first_name + ' ' + last_name
       path: "/service-agreements",
       icon: <MdAssignment size={22} />,
       roles: ["Admin", "Subadmin"],
+      permission: PERMISSION_MODULES.SERVICE_AGREEMENTS,
     },
 
     {
@@ -112,6 +118,7 @@ const fullname = first_name + ' ' + last_name
       path: "/client-licensing",
       icon: <MdVerified size={22} />,
       roles: ["Admin", "Subadmin"],
+      permission: PERMISSION_MODULES.CLIENT_LICENSING,
     },
 
     {
@@ -119,13 +126,8 @@ const fullname = first_name + ' ' + last_name
       path: "/service-requests",
       icon: <MdOutlineRequestPage size={22} />,
       roles: ["Admin", "Subadmin"],
+      permission: PERMISSION_MODULES.SERVICE_REQUESTS,
     },
-    // {
-    //   title: "Permission",
-    //   path: "/permissions",
-    //   icon: <MdAdminPanelSettings size={22} />,
-    //   roles: ["Admin"],
-    // },
   ];
 
   const idrMenuItems = [
@@ -134,18 +136,22 @@ const fullname = first_name + ' ' + last_name
       path: "/client-employees",
       icon: <MdPeople size={22} />,
       roles: client_type === "Admin" ? ["Client Employee"] : [""],
+      permission: PERMISSION_MODULES.CLIENT_EMPLOYEES,
     },
+
     {
       title: "Permission",
       path: "/permissions",
       icon: <MdAdminPanelSettings size={22} />,
       roles: ["Admin"],
     },
+
     {
       title: "IDR Employees",
       path: "/idr-employees",
       icon: <MdEngineering size={22} />,
       roles: ["Admin", "Subadmin"],
+      permission: PERMISSION_MODULES.IDR_EMPLOYEES,
     },
 
     {
@@ -153,16 +159,18 @@ const fullname = first_name + ' ' + last_name
       path: "/service-agreements",
       icon: <MdAssignment size={22} />,
       roles: client_type !== "User" ? ["Client Employee"] : [""],
+      permission: PERMISSION_MODULES.SERVICE_AGREEMENTS,
     },
 
     {
       title: "Client Equipment",
       path: "/client-equipments",
       icon: <MdBuild size={22} />,
-         roles:
+      roles:
         client_type !== "User"
           ? ["IDR Employee", "Client Employee"]
           : ["IDR Employee"],
+      permission: PERMISSION_MODULES.CLIENT_EQUIPMENT,
     },
 
     {
@@ -173,6 +181,7 @@ const fullname = first_name + ' ' + last_name
         client_type !== "User"
           ? ["IDR Employee", "Client Employee"]
           : ["IDR Employee"],
+      permission: PERMISSION_MODULES.CLIENT_LICENSING,
     },
 
     {
@@ -187,6 +196,7 @@ const fullname = first_name + ' ' + last_name
         "Subcontractor_User",
         "Subcontractor",
       ],
+      permission: PERMISSION_MODULES.WORK_ORDERS,
     },
 
     {
@@ -201,6 +211,7 @@ const fullname = first_name + ' ' + last_name
         "Subcontractor_User",
         "Subcontractor",
       ],
+      permission: PERMISSION_MODULES.SERVICE_TICKETS,
     },
 
     {
@@ -224,6 +235,7 @@ const fullname = first_name + ' ' + last_name
               "Subcontractor_User",
               "Subcontractor",
             ],
+      permission: PERMISSION_MODULES.RMAS,
     },
 
     {
@@ -231,6 +243,7 @@ const fullname = first_name + ' ' + last_name
       path: "/add-service-request",
       icon: <MdOutlineRequestPage size={22} />,
       roles: ["Client Employee"],
+      permission: PERMISSION_MODULES.SERVICE_REQUESTS,
     },
 
     {
@@ -238,6 +251,7 @@ const fullname = first_name + ' ' + last_name
       path: "/inventory",
       icon: <MdInventory size={22} />,
       roles: ["Admin", "Subadmin", "IDR Employee"],
+      permission: PERMISSION_MODULES.INVENTORY,
     },
 
     {
@@ -245,6 +259,7 @@ const fullname = first_name + ' ' + last_name
       path: "/inventory-locations",
       icon: <MdOutlineApartment size={22} />,
       roles: ["Admin"],
+      permission: PERMISSION_MODULES.INVENTORY_LOCATIONS,
     },
 
     {
@@ -252,6 +267,7 @@ const fullname = first_name + ' ' + last_name
       path: "/idr-equipment",
       icon: <MdOutlineHandyman size={22} />,
       roles: ["Admin", "Subadmin", "IDR Employee"],
+      permission: PERMISSION_MODULES.IDR_EQUIPMENT,
     },
 
     {
@@ -259,6 +275,7 @@ const fullname = first_name + ' ' + last_name
       path: "/equipment-report",
       icon: <MdOutlineAnalytics size={22} />,
       roles: ["Admin", "Subadmin"],
+      permission: PERMISSION_MODULES.REPORTS,
     },
 
     {
@@ -266,15 +283,17 @@ const fullname = first_name + ' ' + last_name
       path: "/sub-contractors",
       icon: <MdOutlineBusinessCenter size={22} />,
       roles: ["Subcontractor"],
+      permission: PERMISSION_MODULES.SUBCONTRACTORS,
     },
+
     {
       title: "Subcontractor Users",
       path: "/sub-contractors-users",
       icon: <MdOutlineGroup size={22} />,
       roles: ["Subcontractor"],
+      permission: PERMISSION_MODULES.SUBCONTRACTOR_USERS,
     },
   ];
-
   const subcontractorMenuItems = [
     {
       title: "Sub Contractors",
@@ -406,6 +425,20 @@ to-[#4338CA]" />
       </button>
     </div>
   );
+const hasMenuPermission = (item) => {
+  // Existing role protection stays mandatory
+  if (!item.roles?.includes(user_type)) {
+    return false;
+  }
+
+  // Existing role-only menu item
+  if (!item.permission) {
+    return true;
+  }
+
+  // New DB Can View permission
+  return can(item.permission, "Can View");
+};
 
   return (
     <div className="flex h-screen ">
@@ -419,8 +452,7 @@ to-[#4338CA]" />
           <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-4">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-full bg-gradient-to-r from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA] flex items-center justify-center text-white text-lg font-bold shadow-md">
+              via-[#312E81]to-[#4338CA] flex items-center justify-center text-white text-lg font-bold shadow-md">
                 {getInitials(fullname)}
               </div>
 
@@ -494,9 +526,7 @@ to-[#4338CA] flex items-center justify-center text-white text-lg font-bold shado
                   user_type === "Subcontractor"
                     ? `/edit-subcontractor/${subcontractor_id}`
                     : item.path;
-                const hasAccess = item.permission
-                    ? can(item.permission, "Read")
-                    : item.roles?.includes(user_type);
+                 const hasAccess = hasMenuPermission(item);
                 return (
                   hasAccess && (
                     <MenuItem

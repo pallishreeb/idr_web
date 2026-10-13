@@ -65,7 +65,7 @@ const RmaViewList = () => {
     status: searchParams.get("status") || "",
     date: searchParams.get("date") || "",
   });
-
+const [customDate, setCustomDate] = useState("");
   const [sortConfig, setSortConfig] = useState({
     key: "",
     direction: "ASC",
@@ -74,6 +74,7 @@ const RmaViewList = () => {
   useEffect(() => {
     if (!canRead) return;
 
+  if (filters.date === "custom") return;
     dispatch(getRmaLists(filters));
 
     if (canViewClientFilter) {
@@ -135,11 +136,17 @@ useEffect(() => {
       status: value,
     }));
   };
+const getSelectedDate = () => {
+  if (filters.date === "custom") {
+    return customDate;
+  }
 
+  return filters.date;
+};
   /* SEARCH */
   const handleSearch = () => {
     const { client_id, location_id, manufacturer, status,date } = filters;
-
+const selectedDate = date === "custom" ? customDate : date;
     const query = {
       ...(client_id && {
         client_id,
@@ -156,8 +163,8 @@ useEffect(() => {
       ...(status && {
         status,
       }),
-         ...(date && {
-      date,
+         ...(selectedDate && {
+      date:selectedDate,
     }),
     };
 
@@ -173,7 +180,7 @@ useEffect(() => {
       status: "",
       date:"",
     });
-
+    setCustomDate("");
     dispatch(getRmaLists({}));
   };
 
@@ -600,14 +607,37 @@ to-[#4338CA]
                       <option value="60">Last 60 Days</option>
                       <option value="90">Last 90 Days</option>
 
-                      <option disabled>──────────</option>
+                      <option disabled>— Select the year —</option>
 
                       {years.map((year) => (
                         <option key={year} value={year.toString()}>
                           {year}
                         </option>
                       ))}
+                      <option value="custom">Custom</option>
                         </select>
+                        {filters.date === "custom" && (
+                          <input
+                            type="number"
+                            min="1"
+                            placeholder="Enter the 4 digit year"
+                            value={customDate}
+                            onChange={(e) => setCustomDate(e.target.value)}
+                            className="
+                              mt-2
+                              w-full
+                              rounded-2xl
+                              border
+                              border-gray-200
+                              px-4
+                              py-3
+                              text-sm
+                              focus:outline-none
+                              focus:ring-2
+                              focus:ring-indigo-500
+                            "
+                          />
+                        )}
                       </div>
                     )}
                   </div>
@@ -640,6 +670,7 @@ to-[#4338CA]
 
                     <button
                       type="submit"
+                        disabled={filters.date === "custom" && !customDate}
                       className="
                           flex
                           items-center
@@ -649,8 +680,8 @@ to-[#4338CA]
                           rounded-2xl
                           bg-gradient-to-r
                          from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]
+                          via-[#312E81]
+                          to-[#4338CA]
                           text-white
                           text-sm
                           font-semibold
@@ -790,6 +821,7 @@ to-[#4338CA]
                             hover:shadow-md
                             transition-all
                           "
+                          disabled={filters.date === "custom" && !customDate}
                     >
                       <MdSearch className="text-lg" />
                       Search
