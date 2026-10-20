@@ -27,7 +27,9 @@ const Permission = () => {
   const [roles, setRoles] = useState([]);
   const [selectedRole, setSelectedRole] =
     useState("");
-
+const isAdminRole =
+  roles.find((role) => role.user_role_id === selectedRole)?.role_name ===
+  "Admin";
   // -----------------------------
   // Modules
   // -----------------------------
@@ -520,6 +522,7 @@ const handleModuleChange = (moduleId) => {
                               <PermissionTable
                                 module={selectedModuleData}
                                 isEditing={isEditing}
+                                isAdminRole={isAdminRole}
                                 onPermissionChange={
                                   handlePermissionChange
                                 }

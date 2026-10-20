@@ -826,11 +826,11 @@ to-[#4338CA]" />
                             Select Payment Frequency
                           </option>
 
-                          <option value="A">
+                          <option value="Monthly">
                             Monthly
                           </option>
 
-                          <option value="B">
+                          <option value="Yearly">
                             Yearly
                           </option>
                         </select>

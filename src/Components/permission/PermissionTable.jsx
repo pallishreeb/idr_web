@@ -3,6 +3,7 @@ import React from "react";
 const PermissionTable = ({
   module,
   isEditing,
+  isAdminRole,
   onPermissionChange,
 }) => {
   if (!module) {
@@ -78,6 +79,7 @@ const PermissionTable = ({
                   <input
                     type="checkbox"
                     checked={permission.allow === true}
+                    disabled={isAdminRole}
                     onChange={() =>
                       onPermissionChange(
                         permission.perm_type_id
