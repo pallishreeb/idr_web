@@ -145,7 +145,12 @@ const fullname = first_name + ' ' + last_name
       icon: <MdAdminPanelSettings size={22} />,
       roles: ["Admin"],
     },
-
+ {
+      title: "Role",
+      path: "/user-types",
+      icon:  <MdOutlineBadge size={22} />,
+      roles: ["Admin"],
+    },
     {
       title: "IDR Employees",
       path: "/idr-employees",

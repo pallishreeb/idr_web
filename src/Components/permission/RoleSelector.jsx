@@ -68,7 +68,7 @@ const RoleSelector = ({
                 key={role.user_role_id}
                 value={role.user_role_id}
               >
-                {role.role_name}
+                {role.display_name}
               </option>
             ))}
           </>

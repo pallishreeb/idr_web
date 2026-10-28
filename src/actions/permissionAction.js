@@ -114,3 +114,58 @@ export const getMyRolePermissions = async () => {
     throw error;
   }
 };
+
+// Create User Type
+export const createUserType = async (roleName) => {
+  try {
+    const response = await axios.post("/roles/create", {
+      role_name: roleName,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error creating user type:", error);
+    throw error;
+  }
+};
+
+// Get all User Types
+export const getAllUserTypes = async () => {
+  try {
+    const response = await axios.get("/roles/all");
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user types:", error);
+    throw error;
+  }
+};
+
+// Update User Type
+export const updateUserType = async (userRoleId, roleName) => {
+  try {
+    const response = await axios.patch("/roles/update", {
+      user_role_id: userRoleId,
+      display_name: roleName,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user type:", error);
+    throw error;
+  }
+};
+
+// Delete User Type
+export const deleteUserType = async (userRoleId) => {
+  try {
+    const response = await axios.delete(
+      `/roles/delete/${userRoleId}`
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting user type:", error);
+    throw error;
+  }
+};

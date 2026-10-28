@@ -77,6 +77,7 @@ import SubcontractorUsersPage from "./page/subcontractor-users/Sub-users";
 import AddSubcontractorUserPage from "./page/subcontractor-users/AddSubcontractorUserPage";
 import EditSubcontractorUserPage from "./page/subcontractor-users/EditSubcontractorUserPage";
 import Permission from "./page/permission/Permission";
+import UserTypes from "./page/permission/UserTypes";
 import PermissionLoader from "./Components/permission/PermissionLoader";
 import { useSelector } from "react-redux";
 
@@ -246,6 +247,8 @@ function App() {
           {/* Permission */}
 
           <Route path="/permissions" element={<Permission />} />
+              {/* Roles (User Types) */}
+          <Route path="/user-types" element={<UserTypes />} />
           {/* Service request */}
           <Route path="/service-requests" element={<ListServiceRequests />} />
           <Route path="/add-service-request" element={<AddServiceRequest />} />
