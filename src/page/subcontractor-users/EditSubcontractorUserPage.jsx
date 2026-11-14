@@ -85,37 +85,20 @@ const EditSubcontractorUserPage =
             .loadingUsers,
       );
 
-    const [
-      formData,
-      setFormData,
-    ] =
-      useState({
-        subcontractor_user_id:
-          "",
-
-        subcontractor_id:
-          "",
-
-        subcontractor_company:
-          "",
-
-        email_id:
-          "",
-
-        mobile: "",
-
-        first_name:
-          "",
-
-        last_name:
-          "",
-
-        is_active:
-          true,
-        user_type: "Subcontractor_User",
-        internal_note:
-          "",
-      });
+    const [formData, setFormData] = useState({
+      subcontractor_user_id: "",
+      subcontractor_id: "",
+      subcontractor_company: "",
+      email_id: "",
+      mobile: "",
+      first_name: "",
+      last_name: "",
+      password: "",
+      confirmPassword: "",
+      is_active: true,
+      user_type: "Subcontractor_User",
+      internal_note: "",
+    });
 
     /* ===========================
        LOAD DATA
@@ -188,7 +171,9 @@ const EditSubcontractorUserPage =
         last_name:
           userDetails.last_name ||
           "",
-
+        // Password should never be prefilled
+        password: "",
+        confirmPassword: "",
         is_active:
           userDetails.is_active ??
           true,
@@ -281,9 +266,18 @@ const EditSubcontractorUserPage =
         e,
       ) => {
         e.preventDefault();
+        // Validate password only when user wants to change it
+        if (formData.password || formData.confirmPassword) {
+          if (formData.password !== formData.confirmPassword) {
+            toast.error("Passwords do not match.");
+            return;
+          }
 
-        if (!canUpdate) return;
-
+          if (formData.password.length < 6) {
+            toast.error("Password must be at least 6 characters.");
+            return;
+          }
+        }
         const payload =
           {
             subcontractor_user_id:
@@ -305,6 +299,9 @@ const EditSubcontractorUserPage =
 
             internal_note:
               formData.internal_note.trim(),
+             ...(formData.password
+              ? { password: formData.password }
+              : {}),  
           };
 
         try {
@@ -523,6 +520,57 @@ const EditSubcontractorUserPage =
                           required
                             disabled={!canUpdate}
                         />
+                      </div>
+                    </div>
+                    {/* PASSWORD */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* NEW PASSWORD */}
+                      <div>
+                        <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                          New Password
+                        </label>
+
+                        <div className="relative">
+                          <input
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className={inputClass}
+                            placeholder="Enter new password"
+                            minLength={6}
+                          />
+                        </div>
+
+                        <p className="text-xs text-gray-500 mt-2">
+                          Leave blank if you don't want to change the password.
+                        </p>
+                      </div>
+
+                      {/* CONFIRM PASSWORD */}
+                      <div>
+                        <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                          Confirm New Password
+                        </label>
+
+                        <div className="relative">
+                          <input
+                            type="password"
+                            name="confirmPassword"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            className={inputClass}
+                            placeholder="Confirm new password"
+                            minLength={6}
+                          />
+                        </div>
+
+                        {formData.confirmPassword &&
+                          formData.password !== formData.confirmPassword && (
+                            <p className="text-sm text-red-500 mt-2">
+                              Passwords do not match.
+                            </p>
+                          )}
                       </div>
                     </div>
                     {/* USER TYPE */}

@@ -9,7 +9,7 @@ import {
   useDispatch,
   useSelector,
 } from "react-redux";
-
+import { toast } from "react-toastify";
 import {
   useNavigate,
   useParams,
@@ -95,6 +95,8 @@ const AddSubcontractorUserPage =
 
         last_name:
           "",
+        password: "",
+        confirmPassword: "",
         user_type: "Subcontractor_User",
         is_active:
           true,
@@ -259,24 +261,22 @@ const AddSubcontractorUserPage =
         e,
       ) => {
         e.preventDefault();
+        if (formData.password !== formData.confirmPassword) {
+          toast.error("Passwords do not match.");
+          return;
+        }
 
-        const payload =
-          {
-            ...formData,
-
-            email_id:
-              formData.email_id.trim(),
-
-            mobile:
-              formData.mobile.trim(),
-
-            first_name:
-              formData.first_name.trim(),
-
-            last_name:
-              formData.last_name.trim(),
+          const payload = {
+            subcontractor_id: formData.subcontractor_id,
+            subcontractor_company: formData.subcontractor_company,
+            email_id: formData.email_id.trim(),
+            mobile: formData.mobile.trim(),
+            first_name: formData.first_name.trim(),
+            last_name: formData.last_name.trim(),
+            password: formData.password,
+            user_type: formData.user_type,
+            is_active: formData.is_active,
           };
-
         await dispatch(
           addSubcontractorUser(
             payload,
@@ -495,6 +495,56 @@ const AddSubcontractorUserPage =
                         />
                       </div>
                     </div>
+                    {/* PASSWORD */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <div>
+                      <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                        Password
+                      </label>
+
+                      <div className="relative">
+                        <input
+                          type="password"
+                          name="password"
+                          value={formData.password}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="Enter password"
+                          minLength={6}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* CONFIRM PASSWORD */}
+                    <div>
+                      <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                        Confirm Password
+                      </label>
+
+                      <div className="relative">
+                        <input
+                          type="password"
+                          name="confirmPassword"
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="Confirm password"
+                          minLength={6}
+                          required
+                        />
+                      </div>
+
+                      {formData.confirmPassword &&
+                        formData.password !== formData.confirmPassword && (
+                          <p className="text-sm text-red-500 mt-2">
+                            Passwords do not match.
+                          </p>
+                        )}
+                    </div>
+
+                  </div>
                     {/* USER TYPE */}
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
