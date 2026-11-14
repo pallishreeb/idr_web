@@ -8,7 +8,7 @@ import {
   useDispatch,
   useSelector,
 } from "react-redux";
-
+import { toast } from "react-toastify";
 import {
   useNavigate,
 } from "react-router-dom";
@@ -58,6 +58,8 @@ const AddSubcontractorPage =
         "",
       b_email:
         "",
+      password: "",
+      confirmPassword: "",
     });
 
     // HANDLE CHANGE
@@ -85,7 +87,10 @@ const AddSubcontractorPage =
         e,
       ) => {
         e.preventDefault();
-
+        if (formData.password !== formData.confirmPassword) {
+          toast.error("Passwords do not match.");
+          return;
+        }
         const cleanedData =
           {
             b_firstname:
@@ -96,6 +101,7 @@ const AddSubcontractorPage =
 
             b_email:
               formData.b_email.trim(),
+            password: formData.password,
           };
 
         try {
@@ -115,6 +121,8 @@ const AddSubcontractorPage =
 
             b_email:
               "",
+            password: "",
+            confirmPassword: "",
           });
 
           navigate(
@@ -213,8 +221,7 @@ const AddSubcontractorPage =
                   <div>
                     <div className="flex items-center gap-2 mb-5">
                       <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]" />
+                        via-[#312E81] to-[#4338CA]" />
 
                       <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                         Personal
@@ -293,8 +300,7 @@ to-[#4338CA]" />
                   <div>
                     <div className="flex items-center gap-2 mb-5">
                       <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]" />
+                          via-[#312E81] to-[#4338CA]" />
 
                       <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                         Account
@@ -342,6 +348,58 @@ to-[#4338CA]" />
                         communication.
                       </p>
                     </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    {/* PASSWORD */}
+                    <div>
+                      <label
+                        htmlFor="password"
+                        className={labelClass}
+                      >
+                        Password
+                      </label>
+
+                      <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className={inputClass}
+                        placeholder="Enter password"
+                        required
+                        minLength={6}
+                      />
+                    </div>
+
+                    {/* CONFIRM PASSWORD */}
+                    <div>
+                      <label
+                        htmlFor="confirmPassword"
+                        className={labelClass}
+                      >
+                        Confirm Password
+                      </label>
+
+                      <input
+                        type="password"
+                        name="confirmPassword"
+                        id="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className={inputClass}
+                        placeholder="Confirm password"
+                        required
+                        minLength={6}
+                      />
+
+                      {formData.confirmPassword &&
+                        formData.password !== formData.confirmPassword && (
+                          <p className="text-sm text-red-500 mt-2">
+                            Passwords do not match.
+                          </p>
+                        )}
+                    </div>
+                  </div>
                   </div>
 
                   {/* INFO CARD */}
