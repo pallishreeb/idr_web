@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-
+import { getAllUserTypes } from "../../actions/permissionAction";
 import {
   Link,
   useNavigate,
@@ -59,7 +59,8 @@ const AddEmployeePage = () => {
   const user = useSelector(
     (state) => state.user.user,
   );
-
+const [userTypes, setUserTypes] = useState([]);
+const [loadingUserTypes, setLoadingUserTypes] = useState(false);
   const [formData, setFormData] = useState({
     client_id: clientId || "",
     first_name: "",
@@ -80,7 +81,9 @@ const AddEmployeePage = () => {
       );
     }
   }, [dispatch, clientId]);
-
+useEffect(() => {
+  fetchUserTypes();
+}, []);
   useEffect(() => {
     if (
       user?.client_type === "Admin" &&
@@ -125,7 +128,7 @@ const AddEmployeePage = () => {
 
     if (
       formData.employee_type !==
-      "Location Admin"
+      "Client Location Admin" //"Location Admin"
     ) {
       delete updatedFormData.client_location_id;
     }
@@ -138,7 +141,25 @@ const AddEmployeePage = () => {
       ),
     );
   };
+const fetchUserTypes = async () => {
+  try {
+    setLoadingUserTypes(true);
 
+    const response = await getAllUserTypes();
+
+    const data =
+      response?.roles ||
+      response?.data ||
+      response ||
+      [];
+
+    setUserTypes(Array.isArray(data) ? data : []);
+  } catch (error) {
+    console.error("Failed to fetch user types:", error);
+  } finally {
+    setLoadingUserTypes(false);
+  }
+};
   const inputClass =
     "w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-300";
 
@@ -343,17 +364,20 @@ to-[#4338CA]" />
                           Select Employee Type
                         </option>
 
-                        <option value="Admin">
-                          Admin
-                        </option>
-
-                        <option value="Location Admin">
-                          Location Admin
-                        </option>
-
-                        <option value="User">
-                          User
-                        </option>
+                       {loadingUserTypes ? (
+                          <option value="" disabled>
+                            Loading user types...
+                          </option>
+                        ) : (
+                          userTypes.map((role) => (
+                            <option
+                              key={role.user_role_id}
+                              value={role.display_name || role.role_name}
+                            >
+                              {role.display_name || role.role_name}
+                            </option>
+                          ))
+                        )}
                       </select>
                     </div>
                   </div>
@@ -431,12 +455,10 @@ to-[#4338CA]" />
 
               {/* LOCATION ACCESS */}
               {formData.employee_type ===
-                "Location Admin" && (
+                "Client Location Admin" && (
                 <div className="mb-10">
                   <div className="flex items-center gap-2 mb-5">
-                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]" />
+                    <div className="w-1 h-6 rounded-full bg-gradient-to-b from-[#1E1B4B] via-[#312E81] to-[#4338CA]" />
 
                     <h3 className="uppercase tracking-[0.25em] text-xs font-bold text-indigo-500">
                       Location Access
