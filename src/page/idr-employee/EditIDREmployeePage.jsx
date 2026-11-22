@@ -27,7 +27,7 @@ import {
 import Header from "../../Components/Header";
 
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { getAllUserTypes } from "../../actions/permissionAction";
+
 const EditIDREmployeePage = () => {
   const {
     employeeId,
@@ -50,8 +50,7 @@ const EditIDREmployeePage = () => {
       ) =>
         state.employee,
     );
-  const [userTypes, setUserTypes] = useState([]);
-  const [loadingUserTypes, setLoadingUserTypes] = useState(false);
+
   const [
     formData,
     setFormData,
@@ -88,30 +87,7 @@ const EditIDREmployeePage = () => {
     dispatch,
     employeeId,
   ]);
-useEffect(() => {
-  const fetchUserTypes = async () => {
-    try {
-      setLoadingUserTypes(true);
 
-      const response = await getAllUserTypes();
-
-      const data =
-        response?.roles ||
-        response?.data ||
-        response ||
-        [];
-
-      setUserTypes(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error("Error fetching user types:", error);
-      setUserTypes([]);
-    } finally {
-      setLoadingUserTypes(false);
-    }
-  };
-
-  fetchUserTypes();
-}, []);
   useEffect(() => {
     if (
       idrEmployeeDetails
@@ -439,31 +415,36 @@ to-[#4338CA]
 
                     <select
                       name="user_type"
-                      value={formData.user_type}
-                      onChange={handleChange}
-                      className={inputClass}
+                      value={
+                        formData.user_type
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      className={
+                        inputClass
+                      }
                       required
-                      disabled={loadingUserTypes}
                     >
                       <option value="">
-                        {loadingUserTypes
-                          ? "Loading User Types..."
-                          : "Select User Type"}
+                        Select User Type
                       </option>
 
-                      {userTypes.map((role) => {
-                        const roleName =
-                          role.display_name || role.role_name;
+                      <option value="Admin">
+                        Admin
+                      </option>
 
-                        return (
-                          <option
-                            key={role.user_role_id}
-                            value={roleName}
-                          >
-                            {roleName}
-                          </option>
-                        );
-                      })}
+                      <option value="Subadmin">
+                        Subadmin
+                      </option>
+
+                      <option value="IDR Employee">
+                        IDR Employee
+                      </option>
+
+                      <option value="Laborer">
+                        Laborer
+                      </option>
                     </select>
                   </div>
 

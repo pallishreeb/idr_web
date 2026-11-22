@@ -14,7 +14,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { getAllUserTypes } from "../../actions/permissionAction";
+
 import {
   MdPersonAdd,
   MdBusiness,
@@ -73,8 +73,7 @@ const AddSubcontractorUserPage =
             .subcontractor
             .loadingUsers,
       );
-    const [userTypes, setUserTypes] = useState([]);
-    const [loadingUserTypes, setLoadingUserTypes] = useState(false);
+
     const [
       formData,
       setFormData,
@@ -184,9 +183,7 @@ const AddSubcontractorUserPage =
       subcontractorId,
       subcontractors,
     ]);
-    useEffect(() => {
-      fetchUserTypes();
-    }, []);
+
     /* ===========================
        HANDLE SUB CHANGE
     =========================== */
@@ -291,55 +288,7 @@ const AddSubcontractorUserPage =
     // COMMON INPUT STYLE
     const inputClass =
       "w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-300";
-    const fetchUserTypes = async () => {
-      try {
-        setLoadingUserTypes(true);
 
-        const response = await getAllUserTypes();
-
-        const data =
-          response?.roles ||
-          response?.data ||
-          response ||
-          [];
-
-        const allowedUserTypes = [
-          "Subcontractor",
-          "Subcontractor_User",
-        ];
-
-        const normalizedUserTypes = Array.isArray(data)
-          ? data
-              .map((role) => {
-                const displayName =
-                  role.display_name || role.role_name || "";
-
-                // Preserve the backend's existing user_type values.
-                const roleName =
-                  role.role_name ||
-                  (displayName === "Subcontractor User"
-                    ? "Subcontractor_User"
-                    : displayName);
-
-                return {
-                  ...role,
-                  value: roleName,
-                  label: displayName,
-                };
-              })
-              .filter((role) =>
-                allowedUserTypes.includes(role.value)
-              )
-          : [];
-
-        setUserTypes(data);
-      } catch (error) {
-        console.error("Failed to fetch user types:", error);
-        toast.error("Failed to load user types");
-      } finally {
-        setLoadingUserTypes(false);
-      }
-    };
     return (
       <>
         <Header />
@@ -605,27 +554,20 @@ const AddSubcontractorUserPage =
                       <div className="relative">
                         <MdPerson className="absolute top-4 left-4 text-indigo-400 text-xl" />
 
-                      <select
+                        <select
                           name="user_type"
                           value={formData.user_type}
                           onChange={handleChange}
                           className={inputClass}
                           required
                         >
-                          <option value="">
-                            {loadingUserTypes
-                              ? "Loading User Types..."
-                              : "Select User Type"}
+                          <option value="Subcontractor_User">
+                            Subcontractor User
                           </option>
 
-                          {userTypes.map((role) => (
-                            <option
-                              key={role.user_role_id}
-                              value={role.role_name || role.display_name}
-                            >
-                               {role.display_name || role.role_name}
-                            </option>
-                          ))}
+                          <option value="Subcontractor">
+                            Subcontractor
+                          </option>
                         </select>
                       </div>
                     </div>

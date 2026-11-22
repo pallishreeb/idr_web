@@ -1,6 +1,5 @@
 import React, {
   useState,
-  useEffect,
 } from "react";
 
 import {
@@ -21,7 +20,7 @@ import {
 import {
   createIDREmployee,
 } from "../../actions/employeeActions";
-import { getAllUserTypes } from "../../actions/permissionAction";
+
 import Header from "../../Components/Header";
 
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
@@ -42,8 +41,7 @@ const AddIDREmployeePage = () => {
       ) =>
         state.employee,
     );
-const [userTypes, setUserTypes] = useState([]);
-const [loadingUserTypes, setLoadingUserTypes] = useState(false);
+
   const [
     formData,
     setFormData,
@@ -63,9 +61,7 @@ const [loadingUserTypes, setLoadingUserTypes] = useState(false);
         "",
       is_active: true,
     });
-useEffect(() => {
-  fetchUserTypes();
-}, []);
+
   const handleChange =
     (e) => {
       const {
@@ -124,42 +120,7 @@ useEffect(() => {
       focus:ring-indigo-500
       transition-all
     `;
-    const fetchUserTypes = async () => {
-      try {
-        setLoadingUserTypes(true);
 
-        const response = await getAllUserTypes();
-
-        const data =
-          response?.roles ||
-          response?.data ||
-          response ||
-          [];
-
-        // Preserve the existing IDR Employee role choices.
-        // const allowedUserTypes = [
-        //   "Admin",
-        //   "Subadmin",
-        //   "IDR Employee",
-        //   "Laborer",
-        // ];
-
-        // const filteredUserTypes = Array.isArray(data)
-        //   ? data.filter((role) =>
-        //       allowedUserTypes.includes(
-        //         role.role_name || role.display_name
-        //       )
-        //     )
-        //   : [];
-
-        setUserTypes(data);
-      } catch (error) {
-        console.error("Failed to fetch user types:", error);
-        setUserTypes([]);
-      } finally {
-        setLoadingUserTypes(false);
-      }
-    };
   return (
     <>
       <Header />
@@ -405,27 +366,38 @@ to-[#4338CA]
                       User Type
                     </label>
 
-                   <select
+                    <select
                       name="user_type"
-                      value={formData.user_type}
-                      onChange={handleChange}
-                      className={inputClass}
+                      value={
+                        formData.user_type
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      className={
+                        inputClass
+                      }
                       required
                     >
                       <option value="">
-                        {loadingUserTypes
-                          ? "Loading User Types..."
-                          : "Select User Type"}
+                        Select User Type
                       </option>
 
-                      {userTypes.map((role) => (
-                        <option
-                          key={role.user_role_id}
-                          value={role.role_name || role.display_name}
-                        >
-                          {role.display_name || role.role_name}
-                        </option>
-                      ))}
+                      <option value="Admin">
+                        Admin
+                      </option>
+
+                      <option value="Subadmin">
+                        Subadmin
+                      </option>
+
+                      <option value="IDR Employee">
+                        IDR Employee
+                      </option>
+
+                      <option value="Laborer">
+                        Laborer
+                      </option>
                     </select>
                   </div>
 

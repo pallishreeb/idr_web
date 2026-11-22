@@ -245,8 +245,8 @@ const {
                       rounded-2xl
                       bg-gradient-to-r
                       from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]
+                      via-[#312E81]
+                      to-[#4338CA]
                       text-white
                       flex
                       items-center
@@ -389,6 +389,7 @@ to-[#4338CA]
           </div>
 
           {/* ASSIGN TO WORK ORDER */}
+          {canAssign && (
           <form
             onSubmit={handleAssignWorkorder}
             className="
@@ -441,8 +442,8 @@ to-[#4338CA]
                       rounded-2xl
                       bg-gradient-to-r
                       from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]
+                      via-[#312E81]
+                      to-[#4338CA]
                       text-white
                       text-sm
                       font-semibold
@@ -550,8 +551,9 @@ to-[#4338CA]
               </div>
             </div>
           </form>
-
+          )}
           {/* ASSIGN TO SERVICE TICKET */}
+              {canAssign && (
           <form
             onSubmit={handleAssignServiceTicket}
             className="
@@ -604,8 +606,8 @@ to-[#4338CA]
                       rounded-2xl
                       bg-gradient-to-r
                       from-[#1E1B4B]
-via-[#312E81]
-to-[#4338CA]
+                      via-[#312E81]
+                      to-[#4338CA]
                       text-white
                       text-sm
                       font-semibold
@@ -720,8 +722,9 @@ to-[#4338CA]
               </div>
             </div>
           </form>
-
+        )}
           {/* TRANSFER LOCATION */}
+          {canTransfer && (
           <form
             onSubmit={handleTransferInventory}
             className="
@@ -850,6 +853,7 @@ to-[#4338CA]
               </div>
             </div>
           </form>
+          )}
         </div>
       </div>
     </>

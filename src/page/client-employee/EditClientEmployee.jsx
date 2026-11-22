@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
-import { getAllUserTypes } from "../../actions/permissionAction";
+
 import {
   Link,
   useParams,
@@ -69,8 +69,7 @@ const EditEmployeePage = () => {
   const loadingEmployees = useSelector(
     (state) => state.clientEmployee.loading,
   );
-  const [userTypes, setUserTypes] = useState([]);
-  const [loadingUserTypes, setLoadingUserTypes] = useState(false);
+
   const [formData, setFormData] = useState({
     client_id: "",
     first_name: "",
@@ -87,30 +86,7 @@ const EditEmployeePage = () => {
 
     dispatch(getClients());
   }, [dispatch, employeeId]);
-  useEffect(() => {
-    const fetchUserTypes = async () => {
-      try {
-        setLoadingUserTypes(true);
 
-        const response = await getAllUserTypes();
-
-        const data =
-          response?.roles ||
-          response?.data ||
-          response ||
-          [];
-
-        setUserTypes(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Error fetching user types:", error);
-        setUserTypes([]);
-      } finally {
-        setLoadingUserTypes(false);
-      }
-    };
-
-    fetchUserTypes();
-  }, []);
   useEffect(() => {
     if (employee) {
       const {
@@ -398,25 +374,21 @@ to-[#4338CA]" />
                         className={`${inputClass} pl-12`}
                         required
                       >
-                       <option value="">
-                          {loadingUserTypes
-                            ? "Loading Employee Types..."
-                            : "Select Employee Type"}
+                        <option value="">
+                          Select Employee Type
                         </option>
 
-                        {userTypes.map((role) => {
-                          const roleName =
-                            role.display_name || role.role_name;
+                        <option value="Admin">
+                          Admin
+                        </option>
 
-                          return (
-                            <option
-                              key={role.user_role_id}
-                              value={roleName}
-                            >
-                              {roleName}
-                            </option>
-                          );
-                        })}
+                        <option value="Location Admin">
+                          Location Admin
+                        </option>
+
+                        <option value="User">
+                          User
+                        </option>
                       </select>
                     </div>
                   </div>

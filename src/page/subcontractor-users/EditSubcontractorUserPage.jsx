@@ -31,7 +31,7 @@ import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 import useModulePermissions from "../../hooks/useModulePermissions";
 import { PERMISSION_MODULES } from "../../constants/permissionConstants";
-import { getAllUserTypes } from "../../actions/permissionAction";
+
 import {
   getSubcontractorUserById,
   updateSubcontractorUser,
@@ -84,8 +84,7 @@ const EditSubcontractorUserPage =
             .subcontractor
             .loadingUsers,
       );
-    const [userTypes, setUserTypes] = useState([]);
-    const [loadingUserTypes, setLoadingUserTypes] = useState(false);
+
     const [formData, setFormData] = useState({
       subcontractor_user_id: "",
       subcontractor_id: "",
@@ -126,30 +125,7 @@ const EditSubcontractorUserPage =
     /* ===========================
        PREFILL
     =========================== */
-    useEffect(() => {
-      const fetchUserTypes = async () => {
-        try {
-          setLoadingUserTypes(true);
 
-          const response = await getAllUserTypes();
-
-          const data =
-            response?.roles ||
-            response?.data ||
-            response ||
-            [];
-
-          setUserTypes(Array.isArray(data) ? data : []);
-        } catch (error) {
-          console.error("Error fetching user types:", error);
-          setUserTypes([]);
-        } finally {
-          setLoadingUserTypes(false);
-        }
-      };
-
-      fetchUserTypes();
-    }, []);
     useEffect(() => {
       if (
         !userDetails
@@ -598,45 +574,32 @@ const EditSubcontractorUserPage =
                       </div>
                     </div>
                     {/* USER TYPE */}
-                   <div>
-                    <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
-                      User Type
-                    </label>
+                    <div>
+                      <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">
+                        User Type
+                      </label>
 
-                    <div className="relative">
-                      <MdPerson className="absolute top-4 left-4 text-indigo-400 text-xl" />
+                      <div className="relative">
+                        <MdPerson className="absolute top-4 left-4 text-indigo-400 text-xl" />
 
-                      <select
-                        name="user_type"
-                        value={formData.user_type}
-                        onChange={handleChange}
-                        className={inputClass}
-                        required
-                        disabled={!canUpdate || loadingUserTypes}
-                      >
-                        <option value="">
-                          {loadingUserTypes
-                            ? "Loading User Types..."
-                            : "Select User Type"}
-                        </option>
+                        <select
+                          name="user_type"
+                          value={formData.user_type}
+                          onChange={handleChange}
+                          className={inputClass}
+                          required
+                          disabled={!canUpdate}
+                        >
+                          <option value="Subcontractor_User">
+                            Subcontractor User
+                          </option>
 
-                        {userTypes.map((role) => {
-                          const roleValue = role.role_name;
-                          const roleLabel =
-                            role.display_name || role.role_name;
-
-                          return (
-                            <option
-                              key={role.user_role_id || roleValue}
-                              value={roleValue}
-                            >
-                              {roleLabel}
-                            </option>
-                          );
-                        })}
-                      </select>
+                          <option value="Subcontractor">
+                            Subcontractor
+                          </option>
+                        </select>
+                      </div>
                     </div>
-                  </div>
                     {/* NOTE */}
                     <div>
                       <label className="block text-sm font-semibold text-[#1E1B4B] mb-2">

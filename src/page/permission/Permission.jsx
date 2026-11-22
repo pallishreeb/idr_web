@@ -1,13 +1,9 @@
-/** @format */
 
-import React, { useEffect, useState } from "react";
-
-import { useDispatch } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
 
 import PermissionHeader from "../../Components/permission/PermissionHeader";
 import PermissionTable from "../../Components/permission/PermissionTable";
 import RoleSelector from "../../Components/permission/RoleSelector";
-import AddPermissionType from "../../Components/permission/AddPermissionType";
 
 import {
   getAllRoles,
@@ -18,137 +14,138 @@ import {
 import Header from "../../Components/Header";
 import AdminSideNavbar from "../../Components/AdminSideNavbar";
 
+const getModuleKey = (roleId, moduleId) =>
+  `${roleId}:${moduleId}`;
+
+const hasModuleChanges = (original, current) => {
+  if (!original || !current) return false;
+
+  const originalPermissions = original.permission_types || [];
+  const currentPermissions = current.permission_types || [];
+
+  if (originalPermissions.length !== currentPermissions.length) {
+    return true;
+  }
+
+  const originalMap = new Map(
+    originalPermissions.map((permission) => [
+      String(permission.perm_type_id),
+      permission.allow === true,
+    ])
+  );
+
+  return currentPermissions.some((permission) => {
+    const id = String(permission.perm_type_id);
+
+    return (
+      !originalMap.has(id) ||
+      originalMap.get(id) !== (permission.allow === true)
+    );
+  });
+};
+
 const Permission = () => {
-  const dispatch = useDispatch();
-
-  // -----------------------------
   // Roles
-  // -----------------------------
   const [roles, setRoles] = useState([]);
-  const [selectedRole, setSelectedRole] =
-    useState("");
-const isAdminRole =
-  roles.find((role) => role.user_role_id === selectedRole)?.role_name ===
-  "Admin";
-  // -----------------------------
+  const [selectedRole, setSelectedRole] = useState("");
+
+  const isAdminRole =
+    roles.find(
+      (role) => role.user_role_id === selectedRole
+    )?.role_name === "Admin";
+
   // Modules
-  // -----------------------------
   const [modules, setModules] = useState([]);
-  const [selectedModule, setSelectedModule] =
-    useState("");
+  const [selectedModule, setSelectedModule] = useState("");
 
-  // -----------------------------
-  // Selected module permissions
-  // -----------------------------
-  const [selectedModuleData, setSelectedModuleData] =
-    useState(null);
+  // Current module
+  const [selectedModuleData, setSelectedModuleData] = useState(null);
 
-  // -----------------------------
-  // UI state
-  // -----------------------------
-  const [isEditing, setIsEditing] =
-    useState(false);
+  // Draft and original permissions
+  const [moduleDrafts, setModuleDrafts] = useState({});
+  const [originalModuleDrafts, setOriginalModuleDrafts] = useState({});
 
-  const [loadingRoles, setLoadingRoles] =
-    useState(false);
+  // UI states
+  const [loadingRoles, setLoadingRoles] = useState(false);
+  const [loadingPermissions, setLoadingPermissions] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
-  const [loadingPermissions, setLoadingPermissions] =
-    useState(false);
+  // Prevent outdated requests
+  const permissionRequestRef = useRef(0);
 
-  const [saving, setSaving] =
-    useState(false);
+  // Check all modified modules for the selected role
+  const changedModules = modules.filter((module) => {
+    const key = getModuleKey(
+      selectedRole,
+      module.perm_module_id
+    );
 
-  const [saved, setSaved] =
-    useState(false);
+    return hasModuleChanges(
+      originalModuleDrafts[key],
+      moduleDrafts[key]
+    );
+  });
 
-  const [error, setError] =
-    useState("");
+  const hasChanges = changedModules.length > 0;
 
   // ============================================
-  // GET ROLES + MODULES
+  // FETCH ROLES AND MODULES
   // ============================================
-  const fetchRoles = async () => {
-    try {
-      setLoadingRoles(true);
-      setError("");
 
-      const response = await getAllRoles();
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        setLoadingRoles(true);
+        setError("");
 
-      console.log("Roles response:", response);
+        const response = await getAllRoles();
 
-      setRoles(response?.roles || []);
+        setRoles(response?.roles || []);
+        setModules(response?.modules || []);
 
-      /*
-       * Backend now returns modules from:
-       * GET /permission/roles/all
-       */
-      setModules(response?.modules || []);
+        if (response?.roles?.length > 0) {
+          setSelectedRole(response.roles[0].user_role_id);
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
 
-      // Select first role
-      if (response?.roles?.length > 0) {
-        setSelectedRole(
-          response.roles[0].user_role_id
+        setError(
+          error?.response?.data?.message ||
+            error?.message ||
+            "Failed to load roles."
         );
+      } finally {
+        setLoadingRoles(false);
       }
+    };
 
-      // Select first module
-      // if (response?.modules?.length > 0) {
-      //   setSelectedModule(
-      //     response.modules[0].perm_module_id
-      //   );
-      // }
-    } catch (error) {
-      console.error(
-        "Error fetching roles:",
-        error
-      );
-
-      setError(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to load roles."
-      );
-    } finally {
-      setLoadingRoles(false);
-    }
-  };
+    fetchRoles();
+  }, []);
 
   // ============================================
-  // GET ROLE + MODULE PERMISSIONS
+  // FETCH ROLE + MODULE PERMISSIONS
   // ============================================
-  const fetchRolePermissions = async (
-    roleId,
-    moduleId
-  ) => {
-    if (!roleId || !moduleId) {
-      setSelectedModuleData(null);
-      return;
-    }
+
+  const fetchRolePermissions = async (roleId, moduleId) => {
+    if (!roleId || !moduleId) return;
+
+    const requestId = ++permissionRequestRef.current;
 
     try {
       setLoadingPermissions(true);
       setError("");
-      setSaved(false);
 
-      const response =
-        await getRolePermissions(
-          roleId,
-          moduleId
-        );
-
-      console.log(
-        "Role/module permission response:",
-        response
+      const response = await getRolePermissions(
+        roleId,
+        moduleId
       );
 
-      /*
-       * Depending on backend response:
-       *
-       * response.module
-       * response.modules
-       *
-       * We support both.
-       */
+      if (requestId !== permissionRequestRef.current) {
+        return;
+      }
+
       const moduleData =
         response?.module ||
         response?.modules ||
@@ -156,28 +153,29 @@ const isAdminRole =
         response?.data?.modules ||
         null;
 
+      if (!moduleData) {
+        throw new Error("No module permissions received.");
+      }
+
+      const key = getModuleKey(roleId, moduleId);
+
       setSelectedModuleData(moduleData);
 
-      /*
-       * Keep Redux permission state updated.
-       *
-       * IMPORTANT:
-       * Your application-wide usePermission hook
-       * expects an ARRAY of modules.
-       */
-      if (moduleData) {
-        dispatch({
-          type: "permission/setPermissions",
-          payload: Array.isArray(moduleData)
-            ? moduleData
-            : [moduleData],
-        });
-      }
+      setModuleDrafts((previous) => ({
+        ...previous,
+        [key]: moduleData,
+      }));
+
+      setOriginalModuleDrafts((previous) => ({
+        ...previous,
+        [key]: moduleData,
+      }));
     } catch (error) {
-      console.error(
-        "Error fetching role/module permissions:",
-        error
-      );
+      if (requestId !== permissionRequestRef.current) {
+        return;
+      }
+
+      console.error("Error fetching permissions:", error);
 
       setSelectedModuleData(null);
 
@@ -187,192 +185,272 @@ const isAdminRole =
           "Failed to load permissions."
       );
     } finally {
-      setLoadingPermissions(false);
+      if (requestId === permissionRequestRef.current) {
+        setLoadingPermissions(false);
+      }
     }
   };
 
   // ============================================
-  // INITIAL LOAD
+  // ROLE + MODULE SELECTION
   // ============================================
-  useEffect(() => {
-    fetchRoles();
-  }, []);
 
-  // ============================================
-  // ROLE + MODULE CHANGE
-  // ============================================
   useEffect(() => {
-    if (
-      selectedRole &&
-      selectedModule
-    ) {
-      fetchRolePermissions(
-        selectedRole,
-        selectedModule
-      );
+    if (!selectedRole || !selectedModule) {
+      setSelectedModuleData(null);
+      setLoadingPermissions(false);
+      return;
     }
-  }, [
-    selectedRole,
-    selectedModule,
-  ]);
+
+    const key = getModuleKey(
+      selectedRole,
+      selectedModule
+    );
+
+    const hasCachedModule =
+      Object.prototype.hasOwnProperty.call(
+        moduleDrafts,
+        key
+      );
+
+    if (hasCachedModule) {
+      setSelectedModuleData(moduleDrafts[key]);
+      setLoadingPermissions(false);
+      return;
+    }
+
+    fetchRolePermissions(selectedRole, selectedModule);
+  }, [selectedRole, selectedModule, moduleDrafts]);
 
   // ============================================
   // ROLE CHANGE
   // ============================================
-  const handleRoleChange = (roleId) => {
-    setSelectedRole(roleId);
 
-    /*
-     * Reset selected module permissions
-     * while the new role is loading.
-     */
-      setSelectedModule("");
+  const handleRoleChange = (roleId) => {
+    if (saving) return;
+
+    permissionRequestRef.current += 1;
+
+    setSelectedRole(roleId);
+    setSelectedModule("");
     setSelectedModuleData(null);
 
-    setIsEditing(false);
+    setLoadingPermissions(false);
     setSaved(false);
+    setError("");
+
+    // Existing drafts for other roles are preserved.
   };
 
   // ============================================
   // MODULE CHANGE
   // ============================================
-const handleModuleChange = (moduleId) => {
-  // Close currently opened module
-  if (selectedModule === moduleId) {
-    setSelectedModule("");
-    setSelectedModuleData(null);
-    setIsEditing(false);
-    return;
-  }
 
-  // Open selected module
-  setSelectedModule(moduleId);
-  setSelectedModuleData(null);
-  setIsEditing(false);
-  setSaved(false);
-};
+  const handleModuleChange = (moduleId) => {
+    if (saving) return;
+
+    permissionRequestRef.current += 1;
+
+    if (selectedModule === moduleId) {
+      setSelectedModule("");
+      setSelectedModuleData(null);
+      setLoadingPermissions(false);
+      return;
+    }
+
+    const key = getModuleKey(selectedRole, moduleId);
+
+    const hasCachedModule =
+      Object.prototype.hasOwnProperty.call(
+        moduleDrafts,
+        key
+      );
+
+    setSelectedModule(moduleId);
+
+    setSelectedModuleData(
+      hasCachedModule ? moduleDrafts[key] : null
+    );
+
+    setLoadingPermissions(!hasCachedModule);
+    setSaved(false);
+    setError("");
+  };
 
   // ============================================
   // CHANGE PERMISSION
   // ============================================
-  const handlePermissionChange = (
-    permissionId
-  ) => {
-    setSelectedModuleData((current) => {
-      if (!current) return current;
 
-      return {
-        ...current,
+  const handlePermissionChange = (permissionId) => {
+    if (
+      !selectedModuleData ||
+      !selectedRole ||
+      !selectedModule ||
+      isAdminRole ||
+      saving
+    ) {
+      return;
+    }
 
-        permission_types:
-          current.permission_types?.map(
-            (permission) => {
-              if (
-                permission.perm_type_id !==
-                permissionId
-              ) {
-                return permission;
-              }
+    const key = getModuleKey(
+      selectedRole,
+      selectedModule
+    );
 
-              return {
-                ...permission,
-                allow: !permission.allow,
-              };
-            }
-          ),
-      };
+    const updatedModule = {
+      ...selectedModuleData,
+      permission_types:
+        selectedModuleData.permission_types?.map(
+          (permission) =>
+            String(permission.perm_type_id) ===
+            String(permissionId)
+              ? {
+                  ...permission,
+                  allow: !permission.allow,
+                }
+              : permission
+        ),
+    };
+
+    setSelectedModuleData(updatedModule);
+
+    setModuleDrafts((previous) => ({
+      ...previous,
+      [key]: updatedModule,
+    }));
+
+    setSaved(false);
+    setError("");
+  };
+
+  // ============================================
+  // DISCARD ALL UNSAVED CHANGES
+  // ============================================
+
+  const handleCancel = () => {
+    if (!selectedRole || saving) return;
+
+    setModuleDrafts((previous) => {
+      const updated = { ...previous };
+
+      modules.forEach((module) => {
+        const key = getModuleKey(
+          selectedRole,
+          module.perm_module_id
+        );
+
+        if (
+          Object.prototype.hasOwnProperty.call(
+            originalModuleDrafts,
+            key
+          )
+        ) {
+          updated[key] = originalModuleDrafts[key];
+        }
+      });
+
+      return updated;
     });
 
-    setSaved(false);
-  };
-
-  // ============================================
-  // EDIT
-  // ============================================
-  const handleEdit = () => {
-    if (!selectedModuleData) {
-      return;
-    }
-
-    setIsEditing(true);
-    setSaved(false);
-  };
-
-  // ============================================
-  // CANCEL
-  // ============================================
-  const handleCancel = () => {
-    setIsEditing(false);
-
-    if (
-      selectedRole &&
+    const currentKey = getModuleKey(
+      selectedRole,
       selectedModule
-    ) {
-      fetchRolePermissions(
-        selectedRole,
-        selectedModule
-      );
-    }
+    );
+
+    setSelectedModuleData(
+      originalModuleDrafts[currentKey] || null
+    );
 
     setSaved(false);
+    setError("");
   };
 
   // ============================================
-  // SAVE
+  // SAVE ALL MODIFIED MODULES
   // ============================================
+
   const handleSave = async () => {
-    if (
-      !selectedRole ||
-      !selectedModuleData
-    ) {
+    if (!selectedRole || saving || !hasChanges) {
       return;
     }
+
+    const roleId = selectedRole;
+
+    // Capture all modified module data before saving.
+    const modulesToSave = changedModules.map((module) => {
+      const key = getModuleKey(
+        roleId,
+        module.perm_module_id
+      );
+
+      return {
+        key,
+        moduleName: module.module_name,
+        moduleData: moduleDrafts[key],
+      };
+    });
 
     try {
       setSaving(true);
       setError("");
+      setSaved(false);
 
-      const updatePermissions =
-        selectedModuleData.permission_types?.map(
-          (permission) => ({
-            perm_type_id:
-              permission.perm_type_id,
-            allow: permission.allow,
-          })
-        ) || [];
+      const successfulModules = [];
+      const failedModules = [];
 
-      console.log(
-        "Updating permissions:",
-        updatePermissions
-      );
+      // Preserve the existing API contract.
+      // Save each modified module separately.
+      for (const item of modulesToSave) {
+        try {
+          const updatePermissions =
+            item.moduleData.permission_types?.map(
+              (permission) => ({
+                perm_type_id: permission.perm_type_id,
+                allow: permission.allow === true,
+              })
+            ) || [];
 
-      /*
-       * Existing update API.
-       *
-       * If backend changed this endpoint,
-       * only updateRolePermissions() needs
-       * to be changed.
-       */
-      await updateRolePermissions(
-        selectedRole,
-        updatePermissions
-      );
+          await updateRolePermissions(
+            roleId,
+            updatePermissions
+          );
 
-      setIsEditing(false);
+          successfulModules.push(item);
+        } catch (moduleError) {
+          console.error(
+            `Failed to save ${item.moduleName}:`,
+            moduleError
+          );
+
+          failedModules.push(item.moduleName);
+        }
+      }
+
+      // Update original snapshots only for successful modules.
+      if (successfulModules.length > 0) {
+        setOriginalModuleDrafts((previous) => {
+          const updated = { ...previous };
+
+          successfulModules.forEach((item) => {
+            updated[item.key] = item.moduleData;
+          });
+
+          return updated;
+        });
+      }
+
+      if (failedModules.length > 0) {
+        setError(
+          `Could not save: ${failedModules.join(", ")}. Other modules were saved successfully. You can retry the failed changes.`
+        );
+
+        return;
+      }
+
       setSaved(true);
-
-      /*
-       * Reload latest backend data
-       */
-      await fetchRolePermissions(
-        selectedRole,
-        selectedModule
-      );
+      setError("");
     } catch (error) {
-      console.error(
-        "Error updating permissions:",
-        error
-      );
+      console.error("Error saving permissions:", error);
 
       setError(
         error?.response?.data?.message ||
@@ -385,14 +463,8 @@ const handleModuleChange = (moduleId) => {
   };
 
   // ============================================
-  // PERMISSION TYPE ADDED
+  // RENDER
   // ============================================
-  const handlePermissionAdded = async () => {
-    await fetchRolePermissions(
-      selectedRole,
-      selectedModule
-    );
-  };
 
   return (
     <>
@@ -402,87 +474,73 @@ const handleModuleChange = (moduleId) => {
         <AdminSideNavbar />
 
         <main className="min-w-0 flex-1 bg-gray-50 p-4 md:p-6">
-
           <div className="mx-auto w-full max-w-[1200px] space-y-6">
 
-            {/* HEADER */}
             <PermissionHeader
-              isEditing={isEditing}
-              onEdit={handleEdit}
               onCancel={handleCancel}
               onSave={handleSave}
               saving={saving}
+              hasChanges={hasChanges}
+              changedModuleCount={changedModules.length}
             />
 
-            {/* SUCCESS */}
             {saved && (
               <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-                Permissions saved successfully.
+                All permissions saved successfully.
               </div>
             )}
 
-            {/* ERROR */}
             {error && (
               <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {error}
               </div>
             )}
 
-            {/* ROLE + MODULE */}
             <RoleSelector
               roles={roles}
               modules={modules}
               selectedRole={selectedRole}
               selectedModule={selectedModule}
-              setSelectedRole={
-                handleRoleChange
-              }
-              setSelectedModule={
-                handleModuleChange
-              }
-              isEditing={isEditing}
+              setSelectedRole={handleRoleChange}
+              setSelectedModule={handleModuleChange}
+              isEditing={saving}
               loading={loadingRoles}
-              loadingPermissions={
-                loadingPermissions
-              }
+              loadingPermissions={loadingPermissions}
             />
+
             {selectedRole && (
               <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+
                 <div className="border-b border-gray-200 bg-gray-50 px-5 py-4">
                   <h3 className="text-base font-semibold text-gray-800">
                     Modules & Permissions
                   </h3>
 
                   <p className="mt-1 text-xs text-gray-500">
-                    Select a module to view and manage its permissions.
+                    Select modules and update permissions.
+                    Your changes will remain until you save or discard them.
                   </p>
                 </div>
 
                 <div className="divide-y divide-gray-200">
-                  {modules?.map((module) => {
+                  {modules.map((module) => {
                     const isOpen =
                       selectedModule === module.perm_module_id;
 
                     return (
                       <div key={module.perm_module_id}>
-                        {/* MODULE HEADER */}
+
                         <button
                           type="button"
-                          disabled={isEditing}
+                          disabled={saving}
                           onClick={() =>
                             handleModuleChange(
                               module.perm_module_id
                             )
                           }
                           className={`
-                            flex
-                            w-full
-                            items-center
-                            justify-between
-                            px-5
-                            py-4
-                            text-left
-                            transition
+                            flex w-full items-center justify-between
+                            px-5 py-4 text-left transition
                             ${
                               isOpen
                                 ? "bg-indigo-50 text-indigo-700"
@@ -498,22 +556,17 @@ const handleModuleChange = (moduleId) => {
 
                           <span
                             className={`
-                              text-xl
-                              transition-transform
-                              ${
-                                isOpen
-                                  ? "rotate-90"
-                                  : ""
-                              }
+                              text-xl transition-transform
+                              ${isOpen ? "rotate-90" : ""}
                             `}
                           >
                             ›
                           </span>
                         </button>
 
-                        {/* PERMISSIONS */}
                         {isOpen && (
                           <div className="border-t border-gray-200 bg-gray-50 p-4">
+
                             {loadingPermissions ? (
                               <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-sm text-gray-500">
                                 Loading permissions...
@@ -521,46 +574,22 @@ const handleModuleChange = (moduleId) => {
                             ) : (
                               <PermissionTable
                                 module={selectedModuleData}
-                                isEditing={isEditing}
                                 isAdminRole={isAdminRole}
                                 onPermissionChange={
                                   handlePermissionChange
                                 }
                               />
                             )}
+
                           </div>
                         )}
+
                       </div>
                     );
                   })}
                 </div>
               </div>
             )}
-            {/* PERMISSIONS */}
-            {/* {loadingPermissions ? (
-              <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500">
-                Loading permissions...
-              </div>
-            ) : (
-              <PermissionTable
-                module={selectedModuleData}
-                isEditing={isEditing}
-                onPermissionChange={
-                  handlePermissionChange
-                }
-              />
-            )} */}
-
-            {/* ADD NEW PERMISSION TYPE */}
-            {/* {selectedModuleData && (
-              <AddPermissionType
-                module={selectedModuleData}
-                disabled={isEditing}
-                onPermissionAdded={
-                  handlePermissionAdded
-                }
-              />
-            )} */}
 
           </div>
         </main>

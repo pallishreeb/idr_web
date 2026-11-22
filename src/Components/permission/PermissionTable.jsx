@@ -1,8 +1,8 @@
+
 import React from "react";
 
 const PermissionTable = ({
   module,
-  isEditing,
   isAdminRole,
   onPermissionChange,
 }) => {
@@ -19,11 +19,8 @@ const PermissionTable = ({
   const permissions = module.permission_types || [];
 
   return (
-  <div className="bg-white">
-
-    {/* PERMISSIONS */}
-    <div className="divide-y divide-gray-100">
-
+    <div className="bg-white">
+      <div className="divide-y divide-gray-100">
         {permissions.length === 0 ? (
           <div className="p-8 text-center text-sm text-gray-500">
             No permission types available for this module.
@@ -32,14 +29,7 @@ const PermissionTable = ({
           permissions.map((permission) => (
             <div
               key={permission.perm_type_id}
-              className="
-                flex
-                items-center
-                justify-between
-                px-5
-                py-4
-                hover:bg-gray-50
-              "
+              className="flex items-center justify-between px-5 py-4 hover:bg-gray-50"
             >
               <div>
                 <p className="text-sm font-medium text-gray-800">
@@ -53,54 +43,22 @@ const PermissionTable = ({
                 </p>
               </div>
 
-              {!isEditing ? (
-                <span
-                  className={`
-                    inline-flex
-                    h-8
-                    min-w-8
-                    items-center
-                    justify-center
-                    rounded-full
-                    px-2
-                    text-sm
-                    font-semibold
-                    ${
-                      permission.allow
-                        ? "bg-green-100 text-green-600"
-                        : "bg-gray-100 text-gray-400"
-                    }
-                  `}
-                >
-                  {permission.allow ? "✓" : "✕"}
-                </span>
-              ) : (
-                <label className="relative inline-flex cursor-pointer items-center">
-                  <input
-                    type="checkbox"
-                    checked={permission.allow === true}
-                    disabled={isAdminRole}
-                    onChange={() =>
-                      onPermissionChange(
-                        permission.perm_type_id
-                      )
-                    }
-                    className="
-                      h-5
-                      w-5
-                      cursor-pointer
-                      rounded
-                      border-gray-300
-                      text-indigo-600
-                      focus:ring-indigo-500
-                    "
-                  />
-                </label>
-              )}
+              <label className="relative inline-flex items-center">
+                <input
+                  type="checkbox"
+                  checked={permission.allow === true}
+                  disabled={isAdminRole}
+                  onChange={() =>
+                    onPermissionChange(
+                      permission.perm_type_id
+                    )
+                  }
+                  className="h-5 w-5 cursor-pointer rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </label>
             </div>
           ))
         )}
-
       </div>
     </div>
   );

@@ -1,15 +1,18 @@
+
 import React from "react";
+
 import {
   MdVerifiedUser,
-  MdEdit,
   MdClose,
   MdSave,
 } from "react-icons/md";
+
 const PermissionHeader = ({
-  isEditing,
-  onEdit,
   onCancel,
   onSave,
+  saving,
+  hasChanges,
+  changedModuleCount,
 }) => {
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -26,36 +29,36 @@ const PermissionHeader = ({
           <p className="text-sm text-gray-500">
             Manage module and action permissions.
           </p>
+
+          {hasChanges && (
+            <p className="mt-1 text-xs font-medium text-amber-600">
+              {changedModuleCount} module(s) have unsaved changes.
+            </p>
+          )}
         </div>
       </div>
 
-      {!isEditing ? (
+      <div className="flex gap-2">
         <button
-          onClick={onEdit}
-          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
+          type="button"
+          onClick={onCancel}
+          disabled={!hasChanges || saving}
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <MdEdit size={16} />
-          Edit Permissions
+          <MdClose size={16} />
+          Discard Changes
         </button>
-      ) : (
-        <div className="flex gap-2">
-          <button
-            onClick={onCancel}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            <MdClose size={16} />
-            Cancel
-          </button>
 
-          <button
-            onClick={onSave}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
-          >
-            <MdSave size={16} />
-            Save Changes
-          </button>
-        </div>
-      )}
+        <button
+          type="button"
+          onClick={onSave}
+          disabled={!hasChanges || saving}
+          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <MdSave size={16} />
+          {saving ? "Saving..." : "Save All Changes"}
+        </button>
+      </div>
     </div>
   );
 };
