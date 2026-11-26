@@ -431,17 +431,13 @@ to-[#4338CA]" />
     </div>
   );
 const hasMenuPermission = (item) => {
-  // Existing role protection stays mandatory
-  if (!item.roles?.includes(user_type)) {
-    return false;
-  }
-
-  // Existing role-only menu item
+  // Preserve role restrictions for menu items
+  // that do not use database permissions.
   if (!item.permission) {
-    return true;
+    return item.roles?.includes(user_type);
   }
 
-  // New DB Can View permission
+  // Database permission controls visibility.
   return can(item.permission, "Can View");
 };
 
